@@ -1,6 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
-
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 
@@ -83,21 +82,6 @@ namespace VBSHIGGS
       };
       std::map<VBSHIGGS::RunBooleans, SG::ReadDecorHandleKey<xAOD::EventInfo>> m_runBooleans_key;
       typedef std::unordered_map<VBSHIGGS::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
-
-      bool ele0_passSET = false;
-      bool ele1_passSET = false;
-      bool mu0_passSMT = false;
-      bool mu1_passSMT = false;
-
-      std::vector<std::string> ele0_trigPassed;
-      std::vector<std::string> ele1_trigPassed;
-      std::vector<std::string> mu0_trigPassed;
-      std::vector<std::string> mu1_trigPassed;
-
-      std::vector<std::string> ele0_trigMatched;
-      std::vector<std::string> ele1_trigMatched;
-      std::vector<std::string> mu0_trigMatched;
-      std::vector<std::string> mu1_trigMatched;
 
       CP::SysWriteDecorHandle<bool> ele0_passSET_decor {this, "ele0_passSET", "ele0_passSET_%SYS%", "Flag if Ele0 passes any Single Electron Trigger"};
       CP::SysWriteDecorHandle<bool> ele1_passSET_decor {this, "ele1_passSET", "ele1_passSET_%SYS%", "Flag if Ele1 passes any Single Electron Trigger"};

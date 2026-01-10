@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration   
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "TriggerDecoratorAlg.h"
@@ -94,16 +94,6 @@ namespace VBSHIGGS
         m_trig_branches.at(channel).set(*event, var, sys);
       }
 
-      ele0_trigPassed.clear();
-      ele1_trigPassed.clear();
-      mu0_trigPassed.clear();
-      mu1_trigPassed.clear();
-
-      ele0_trigMatched.clear();
-      ele1_trigMatched.clear();
-      mu0_trigMatched.clear();
-      mu1_trigMatched.clear();
-
     }
     return StatusCode::SUCCESS;
   }
@@ -118,33 +108,38 @@ namespace VBSHIGGS
     
     const xAOD::Muon* mu0 = nullptr;
     const xAOD::Muon* mu1 = nullptr;
-    
-    if (electrons->size() >= 2) {
-      ele0 = electrons->at(0);
-      ele1 = electrons->at(1);
-    }
-    
-    if (muons->size() >= 2) {
-      mu0 = muons->at(0);
-      mu1 = muons->at(1);
-    }
-    
-    if (electrons->size() == 1 && muons->size() == 1) {
-      ele0 = electrons->at(0);
-      mu0 = muons->at(0);
-    }
 
-    if (electrons->size() == 1 && muons->size() == 0) {
-      ele0 = electrons->at(0);
-    }
+    if (electrons->size() >= 1) ele0 = electrons->at(0);
+    if (electrons->size() >= 2) ele1 = electrons->at(1);
+    if (muons->size() >= 1) mu0 = muons->at(0);
+    if (muons->size() >= 2) mu1 = muons->at(1);
 
-    if (electrons->size() == 0 && muons->size() == 1) {
-      mu0 = muons->at(0);
-    }
+    bool ele0_passSET = false;
+    bool ele1_passSET = false;
+    bool mu0_passSMT = false;
+    bool mu1_passSMT = false;
+
+    std::vector<std::string> ele0_trigPassed;
+    std::vector<std::string> ele1_trigPassed;
+    std::vector<std::string> mu0_trigPassed;
+    std::vector<std::string> mu1_trigPassed;
+
+    std::vector<std::string> ele0_trigMatched;
+    std::vector<std::string> ele1_trigMatched;
+    std::vector<std::string> mu0_trigMatched;
+    std::vector<std::string> mu1_trigMatched;
     
     // Based on decision of group, only SLT will remain in the analysis code
-    if (ele0 || mu0) evaluateSingleLeptonTrigger(event, runBoolDecos, ele0, mu0, sys, ele0_trigPassed, mu0_trigPassed, ele0_trigMatched, mu0_trigMatched, ele0_passSET, mu0_passSMT);
-    if (ele1 || mu1) evaluateSingleLeptonTrigger(event, runBoolDecos, ele1, mu1, sys, ele1_trigPassed, mu1_trigPassed, ele1_trigMatched, mu1_trigMatched, ele1_passSET, mu1_passSMT);
+    if (ele0 || mu0)
+      evaluateSingleLeptonTrigger(event, runBoolDecos, ele0, mu0, sys,
+				  ele0_trigPassed, mu0_trigPassed,
+				  ele0_trigMatched, mu0_trigMatched,
+				  ele0_passSET, mu0_passSMT);
+    if (ele1 || mu1)
+      evaluateSingleLeptonTrigger(event, runBoolDecos, ele1, mu1, sys,
+				  ele1_trigPassed, mu1_trigPassed,
+				  ele1_trigMatched, mu1_trigMatched,
+				  ele1_passSET, mu1_passSMT);
 
     if(m_saveHighLevelVariables) {
       // Store the output as decorators which will be written into the nTuples
