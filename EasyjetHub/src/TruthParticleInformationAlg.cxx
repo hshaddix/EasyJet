@@ -403,14 +403,6 @@ public:
       truthBSMParticles(m_truthParticleBSMInKey);
     ATH_CHECK(truthBSMParticles.isValid());
 
-    bool isMC = eventInfo->eventType(xAOD::EventInfo::IS_SIMULATION);
-    if (!isMC)
-    {
-      ATH_MSG_ERROR(
-        "No truth particle information available in data, cannot build "
-        << std::string(m_nHiggses, 'H') << " decay path!");
-      return StatusCode::FAILURE;
-    }
     ATH_CHECK(recordTruthParticleInformation(*truthBSMParticles,
                                              *truthSMParticles, *eventInfo));
     return StatusCode::SUCCESS;
