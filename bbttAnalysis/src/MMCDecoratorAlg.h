@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -79,15 +79,15 @@ private:
     CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
 
-    CP::SysReadDecorHandle<bool> m_pass_LepHad {"pass_baseline_LepHad_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_pass_HadHad {"pass_baseline_HadHad_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_pass_LepHad_1B {"pass_LepHad_1B_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_pass_HadHad_1B {"pass_HadHad_1B_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_pass_LepHad_OS {"OS_CHARGE_LEPHAD_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_pass_LepHad {"pass_baseline_LepHad_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_pass_HadHad {"pass_baseline_HadHad_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_pass_LepHad_1B {"pass_LepHad_1B_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_pass_HadHad_1B {"pass_HadHad_1B_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_pass_LepHad_OS {"OS_CHARGE_LEPHAD_%SYS%", this};
 
-    CP::SysReadDecorHandle<bool> m_selected_el {"selected_el_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_selected_tau {"selected_tau_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
     CP::SysReadDecorHandle<char> m_isBtag
       {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
 

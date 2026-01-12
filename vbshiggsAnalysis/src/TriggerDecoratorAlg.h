@@ -67,7 +67,7 @@ namespace VBSHIGGS
       Gaudi::Property<bool> m_saveHighLevelVariables
       { this, "saveHighLevelVariables", false, "Flag to save high level variables"};
 
-      std::unordered_map<VBSHIGGS::TriggerChannel, CP::SysWriteDecorHandle<bool> > m_trig_branches;
+      std::unordered_map<VBSHIGGS::TriggerChannel, CP::SysWriteDecorHandle<char> > m_trig_branches;
       std::unordered_map<VBSHIGGS::TriggerChannel, bool> m_trig_bools;
       std::unordered_map<VBSHIGGS::TriggerChannel, std::string> m_triggerChannels = 
       {
@@ -81,22 +81,34 @@ namespace VBSHIGGS
         {VBSHIGGS::is23_400bunches, "is2023_400bunches"},
       };
       std::map<VBSHIGGS::RunBooleans, SG::ReadDecorHandleKey<xAOD::EventInfo>> m_runBooleans_key;
-      typedef std::unordered_map<VBSHIGGS::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
+      typedef std::unordered_map<VBSHIGGS::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
 
-      CP::SysWriteDecorHandle<bool> ele0_passSET_decor {this, "ele0_passSET", "ele0_passSET_%SYS%", "Flag if Ele0 passes any Single Electron Trigger"};
-      CP::SysWriteDecorHandle<bool> ele1_passSET_decor {this, "ele1_passSET", "ele1_passSET_%SYS%", "Flag if Ele1 passes any Single Electron Trigger"};
-      CP::SysWriteDecorHandle<bool> mu0_passSMT_decor {this, "mu0_passSMT", "mu0_passSMT_%SYS%", "Flag if Mu0 passes any Single Muon Trigger"};
-      CP::SysWriteDecorHandle<bool> mu1_passSMT_decor {this, "mu1_passSMT", "mu1_passSMT_%SYS%", "Flag if Mu1 passes any Single Muon Trigger"};
+      CP::SysWriteDecorHandle<char> m_ele0_passSET_decor
+	{"ele0_passSET_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_ele1_passSET_decor
+	{"ele1_passSET_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_mu0_passSMT_decor
+	{"mu0_passSMT_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_mu1_passSMT_decor
+	{"mu1_passSMT_%SYS%", this};
 
-      CP::SysWriteDecorHandle<std::vector<std::string>> ele0_trigPassed_decor {this, "ele0_trigPassed", "ele0_trigPassed_%SYS%", "List of Triggers that Ele0 Passes"};
-      CP::SysWriteDecorHandle<std::vector<std::string>> ele1_trigPassed_decor {this, "ele1_trigPassed", "ele1_trigPassed_%SYS%", "List of Triggers that Ele1 Passes"};
-      CP::SysWriteDecorHandle<std::vector<std::string>> mu0_trigPassed_decor {this, "mu0_trigPassed", "mu0_trigPassed_%SYS%", "List of Triggers that Mu0 Passes"};
-      CP::SysWriteDecorHandle<std::vector<std::string>> mu1_trigPassed_decor {this, "mu1_trigPassed", "mu1_trigPassed_%SYS%", "List of Triggers that Mu1 Passes"};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_ele0_trigPassed_decor
+	{"ele0_trigPassed_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_ele1_trigPassed_decor
+	{"ele1_trigPassed_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_mu0_trigPassed_decor
+	{"mu0_trigPassed_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_mu1_trigPassed_decor
+	{"mu1_trigPassed_%SYS%", this};
 
-      CP::SysWriteDecorHandle<std::vector<std::string>> ele0_trigMatched_decor {this, "ele0_trigMatched", "ele0_trigMatched_%SYS%", "List of Triggers that Ele0 Matches"};
-      CP::SysWriteDecorHandle<std::vector<std::string>> ele1_trigMatched_decor {this, "ele1_trigMatched", "ele1_trigMatched_%SYS%", "List of Triggers that Ele1 Matches"};
-      CP::SysWriteDecorHandle<std::vector<std::string>> mu0_trigMatched_decor {this, "mu0_trigMatched", "mu0_trigMatched_%SYS%", "List of Triggers that Mu0 Matches"};
-      CP::SysWriteDecorHandle<std::vector<std::string>> mu1_trigMatched_decor {this, "mu1_trigMatched", "mu1_trigMatched_%SYS%", "List of Triggers that Mu1 Matches"};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_ele0_trigMatched_decor
+	{"ele0_trigMatched_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_ele1_trigMatched_decor
+	{"ele1_trigMatched_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_mu0_trigMatched_decor
+	{"mu0_trigMatched_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_mu1_trigMatched_decor
+	{"mu1_trigMatched_%SYS%", this};
 
       void evaluateTriggerCuts(const xAOD::EventInfo *event,
 			       const runBoolReadDecoMap& runBoolDecos,
@@ -107,9 +119,11 @@ namespace VBSHIGGS
 				       const runBoolReadDecoMap& runBoolDecos,
 				       const xAOD::Electron* ele, const xAOD::Muon* mu,
 				       const CP::SystematicSet& sys, 
-               std::vector<std::string>& ele_trigPassed, std::vector<std::string>& mu_trigPassed,
-               std::vector<std::string>& ele_trigMatched, std::vector<std::string>& mu_trigMatched,
-               bool& ele_passSET, bool& mu_passSMT);
+				       std::vector<std::string>& ele_trigPassed,
+				       std::vector<std::string>& mu_trigPassed,
+				       std::vector<std::string>& ele_trigMatched,
+				       std::vector<std::string>& mu_trigMatched,
+				       bool& ele_passSET, bool& mu_passSMT);
       void setThresholds(const xAOD::EventInfo* event,
 			 const runBoolReadDecoMap& runBoolDecos,
 			 const CP::SystematicSet& sys);

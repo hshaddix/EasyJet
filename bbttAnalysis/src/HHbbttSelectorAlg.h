@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -109,17 +109,17 @@ private:
     CP::SysReadDecorHandle<unsigned int> m_year
       {this, "year", "dataTakingYear", ""};
 
-    CP::SysReadDecorHandle<bool> m_is2016_periodA
+    CP::SysReadDecorHandle<char> m_is2016_periodA
       {this, "is2016_periodA", "is2016_periodA", ""};
-    CP::SysReadDecorHandle<bool> m_is2016_periodB_D3
+    CP::SysReadDecorHandle<char> m_is2016_periodB_D3
       {this, "is2016_periodB_D3", "is2016_periodB_D3", ""};
-    CP::SysReadDecorHandle<bool> m_is2017_periodB1_B4
+    CP::SysReadDecorHandle<char> m_is2017_periodB1_B4
       {this, "is2017_periodB1_B4", "is2017_periodB1_B4", ""};
-    CP::SysReadDecorHandle<bool> m_l1topo_disabled
+    CP::SysReadDecorHandle<char> m_l1topo_disabled
       {this, "l1TopoDisabled", "l1TopoDisabled", ""};
-    CP::SysReadDecorHandle<bool> m_is2022_75bunches
+    CP::SysReadDecorHandle<char> m_is2022_75bunches
       {this, "is2022_75bunches", "is2022_75bunches", ""};
-    CP::SysReadDecorHandle<bool> m_is2023_first_2400bunches
+    CP::SysReadDecorHandle<char> m_is2023_first_2400bunches
       {this, "is2023_first_2400bunches", "is2023_first_2400bunches", ""};
 
     Gaudi::Property<std::vector<std::string>> m_eleWPNames
@@ -131,15 +131,15 @@ private:
     leptonDecoMap m_eleWPDecorHandleMap;   
     leptonDecoMap m_muonWPDecorHandleMap;
 
-    CP::SysWriteDecorHandle<bool> m_selected_el {"selected_el_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_selected_el_isIso {"selected_el_isIso_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_el_isIso {"selected_el_isIso_%SYS%", this};
 
-    CP::SysWriteDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_selected_mu_isIso {"selected_mu_isIso_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_mu_isIso {"selected_mu_isIso_%SYS%", this};
 
-    CP::SysWriteDecorHandle<bool> m_selected_tau {"selected_tau_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
 
-    CP::SysReadDecorHandle<bool> bjet_trigMatchDeco{"passTrigMatch_DBT_%SYS%", this};
+    CP::SysReadDecorHandle<char> bjet_trigMatchDeco{"passTrigMatch_DBT_%SYS%", this};
 
     std::unordered_map<HHBBTT::TriggerChannel, std::string> m_triggerChannels =
       {
@@ -181,7 +181,7 @@ private:
      * We then define a map m_bools mapping the enum to the boolean value and a map m_boolnames mapping the enum to the boolean name.
      * Additionally, m_Bbranches is a map of SysWriteDecorHandles taking care of saving the variables.
      */
-    std::unordered_map < HHBBTT::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+    std::unordered_map < HHBBTT::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
     std::unordered_map < HHBBTT::Booleans, bool > m_bools;
     std::unordered_map < HHBBTT::Booleans, std::string > m_boolnames{
     {HHBBTT::pass_trigger_SR, "pass_trigger_SR"},
@@ -257,11 +257,11 @@ private:
 
     StatusCode initialiseCutflow();
 
-    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::EventInfo, bool> > trigPassReadDecoMap;
-    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::MuonContainer, bool> > muTrigMatchReadDecoMap;
-    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::ElectronContainer, bool> > eleTrigMatchReadDecoMap;
-    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::TauJetContainer, bool> > tauTrigMatchReadDecoMap;
-    typedef CP::SysReadDecorHandle<bool> bjetTrigMatchReadDeco;
+    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::EventInfo, char> > trigPassReadDecoMap;
+    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::MuonContainer, char> > muTrigMatchReadDecoMap;
+    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::ElectronContainer, char> > eleTrigMatchReadDecoMap;
+    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::TauJetContainer, char> > tauTrigMatchReadDecoMap;
+    typedef CP::SysReadDecorHandle<char> bjetTrigMatchReadDeco;
 
     void applyTriggerSelection
       (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos,

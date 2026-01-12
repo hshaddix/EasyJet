@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
   TriggerDecoratorAlg:
   An alg that saves the event-level + tau-trigger matching info as decorations
@@ -102,7 +102,7 @@ namespace HH4B
     std::map<triggerSFType, SG::WriteDecorHandleKey<xAOD::EventInfo>> m_trigSFDecoratorKeys;
 
     typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::EventInfo, bool> > trigReadDecoMap;
-    typedef std::unordered_map<HH4B::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, bool> > passWriteDecoMap;
+    typedef std::unordered_map<HH4B::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, char> > passWriteDecoMap;
     typedef std::unordered_map<int, std::unordered_map<HH4B::TriggerChannel, std::vector<std::string>>> triggerMap;
 
     void evaluateTriggerCuts(const xAOD::EventInfo* eventInfo, const std::vector<std::string> &Triggers,

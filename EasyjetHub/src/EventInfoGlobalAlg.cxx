@@ -71,12 +71,12 @@ namespace Easyjet
     yearDecorHandle(*eventInfo) = year;
 
     for(unsigned int i=0; i<m_runPeriods.size(); i++){
-      SG::WriteDecorHandle<xAOD::EventInfo, bool> handle(m_runPeriodsDecor_keys[i]);
+      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(m_runPeriodsDecor_keys[i]);
       handle(*eventInfo) = std::get<1>(m_runPeriods[i]) <= runNumber &&
         runNumber <= std::get<2>(m_runPeriods[i]);
     }
 
-    SG::WriteDecorHandle<xAOD::EventInfo, bool> l1TopoDisabled(m_L1TopoDisabledDecorKey);
+    SG::WriteDecorHandle<xAOD::EventInfo, char> l1TopoDisabled(m_L1TopoDisabledDecorKey);
     l1TopoDisabled(*eventInfo) =
       (runNumber == 336506) || (runNumber == 336548) || (runNumber == 336567);
 

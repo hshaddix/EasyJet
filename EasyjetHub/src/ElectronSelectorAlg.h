@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_ELECTRONSELECTORALG
@@ -64,9 +64,8 @@ private:
     CP::SysWriteDecorHandle<int> m_nSelPart {this, "decorOutName", "nElectrons_%SYS%", 
         "Name out output decorator for number of selected electrons"};
 
-    CP::SysWriteDecorHandle<bool > m_isSelectedElectron {
-        this, "decoration", "isAnalysisElectron_%SYS%", "decoration for per-object if electron is selected"
-    };
+    CP::SysWriteDecorHandle<char> m_isSelectedElectron
+      {"isAnalysisElectron_%SYS%", this};
 
     Gaudi::Property<float> m_minPt            {this, "minPt", 7e3, "Minimum pT of electrons"};
     Gaudi::Property<float> m_maxEta           {this, "maxEta", 100., "Maximum eta of electrons"};
@@ -75,7 +74,7 @@ private:
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra electrons after pT sorting"}; // -1 means keep them all
 
     Gaudi::Property<int>   m_electronAmount       {this, "electronAmount", -1, "Number of electrons to consider for isElectronXX decoration"};
-    CP::SysWriteDecorHandleArray<bool> m_leadBranches {{}, this}; // Declared w/o property
+    CP::SysWriteDecorHandleArray<char> m_leadBranches {{}, this}; // Declared w/o property
   };
 }
 

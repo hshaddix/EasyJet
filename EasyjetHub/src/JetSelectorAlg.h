@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -67,8 +67,7 @@ private:
     CP::SysWriteDecorHandle<int> m_nSelPart {this, "decorOutName", "nJets_%SYS%", 
         "Name of output decorator for number of selected jets"};
 
-    CP::SysWriteDecorHandle<bool> m_isSelectedJet {this, "decoration", "isAnalysisJet_%SYS%", 
-        "decoration for per-object if jet is selected"};
+    CP::SysWriteDecorHandle<char> m_isSelectedJet {"isAnalysisJet_%SYS%", this};
 
     std::vector<CP::SysReadDecorHandle<char>> m_bTagTrigMatching_in;
     std::vector<CP::SysWriteDecorHandle<char>> m_bTagTrigMatching_out;
@@ -89,10 +88,10 @@ private:
 
     Gaudi::Property<bool>  m_selectBjet       {this, "selectBjet", false, "Apply bjet selection"};
     Gaudi::Property<int>   m_bjetAmount       {this, "bjetAmount", -1, "Number of jets to consider for isbjetXX decoration"};
-    CP::SysWriteDecorHandleArray<bool> m_bleadBranches {{}, this};
+    CP::SysWriteDecorHandleArray<char> m_bleadBranches {{}, this};
 
     Gaudi::Property<int>   m_jetAmount        {this, "jetAmount", -1, "Number of jets to consider for isjetXX decoration"};
-    CP::SysWriteDecorHandleArray<bool> m_jleadBranches {{}, this};
+    CP::SysWriteDecorHandleArray<char> m_jleadBranches {{}, this};
 
   };
 }

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_TAUSELECTORALG
@@ -70,9 +70,8 @@ private:
       m_nSelPart{ this, "decorOutName", "nTaus_%SYS%",
 	  "Name out output decorator for number of selected taus" };
 
-    CP::SysWriteDecorHandle<bool > m_isSelectedTau {
-        this, "decoration", "isAnalysisTau_%SYS%", "decoration for per-object if tau is selected"
-    };
+    CP::SysWriteDecorHandle<char> m_isSelectedTau
+      {"isAnalysisTau_%SYS%", this};
 
     Gaudi::Property<float> m_minPt            {this, "minPt", 20e3, "Minimum pT of taus"};
     Gaudi::Property<float> m_maxEta           {this, "maxEta", 2.5, "Maximum eta of taus"};
@@ -81,7 +80,7 @@ private:
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra taus after pT sorting"}; // -1 means keep them all
 
     Gaudi::Property<int>   m_tauAmount       {this, "tauAmount", -1, "Number of taus to consider for isTauXX decoration"};
-    CP::SysWriteDecorHandleArray<bool> m_leadBranches {{}, this}; // Declared w/o property
+    CP::SysWriteDecorHandleArray<char> m_leadBranches {{}, this}; // Declared w/o property
 
 
   };

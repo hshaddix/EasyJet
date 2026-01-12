@@ -65,7 +65,7 @@ private:
     Gaudi::Property<std::vector<std::string>> m_cutList
     { this, "NW_cutList", {}, "List of cuts to apply" };
 
-    std::unordered_map<std::string, CP::SysReadDecorHandle<bool>>
+    std::unordered_map<std::string, CP::SysReadDecorHandle<char>>
       m_cuts;
 
     ToolHandleArray<NeutrinoWeightingTool> m_reco_pairings { this, "NeutrinoWeightingTools", {}, "" };

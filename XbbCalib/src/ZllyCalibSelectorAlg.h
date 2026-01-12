@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -85,9 +85,9 @@ namespace XBBCALIB
 
       long long int m_total_events{0};
 
-      std::unordered_map<XBBCALIB::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<XBBCALIB::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<XBBCALIB::Booleans, bool> m_bools;
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<XBBCALIB::Booleans, std::string> m_boolnames{
       // {XBBCALIB::PASS_TRIGGER, "PASS_TRIGGER"},
       {XBBCALIB::PASS_EXACTLY_ONE_PHOTON, "PASS_EXACTLY_ONE_PHOTON"},

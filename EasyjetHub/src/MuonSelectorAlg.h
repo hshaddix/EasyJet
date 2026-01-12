@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_MUONSELECTORALG
@@ -63,10 +63,8 @@ private:
     CP::SysWriteDecorHandle<int> m_nSelPart {this, "decorOutName", "nMuons_%SYS%", 
         "Name out output decorator for number of selected muons"};
 
-    CP::SysWriteDecorHandle<bool > m_isSelectedMuon {
-        this, "decoration", "isAnalysisMuon_%SYS%", "decoration for per-object if muon is selected"
-    };
-
+    CP::SysWriteDecorHandle<char> m_isSelectedMuon
+      {"isAnalysisMuon_%SYS%", this};
 
     Gaudi::Property<float> m_minPt            {this, "minPt", 7e3, "Minimum pT of muons"};
     Gaudi::Property<float> m_maxEta           {this, "maxEta", 2.7, "Maximum eta of muons"};
@@ -75,7 +73,7 @@ private:
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra muons after pT sorting"}; // -1 means keep them all
 
     Gaudi::Property<int>   m_muonAmount       {this, "muonAmount", -1, "Number of muons to consider for isMuonXX decoration"};
-    CP::SysWriteDecorHandleArray<bool> m_leadBranches {{}, this}; // Declared w/o property
+    CP::SysWriteDecorHandleArray<char> m_leadBranches {{}, this}; // Declared w/o property
   };
 }
 

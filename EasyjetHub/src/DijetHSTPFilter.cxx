@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Jared Little, JaeJin Hong
@@ -59,7 +59,7 @@ namespace Easyjet
     pass_HSTP_filter = pT_j1_truthHS > pT_j1_truthPU;
 
     // Update the user-defined variable in EventInfo
-    SG::WriteDecorHandle<xAOD::EventInfo, bool> HSTPFilterDecorHandle(m_PassHSTPKey);
+    SG::WriteDecorHandle<xAOD::EventInfo, char> HSTPFilterDecorHandle(m_PassHSTPKey);
     HSTPFilterDecorHandle(*eventInfo) = pass_HSTP_filter;
 
     return StatusCode::SUCCESS;

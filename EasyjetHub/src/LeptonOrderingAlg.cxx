@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Minori Fujimoto
@@ -27,13 +27,13 @@ namespace Easyjet
       leadBranchesEle_keys.emplace_back("isLepton" + std::to_string(i + 1) + "_%SYS%");
       leadBranchesMu_keys.emplace_back("isLepton" + std::to_string(i + 1) + "_%SYS%");
     }
-    m_leadBranchesEle = CP::SysWriteDecorHandleArray<bool>(leadBranchesEle_keys,this);
-    m_leadBranchesMu = CP::SysWriteDecorHandleArray<bool>(leadBranchesMu_keys,this);
+    m_leadBranchesEle = CP::SysWriteDecorHandleArray<char>(leadBranchesEle_keys,this);
+    m_leadBranchesMu = CP::SysWriteDecorHandleArray<char>(leadBranchesMu_keys,this);
     ATH_CHECK( m_leadBranchesEle.initialize(m_systematicsList, m_inEleHandle) );
     ATH_CHECK( m_leadBranchesMu.initialize(m_systematicsList, m_inMuHandle) );
 
     // Intialise syst list (must come after all syst-aware inputs and outputs)
-    ATH_CHECK (m_systematicsList.initialize());    
+    ATH_CHECK (m_systematicsList.initialize());
 
     return StatusCode::SUCCESS;
   }

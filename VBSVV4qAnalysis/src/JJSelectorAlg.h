@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef VBSVV4qANALYSIS_JJSELECTORALG_H
@@ -79,7 +79,7 @@ namespace VBSVV4q{
 
       CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{ this, "event", "EventInfo",  "EventInfo container to read" };
 
-      CP::SysReadDecorHandle<bool> m_passTriggerSJT {this, "passTriggerSJT", "pass_trigger_SJT_%SYS%", "events pass any singjet triggers"};
+      CP::SysReadDecorHandle<char> m_passTriggerSJT {"pass_trigger_SJT_%SYS%", this};
 
       CP::SysFilterReporterParams m_filterParams {this, "VBSVV4q selection"};
 
@@ -89,9 +89,9 @@ namespace VBSVV4q{
       
       long long int m_total_events{0};
 
-      std::unordered_map<VBSVV4q::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<VBSVV4q::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<VBSVV4q::Booleans, bool> m_bools;
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<VBSVV4q::Booleans, std::string> m_boolnames{
         {VBSVV4q::PASS_TRIGGER, "PASS_TRIGGER"},
         {VBSVV4q::PASS_ONE_LARGE_JET, "PASS_ONE_LARGE_JET"},

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -52,8 +52,8 @@ private:
     CP::SysReadHandle<xAOD::EventInfo>
       m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
 
-    CP::SysReadDecorHandle<bool> m_pass_trigger_SLT {this, "passTrigSLT", "", "pass trigger SLT"};
-    CP::SysReadDecorHandle<bool> m_pass_trigger_DLT {this, "passTrigDLT", "", "pass trigger DLT"};
+    CP::SysReadDecorHandle<char> m_pass_trigger_SLT {this, "passTrigSLT", "", "pass trigger SLT"};
+    CP::SysReadDecorHandle<char> m_pass_trigger_DLT {this, "passTrigDLT", "", "pass trigger DLT"};
 
     Gaudi::Property<std::vector<std::string>> m_eleTrigSF
       {this, "eleTriggerSF", {}, "List of electron trigger SF"};
@@ -63,8 +63,8 @@ private:
       {this, "muonTriggerSF", {}, "List of muon trigger SF"};
     std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_muonTriggerSF;
 
-    CP::SysReadDecorHandle<bool> m_selected_el{"selected_el_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_el{"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
     
     CP::SysReadDecorHandle<unsigned int> m_year{this, "year", "dataTakingYear", ""};
 

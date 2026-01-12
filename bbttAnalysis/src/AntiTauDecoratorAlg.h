@@ -48,15 +48,15 @@ namespace HHBBTT
 
     CP::SysReadDecorHandle<unsigned int> m_year{"dataTakingYear", this};
 
-    CP::SysReadDecorHandle<bool> m_is2016_periodA{"is2016_periodA", this};
-    CP::SysReadDecorHandle<bool> m_is2016_periodB_D3{"is2016_periodB_D3", this};
-    CP::SysReadDecorHandle<bool> m_is2022_75bunches{"is2022_75bunches", this};
+    CP::SysReadDecorHandle<char> m_is2016_periodA{"is2016_periodA", this};
+    CP::SysReadDecorHandle<char> m_is2016_periodB_D3{"is2016_periodB_D3", this};
+    CP::SysReadDecorHandle<char> m_is2022_75bunches{"is2022_75bunches", this};
 
-    CP::SysReadDecorHandle<bool> m_passSLT{"pass_trigger_SLT", this};
-    CP::SysReadDecorHandle<bool> m_passLTT{"pass_trigger_LTT", this};
-    CP::SysReadDecorHandle<bool> m_passSTT{"pass_trigger_STT", this};
-    CP::SysReadDecorHandle<bool> m_passDTT{"pass_trigger_DTT", this};
-    CP::SysReadDecorHandle<bool> m_passDBT{"pass_trigger_DBT", this};
+    CP::SysReadDecorHandle<char> m_passSLT{"pass_trigger_SLT", this};
+    CP::SysReadDecorHandle<char> m_passLTT{"pass_trigger_LTT", this};
+    CP::SysReadDecorHandle<char> m_passSTT{"pass_trigger_STT", this};
+    CP::SysReadDecorHandle<char> m_passDTT{"pass_trigger_DTT", this};
+    CP::SysReadDecorHandle<char> m_passDBT{"pass_trigger_DBT", this};
 
     // Taus
     CP::SysReadHandle<xAOD::TauJetContainer>
@@ -77,9 +77,9 @@ namespace HHBBTT
       { this, "antiTauScoreThreshold", 0.,
 	"Lower threshold of RNN/GNTau score for Anti-Id taus" };
 
-    CP::SysReadDecorHandle<bool> m_triggerMatchSTT{"trigMatch_STT", this};
-    CP::SysReadDecorHandle<bool> m_triggerMatchLTT{"trigMatch_LTT", this};
-    CP::SysReadDecorHandle<bool> m_triggerMatchDTT{"trigMatch_DTT", this};
+    CP::SysReadDecorHandle<char> m_triggerMatchSTT{"trigMatch_STT", this};
+    CP::SysReadDecorHandle<char> m_triggerMatchLTT{"trigMatch_LTT", this};
+    CP::SysReadDecorHandle<char> m_triggerMatchDTT{"trigMatch_DTT", this};
 
     CP::SysWriteSelectionHandle m_IDTau{
       this, "IDTauSelection", "", "decoration name for the ID taus"};

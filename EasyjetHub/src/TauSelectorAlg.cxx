@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "TauSelectorAlg.h"
@@ -29,7 +29,7 @@ namespace Easyjet
     for(int i=0; i< m_tauAmount; i++){
       leadBranches_keys.emplace_back("isTau"+std::to_string(i+1)+"_%SYS%");
     }
-    m_leadBranches = CP::SysWriteDecorHandleArray<bool>(leadBranches_keys, this);
+    m_leadBranches = CP::SysWriteDecorHandleArray<char>(leadBranches_keys, this);
     ATH_CHECK(m_leadBranches.initialize(m_systematicsList, m_inHandle));
 
     ANA_CHECK (m_isSelectedTau.initialize(m_systematicsList, m_inHandle));

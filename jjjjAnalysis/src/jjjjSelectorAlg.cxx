@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "jjjjSelectorAlg.h"
@@ -40,14 +40,14 @@ namespace jjjj
 
     for (auto& [key, value] : m_boolnames) {
       m_bools.emplace(key, false);
-      CP::SysWriteDecorHandle<bool> whandle{value+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
       m_Bbranches.emplace(key, whandle);
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     }
 
     // make trigger decorators
     for (auto trig : m_triggers){
-      CP::SysReadDecorHandle<bool> deco {this, "trig"+trig, trig, "Name of trigger"};
+      CP::SysReadDecorHandle<bool> deco {trig, this};
       m_triggerdecos.emplace(trig, deco);
       ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
     }

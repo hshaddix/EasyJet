@@ -82,8 +82,8 @@ private:
     CP::SysReadDecorHandle<int> m_mu_truthOrigin{"truthOrigin", this};
     CP::SysReadDecorHandle<int> m_mu_truthType{"truthType", this};
 
-    CP::SysReadDecorHandle<bool> m_ele_selected{"ele_is_selected_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_mu_selected{"mu_is_selected_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_ele_selected{"ele_is_selected_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_mu_selected{"mu_is_selected_%SYS%", this};
 
     CP::SysReadDecorHandle<char> 
     m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};

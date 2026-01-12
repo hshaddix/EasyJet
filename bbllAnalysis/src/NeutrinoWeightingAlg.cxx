@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Adam Anderson
@@ -34,7 +34,7 @@ namespace HHBBLL
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
 
     for (const std::string &cut : m_cutList) {
-      CP::SysReadDecorHandle<bool> rhandle{cut+"_%SYS%", this};
+      CP::SysReadDecorHandle<char> rhandle{cut+"_%SYS%", this};
       m_cuts.emplace(cut, rhandle);
       ATH_CHECK (m_cuts.at(cut).initialize(m_systematicsList, m_eventHandle));
     }
@@ -79,7 +79,7 @@ namespace HHBBLL
 
       bool pass_NW_check = true;
       for (const std::string &cut : m_cutList) {
-        pass_NW_check &= m_cuts.at(cut).get(*event, sys);
+        pass_NW_check &= static_cast<bool>(m_cuts.at(cut).get(*event, sys));
       }
 
       if (!pass_NW_check) {

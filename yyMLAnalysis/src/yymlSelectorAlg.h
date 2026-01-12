@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -101,14 +101,6 @@ private:
     CP::SysReadDecorHandle<unsigned int> m_year{
         this, "year", "dataTakingYear",""};
 
-    // TODO: need these? used by Multilepton, similarly for bbll
-    // CP::SysReadDecorHandle<bool> m_is22_75bunches{
-    //     this, "is2022_75bunches", "is2022_75bunches", ""};
-    // CP::SysReadDecorHandle<bool> m_is23_75bunches{
-    //     this, "is2023_75bunches", "is2023_75bunches", ""};
-    // CP::SysReadDecorHandle<bool> m_is23_400bunches{
-    //     this, "is2023_400bunches", "is2023_400bunches", ""};
-
     CP::SysFilterReporterParams m_filterParams{
         this, "yyML selection"};
 
@@ -119,11 +111,9 @@ private:
     ToolHandle<Trig::IMatchingTool> m_matchingTool{
         this, "trigMatchingTool", "", "Trigger matching tool"};
 
-    // std::unordered_map<std::string, CP::SysReadDecorHandle<bool> > m_triggerdecos;
-
     long long int m_total_events{0};
 
-    std::unordered_map<HHYYML::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+    std::unordered_map<HHYYML::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
     std::unordered_map < HHYYML::Booleans, bool > m_bools;
     std::unordered_map < HHYYML::Booleans, std::string > m_boolnames{
         {HHYYML::pass_trigger_diphoton, "pass_trigger_diphoton"},
@@ -143,12 +133,8 @@ private:
     Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
     std::vector<HHYYML::Booleans> m_inputCutKeys;
     Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-    // CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this}; // TODO: used by bbll
     double m_total_mcEventWeight{0.0};
-    CP::SysReadDecorHandle<float>
-		m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
-
-    // std::unordered_map<MULTILEPTON::TriggerChannel, std::unordered_map<MULTILEPTON::Var, float>> m_pt_threshold; // TODO: used in Multilepton and bbll, probably not needed for diphoton triggers
+    CP::SysReadDecorHandle<float> m_generatorWeight{"generatorWeight_%SYS%", this};
 
     StatusCode initialiseCutflow();
 

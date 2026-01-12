@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -132,11 +132,13 @@ namespace HHBBYY
 
       CP::SysReadDecorHandle<char> m_photonLIWPDecorHandle{"", this};
 
-      CP::SysWriteDecorHandle<bool> m_selected_ph {"selected_ph_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_selected_ph {"selected_ph_%SYS%", this};
 
-      std::vector<std::string> m_inputCutList{};
+      Gaudi::Property<std::vector<std::string>> m_inputCutList{
+	this, "cutList", {}};
 
-      std::vector<std::string> m_photonTriggers;
+      Gaudi::Property<std::vector<std::string>> m_photonTriggers{
+	this, "photonTriggers", {}};
 
       std::unordered_map<std::string,  SG::ReadDecorHandleKey<xAOD::EventInfo>> m_triggerDecorKeys;
 
@@ -144,8 +146,8 @@ namespace HHBBYY
 
       SG::ReadDecorHandleKey< xAOD::EventInfo > m_nPVDecorKey;
 
-      bool m_saveCutFlow;
-      bool m_saveTriggerInfo;
+      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
+      Gaudi::Property<bool> m_saveTriggerInfo{this, "saveTriggerInfo", false};
       long long int m_total_events{0};
       double m_total_mcEventWeight{0.0};
 
@@ -164,7 +166,7 @@ namespace HHBBYY
         { this, "do_eventCleaning_BadBatman", false, "Use BadBatman event cleaning" };
 
 
-      std::unordered_map<std::string, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map < HHBBYY::Booleans, bool > m_bools;
       std::unordered_map < HHBBYY::Booleans, std::string > m_boolnames{
           {HHBBYY::is15, "is15"},
@@ -187,9 +189,9 @@ namespace HHBBYY
         {"HLT_g45_medium_g20_medium_L1eEM40L_2eEM18L", "diphoton"}
     };
 
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
-      ToolHandle<Trig::IMatchingTool> m_matchingTool{this, "trigMatchingTool", "",
-	    "Trigger matching tool"};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
+      ToolHandle<Trig::IMatchingTool> m_matchingTool
+	{this, "trigMatchingTool", "", "Trigger matching tool"};
       CP::SysReadDecorHandle<unsigned int> m_runNumber 
         {this, "runNumber", "runNumber", "Runnumber"};
       CP::SysReadDecorHandle<unsigned int> m_rdmRunNumber 

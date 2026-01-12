@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -91,7 +91,7 @@ namespace HH4B
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run the selector algorithm in run-through mode" };
 
-      std::unordered_map<std::string, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
 
       std::vector<float> eventWeights{};
 

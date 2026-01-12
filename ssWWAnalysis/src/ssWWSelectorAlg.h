@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -181,13 +181,13 @@ namespace ssWWVBS
       CP::SysReadDecorHandle<unsigned int> m_year
 	{this, "year", "dataTakingYear", ""};
 
-      CP::SysReadDecorHandle<bool> m_is17_periodB5_B8
+      CP::SysReadDecorHandle<char> m_is17_periodB5_B8
 	{this, "is2017_periodB5_B8", "is2017_periodB5_B8", ""};
-      CP::SysReadDecorHandle<bool> m_is22_75bunches
+      CP::SysReadDecorHandle<char> m_is22_75bunches
 	{this, "is2022_75bunches", "is2022_75bunches", ""};
-      CP::SysReadDecorHandle<bool> m_is23_75bunches
+      CP::SysReadDecorHandle<char> m_is23_75bunches
 	{this, "is2023_75bunches", "is2023_75bunches", ""};
-      CP::SysReadDecorHandle<bool> m_is23_400bunches
+      CP::SysReadDecorHandle<char> m_is23_400bunches
 	{this, "is2023_400bunches", "is2023_400bunches", ""};
       
       CP::SysFilterReporterParams m_filterParams {this, "ssWW selection"};
@@ -210,7 +210,7 @@ namespace ssWWVBS
 
       long long int m_total_events{0};
 
-      std::unordered_map<ssWWVBS::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<ssWWVBS::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<ssWWVBS::Booleans, bool> m_bools;
       std::unordered_map<ssWWVBS::Booleans, std::string> m_boolnames{
         {ssWWVBS::IS_ee, "IS_ee"},
@@ -253,10 +253,10 @@ namespace ssWWVBS
       Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
       std::vector<ssWWVBS::Booleans> m_inputCutKeys;
       Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
 
-      CP::SysWriteDecorHandle<bool> m_ele_selected {"ele_is_selected_%SYS%", this};
-      CP::SysWriteDecorHandle<bool> m_mu_selected {"mu_is_selected_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_ele_selected {"ele_is_selected_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_mu_selected {"mu_is_selected_%SYS%", this};
       
 
       std::unordered_map<ssWWVBS::TriggerChannel, std::unordered_map<ssWWVBS::Var, float>> m_pt_threshold;

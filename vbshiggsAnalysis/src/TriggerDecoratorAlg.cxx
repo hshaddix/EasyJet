@@ -23,7 +23,7 @@ namespace VBSHIGGS
     
     // make trigger decorators
     for (auto trig : m_triggers){
-      CP::SysReadDecorHandle<bool> deco {this, "trig"+trig, trig, "Name of trigger"};
+      CP::SysReadDecorHandle<bool> deco {trig, this};
       m_triggerdecos.emplace(trig, deco);
       ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
     }
@@ -31,7 +31,7 @@ namespace VBSHIGGS
     // make trigger flags
     for (const auto& [channel, name] : m_triggerChannels) {
       m_trig_bools.emplace(channel, false);
-      CP::SysWriteDecorHandle<bool> whandle{"pass_trigger_"+name+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{"pass_trigger_"+name+"_%SYS%", this};
       m_trig_branches.emplace(channel, whandle);
       ATH_CHECK(m_trig_branches.at(channel).initialize(m_systematicsList, m_eventHandle));
     }
@@ -45,20 +45,20 @@ namespace VBSHIGGS
     }
 
     if(m_saveHighLevelVariables) {
-      ANA_CHECK(ele0_passSET_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(ele1_passSET_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(mu0_passSMT_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(mu1_passSMT_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_ele0_passSET_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_ele1_passSET_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_mu0_passSMT_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_mu1_passSMT_decor.initialize(m_systematicsList, m_eventHandle));
 
-      ANA_CHECK(ele0_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(ele1_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(mu0_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(mu1_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_ele0_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_ele1_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_mu0_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_mu1_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
 
-      ANA_CHECK(ele0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(ele1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(mu0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-      ANA_CHECK(mu1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_ele0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_ele1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_mu0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_mu1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
     }
 
     ATH_CHECK (m_systematicsList.initialize());
@@ -143,20 +143,20 @@ namespace VBSHIGGS
 
     if(m_saveHighLevelVariables) {
       // Store the output as decorators which will be written into the nTuples
-      ele0_passSET_decor.set(*event, ele0_passSET, sys);
-      ele1_passSET_decor.set(*event, ele1_passSET, sys);
-      mu0_passSMT_decor.set(*event, mu0_passSMT, sys);
-      mu1_passSMT_decor.set(*event, mu1_passSMT, sys);
+      m_ele0_passSET_decor.set(*event, ele0_passSET, sys);
+      m_ele1_passSET_decor.set(*event, ele1_passSET, sys);
+      m_mu0_passSMT_decor.set(*event, mu0_passSMT, sys);
+      m_mu1_passSMT_decor.set(*event, mu1_passSMT, sys);
 
-      ele0_trigPassed_decor.set(*event, ele0_trigPassed, sys);
-      ele1_trigPassed_decor.set(*event, ele1_trigPassed, sys);
-      mu0_trigPassed_decor.set(*event, mu0_trigPassed, sys);
-      mu1_trigPassed_decor.set(*event, mu1_trigPassed, sys);
+      m_ele0_trigPassed_decor.set(*event, ele0_trigPassed, sys);
+      m_ele1_trigPassed_decor.set(*event, ele1_trigPassed, sys);
+      m_mu0_trigPassed_decor.set(*event, mu0_trigPassed, sys);
+      m_mu1_trigPassed_decor.set(*event, mu1_trigPassed, sys);
 
-      ele0_trigMatched_decor.set(*event, ele0_trigMatched, sys);
-      ele1_trigMatched_decor.set(*event, ele1_trigMatched, sys);
-      mu0_trigMatched_decor.set(*event, mu0_trigMatched, sys);
-      mu1_trigMatched_decor.set(*event, mu1_trigMatched, sys);
+      m_ele0_trigMatched_decor.set(*event, ele0_trigMatched, sys);
+      m_ele1_trigMatched_decor.set(*event, ele1_trigMatched, sys);
+      m_mu0_trigMatched_decor.set(*event, mu0_trigMatched, sys);
+      m_mu1_trigMatched_decor.set(*event, mu1_trigMatched, sys);
     }
   }
 

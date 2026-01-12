@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "bbbbSelectorAlg.h"
@@ -49,7 +49,7 @@ namespace HH4B
     }
     
     for (const std::string &string_var: m_inputCutList) {
-      CP::SysWriteDecorHandle<bool> var {string_var+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> var {string_var+"_%SYS%", this};
       m_Bbranches.emplace(string_var, var);
       ATH_CHECK (m_Bbranches.at(string_var).initialize(m_systematicsList, m_eventHandle));
     }

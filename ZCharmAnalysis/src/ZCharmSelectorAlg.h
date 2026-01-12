@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -55,8 +55,11 @@ namespace ZCC
         "DILEPTON_MASS_WINDOW",
       };
 
+      Gaudi::Property<bool> m_isMC
+	{ this, "isMC", false, "Is this simulation?" };
+
       Gaudi::Property<bool> m_bypass
-      { this, "bypass", false, "Run selector algorithm in pass-through mode" };
+	{ this, "bypass", false, "Run selector algorithm in pass-through mode" };
 
       /// \brief Setup syst-aware input container handles
       CP::SysListHandle m_systematicsList {this};
@@ -84,13 +87,13 @@ namespace ZCC
       CP::SysReadDecorHandle<unsigned int> m_year
 	{this, "year", "dataTakingYear", ""};
 
-      CP::SysReadDecorHandle<bool> m_is17_periodB5_B8
+      CP::SysReadDecorHandle<char> m_is17_periodB5_B8
 	{this, "is2017_periodB5_B8", "is2017_periodB5_B8", ""};
-      CP::SysReadDecorHandle<bool> m_is22_75bunches
+      CP::SysReadDecorHandle<char> m_is22_75bunches
 	{this, "is2022_75bunches", "is2022_75bunches", ""};
-      CP::SysReadDecorHandle<bool> m_is23_75bunches
+      CP::SysReadDecorHandle<char> m_is23_75bunches
 	{this, "is2023_75bunches", "is2023_75bunches", ""};
-      CP::SysReadDecorHandle<bool> m_is23_400bunches
+      CP::SysReadDecorHandle<char> m_is23_400bunches
 	{this, "is2023_400bunches", "is2023_400bunches", ""};
       
       CP::SysFilterReporterParams m_filterParams {this, "ZCharm selection"};
@@ -114,7 +117,7 @@ namespace ZCC
 
       long long int m_total_events{0};
 
-      std::unordered_map<ZCC::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<ZCC::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<ZCC::Booleans, bool> m_bools;
       std::unordered_map<ZCC::Booleans, std::string> m_boolnames{
         {ZCC::IS_ee, "IS_ee"},
@@ -136,7 +139,7 @@ namespace ZCC
       Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
       std::vector<ZCC::Booleans> m_inputCutKeys;
       Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      CP::SysWriteDecorHandle<bool> m_pass_cuts {"PassCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_pass_cuts {"PassCuts_%SYS%", this};
 
       std::unordered_map<ZCC::TriggerChannel, std::unordered_map<ZCC::Var, float>> m_pt_threshold;
 

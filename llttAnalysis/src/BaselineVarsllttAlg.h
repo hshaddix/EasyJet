@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -91,20 +91,14 @@ private:
       { this, "tauWP", "","Tau ID working point" };
     CP::SysReadDecorHandle<float> m_tau_effSF{"", this};
 
-    CP::SysReadDecorHandle<bool> 
-    m_selected_el { this, "selected_el", "selected_el_%SYS%", "Name of input dectorator for selected el"};
-    CP::SysReadDecorHandle<bool> 
-    m_selected_mu { this, "selected_mu", "selected_mu_%SYS%", "Name of input dectorator for selected mu"};
-    CP::SysReadDecorHandle<bool> 
-    m_selected_tau { this, "selected_tau", "selected_tau_%SYS%", "Name of input dectorator for selected tau"};
-    CP::SysReadDecorHandle<int>
-    m_istauID { this, "istauID", "istauID_%SYS%", "Name of input dectorator for selected tauID"};
+    CP::SysReadDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
+    CP::SysReadDecorHandle<int> m_istauID {"istauID_%SYS%", this};
 
     // flag set for a->mumu constructed.
-    CP::SysReadDecorHandle<bool>
-    m_selected_el_amm { this, "selected_el_amm", "selected_el_amm_%SYS%", "Name of input dectorator for selected el from amumu"};
-    CP::SysReadDecorHandle<bool>
-    m_selected_mu_amm { this, "selected_mu_amm", "selected_mu_amm_%SYS%", "Name of input dectorator for selected mu from amumu"};
+    CP::SysReadDecorHandle<char> m_selected_el_amm {"selected_el_amm_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu_amm {"selected_mu_amm_%SYS%", this};
 
     CP::SysReadDecorHandle<char> 
     m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};

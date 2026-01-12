@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "TriggerDecoratorAlg.h"
@@ -207,12 +207,14 @@ namespace HHHBBBBTT
       if(pass){
 	for(const xAOD::Muon* mu : *muons){
 	  bool match = m_matchingTool->match(*mu, trig);
-	  mu_trigMatchDecos.at(HHHBBBBTT::SLT)(*mu) |= match;
+	  char& deco = mu_trigMatchDecos.at(HHHBBBBTT::SLT)(*mu);
+	  deco = deco || match;
 	}
       }
     }
 
-    pass_decos.at(HHHBBBBTT::SLT)(*eventInfo) |= trigPassed_SMT;
+    char& evtDeco = pass_decos.at(HHHBBBBTT::SLT)(*eventInfo);
+    evtDeco = evtDeco || trigPassed_SMT;
 
   }
 
@@ -234,12 +236,14 @@ namespace HHHBBBBTT
       if(pass){
 	for(const xAOD::Electron* ele : *electrons){
 	  bool match = m_matchingTool->match(*ele, trig);
-	  ele_trigMatchDecos.at(HHHBBBBTT::SLT)(*ele) |= match;
+	  char& deco = ele_trigMatchDecos.at(HHHBBBBTT::SLT)(*ele);
+	  deco = deco || match;
 	}
       }
     }
 
-    pass_decos.at(HHHBBBBTT::SLT)(*eventInfo) |= trigPassed_SET;
+    char& evtDeco = pass_decos.at(HHHBBBBTT::SLT)(*eventInfo);
+    evtDeco = evtDeco || trigPassed_SET;
     
   }
 
@@ -275,19 +279,25 @@ namespace HHHBBBBTT
 	if(pass){
 	  for(const xAOD::Muon* mu : *muons){
 	    bool match = m_matchingTool->match(*mu, trig);
-	    mu_trigMatchDecos.at(channel)(*mu) |= match;
-	    mu_trigMatchDecos.at(HHHBBBBTT::LTT)(*mu) |= match;
+	    char& deco_channel = mu_trigMatchDecos.at(channel)(*mu);
+	    deco_channel = deco_channel || match;
+	    char& deco = mu_trigMatchDecos.at(HHHBBBBTT::LTT)(*mu);
+	    deco = deco || match;
 	  }
 	  for(const xAOD::TauJet* tau : *taus){
 	    bool match = m_matchingTool->match(*tau, trig, 0.2);
-	    tau_trigMatchDecos.at(channel)(*tau) |= match;
-	    tau_trigMatchDecos.at(HHHBBBBTT::LTT)(*tau) |= match;
+	    char& deco_channel = tau_trigMatchDecos.at(channel)(*tau);
+	    deco_channel = deco_channel || match;
+	    char& deco = tau_trigMatchDecos.at(HHHBBBBTT::LTT)(*tau);
+	    deco = deco || match;
 	  }
 	}
       }
 
-      pass_decos.at(channel)(*eventInfo) |= mapDecisions.at(channel);
-      pass_decos.at(HHHBBBBTT::LTT)(*eventInfo) |= mapDecisions.at(channel);
+      char& evtDeco_channel = pass_decos.at(channel)(*eventInfo);
+      evtDeco_channel = evtDeco_channel || mapDecisions.at(channel);
+      char& evtDeco = pass_decos.at(HHHBBBBTT::LTT)(*eventInfo);
+      evtDeco = evtDeco || mapDecisions.at(channel);
     }
 
   }
@@ -321,19 +331,25 @@ namespace HHHBBBBTT
 	if(pass){
 	  for(const xAOD::Electron* ele : *electrons){
 	    bool match = m_matchingTool->match(*ele, trig);
-	    ele_trigMatchDecos.at(channel)(*ele) |= match;
-	    ele_trigMatchDecos.at(HHHBBBBTT::LTT)(*ele) |= match;
+	    char& deco_channel = ele_trigMatchDecos.at(channel)(*ele);
+	    deco_channel = deco_channel || match;
+	    char& deco = ele_trigMatchDecos.at(HHHBBBBTT::LTT)(*ele);
+	    deco = deco || match;
 	  }
 	  for(const xAOD::TauJet* tau : *taus){
 	    bool match = m_matchingTool->match(*tau, trig, 0.2);
-	    tau_trigMatchDecos.at(channel)(*tau) |= match;
-	    tau_trigMatchDecos.at(HHHBBBBTT::LTT)(*tau) |= match;
+	    char& deco_channel = tau_trigMatchDecos.at(channel)(*tau);
+	    deco_channel = deco_channel || match;
+	    char& deco = tau_trigMatchDecos.at(HHHBBBBTT::LTT)(*tau);
+	    deco = deco || match;
 	  }
 	}
       }
 
-      pass_decos.at(channel)(*eventInfo) |= mapDecisions.at(channel);
-      pass_decos.at(HHHBBBBTT::LTT)(*eventInfo) |= mapDecisions.at(channel);
+      char& evtDeco_channel = pass_decos.at(channel)(*eventInfo);
+      evtDeco_channel = evtDeco_channel || mapDecisions.at(channel);
+      char& evtDeco = pass_decos.at(HHHBBBBTT::LTT)(*eventInfo);
+      evtDeco = evtDeco || mapDecisions.at(channel);
     }
 
   }
@@ -358,12 +374,14 @@ namespace HHHBBBBTT
 	for(const xAOD::TauJet* tau : *taus){
 	  bool match = m_matchingTool->match(*tau, trig, 0.2);
 	  if(!m_useDiTauTrigMatch) match = true;
-	  tau_trigMatchDecos.at(HHHBBBBTT::STT)(*tau) |= match;
+	  char& deco = tau_trigMatchDecos.at(HHHBBBBTT::STT)(*tau);
+	  deco = deco || match;
 	}
       }
     }
 
-    pass_decos.at(HHHBBBBTT::STT)(*eventInfo) |= trigPassed_STT;
+    char& evtDeco = pass_decos.at(HHHBBBBTT::STT)(*eventInfo);
+    evtDeco = evtDeco || trigPassed_STT;
      
   }
 
@@ -427,14 +445,18 @@ namespace HHHBBBBTT
 	  }
 	  for(const xAOD::TauJet* tau : *taus){
 	    bool match = m_matchingTool->match(*tau, trig2, 0.2);
-	    tau_trigMatchDecos.at(channel)(*tau) |= match;
-	    tau_trigMatchDecos.at(HHHBBBBTT::DTT)(*tau) |= match;
+	    char& deco_channel = tau_trigMatchDecos.at(channel)(*tau);
+	    deco_channel = deco_channel || match;
+	    char& deco = tau_trigMatchDecos.at(HHHBBBBTT::DTT)(*tau);
+	    deco = deco || match;
 	  }
 	}
       }
 
-      pass_decos.at(channel)(*eventInfo) |= mapDecisions.at(channel);
-      pass_decos.at(HHHBBBBTT::DTT)(*eventInfo) |= mapDecisions.at(channel);
+      char& evtDeco_channel = pass_decos.at(channel)(*eventInfo);
+      evtDeco_channel = evtDeco_channel || mapDecisions.at(channel);
+      char& evtDeco = pass_decos.at(HHHBBBBTT::DTT)(*eventInfo);
+      evtDeco = evtDeco || mapDecisions.at(channel);
     }
 
     // Save specifically tau35 + tau25 independent trigger matching
@@ -448,7 +470,8 @@ namespace HHHBBBBTT
         if(!pass) continue;
         for(const xAOD::TauJet* tau : *taus){
           bool match = m_matchingTool->match(*tau, trig, 0.2);
-          tau_trigMatchDecos.at(channel)(*tau) |= match;
+          char& deco = tau_trigMatchDecos.at(channel)(*tau);
+          deco = deco || match;
         }
       }
     }
@@ -479,8 +502,10 @@ void TriggerDecoratorAlg::checkDiBJetTriggers
 	}
       }
 
-      pass_decos.at(channel)(*eventInfo) |= mapDecisions.at(channel);
-      pass_decos.at(HHHBBBBTT::DBT)(*eventInfo) |= mapDecisions.at(channel);
+      char& evtDeco_channel = pass_decos.at(channel)(*eventInfo);
+      evtDeco_channel = evtDeco_channel || mapDecisions.at(channel);
+      char& evtDeco = pass_decos.at(HHHBBBBTT::DBT)(*eventInfo);
+      evtDeco = evtDeco || mapDecisions.at(channel);
     }
   }
 
@@ -506,8 +531,11 @@ void TriggerDecoratorAlg::checkBjetTauTriggers
 	//TO DO: implement trigger matching
 	}
       }
-      pass_decos.at(channel)(*eventInfo) |= mapDecisions.at(channel);
-      pass_decos.at(HHHBBBBTT::BTT)(*eventInfo) |= mapDecisions.at(channel);
+
+      char& evtDeco_channel = pass_decos.at(channel)(*eventInfo);
+      evtDeco_channel = evtDeco_channel || mapDecisions.at(channel);
+      char& evtDeco = pass_decos.at(HHHBBBBTT::BTT)(*eventInfo);
+      evtDeco = evtDeco || mapDecisions.at(channel);
     }
   }
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 
@@ -52,7 +52,7 @@ namespace Easyjet
 
     SG::ReadHandle<xAOD::JetContainer> inContainer(m_inHandleKey);
     SG::ReadHandle<xAOD::TruthEventContainer> eventContainer(m_eventHandleKey);
-    SG::WriteDecorHandle<xAOD::JetContainer, bool> m_isSelectedJet(m_isSelectedJetKey);
+    SG::WriteDecorHandle<xAOD::JetContainer, char> m_isSelectedJet(m_isSelectedJetKey);
     SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey);
     SG::WriteHandle<ConstDataVector<xAOD::JetContainer>> m_outHandle(m_outHandleKey);
 
@@ -126,7 +126,7 @@ namespace Easyjet
       for (const xAOD::Jet *jet : *workContainer) {
         int truthLabel = (*m_truthLabel)(*jet);
         if (truthLabel == 5 && std::abs(jet->eta())<2.5){
-          SG::WriteDecorHandle<xAOD::JetContainer, bool> handle(m_bleadBranchesKeys.at(njet));
+          SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_bleadBranchesKeys.at(njet));
           handle(*jet) = true;
           njet++;
         }
@@ -140,7 +140,7 @@ namespace Easyjet
       for (const xAOD::Jet *jet : *workContainer) {
         int truthLabel = (*m_truthLabel)(*jet);
         if (truthLabel == 4 && std::abs(jet->eta())<2.5){
-          SG::WriteDecorHandle<xAOD::JetContainer, bool> handle(m_cleadBranchesKeys.at(njet));
+          SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_cleadBranchesKeys.at(njet));
           handle(*jet) = true;
           njet++;
         }

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_EVENTSELECTORALG
@@ -38,7 +38,7 @@ namespace Easyjet
     CP::SysReadHandle<xAOD::EventInfo> m_eventHandle
       {this, "event", "EventInfo", "EventInfo container to read" };
 
-    CP::SysReadDecorHandle<bool> m_filter_deco
+    CP::SysReadDecorHandle<char> m_filter_deco
       {this, "filterDecoration", "", "EventInfo boolean decoration used to filer events"};
 
     /// \brief Setup sys-aware output decorations

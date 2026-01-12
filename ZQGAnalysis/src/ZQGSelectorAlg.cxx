@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZQGSelectorAlg.h"
@@ -53,19 +53,19 @@ namespace ZQG
     
     ATH_CHECK (m_matchingTool.retrieve());
 
-    ATH_CHECK(m_passTruthCutsKey.initialize());
+    ATH_CHECK(m_passTruthCutsKey.initialize(m_isMC));
 
 
     for (auto& [key, value] : m_boolnames) {
       m_bools.emplace(key, false);
-      CP::SysWriteDecorHandle<bool> whandle{value+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
       m_Bbranches.emplace(key, whandle);
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     }
 
     // make trigger decorators
     for (auto trig : m_triggers){
-      CP::SysReadDecorHandle<bool> deco {this, "trig"+trig, trig, "Name of trigger"};
+      CP::SysReadDecorHandle<bool> deco{trig, this};
       m_triggerdecos.emplace(trig, deco);
       ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
     }
@@ -95,11 +95,10 @@ namespace ZQG
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
       ANA_CHECK (m_eventHandle.retrieve (event, sys));
-      bool isMC = event->eventType(xAOD::EventInfo::IS_SIMULATION);
       bool pass_truth_baseline = false;
-      if (isMC){
+      if (m_isMC){
         // Find truth decision
-        SG::ReadDecorHandle<xAOD::TruthEventContainer, bool> m_passTruthCuts(m_passTruthCutsKey);
+        SG::ReadDecorHandle<xAOD::TruthEventContainer, char> m_passTruthCuts(m_passTruthCutsKey);
         // Retrieve the truth decision
         if (!m_passTruthCuts.isPresent() || m_passTruthCuts->empty()) {
           ATH_MSG_ERROR("PassTruthCuts decision is empty or not found!");

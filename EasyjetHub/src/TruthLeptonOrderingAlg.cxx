@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 
@@ -40,8 +40,8 @@ namespace Easyjet
     // Retrieve inputs
     SG::ReadHandle<xAOD::TruthParticleContainer> inTruthElectronContainer(m_inTruthElectronHandleKey);
     SG::ReadHandle<xAOD::TruthParticleContainer> inTruthMuonContainer(m_inTruthMuonHandleKey);
-    SG::ReadDecorHandle<xAOD::TruthParticleContainer, bool> m_isSelectedElectron(m_isSelectedElectronKey);
-    SG::ReadDecorHandle<xAOD::TruthParticleContainer, bool> m_isSelectedMuon(m_isSelectedMuonKey);  
+    SG::ReadDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedElectron(m_isSelectedElectronKey);
+    SG::ReadDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedMuon(m_isSelectedMuonKey);  
 
     std::vector<std::pair<const xAOD::TruthParticle*, int>> leptons;
 
@@ -71,10 +71,10 @@ namespace Easyjet
     int nLepton = 0;
     for (auto lepton : leptons) {
         if (std::abs(lepton.second) == 11){ //ele
-            SG::WriteDecorHandle<xAOD::TruthParticleContainer, bool> eledecor(m_leadBranchesEleKey.at(nLepton));
+            SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> eledecor(m_leadBranchesEleKey.at(nLepton));
             eledecor(*lepton.first) = true;
         } else if (std::abs(lepton.second) == 13) { //mu
-            SG::WriteDecorHandle<xAOD::TruthParticleContainer, bool> mudecor(m_leadBranchesMuKey.at(nLepton));
+            SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> mudecor(m_leadBranchesMuKey.at(nLepton));
             mudecor(*lepton.first) = true;
         }
         nLepton++;

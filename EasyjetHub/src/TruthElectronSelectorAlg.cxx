@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 
@@ -42,7 +42,7 @@ namespace Easyjet
         SG::VIEW_ELEMENTS);
 
         
-    SG::WriteDecorHandle<xAOD::TruthParticleContainer, bool> m_isSelectedElectron(m_isSelectedElectronKey);
+    SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedElectron(m_isSelectedElectronKey);
     SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey);
 
     // loop over electrons 

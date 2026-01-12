@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -115,15 +115,14 @@ namespace MONOJET
 
       std::unordered_map<std::string, CP::SysReadDecorHandle<bool> > m_triggerdecos;
 
-
-      std::unordered_map<std::string, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
 
       CutManager m_MonojetCuts;
       Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
       Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
       long long int m_total_events{0};
       double m_total_mcEventWeight{0.0};
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
 
       void evaluateALLcuts
       (CutManager& MonojetCuts);

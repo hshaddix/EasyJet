@@ -34,7 +34,7 @@ namespace VBSVV4q{
 
     for (auto& [key, value] : m_boolnames) {
       m_bools.emplace(key, false);
-      CP::SysWriteDecorHandle<bool> whandle{value+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
       m_Bbranches.emplace(key, whandle);
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     }

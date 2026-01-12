@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZQGTruthSelectorAlg.h"
@@ -88,16 +88,9 @@ namespace ZQG
 
     truthOverlapRemoval(*truthJets, *truthElectrons, *truthMuons, *jets_after_overlap);
     for (const xAOD::Jet *jet : *jets_after_overlap){
-      bool isbjet=false;
-      bool iscjet=false;
       int truthlabel = truthFlavour(*jet);
-      if (truthlabel == 5){
-        isbjet = true;
-      } else if (truthlabel == 4){
-        iscjet = true;
-      }
-      if(isbjet) truthbjets->push_back(jet);
-      if(iscjet) truthcjets->push_back(jet);
+      if(truthlabel == 5) truthbjets->push_back(jet);
+      if(truthlabel == 4) truthcjets->push_back(jet);
     }
 
     int n_cjets = truthcjets->size();
@@ -198,11 +191,11 @@ namespace ZQG
     }
 
     ATH_MSG_VERBOSE("pass_truth_baseline = " << pass_truth_baseline);
-    SG::WriteDecorHandle<xAOD::TruthEventContainer, bool> passTruthCutsHandle(m_passTruthCutsKey);
+    SG::WriteDecorHandle<xAOD::TruthEventContainer, char> passTruthCutsHandle(m_passTruthCutsKey);
     passTruthCutsHandle(*truthevent) = pass_truth_baseline;
 
     for (auto& [key, handleKey] : m_BbranchKeys) {
-      SG::WriteDecorHandle<xAOD::TruthEventContainer, bool> handle(handleKey);
+      SG::WriteDecorHandle<xAOD::TruthEventContainer, char> handle(handleKey);
       handle(*truthevent) = m_bools.at(key);
     }
 

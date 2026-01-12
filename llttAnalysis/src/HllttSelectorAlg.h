@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -113,7 +113,7 @@ private:
     Gaudi::Property<std::vector<std::string>> m_triggers 
           {this, "triggerLists", {}, "Name list of trigger"};
 
-    std::unordered_map<std::string, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+    std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
     std::vector<std::string> m_Bvarnames{      
       "pass_trigger_SLT", "pass_trigger_DLT", "pass_baseline_DLT", "pass_DLT",
 	"pass_baseline_LepLep", "pass_LepLep", "pass_baseline_LepHad", "pass_LepHad",
@@ -121,9 +121,9 @@ private:
     };
 
 
-    CP::SysWriteDecorHandle<bool> m_selected_el {"selected_el_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_selected_tau {"selected_tau_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
     // flag tau passing loose(1) and medium(2)
     CP::SysWriteDecorHandle<int> m_istauID {"istauID_%SYS%", this};
     
@@ -132,14 +132,17 @@ private:
     
     /// \brief Internal variables
 
-    bool trigPassed_SLT {false};
-    bool trigPassed_DLT {false};
-
     std::unordered_map<HLLTT::TriggerChannel, std::unordered_map<HLLTT::Var, float>> m_pt_threshold;
 
-    void applyTriggerSelection(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
-    void applySLTTriggerSelection(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
-    void applyDiLepTriggerSelection(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
+    void applyTriggerSelection(const xAOD::EventInfo* event,
+			       const CP::SystematicSet& sys,
+			       bool& trigPassed_SLT, bool& trigPassed_DLT);
+    void applySLTTriggerSelection(const xAOD::EventInfo* event,
+				  const CP::SystematicSet& sys,
+				  bool& trigPassed_SLT);
+    void applyDiLepTriggerSelection(const xAOD::EventInfo* event,
+				    const CP::SystematicSet& sys,
+				    bool& trigPassed_DLT);
 
   };
 }

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -115,13 +115,13 @@ namespace HZALLYY
     CP::SysReadDecorHandle<unsigned int> m_year
       {this, "year", "dataTakingYear", ""};
    
-    CP::SysReadDecorHandle<bool> m_is17_periodB5_B8
+    CP::SysReadDecorHandle<char> m_is17_periodB5_B8
       {this, "is2017_periodB5_B8", "is2017_periodB5_B8", ""};
-    CP::SysReadDecorHandle<bool> m_is22_75bunches
+    CP::SysReadDecorHandle<char> m_is22_75bunches
       {this, "is2022_75bunches", "is2022_75bunches", ""};
-    CP::SysReadDecorHandle<bool> m_is23_75bunches
+    CP::SysReadDecorHandle<char> m_is23_75bunches
       {this, "is2023_75bunches", "is2023_75bunches", ""};
-    CP::SysReadDecorHandle<bool> m_is23_400bunches
+    CP::SysReadDecorHandle<char> m_is23_400bunches
       {this, "is2023_400bunches", "is2023_400bunches", ""};
     
     CP::SysFilterReporterParams m_filterParams {this, "HZAllyy selection"};
@@ -142,7 +142,7 @@ namespace HZALLYY
 
     long long int m_total_events{0};
 
-    std::unordered_map<HZALLYY::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+    std::unordered_map<HZALLYY::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
     std::unordered_map<HZALLYY::Booleans, bool> m_bools;
     std::unordered_map<HZALLYY::Booleans, std::string> m_boolnames{
       {HZALLYY::pass_trigger_SLT, "pass_trigger_SLT"},
@@ -161,7 +161,7 @@ namespace HZALLYY
     Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
     std::vector<HZALLYY::Booleans> m_inputCutKeys;
     Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-    CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
     double m_total_mcEventWeight{0.0};
     CP::SysReadDecorHandle<float> m_generatorWeight
       { this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Frederic Renner
@@ -36,14 +36,14 @@ namespace Easyjet
     for(int i=0; i<m_bjetAmount; i++){
       bleadBranches_keys.emplace_back("isbjet"+std::to_string(i+1)+"_%SYS%");
     }
-    m_bleadBranches = CP::SysWriteDecorHandleArray<bool>(bleadBranches_keys, this);
+    m_bleadBranches = CP::SysWriteDecorHandleArray<char>(bleadBranches_keys, this);
     ATH_CHECK(m_bleadBranches.initialize(m_systematicsList,m_inHandle));
 
     std::vector<std::string> jleadBranches_keys{};
     for(int i=0; i<m_jetAmount; i++){
       jleadBranches_keys.emplace_back("isjet"+std::to_string(i+1)+"_%SYS%");
     }
-    m_jleadBranches = CP::SysWriteDecorHandleArray<bool> (jleadBranches_keys, this);
+    m_jleadBranches = CP::SysWriteDecorHandleArray<char> (jleadBranches_keys, this);
     ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_inHandle));
 
     for (const auto& trig : m_triggers) {

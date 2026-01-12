@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -89,10 +89,8 @@ private:
       { this, "muonWP", "","Muon ID + Iso working point" };
     CP::SysReadDecorHandle<float> m_mu_SF{"", this};
 
-    CP::SysReadDecorHandle<bool> 
-      m_tight_selected_el { this, "tight_selected_el", "tight_selected_el_%SYS%", "Name of input decorator for tight selected el"};
-    CP::SysReadDecorHandle<bool> 
-      m_tight_selected_mu { this, "tight_selected_mu", "tight_selected_mu_%SYS%", "Name of input decorator for tight selected mu"};
+    CP::SysReadDecorHandle<char> m_tight_selected_el {"tight_selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_tight_selected_mu {"tight_selected_mu_%SYS%", this};
 
     Gaudi::Property<bool> m_isMC
       { this, "isMC", false, "Is this simulation?" };

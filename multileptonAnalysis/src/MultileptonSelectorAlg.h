@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -123,35 +123,26 @@ private:
     CP::SysReadDecorHandle<unsigned int> m_year{
         this, "year", "dataTakingYear",""};
 
-    CP::SysReadDecorHandle<bool> m_is16_periodA{
-        this, "is2016_periodA", "is2016_periodA", ""};
-    CP::SysReadDecorHandle<bool> m_is22_75bunches{
-        this, "is2022_75bunches", "is2022_75bunches", ""};
-    CP::SysReadDecorHandle<bool> m_is23_75bunches{
-        this, "is2023_75bunches", "is2023_75bunches", ""};
-    CP::SysReadDecorHandle<bool> m_is23_400bunches{
-        this, "is2023_400bunches", "is2023_400bunches", ""};
-    CP::SysReadDecorHandle<bool> m_is24_timeframeA_C{
-        this, "is2024_timeframeA_C", "is2024_timeframeA_C", ""};
-    CP::SysReadDecorHandle<bool> m_is24_timeframeD{
-        this, "is2024_timeframeD", "is2024_timeframeD", ""};
-        CP::SysReadDecorHandle<bool> m_is24_timeframeE_F{
-        this, "is2024_timeframeE_F", "is2024_timeframeE_F", ""};
-    CP::SysFilterReporterParams m_filterParams{
-        this, "Multilepton selection"};
-
+    CP::SysReadDecorHandle<char> m_is16_periodA{"is2016_periodA", this};
+    CP::SysReadDecorHandle<char> m_is22_75bunches{"is2022_75bunches", this};
+    CP::SysReadDecorHandle<char> m_is23_75bunches{"is2023_75bunches", this};
+    CP::SysReadDecorHandle<char> m_is23_400bunches{"is2023_400bunches", this};
+    CP::SysReadDecorHandle<char> m_is24_timeframeA_C{"is2024_timeframeA_C", this};
+    CP::SysReadDecorHandle<char> m_is24_timeframeD{"is2024_timeframeD", this};
+    CP::SysReadDecorHandle<char> m_is24_timeframeE_F{"is2024_timeframeE_F", this};
+    CP::SysFilterReporterParams m_filterParams{this, "Multilepton selection"};
 
     Gaudi::Property<std::vector<std::string>> m_triggers 
-		{ this, "triggerLists", {}, "Name list of trigger" };
+      { this, "triggerLists", {}, "Name list of trigger" };
 		
     ToolHandle<Trig::IMatchingTool> m_matchingTool
-		{ this, "trigMatchingTool", "", "Trigger matching tool"};
+      { this, "trigMatchingTool", "", "Trigger matching tool"};
 
     std::unordered_map<std::string, CP::SysReadDecorHandle<bool> > m_triggerdecos;
 
     long long int m_total_events{0};
     
-    std::unordered_map<MULTILEPTON::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+    std::unordered_map<MULTILEPTON::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
     std::unordered_map<MULTILEPTON::Booleans, bool> m_bools;
     std::unordered_map<MULTILEPTON::Booleans, std::string> m_boolnames{
         {MULTILEPTON::pass_trigger_SLT, "pass_trigger_SLT"},

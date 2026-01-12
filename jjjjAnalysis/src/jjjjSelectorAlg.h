@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -95,7 +95,7 @@ namespace jjjj
 
       long long int m_total_events{0};
 
-      std::unordered_map<jjjj::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<jjjj::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<jjjj::Booleans, bool> m_bools;
       std::unordered_map<jjjj::Booleans, std::string> m_boolnames{
         {jjjj::pass_trigger_SJT, "pass_trigger_SJT"},
@@ -106,7 +106,7 @@ namespace jjjj
       Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
       std::vector<jjjj::Booleans> m_inputCutKeys;
       Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      CP::SysWriteDecorHandle<bool> m_pass_cuts {"PassCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_pass_cuts {"PassCuts_%SYS%", this};
 
       std::unordered_map<jjjj::TriggerChannel, std::unordered_map<jjjj::Var, float>> m_pt_threshold;
 

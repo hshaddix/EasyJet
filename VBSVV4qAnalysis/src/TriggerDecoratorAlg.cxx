@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration   
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration   
 */
 
 #include "TriggerDecoratorAlg.h"
@@ -24,7 +24,7 @@ namespace VBSVV4q
     
     // make trigger decorators
     for (auto trig : m_triggers){
-      CP::SysReadDecorHandle<bool> deco {this, "trig"+trig, trig, "Name of trigger"};
+      CP::SysReadDecorHandle<bool> deco {trig, this};
       m_triggerdecos.emplace(trig, deco);
       ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
     }
@@ -32,7 +32,7 @@ namespace VBSVV4q
     // make trigger flags
     for (const auto& [channel, name] : m_triggerChannels) {
       m_trig_bools.emplace(channel, false);
-      CP::SysWriteDecorHandle<bool> whandle{"pass_trigger_"+name+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{"pass_trigger_"+name+"_%SYS%", this};
       m_trig_branches.emplace(channel, whandle);
       ATH_CHECK(m_trig_branches.at(channel).initialize(m_systematicsList, m_eventHandle));
     }

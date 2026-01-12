@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_ORTHOGONALITYALG
@@ -48,7 +48,7 @@ private:
     CP::SysReadHandle<xAOD::JetContainer>
     m_jetHandle{ this, "bjets", "",   "Jet container to read" };
 
-    CP::SysWriteDecorHandleArray<bool> m_Bbranches{{}, this};
+    CP::SysWriteDecorHandleArray<char> m_Bbranches{{}, this};
 
   };
 }

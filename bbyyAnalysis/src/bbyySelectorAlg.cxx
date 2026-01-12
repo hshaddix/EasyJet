@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "bbyySelectorAlg.h"
@@ -15,12 +15,7 @@ namespace HHBBYY
   bbyySelectorAlg::bbyySelectorAlg(const std::string &name,
                                 ISvcLocator *pSvcLocator)
       : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-    declareProperty("cutList", m_inputCutList);
-    declareProperty("saveCutFlow",m_saveCutFlow);
-    declareProperty("photonTriggers",m_photonTriggers);
-    declareProperty("saveTriggerInfo", m_saveTriggerInfo);
-  }
+  { }
 
 
   StatusCode bbyySelectorAlg::initialize()
@@ -81,14 +76,14 @@ namespace HHBBYY
     }
     
     for (const std::string &string_var: m_inputCutList) {
-      CP::SysWriteDecorHandle<bool> var {string_var+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> var {string_var+"_%SYS%", this};
       m_Bbranches.emplace(string_var, var);
       ATH_CHECK (m_Bbranches.at(string_var).initialize(m_systematicsList, m_eventHandle));
     }
     // Intialise booleans with value false.
     for (auto& [key, value] : m_boolnames) {
       m_bools.emplace(key, false);
-      CP::SysWriteDecorHandle<bool> var {value+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> var {value+"_%SYS%", this};
       m_Bbranches.emplace(value, var);
       ATH_CHECK(m_Bbranches.at(value).initialize(m_systematicsList, m_eventHandle));
     };
@@ -256,10 +251,13 @@ namespace HHBBYY
         for (size_t i = 0; i < m_bbyyCuts.size(); ++i) {
           if (m_bbyyCuts[i].passed)
           {
-            if (not m_enableSinglePhotonTrigger and m_inputCutList.at(i) == "PASS_TRIGGER"){
+	    std::string cut = m_inputCutList.value().at(i);
+            if (not m_enableSinglePhotonTrigger and
+		cut == "PASS_TRIGGER"){
               if (not m_bools.at(HHBBYY::pass_trigger_diphoton)) break;
               consecutive_cuts += m_bools.at(HHBBYY::pass_trigger_diphoton);
-            }else if (not m_enableSinglePhotonTrigger and m_inputCutList.at(i) == "PASS_TRIGGER_MATCHING"){
+            } else if (not m_enableSinglePhotonTrigger and
+		       cut == "PASS_TRIGGER_MATCHING"){
               if (not m_bools.at(HHBBYY::pass_matching_trigger_diphoton)) break;
               consecutive_cuts += m_bools.at(HHBBYY::pass_matching_trigger_diphoton);
             }else
@@ -272,7 +270,7 @@ namespace HHBBYY
         // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
         // I think this is an elegant way to do it :) . Considering the difficulties a configurable cut list imposes. 
         for (unsigned int i=0; i<consecutive_cuts; i++) {
-          std::string cut = m_inputCutList.at(i);
+          std::string cut = m_inputCutList.value().at(i);
           bool pass = true;
           if (not m_enableSinglePhotonTrigger and cut == "PASS_TRIGGER")
             pass = m_bools.at(HHBBYY::pass_trigger_diphoton);

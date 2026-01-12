@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
   TriggerDecoratorAlg:
   An alg that saves the event-level + tau-trigger matching info as decorations
@@ -124,12 +124,12 @@ namespace HHHBBBBTT
     Gaudi::Property<bool> m_useDiTauTrigMatch
       { this, "diTauTrigMatch", true, "Run di-tau trigger matching" };
 
-    typedef std::unordered_map<HHHBBBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
     typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::EventInfo, bool> > trigReadDecoMap;
-    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, bool> > passWriteDecoMap;
-    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::MuonContainer, bool> > muTrigMatchWriteDecoMap;
-    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::ElectronContainer, bool> > eleTrigMatchWriteDecoMap;
-    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::TauJetContainer, bool> > tauTrigMatchWriteDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, char> > passWriteDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::MuonContainer, char> > muTrigMatchWriteDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::ElectronContainer, char> > eleTrigMatchWriteDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::TauJetContainer, char> > tauTrigMatchWriteDecoMap;
     
     void checkSingleMuTriggers
       (int year, const xAOD::EventInfo* eventInfo,

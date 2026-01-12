@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -93,10 +93,10 @@ namespace ttHH
       { this, "muonWP", "","Muon ID + Iso cuts" };
       CP::SysReadDecorHandle<char> m_muonWPDecorHandle{"", this};
 
-      CP::SysWriteDecorHandle<bool> m_tight_selected_el {"tight_selected_el_%SYS%", this};
-      CP::SysWriteDecorHandle<bool> m_tight_selected_mu {"tight_selected_mu_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_tight_selected_el {"tight_selected_el_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_tight_selected_mu {"tight_selected_mu_%SYS%", this};
 
-      CP::SysReadDecorHandle<bool> m_passTriggerSinglep {this, "passTriggerSinglep", "ttHH_pass_trigger_singlep", "events pass any singlep triggers"};
+      CP::SysReadDecorHandle<char> m_passTriggerSinglep {"ttHH_pass_trigger_singlep", this};
 
       CP::SysFilterReporterParams m_filterParams {this, "ttHH selection"};
 
@@ -110,14 +110,14 @@ namespace ttHH
       bool m_saveCutFlow;
       long long int m_total_events{0};
 
-      std::unordered_map<std::string, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
       
       std::unordered_map < ttHH::Trigger_Matching_Tool, bool > m_triggers_matchs;
       std::unordered_map < ttHH::Trigger_Matching_Tool, std::string > m_triggermatchingnames{
           {ttHH::pass_matching_trigger_singlep, "pass_matching_trigger_singlep"},
       };
 
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       
       ToolHandle<Trig::IMatchingTool> m_matchingTool{this, "trigMatchingTool", "",
 	    "Trigger matching tool"};

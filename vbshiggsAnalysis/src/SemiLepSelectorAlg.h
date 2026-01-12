@@ -63,7 +63,7 @@ namespace VBSHIGGS{
       CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "vbshiggsAnalysisMuons_%SYS%",   "Muon container to read" };
       CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
 
-      CP::SysReadDecorHandle<bool> m_passTriggerSLT {this, "passTriggerSLT", "pass_trigger_SLT_%SYS%", "events pass any singlep triggers"};
+      CP::SysReadDecorHandle<char> m_passTriggerSLT {this, "passTriggerSLT", "pass_trigger_SLT_%SYS%", "events pass any singlep triggers"};
 
       CP::SysReadHandle<xAOD::JetContainer> m_largejetHandle{ this, "largejets", "vbshiggsAnalysisLargeJets_%SYS%", "Large R Jet container to read"};
       CP::SysReadDecorHandle<float> m_GN2Xv01_phbb = {this, "phbb", "GN2Xv01_phbb", "GN2Xv01_phbb"};
@@ -86,9 +86,9 @@ namespace VBSHIGGS{
       
       long long int m_total_events{0};
 
-      std::unordered_map<VBSHIGGS::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<VBSHIGGS::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<VBSHIGGS::Booleans, bool> m_bools;
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<VBSHIGGS::Booleans, std::string> m_boolnames{
         {VBSHIGGS::PASS_TRIGGER, "PASS_TRIGGER"}
       };

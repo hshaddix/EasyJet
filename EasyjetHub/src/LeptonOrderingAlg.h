@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_LEPTONORDERINGALG
@@ -50,12 +50,12 @@ private:
     CP::SysReadHandle<xAOD::MuonContainer>
     m_inMuHandle{ this, "containerInMuKey", "",   "Muon container to read" };
 
-    CP::SysReadDecorHandle<bool> m_isSelectedElectron{"isAnalysisElectron_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_isSelectedMuon{"isAnalysisMuon_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_isSelectedElectron{"isAnalysisElectron_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_isSelectedMuon{"isAnalysisMuon_%SYS%", this};
 
     /// \brief Setup sys-aware output decorations
-    CP::SysWriteDecorHandleArray<bool> m_leadBranchesEle{{}, this};
-    CP::SysWriteDecorHandleArray<bool> m_leadBranchesMu{{}, this};
+    CP::SysWriteDecorHandleArray<char> m_leadBranchesEle{{}, this};
+    CP::SysWriteDecorHandleArray<char> m_leadBranchesMu{{}, this};
   };
 }
 

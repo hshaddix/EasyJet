@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+# Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
@@ -71,6 +71,7 @@ def ZQG_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
     cfg.addEventAlgo(
         CompFactory.ZQG.ZQGSelectorAlg(
             "ZQGSelectorAlg",
+            isMC=flags.Input.isMC,
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorList=["ftag_quantile_" + pcbt_wp for pcbt_wp in btag_pcbt_wps],
             eventDecisionOutputDecoration="ZQG_pass_sr_%SYS%",

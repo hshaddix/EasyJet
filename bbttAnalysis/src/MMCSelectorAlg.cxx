@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "MMCSelectorAlg.h"
@@ -59,9 +59,9 @@ namespace HHBBTT
 
       for(const auto& channel : m_channels){
         if(channel == HHBBTT::LepHad || channel == HHBBTT::AntiIsoLepHad)
-          is_lephad |= m_pass_LepHad.get(*event, sys);
+          is_lephad |= static_cast<bool>(m_pass_LepHad.get(*event, sys));
         else if(channel == HHBBTT::HadHad)
-          is_hadhad |= m_pass_HadHad.get(*event, sys);
+          is_hadhad |= static_cast<bool>(m_pass_HadHad.get(*event, sys));
       }
 
       // No MMC selection for CRs -> bail out early

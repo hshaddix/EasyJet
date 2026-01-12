@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -42,8 +42,8 @@ public:
 
 private:
 
-    typedef std::unordered_map<HHBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
-    typedef std::unordered_map<HHBBTT::Booleans, CP::SysReadDecorHandle<bool>> categoryReadDecoMap;
+    typedef std::unordered_map<HHBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
+    typedef std::unordered_map<HHBBTT::Booleans, CP::SysReadDecorHandle<char>> categoryReadDecoMap;
 
     /// \brief Setup syst-aware input container handles
     CP::SysListHandle m_systematicsList {this};
@@ -114,18 +114,15 @@ private:
     CP::SysReadDecorHandle<int>
       m_tauTruthJetLabel { this, "tauTruthJetLabel", "tauTruthJetLabel", "Decoration tauTruthJetLabel" };
 
-    CP::SysReadDecorHandle<bool> 
-      m_selected_el { this, "selected_el", "selected_el_%SYS%", "Name of input decorator for selected el"};
-    CP::SysReadDecorHandle<bool> 
-      m_selected_el_isIso { this, "selected_el_isIso", "selected_el_isIso_%SYS%", "Input deco for selected el+iso"};
+    CP::SysReadDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_el_isIso {
+      "selected_el_isIso_%SYS%", this};
     
-    CP::SysReadDecorHandle<bool> 
-      m_selected_mu { this, "selected_mu", "selected_mu_%SYS%", "Name of input decorator for selected mu"};
-    CP::SysReadDecorHandle<bool> 
-      m_selected_mu_isIso { this, "selected_mu_isIso", "selected_mu_isIso_%SYS%", "Input deco for selected mu+iso"};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu_isIso
+      {"selected_mu_isIso_%SYS%", this};
     
-    CP::SysReadDecorHandle<bool> 
-      m_selected_tau { this, "selected_tau", "selected_tau_%SYS%", "Name of input decorator for selected tau"};
+    CP::SysReadDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
     
     CP::SysReadDecorHandle<char> 
       m_isBtag {this, "bTagWPDecorName", "", "Name of input decorator for b-tagging"};

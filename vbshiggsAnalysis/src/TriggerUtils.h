@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef VBSHIGGSANALYSIS_TRIGGERUTILS
@@ -11,7 +11,7 @@
 
 namespace VBSHIGGS
 {
-    typedef std::unordered_map<VBSHIGGS::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
+    typedef std::unordered_map<VBSHIGGS::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
 
     void getSingleEleTriggers(int year, const xAOD::EventInfo* event,
 			      const runBoolReadDecoMap& runBoolDecos,

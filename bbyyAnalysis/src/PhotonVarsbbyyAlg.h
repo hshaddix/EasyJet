@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -74,8 +74,7 @@ namespace HHBBYY
     std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
     std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
     
-    CP::SysReadDecorHandle<bool> 
-    m_selected_ph { this, "selected_ph", "selected_ph_%SYS%", "Name of input decorator for selected ph"};
+    CP::SysReadDecorHandle<char> m_selected_ph {"selected_ph_%SYS%", this};
   };
 }
 #endif

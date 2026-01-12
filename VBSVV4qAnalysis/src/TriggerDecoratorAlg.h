@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 */
 
@@ -55,7 +55,7 @@ namespace VBSVV4q
       ToolHandle<Trig::IMatchingTool> m_matchingTool
       { this, "trigMatchingTool", "", "Trigger matching tool"};
 
-      std::unordered_map<VBSVV4q::TriggerChannel, CP::SysWriteDecorHandle<bool> > m_trig_branches;
+      std::unordered_map<VBSVV4q::TriggerChannel, CP::SysWriteDecorHandle<char> > m_trig_branches;
       std::unordered_map<VBSVV4q::TriggerChannel, bool> m_trig_bools;
       std::unordered_map<VBSVV4q::TriggerChannel, std::string> m_triggerChannels = 
       {

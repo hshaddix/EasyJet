@@ -40,13 +40,6 @@ namespace HHYYML
 
     ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
 
-    // // make trigger decorators
-    // for (auto trig : m_triggers){
-    //   CP::SysReadDecorHandle<bool> deco {this, "trig"+trig, trig, "Name of trigger"};
-    //   m_triggerdecos.emplace(trig, deco);
-    //   ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
-    // }
-
     //Initialize trigger decorations
     for (const std::string &trig : m_photonTriggers)
     {
@@ -60,7 +53,7 @@ namespace HHYYML
     // Intialise booleans with value false. Also initialise syst-aware output decorators
     for (auto& [key, value] : m_boolnames) {
       m_bools.emplace(key, false);
-      CP::SysWriteDecorHandle<bool> whandle{value+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
       m_Bbranches.emplace(key, whandle);
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     };
@@ -102,17 +95,6 @@ namespace HHYYML
 
       const xAOD::TauJetContainer *taus = nullptr;
       ANA_CHECK (m_tauHandle.retrieve (taus, sys));
-
-      // // Not yet using btag decisions in selection at production level
-      // bool WPgiven = !m_isBtag.empty();
-      // auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
-      // auto nonbjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
-      // for(const xAOD::Jet* jet : *jets) {
-      //   if (WPgiven) {
-      //     if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets->push_back(jet); // TODO: is this eta cut needed/appropriate?
-      //     else nonbjets->push_back(jet);
-      //   }
-      // }
 
       // Reset boolean decisions to default=false
       for (const auto& [key, value] : m_bools) {

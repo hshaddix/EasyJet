@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef BBBBTTANALYSIS_TRIGGERUTILS
@@ -14,7 +14,7 @@
 namespace HHHBBBBTT
 {
 
-  typedef std::unordered_map<HHHBBBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
+  typedef std::unordered_map<HHHBBBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
   
   void getSingleMuTriggers(int year, const xAOD::EventInfo* eventInfo,
 			   const runBoolReadDecoMap& runBoolDecos,

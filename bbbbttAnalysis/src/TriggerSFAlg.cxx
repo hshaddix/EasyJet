@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "TriggerSFAlg.h"
@@ -65,7 +65,7 @@ namespace HHHBBBBTT
     }
 
     for (auto& [key, value] : m_boolnames) {
-      CP::SysReadDecorHandle<bool> whandle{value+"_%SYS%", this};
+      CP::SysReadDecorHandle<char> whandle{value+"_%SYS%", this};
       m_categoryBranches.emplace(key, whandle);
       ATH_CHECK(m_categoryBranches.at(key).initialize(m_systematicsList, m_eventHandle));
     };

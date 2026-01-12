@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef EASYJET_PHOTONSELECTORALG
@@ -63,9 +63,8 @@ private:
     CP::SysWriteDecorHandle<int> m_nSelPart {this, "decorOutName", "Photons_%SYS%", 
         "Name out output decorator for number of selected photons"};
 
-    CP::SysWriteDecorHandle<bool > m_isSelectedPhoton {
-        this, "decoration", "isAnalysisPhoton_%SYS%", "decoration for per-object if photon is selected"
-    };
+    CP::SysWriteDecorHandle<char> m_isSelectedPhoton
+      {"isAnalysisPhoton_%SYS%", this};
 
     Gaudi::Property<float> m_minPt            {this, "minPt", 25e3, "Minimum pT of photons"};
     Gaudi::Property<float> m_maxEta           {this, "maxEta", 100., "Maximum eta of photons"};
@@ -74,7 +73,7 @@ private:
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra photons after pT sorting"}; // -1 means keep them all
 
     Gaudi::Property<int>   m_photonAmount     {this, "photonAmount", -1, "Number of photons to consider for isPhotonXX decoration"};
-    CP::SysWriteDecorHandleArray<bool> m_leadBranches { {}, this}; // Declared w/o property
+    CP::SysWriteDecorHandleArray<char> m_leadBranches { {}, this}; // Declared w/o property
 
   };
 }

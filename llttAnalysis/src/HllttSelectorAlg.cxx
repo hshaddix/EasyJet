@@ -37,7 +37,7 @@ namespace HLLTT
     
     // Intialise syst-aware output decorators
     for (const std::string &var : m_Bvarnames){
-      CP::SysWriteDecorHandle<bool> whandle{var+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{var+"_%SYS%", this};
       m_Bbranches.emplace(var, whandle);
       ATH_CHECK(m_Bbranches.at(var).initialize(m_systematicsList, m_eventHandle));
     };
@@ -70,7 +70,7 @@ namespace HLLTT
 
     // make trigger decorators
     for (auto trig : m_triggers){
-      CP::SysReadDecorHandle<bool> deco {this, "trig"+trig, trig, "Name of trigger"};
+      CP::SysReadDecorHandle<bool> deco {trig, this};
       m_triggerdecos.emplace(trig, deco);
       ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
     }
@@ -116,7 +116,9 @@ namespace HLLTT
       const xAOD::TauJetContainer *mrmtaus = nullptr;
       ANA_CHECK (m_mrmtauHandle.retrieve (mrmtaus, sys));      
 
-      applyTriggerSelection(event, sys);
+      bool trigPassed_SLT = false;
+      bool trigPassed_DLT = false;
+      applyTriggerSelection(event, sys, trigPassed_SLT, trigPassed_DLT);
       // flags for leplep                                              
       m_Bbranches.at("pass_trigger_SLT").set(*event, trigPassed_SLT, sys);
       m_Bbranches.at("pass_trigger_DLT").set(*event, trigPassed_DLT, sys);
@@ -304,24 +306,25 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  void HllttSelectorAlg::applyTriggerSelection(const xAOD::EventInfo* event, const CP::SystematicSet& sys){
+  void HllttSelectorAlg::applyTriggerSelection(const xAOD::EventInfo* event,
+					       const CP::SystematicSet& sys,
+					       bool& trigPassed_SLT,
+					       bool& trigPassed_DLT){
     //************
     // trigger selecton
     //************
-
-    trigPassed_SLT = false;
-    trigPassed_DLT = false;
-    applySLTTriggerSelection(event, sys);
-    applyDiLepTriggerSelection(event, sys);
+    applySLTTriggerSelection(event, sys, trigPassed_SLT);
+    applyDiLepTriggerSelection(event, sys, trigPassed_DLT);
   }
 
 
   void HllttSelectorAlg ::applySLTTriggerSelection(const xAOD::EventInfo *event,
-						   const CP::SystematicSet &sys)
+						   const CP::SystematicSet &sys,
+						   bool& trigPassed_SLT)
   {
+    trigPassed_SLT = false;
     bool trigPassed_SET = false;
     bool trigPassed_SMT = false;
-    trigPassed_SLT = false;
 
     std::vector<std::string> single_ele_paths;
     std::vector<std::string> single_mu_paths;
@@ -370,12 +373,11 @@ namespace HLLTT
     if (trigPassed_SET || trigPassed_SMT) trigPassed_SLT = true;
   }
 
-  void HllttSelectorAlg ::applyDiLepTriggerSelection(
-      const xAOD::EventInfo *event,
-      const CP::SystematicSet &sys)
+  void HllttSelectorAlg ::applyDiLepTriggerSelection(const xAOD::EventInfo *event,
+						     const CP::SystematicSet &sys,
+						     bool& trigPassed_DLT)
   {
     trigPassed_DLT = false;
-
     std::vector<std::string> dilep_paths;
     int year = m_year.get(*event, sys);
     

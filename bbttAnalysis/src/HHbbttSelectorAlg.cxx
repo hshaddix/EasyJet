@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Carl Gwilliam
@@ -90,7 +90,7 @@ namespace HHBBTT
     // Intialise booleans with value false. Also initialise syst-aware output decorators
     for (auto& [key, value] : m_boolnames) {
       m_bools.emplace(key, false);
-      CP::SysWriteDecorHandle<bool> whandle{value+"_%SYS%", this};
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
       m_Bbranches.emplace(key, whandle);
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     };
@@ -962,14 +962,14 @@ namespace HHBBTT
 
     bool trigPassed_SET = triggerdecos.at(HHBBTT::SLT)(*event);
     if(ele){
-      trigPassed_SET &= ele_trigMatchDecos.at(HHBBTT::SLT)(*ele);
+      trigPassed_SET &= static_cast<bool>(ele_trigMatchDecos.at(HHBBTT::SLT)(*ele));
       trigPassed_SET &= ele->pt() > m_pt_threshold[HHBBTT::SLT][HHBBTT::ele];
     }
     else trigPassed_SET = false;
 
     bool trigPassed_SMT = triggerdecos.at(HHBBTT::SLT)(*event);
     if(mu){
-      trigPassed_SMT &= mu_trigMatchDecos.at(HHBBTT::SLT)(*mu);
+      trigPassed_SMT &= static_cast<bool>(mu_trigMatchDecos.at(HHBBTT::SLT)(*mu));
       trigPassed_SMT &= mu->pt() > m_pt_threshold[HHBBTT::SLT][HHBBTT::mu];
     }
     else trigPassed_SMT = false;
@@ -986,8 +986,8 @@ namespace HHBBTT
 
     bool trigPassed_ETT_4J12 = triggerdecos.at(HHBBTT::ETT_4J12)(*event);
     if(ele && tau && jet0 && jet1){
-      trigPassed_ETT_4J12 &= ele_trigMatchDecos.at(HHBBTT::ETT_4J12)(*ele);
-      trigPassed_ETT_4J12 &= tau_trigMatchDecos.at(HHBBTT::ETT_4J12)(*tau);
+      trigPassed_ETT_4J12 &= static_cast<bool>(ele_trigMatchDecos.at(HHBBTT::ETT_4J12)(*ele));
+      trigPassed_ETT_4J12 &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::ETT_4J12)(*tau));
       trigPassed_ETT_4J12 &=
 	(ele->pt() > m_pt_threshold[HHBBTT::ETT_4J12][HHBBTT::ele] &&
 	 tau->pt() > m_pt_threshold[HHBBTT::ETT_4J12][HHBBTT::leadingtau] &&
@@ -998,8 +998,8 @@ namespace HHBBTT
 
     bool trigPassed_ETT = triggerdecos.at(HHBBTT::ETT)(*event);
     if(ele && tau && jet0){
-      trigPassed_ETT &= ele_trigMatchDecos.at(HHBBTT::ETT)(*ele);
-      trigPassed_ETT &= tau_trigMatchDecos.at(HHBBTT::ETT)(*tau);
+      trigPassed_ETT &= static_cast<bool>(ele_trigMatchDecos.at(HHBBTT::ETT)(*ele));
+      trigPassed_ETT &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::ETT)(*tau));
       trigPassed_ETT &=
 	(ele->pt() > m_pt_threshold[HHBBTT::ETT][HHBBTT::ele] &&
 	 tau->pt() > m_pt_threshold[HHBBTT::ETT][HHBBTT::leadingtau] &&
@@ -1009,8 +1009,8 @@ namespace HHBBTT
 
     bool trigPassed_MTT_2016 = triggerdecos.at(HHBBTT::MTT_2016)(*event);
     if(mu && tau && jet0){
-      trigPassed_MTT_2016 &= mu_trigMatchDecos.at(HHBBTT::MTT_2016)(*mu);
-      trigPassed_MTT_2016 &= tau_trigMatchDecos.at(HHBBTT::MTT_2016)(*tau);
+      trigPassed_MTT_2016 &= static_cast<bool>(mu_trigMatchDecos.at(HHBBTT::MTT_2016)(*mu));
+      trigPassed_MTT_2016 &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::MTT_2016)(*tau));
       trigPassed_MTT_2016 &=
 	(mu->pt() > m_pt_threshold[HHBBTT::MTT_2016][HHBBTT::mu] &&
 	 tau->pt() > m_pt_threshold[HHBBTT::MTT_2016][HHBBTT::leadingtau] &&
@@ -1020,8 +1020,8 @@ namespace HHBBTT
 
     bool trigPassed_MTT_high = triggerdecos.at(HHBBTT::MTT_high)(*event);
     if(mu && tau && jet0){
-      trigPassed_MTT_high &= mu_trigMatchDecos.at(HHBBTT::MTT_high)(*mu);
-      trigPassed_MTT_high &= tau_trigMatchDecos.at(HHBBTT::MTT_high)(*tau);
+      trigPassed_MTT_high &= static_cast<bool>(mu_trigMatchDecos.at(HHBBTT::MTT_high)(*mu));
+      trigPassed_MTT_high &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::MTT_high)(*tau));
       trigPassed_MTT_high &=
 	(mu->pt() > m_pt_threshold[HHBBTT::MTT_high][HHBBTT::mu] &&
 	 tau->pt() > m_pt_threshold[HHBBTT::MTT_high][HHBBTT::leadingtau] &&
@@ -1034,8 +1034,8 @@ namespace HHBBTT
     If LTT is included again, this should be revisited*/
 
     if(mu && tau && jet0 && jet1){
-      trigPassed_MTT_low &= mu_trigMatchDecos.at(HHBBTT::MTT_low)(*mu);
-      trigPassed_MTT_low &= tau_trigMatchDecos.at(HHBBTT::MTT_low)(*tau);
+      trigPassed_MTT_low &= static_cast<bool>(mu_trigMatchDecos.at(HHBBTT::MTT_low)(*mu));
+      trigPassed_MTT_low &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::MTT_low)(*tau));
       trigPassed_MTT_low &=
         (mu->pt() > m_pt_threshold[HHBBTT::MTT_low][HHBBTT::mu] &&
          tau->pt() > m_pt_threshold[HHBBTT::MTT_low][HHBBTT::leadingtau] &&
@@ -1056,15 +1056,14 @@ namespace HHBBTT
 
     bool trigPassed_STT = triggerdecos.at(HHBBTT::STT)(*event);
     if(tau){
-      trigPassed_STT &= tau_trigMatchDecos.at(HHBBTT::STT)(*tau);
+      trigPassed_STT &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::STT)(*tau));
       trigPassed_STT &= tau->pt() > m_pt_threshold[HHBBTT::STT][HHBBTT::leadingtau];
     }
     else trigPassed_STT = false;
 
     m_bools.at(HHBBTT::pass_trigger_STT) = trigPassed_STT;
 
-    bool trigPassed_uniqueRNNTauTrig18 = triggerdecos.at(HHBBTT::RNNTauTrig18)(*event);
-    m_bools.at(HHBBTT::pass_trigger_uniqueRNNTauTrig18) = trigPassed_uniqueRNNTauTrig18;
+    m_bools.at(HHBBTT::pass_trigger_uniqueRNNTauTrig18) = triggerdecos.at(HHBBTT::RNNTauTrig18)(*event);
   }
 
   void HHbbttSelectorAlg::applyDiTauTriggerSelection
@@ -1076,8 +1075,8 @@ namespace HHBBTT
 
     bool trigPassed_DTT_2016 = triggerdecos.at(HHBBTT::DTT_2016)(*event);
     if(tau0 && tau1 && jet0){
-      trigPassed_DTT_2016 &= tau_trigMatchDecos.at(HHBBTT::DTT_2016)(*tau0);
-      trigPassed_DTT_2016 &= tau_trigMatchDecos.at(HHBBTT::DTT_2016)(*tau1);
+      trigPassed_DTT_2016 &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_2016)(*tau0));
+      trigPassed_DTT_2016 &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_2016)(*tau1));
       trigPassed_DTT_2016 &=
         (tau0->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::subleadingtau] &&
@@ -1088,8 +1087,8 @@ namespace HHBBTT
 
     bool trigPassed_DTT_4J12 = triggerdecos.at(HHBBTT::DTT_4J12)(*event);
     if(tau0 && tau1 && eta_lt2p5_jet0 && eta_lt2p5_jet1){
-      trigPassed_DTT_4J12 &= tau_trigMatchDecos.at(HHBBTT::DTT_4J12)(*tau0);
-      trigPassed_DTT_4J12 &= tau_trigMatchDecos.at(HHBBTT::DTT_4J12)(*tau1);
+      trigPassed_DTT_4J12 &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_4J12)(*tau0));
+      trigPassed_DTT_4J12 &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_4J12)(*tau1));
       trigPassed_DTT_4J12 &=
         (tau0->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::subleadingtau] &&
@@ -1101,8 +1100,8 @@ namespace HHBBTT
 
     bool trigPassed_DTT_L1Topo = triggerdecos.at(HHBBTT::DTT_L1Topo)(*event);
     if(tau0 && tau1 && eta_lt3p2_jet0){
-      trigPassed_DTT_L1Topo &= tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo)(*tau0);
-      trigPassed_DTT_L1Topo &= tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo)(*tau1);
+      trigPassed_DTT_L1Topo &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo)(*tau0));
+      trigPassed_DTT_L1Topo &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo)(*tau1));
       trigPassed_DTT_L1Topo &=
         (tau0->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::subleadingtau] &&
@@ -1114,8 +1113,8 @@ namespace HHBBTT
 
     bool trigPassed_DTT_4J12_delayed = triggerdecos.at(HHBBTT::DTT_4J12_delayed)(*event);
     if(tau0 && tau1 && eta_lt2p5_jet0 && eta_lt2p5_jet1){
-      trigPassed_DTT_4J12_delayed &= tau_trigMatchDecos.at(HHBBTT::DTT_4J12_delayed)(*tau0);
-      trigPassed_DTT_4J12_delayed &= tau_trigMatchDecos.at(HHBBTT::DTT_4J12_delayed)(*tau1);
+      trigPassed_DTT_4J12_delayed &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_4J12_delayed)(*tau0));
+      trigPassed_DTT_4J12_delayed &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_4J12_delayed)(*tau1));
       trigPassed_DTT_4J12_delayed &=
         (tau0->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::subleadingtau] &&
@@ -1127,8 +1126,8 @@ namespace HHBBTT
 
     bool trigPassed_DTT_L1Topo_delayed = triggerdecos.at(HHBBTT::DTT_L1Topo_delayed)(*event);
     if(tau0 && tau1 && eta_lt3p2_jet0){
-      trigPassed_DTT_L1Topo_delayed &= tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo_delayed)(*tau0);
-      trigPassed_DTT_L1Topo_delayed &= tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo_delayed)(*tau1);
+      trigPassed_DTT_L1Topo_delayed &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo_delayed)(*tau0));
+      trigPassed_DTT_L1Topo_delayed &= static_cast<bool>(tau_trigMatchDecos.at(HHBBTT::DTT_L1Topo_delayed)(*tau1));
       trigPassed_DTT_L1Topo_delayed &=
         (tau0->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHBBTT::DTT][HHBBTT::subleadingtau] &&

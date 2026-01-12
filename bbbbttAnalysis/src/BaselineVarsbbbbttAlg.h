@@ -42,8 +42,8 @@ public:
 
 private:
 
-    typedef std::unordered_map<HHHBBBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
-    typedef std::unordered_map<HHHBBBBTT::Booleans, CP::SysReadDecorHandle<bool>> categoryReadDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
+    typedef std::unordered_map<HHHBBBBTT::Booleans, CP::SysReadDecorHandle<char>> categoryReadDecoMap;
 
     /// \brief Setup syst-aware input container handles
     CP::SysListHandle m_systematicsList {this};
@@ -108,24 +108,17 @@ private:
     CP::SysReadDecorHandle<char> m_EleRNNMedium{"EleRNNMedium_v1", this};
     CP::SysReadDecorHandle<char> m_EleRNNTight{"EleRNNTight_v1", this};
 
-    CP::SysReadDecorHandle<int>
-      m_truthTypeTau{ this, "truthTypeTau", "truthType", "Tau truth type" };
+    CP::SysReadDecorHandle<int> m_truthTypeTau{"truthType", this};
 
-    CP::SysReadDecorHandle<int>
-      m_tauTruthJetLabel { this, "tauTruthJetLabel", "tauTruthJetLabel", "Decoration tauTruthJetLabel" };
+    CP::SysReadDecorHandle<int> m_tauTruthJetLabel {"tauTruthJetLabel", this};
 
-    CP::SysReadDecorHandle<bool> 
-      m_selected_el { this, "selected_el", "selected_el_%SYS%", "Name of input decorator for selected el"};
-    CP::SysReadDecorHandle<bool> 
-      m_selected_el_isIso { this, "selected_el_isIso", "selected_el_isIso_%SYS%", "Input deco for selected el+iso"};
+    CP::SysReadDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_el_isIso {"selected_el_isIso_%SYS%", this};
     
-    CP::SysReadDecorHandle<bool> 
-      m_selected_mu { this, "selected_mu", "selected_mu_%SYS%", "Name of input decorator for selected mu"};
-    CP::SysReadDecorHandle<bool> 
-      m_selected_mu_isIso { this, "selected_mu_isIso", "selected_mu_isIso_%SYS%", "Input deco for selected mu+iso"};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu_isIso {"selected_mu_isIso_%SYS%", this};
     
-    CP::SysReadDecorHandle<bool> 
-      m_selected_tau { this, "selected_tau", "selected_tau_%SYS%", "Name of input decorator for selected tau"};
+    CP::SysReadDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
     
     CP::SysReadDecorHandle<char> 
       m_isBtag {this, "bTagWPDecorName", "", "Name of input decorator for b-tagging"};

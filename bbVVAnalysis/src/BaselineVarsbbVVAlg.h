@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Kira Abeling, JaeJin Hong
@@ -96,24 +96,16 @@ private:
       { this, "muonWP", "","Muon ID + Iso working point" };
     CP::SysReadDecorHandle<float> m_mu_SF{"", this};
 
-    CP::SysReadDecorHandle<bool> 
-      m_selected_el { this, "selected_el", "selected_el_%SYS%", "Name of input dectorator for selected el"};
-    CP::SysReadDecorHandle<bool> 
-      m_selected_mu { this, "selected_mu", "selected_mu_%SYS%", "Name of input dectorator for selected mu"};
-    CP::SysReadDecorHandle<bool> 
-      m_matched_el { this, "matched_el", "matched_el_%SYS%", "Name of input dectorator for selected el"};
-    CP::SysReadDecorHandle<bool> 
-      m_matched_mu { this, "matched_mu", "matched_mu_%SYS%", "Name of input dectorator for selected mu"};
-    CP::SysReadDecorHandle<bool> 
-      m_selected_tau { this, "selected_tau", "selected_tau_%SYS%", "Name of input decorator for selected tau"};
+    CP::SysReadDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_matched_el {"matched_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_matched_mu {"matched_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
 
 
-    CP::SysReadDecorHandle<bool>
-      m_Whad { this, "Whad", "Whad_%SYS%", "Name of input dectorator for Whad jet"};
-    CP::SysReadDecorHandle<bool>
-      m_Whad2 { this, "Whad2", "Whad2_%SYS%", "Name of input dectorator for Whad jet"};
-    CP::SysReadDecorHandle<bool>
-      m_Hbb { this, "Hbb", "Hbb_%SYS%", "Name of input dectorator for Hbb jet"};
+    CP::SysReadDecorHandle<char> m_Whad {"Whad_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_Whad2 {"Whad2_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_Hbb {"Hbb_%SYS%", this};
 
     Gaudi::Property<std::vector<std::string>> m_GN2X_wps
       { this, "GN2X_WPs", {}, "GN2X_hbb_wps from the bbVV config" };
@@ -135,10 +127,10 @@ private:
     CP::SysReadDecorHandle<float> m_GN2Xv01_ptop{"GN2Xv01_ptop", this};
 
     Gaudi::Property<std::vector<std::string>> m_floatVariables
-          {this, "floatVariableList", {}, "Name list of floating variables"};
+      {this, "floatVariableList", {}, "Name list of floating variables"};
 
     Gaudi::Property<std::vector<std::string>> m_intVariables
-          {this, "intVariableList", {}, "Name list of integer variables"};
+      {this, "intVariableList", {}, "Name list of integer variables"};
 
     
     /// \brief Setup sys-aware output decorations

@@ -1,6 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
-
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 
@@ -59,7 +58,7 @@ namespace ttHH
       SG::WriteDecorHandleKey<xAOD::EventInfo> > m_pass_DecorKey;
 
     typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::EventInfo, bool> > trigReadDecoMap;
-    typedef std::unordered_map<ttHH::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, bool> > passWriteDecoMap;
+    typedef std::unordered_map<ttHH::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, char> > passWriteDecoMap;
 
     void evaluateTriggerCuts(const xAOD::EventInfo* eventInfo, const std::vector<std::string> &Triggers,
                                                   const trigReadDecoMap& triggerdecos, passWriteDecoMap& pass_decos, 

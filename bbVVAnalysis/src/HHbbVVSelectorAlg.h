@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Kira Abeling, JaeJin Hong
@@ -133,16 +133,16 @@ private:
     CP::SysReadDecorHandle<char> m_muonWPDecorHandle{"", this};
     
     /// \brief Setup sys-aware output decorations
-    CP::SysWriteDecorHandle<bool> m_pass_sr {"pass_bbVV_sr_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_pass_sr {"pass_bbVV_sr_%SYS%", this};
 
     CP::SysFilterReporterParams m_filterParams {this, "HHbbVV selection"};
 
-    CP::SysWriteDecorHandle<bool> m_selected_el {"selected_el_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
 
-    CP::SysWriteDecorHandle<bool> m_Whad {"Whad_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_Whad2 {"Whad2_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_Hbb {"Hbb_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_Whad {"Whad_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_Whad2 {"Whad2_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_Hbb {"Hbb_%SYS%", this};
     
     /// \brief Internal variables
     // TODO: implement internal and relevant bbVV variables here

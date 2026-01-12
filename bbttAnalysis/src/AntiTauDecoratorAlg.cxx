@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "AntiTauDecoratorAlg.h"
@@ -167,10 +167,13 @@ namespace HHBBTT
 		       decayMode!=xAOD::TauJetParameters::Mode_NotSet);
     
           // for SLT and DBT no anti-tau trigger matching is required
-          if (LTT) isAntiTau &= m_triggerMatchLTT.get(*tau, sys);
-          else if (DTT) isAntiTau &= m_triggerMatchDTT.get(*tau, sys);
+          if (LTT)
+            isAntiTau &= static_cast<bool>(m_triggerMatchLTT.get(*tau, sys));
+          else if (DTT)
+            isAntiTau &= static_cast<bool>(m_triggerMatchDTT.get(*tau, sys));
           // in STT if ID tau not trig matched anti tau needs be matched to trigger
-          else if (STT && nIDMatchedTauSTT == 0) isAntiTau &= m_triggerMatchSTT.get(*tau, sys);
+          else if (STT && nIDMatchedTauSTT == 0)
+            isAntiTau &= static_cast<bool>(m_triggerMatchSTT.get(*tau, sys));
 
           if (isAntiTau) {
             if(SLT || LTT) antiTauCategory = 1;

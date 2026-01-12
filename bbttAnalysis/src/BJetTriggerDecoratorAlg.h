@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
   BJetTriggerDecoratorAlg:
   An alg that saves b-jet trigger matching info as decorations
@@ -48,7 +48,7 @@ namespace HHBBTT
     CP::SysListHandle m_systematicsList {this};
     CP::SysReadHandle<xAOD::JetContainer> m_jetHandle {
       this, "jets", "bbttAnalysisJets_%SYS%", "the jet collection to run on"};
-    CP::SysWriteDecorHandle<bool> m_bjet_trigMatch_Write{
+    CP::SysWriteDecorHandle<char> m_bjet_trigMatch_Write{
       this, "trigMatch_DBT", "passTrigMatch_DBT_%SYS%", "aggregated b-jet trigger matching"};
 
     SG::ReadHandleKey<xAOD::EventInfo> m_eventInfoKey
@@ -67,10 +67,10 @@ namespace HHBBTT
     std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::EventInfo>> m_triggerdecoKeys;
     std::unordered_map<std::string, CP::SysReadDecorHandle<char>> m_bjet_trigMatch_Read;
     
-    typedef std::unordered_map<HHBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
+    typedef std::unordered_map<HHBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
     typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::EventInfo, bool> > trigReadDecoMap;
     typedef std::unordered_map<std::string, CP::SysReadDecorHandle<char> > bjetReadTrigMatchMap;
-    typedef CP::SysWriteDecorHandle<bool> bjetTrigMatchWriteDeco;
+    typedef CP::SysWriteDecorHandle<char> bjetTrigMatchWriteDeco;
 
     void checkDiBJetMatchingTriggers(
       int year,

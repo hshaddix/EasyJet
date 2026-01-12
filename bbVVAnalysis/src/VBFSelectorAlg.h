@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Celine Stauch
@@ -165,21 +165,21 @@ private:
     
     
     /// \brief Setup sys-aware output decorations
-    CP::SysWriteDecorHandle<bool> m_pass_sr {"pass_bbVV_sr_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_pass_sr {"pass_bbVV_sr_%SYS%", this};
     
     std::unordered_map<HHBBVV::TriggerChannel, std::unordered_map<HHBBVV::Var, float>> m_pt_threshold;
 
     CP::SysFilterReporterParams m_filterParams {this, "HHbbVV selection"};
 
-    CP::SysWriteDecorHandle<bool> m_selected_el {"selected_el_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_matched_el {"matched_el_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_matched_mu {"matched_mu_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_el {"selected_el_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_matched_el {"matched_el_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_matched_mu {"matched_mu_%SYS%", this};
 
-    CP::SysWriteDecorHandle<bool> m_selected_tau {"selected_tau_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
 
-    CP::SysWriteDecorHandle<bool> m_Whad {"Whad_%SYS%", this};
-    CP::SysWriteDecorHandle<bool> m_Hbb {"Hbb_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_Whad {"Whad_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_Hbb {"Hbb_%SYS%", this};
     
     /// \brief Internal variables
     // TODO: implement internal and relevant bbVV variables here
@@ -195,9 +195,9 @@ private:
     Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
     Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", true};
 
-    CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
     
-    std::unordered_map < HHBBVV::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+    std::unordered_map < HHBBVV::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
     std::unordered_map < HHBBVV::Booleans, bool > m_bools;
     std::unordered_map < HHBBVV::Booleans, std::string > m_boolnames{
         {HHBBVV::pass_trigger_SET, "pass_trigger_SET"},

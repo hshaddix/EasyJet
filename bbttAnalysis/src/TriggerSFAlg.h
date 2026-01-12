@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -42,8 +42,8 @@ public:
 
 private:
 
-    typedef std::unordered_map<HHBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, bool> > runBoolReadDecoMap;
-    typedef std::unordered_map<HHBBTT::Booleans, CP::SysReadDecorHandle<bool>> categoryReadDecoMap;
+    typedef std::unordered_map<HHBBTT::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;
+    typedef std::unordered_map<HHBBTT::Booleans, CP::SysReadDecorHandle<char>> categoryReadDecoMap;
 
     void computeTriggerSF(const xAOD::EventInfo *event, const CP::SystematicSet& sys,
 			  const runBoolReadDecoMap& runBoolDecos,
@@ -89,9 +89,9 @@ private:
       {this, "tauTriggerSF", {}, "List of tau trigger SF"};
     std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_tauTriggerSF;
 
-    CP::SysReadDecorHandle<bool> m_selected_el{"selected_el_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_selected_mu {"selected_mu_%SYS%", this};
-    CP::SysReadDecorHandle<bool> m_selected_tau {"selected_tau_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_el{"selected_el_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_mu {"selected_mu_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_selected_tau {"selected_tau_%SYS%", this};
     
     CP::SysReadDecorHandle<unsigned int> m_year{this, "year", "dataTakingYear", ""};
 
