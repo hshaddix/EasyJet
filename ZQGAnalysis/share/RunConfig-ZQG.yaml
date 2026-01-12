@@ -3,7 +3,10 @@ include: [EasyjetHub/base-config.yaml]
 # Definition of container names
 full_container_names:
   phys:
-    include: ZQGAnalysis/container-names-DAOD_PHYS.yaml
+    intput:
+      tracks: InDetTrackParticles
+    output:
+      tracks: AnalysisTracks_%SYS%
 
 GRL:
   # good runs lists to filter events
