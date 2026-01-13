@@ -43,6 +43,7 @@ atlas_add_component(XbbCalib
 # Install python modules, joboptions, and share content
 atlas_install_scripts(
   bin/xbbcalib-ntupler
+  scripts/XbbCalib-submitGrid.py
 )
 atlas_install_python_modules(
   python/ttCalib_config.py
@@ -55,4 +56,5 @@ atlas_install_python_modules(
 atlas_install_runtime( scripts/*.py POST_BUILD_CMD ${ATLAS_FLAKE8} )
 atlas_install_data(
   share/*
+  datasets/*
 )

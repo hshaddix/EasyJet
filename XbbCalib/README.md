@@ -1,107 +1,116 @@
-# Run easyjet for Xbb Calibration. (WIP)
-
-Analysis Package for the $Xbb$ Calibration
+# Analysis Package for the Xbb Calibration
 =========================
+
+The analysis package for the Xbb Calibration is used to produce the nutples for the signal calibration and top mis-tag calibration of the Xbb tagger. 
 
 # Folder structure
 
 - `bin/`: Executables
   - `xbbcalib-ntupler`
 - `datasets/`
-    - `ttbar`: Lists of data and mc samples to process
+    - "/ {process} / {ptag} / {data_period}.txt"
 - `python/`: Main python code to configure the components (objects, selections as well as the variables to save)
   - `ttCalib_config`
   - `ZbbjCalib_config`
   - `ZbbyCalib_config`
   - `ZllCalib_config`
 - `scripts`
-  - `grid`: Scripts for submitting grid jobs.
+  - `XbbCalib-submitGrid.py`: Scripts for submitting grid jobs.
   - `ttCalibPostProcess`: script for computing sumofweights
 - `share/`: yaml files containing configurations used by the components
-  - `RunConfig-ttCalib`: configurations called by the executables (see below);	
-  - `trigger`: list of the triggers to use per year.
-  - `XSectionsData`: XSections for computing weights.
+  - `RunConfig-{ANA}.yaml`: configurations called by the executables (see below);	
+  - `RunConfig-{ANA}-syst_Set<1/2>.yaml`: configurations called by the executables for systematics production;	
+  - `trigger_{ANA}.yaml`: list of the triggers to use per year.
 - `src/`: C++ code
-  - `ttCalibSelectorAlg`: Find if the event pass the baseline selection for $t \bar{t}$ calibration;
-  - `BaselineVarsttCalibAlg`: Compute the baseline variables for the $t \bar{t}$ calibration.
+  - `{ANA}CalibSelectorAlg`: Find if the event pass the baseline selection for the calibration;
+  - `BaselineVars<ANA>CalibAlg`: Compute the baseline variables for the calibration.
 
 
-# Zbby calibration (WIP)
+# Submitting a grid prodcution
 
-To run the Xbb calibration ntupler a sparse-checkout of `EasyjetHub`, `EasyjetTests`, `XbbCalib`is needed. After builiding easyjet, a test job can be run. First download a file locally, the example uses the Zbb+y signal sample.
+To run the Xbb calibration ntupler a sparse-checkout of `EasyjetHub`, `EasyjetTests`, `XbbCalib`is needed. After builiding easyjet, a test job can be run. First download a file locally, the example uses the Zbb+j signal sample.
 
 ```
 lsetup rucio
-rucio get --nrandom 1 mc20_13TeV.700353.Sh_2211_pTZ100_Zbbgamma.deriv.DAOD_PHYS.e8312_s3681_r13145_p6490
+rucio get --nrandom 1 mc20_13TeV.700855.Sh_2214_Zbb_ptZ_200_ECMS.deriv.DAOD_PHYS.e8536_s3681_r13167_p7018
 ```
  
 Run test 
 
 ```
-xbbcalib-ntupler run/mc20_13TeV.700353.Sh_2211_pTZ100_Zbbgamma.deriv.DAOD_PHYS.e8312_s3681_r13145_p6490/DAOD_PHYS.<sample downloaded>.pool.root.1 --run-config ../easyjet/XbbCalib/share/RunConfig-ZbbyCalib.yaml --out-file output.root -e 10
+xbbcalib-ntupler run/mc20_13TeV.700855.Sh_2214_Zbb_ptZ_200_ECMS.deriv.DAOD_PHYS.e8536_s3681_r13167_p7018/DAOD_PHYS.<sample downloaded>.pool.root.1 --run-config ../easyjet/XbbCalib/share/RunConfig_ZbbjCalib.yaml --out-file output.root -e 100
 ```
 
-Then to submit to the grid (Zbb+y specific example when running the production including systematics)
+Then to submit to the grid first setup rucio and panda as:
 
 ```
 lsetup rucio
 lsetup panda
 ```
 
-The systematic production is split into two set, `syst_Set1.yaml` (MUON, MET, JER systematics NOT included) and `syst_Set2.yaml` (MET, JER systematics included). To sumit to the grid from the run directory:
+and then use the following script
 
 ```
-python3 ../easyjet/XbbCalib/scripts/XbbCalib-submitGrid.py -c ../easyjet/XbbCalib/share/RunConfig-ZbbyCalib-syst_Set1.yaml --tag <NameAndDateOfProdcution>_syst1  -s "all" --nGBPerJob 2 --memory 4000 
-python3 ../easyjet/XbbCalib/scripts/XbbCalib-submitGrid.py -c ../easyjet/XbbCalib/share/RunConfig-ZbbyCalib-syst_Set2.yaml --tag <NameAndDateOfProdcution>_syst2  -s "all" --nGBPerJob 2 --memory 4000 
+XbbCalib-submitGrid.py [-h] --tag TAG --ptag PTAG [--data {run2,run3} [{run2,run3} ...]] [--mc {mc20,mc23} [{mc20,mc23} ...]] [-c CONFIG]
+                              [-s SAMPLES [SAMPLES ...]] --analysis {Zbby,Zbbj,Zll,tt} [--dry-run]
+
+options:
+  -h, --help            show this help message and exit
+  --tag TAG             A tag to identify the submission - will be included in the output names (default: None)
+  --ptag PTAG           Production tag to use, e.g. p7018, p6490 (default: None)
+  --data {run2,run3} [{run2,run3} ...]
+                        Space seperated list of data periods to process (default: None)
+  --mc {mc20,mc23} [{mc20,mc23} ...]
+                        Space seperated list of mc campaigns to process (default: None)
+  -c CONFIG, --config CONFIG
+                        Use this config instead of the default one (default: None)
+  -s SAMPLES [SAMPLES ...], --samples SAMPLES [SAMPLES ...]
+                        Space-delimited list of samples, "MG_Zqqgamma SinglePhoton" If none are given, all samples for a given analysis are run (default:
+                        None)
+  --analysis {Zbby,Zbbj,Zll,tt}
+                        Which analysis to run - defines the default config and samples (default: None)
+  --dry-run             If set, will only print the commands that would be run, without executing (default: False)
 ```
 
-To sumbit data:
+
+For example to launch a systematics production for Zbb+j, the systematics are split into two set, `*syst_Set1.yaml` and `*syst_Set2.yaml`. The following command is to be run:
 
 ```
-easyjet-gridsubmit --data-list /direct/usatlas+u/ivelisce/VBSHiggs/easyjet/XbbCalib/datasets/data/data_Run2_p6490.txt --run-config ../easyjet/XbbCalib/share/RunConfig-ZbbyCalib-syst_Set2.yaml --exec xbbcalib-ntupler --campaign <NameAndDateOfProdcution> --mergeOutput --noEmail --nGBperJob 2 --memory 4000 --noTag
+XbbCalib-submitGrid.py --tag <ANA>_<DATE>_SYST_SET1  --analysis Zbbj --ptag p701X --mc mc20 mc23 --data run2 run3 --nGBPerJob 2 --memory 4000 -c RunConfig-ZbbjCalib-syst_Set1.yaml
+XbbCalib-submitGrid.py --tag <ANA>_<DATE>_SYST_SET2  --analysis Zbbj --ptag p701X --mc mc20 mc23 --nGBPerJob 2 --memory 4000 -c RunConfig-ZbbjCalib-syst_Set2.yaml
 ```
+**WARNING:** Before submitting a grid production please conntact the Xbb conveners. The ntuples are centrally produced and generally stored at `/eos/atlas/atlascerngroupdisk/perf-flavtag/calib/xbb`.
+
+**WARNING:** Make sure you define something meaningul for the tag and always tag the verison of the code you use to make a grid production. 
+
+**NOTE:** The parton shower variation should submitted with the defualm (nominal only) config thorugh the option of submiting specific samples with `XbbCalib-submitGrid.py`. For example for the Zbbj calibration: 
+
+```
+XbbCalib-submitGrid.py --analysis Zbb --tag <ANA>_<DATE>_SYST -s "Zbb_ptZ_200_ECMS_Lund" --ptag p701X --mc mc20 mc23
+```
+
+The parton shower variation sample is different for each analysis. The following alternative samples are currently used:
+- Zbb+jets: `Zbb_ptZ_200_ECMS_Lund`
+- Zbb+gamma: `Zqqgamma_MGPy8EvtGen`
+- Zll+jets: `Zll_Lund` (only avaible for Run 2)
+- Zll+gamma: ??? (currently no alternative sample avaible)
+- ttbar: `ttbar_Single_Lep_PhH7EG`
 
 Nominal production can be run as:
 
 ```
-python3 ../easyjet/XbbCalib/scripts/XbbCalib-submitGrid.py -c ../easyjet/XbbCalib/share/RunConfig-ZbbyCalib.yaml --tag <NameAndDateOfProdcution> -s "all" --nGBPerJob 2 --memory 4000 
+XbbCalib-submitGrid.py --tag <ANA>_<DATE>_SYST  --analysis Zbbj --ptag p7018 --mc mc20 mc23 --data run2 run3
 ```
-
 
 # ttbar calibration
 
-## Installation
-
-```
-setupATLAS
-lsetup git
-git lfs install
-git clone --recursive --no-checkout --origin upstream ssh://git@gitlab.cern.ch:7999/easyjet/easyjet.git
-cd easyjet
-git sparse-checkout init --cone
-git sparse-checkout set EasyjetHub EasyjetTests EasyjetPlus XbbCalib
-git checkout upstream/main
-git submodule update --init --recursive
-```
-
-## Running Locally
-
-From the run directory
-
-```xbb-ntupler ttbar_PHYS_10evt.root --run-config XbbCalib/RunConfig-ttCalib.yaml --out-file calibration-vars.root```
-
-## Running on Grid
-
-Configure ```RunOnGrid_ttCalib.sh``` to match the corresponding datasets in ```datasets/ttbar```, then run 
-```source ../easyjet/XbbCalib/scripts/grid/RunOnGrid_ttCalib.sh```
-
 Once your grid jobs have ran succesfully and you retrived the outputs, you will need to hadd the outputs before reweighting. Theres is a problem with hadding files which contain empty trees; For this, there is a custom mergeRootFiles.C macro. <https://gitlab.cern.ch/dallen/gn2x_calibration/-/blob/master/mergeRootFiles.C?ref_type=heads>
 
-## Reweighting MC
 
 Using the ttCalibPostProcess.py script will add a 'weight' branch to your analyis tree.
 
-```../easyjet/XbbCalib/scripts/ttCalibPostProcess.py --xSectionsConfig ../easyjet/XbbCalib/share/XSectionsData.yaml --mergeMyFiles --mergeToOutput --inFile calibration-vars.root --ouFile reweighted.root```
+```
+../easyjet/XbbCalib/scripts/ttCalibPostProcess.py --xSectionsConfig ../easyjet/XbbCalib/share/XSectionsData.yaml --mergeMyFiles --mergeToOutput --inFile calibration-vars.root --ouFile reweighted.root
+```
 
-
-
+Contact: atlas-cp-flavtag-jetetmiss-boostedxbbtagging-conveners@cern.ch 

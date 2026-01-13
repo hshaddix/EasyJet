@@ -36,7 +36,6 @@ OverlapRemoval:
 Large_R_jet:
   min_pT: 200.e+3
   max_eta: 2.0
-  min_m: 40.e+3
   runMuonJetPtCorr: false
 
 Photon:

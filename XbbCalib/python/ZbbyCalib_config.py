@@ -41,7 +41,6 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             containerOutKey=selected_large_r_jets,
             minPt=flags.Analysis.Large_R_jet.min_pT,
             maxEta=flags.Analysis.Large_R_jet.max_eta,
-            minMass=flags.Analysis.Large_R_jet.min_m,
             minimumAmount=1,
         )
     )

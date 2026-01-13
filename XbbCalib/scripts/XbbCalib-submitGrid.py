@@ -3,16 +3,18 @@
 # Modified for XbbClaib use by Iza Veliscek and Nikita Pond
 # script helps with grid submission
 # to run:
-# all samples: XbbCalib-submitGrid.py --tag {}  --analysis Zbbj --ptag p7018 \
-# --mc mc20 mc23  --data run2 run3
+# all samples: XbbCalib-submitGrid.py --tag {}  --analysis Zbbj --ptag p701X \
+# --mc mc20 mc23 --data run2 run3
 # A specific samples:
-# python3 XbbCalib-submitGrid.py --tag {}  -s "Wjets --samplePath Zbby" --ptag p7018 \
+# python3 XbbCalib-submitGrid.py --tag {} -s "Wjet" --ptag p701X \
 #  --mc mc20 mc23
 # By default will use:
 # All samples for a specific analysis, as defined in MC_PROCESSES_BY_ANALYSIS
 # Default config for a specific analysis, as defined in CONFIG_BY_ANALYSIS
 # Any additional arguments not covered here will be passed to easyjet-gridsubmit,
 # e.g. --nFilesPerJob, --maxFiles, --mergeOutput, --noSubmit, etc.
+# A note on systematics production: The parton shower variations need to be submitted \
+# the specific sample option descirbed above and with nominal only config
 
 import os
 import tempfile
@@ -57,14 +59,14 @@ MC_PROCESSES_BY_ANALYSIS = {
 
 # Define the default config to use for a given analysis
 CONFIG_BY_ANALYSIS = {
-    "Zbbj": "../easyjet/XbbCalib/share/RunConfig_ZbbjCalib.yaml",
-    "Zbby": "../easyjet/XbbCalib/share/RunConfig-ZbbyCalib.yaml",
-    "Zll": "../easyjet/XbbCalib/share/RunConfig-Zll.yaml",
-    "tt": "../easyjet/XbbCalib/share/RunConfig-ttCalib.yaml"
+    "Zbbj": "RunConfig_ZbbjCalib.yaml",
+    "Zbby": "RunConfig-ZbbyCalib.yaml",
+    "Zll": "RunConfig-Zll.yaml",
+    "tt": "RunConfig-ttCalib.yaml"
 }
 
-SAMPLES_BASE_PATH = Path(
-    "../easyjet/XbbCalib/datasets/"
+SAMPLES_BASE_PATH = (
+    Path(__file__).parent / "../data/XbbCalib/"
 ).resolve()
 
 
@@ -166,6 +168,7 @@ def get_all_mc_samples(
 
     for process in samples:
         sample_file = SAMPLES_BASE_PATH / process / ptag / f"{campaign}.txt"
+
         if sample_file.exists():
             mc_list.append(str(sample_file))
         else:
@@ -221,6 +224,7 @@ def main(args, ej_grid_submit_args):
     # Run all data periods
     for data_period in args.data or []:
         data_file = SAMPLES_BASE_PATH / "data" / args.ptag / f"{data_period}.txt"
+
         assert data_file.exists(), f"Data file {data_file} does not exist"
         submit(
             ej_command + ['--data-list', str(data_file)],
@@ -229,9 +233,5 @@ def main(args, ej_grid_submit_args):
 
 
 if __name__ == "__main__":
-    current_dir = os.getcwd()
-    if os.path.basename(current_dir) != "run":
-        raise ValueError("you need to submit from run directory")
-
     this_args, ej_grid_submit_args = get_args()
     main(this_args, ej_grid_submit_args)
