@@ -30,7 +30,7 @@ Small_R_jet:
 
   amount: 4
   variables_int_allJets: ["truthLabel", "PassWP", "pcbt"]
-
+  do_parent_decoration: true
   btag_egReductionB: "Medium"
   btag_egReductionC: "Medium"
   btag_egReductionLight: "Medium"

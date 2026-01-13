@@ -8,6 +8,7 @@
       small_R_jets:
         btag_details: true
         btag_info: true
+        truth_parent_info: true
       photons:
         shower_shapes: false
         truth_labels: false
