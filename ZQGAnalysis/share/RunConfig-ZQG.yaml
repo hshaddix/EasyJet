@@ -73,7 +73,7 @@ Small_R_jet:
 
 Large_R_jet:
   amount: 1
-  variables_LargeRJets: ["pt", "eta", "phi", "E", "m", "GN2Xv01_DXcc", "GN2Xv01_phbb", "GN2Xv01_phcc", "GN2Xv01_pqcd", "GN2Xv01_ptop"]
+  variables: ["pt", "eta", "phi", "E", "m", "GN2Xv01_DXcc", "GN2Xv01_phbb", "GN2Xv01_phcc", "GN2Xv01_pqcd", "GN2Xv01_ptop"]
 
 Electron:
   ID: "TightLH"

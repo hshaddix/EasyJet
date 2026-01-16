@@ -7,8 +7,7 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     PhotonSelectorAlgCfg, MuonSelectorAlgCfg, ElectronSelectorAlgCfg,
     JetSelectorAlgCfg)
 from EasyjetHub.output.ttree.selected_objects import (
-    get_selected_photon_branches_variables,
-    get_selected_jet_branches_variables,
+    get_selected_obj_branches_variables
 )
 import AthenaCommon.SystemOfUnits as Units
 from itertools import chain
@@ -595,7 +594,7 @@ def bbyy_branches(flags):
     (object_level_branches['photons'],
      object_level_float_variables['photons'],
      object_level_int_variables['photons']) = \
-        get_selected_photon_branches_variables(flags, "bbyy")
+        get_selected_obj_branches_variables(flags, "bbyy", "Photon")
 
     float_variable_names['photons'] += object_level_float_variables['photons']
     int_variable_names['photons'] += object_level_int_variables['photons']
@@ -603,7 +602,7 @@ def bbyy_branches(flags):
     (object_level_branches['jets'],
      object_level_float_variables['jets'],
      object_level_int_variables['jets']) = \
-        get_selected_jet_branches_variables(flags, "bbyy")
+        get_selected_obj_branches_variables(flags, "bbyy", "Jet")
 
     # TODO this will have to be changed in "jets"
     # when moving Jet-related variables in separate algo

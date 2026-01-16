@@ -7,8 +7,7 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg,
     PhotonSelectorAlgCfg, JetSelectorAlgCfg)
 from EasyjetHub.output.ttree.selected_objects import (
-    get_selected_lepton_branches_variables,
-    get_selected_photon_branches_variables,
+    get_selected_obj_branches_variables,
 )
 
 
@@ -195,7 +194,7 @@ def llyy_branches(flags):
     (object_level_branches['photons'],
      object_level_float_variables['photons'],
      object_level_int_variables['photons']) = \
-        get_selected_photon_branches_variables(flags, "llyy")
+        get_selected_obj_branches_variables(flags, "llyy", "Photon")
 
     float_variable_names['photons'] += object_level_float_variables['photons']
     int_variable_names['photons'] += object_level_int_variables["photons"]
@@ -203,7 +202,7 @@ def llyy_branches(flags):
     (object_level_branches['leptons'],
      object_level_float_variables['leptons'],
      object_level_int_variables['leptons']) = \
-        get_selected_lepton_branches_variables(flags, "llyy")
+        get_selected_obj_branches_variables(flags, "llyy", "Lepton")
 
     float_variable_names['leptons'] += object_level_float_variables['leptons']
     int_variable_names['leptons'] += object_level_int_variables['leptons']

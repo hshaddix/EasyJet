@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+# Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
@@ -10,9 +10,7 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg,
     JetSelectorAlgCfg)
 from EasyjetHub.output.ttree.selected_objects import (
-    get_selected_lepton_branches_variables,
-    get_selected_jet_tagged_branches_variables,
-
+    get_selected_obj_branches_variables,
 )
 
 
@@ -281,7 +279,7 @@ def bbll_branches(flags):
     (object_level_branches['leptons'],
      object_level_float_variables['leptons'],
      object_level_int_variables['leptons']) = \
-        get_selected_lepton_branches_variables(flags, "bbll")
+        get_selected_obj_branches_variables(flags, "bbll", "Lepton")
 
     float_variable_names['leptons'] += object_level_float_variables['leptons']
     int_variable_names['leptons'] += object_level_int_variables['leptons']
@@ -289,7 +287,7 @@ def bbll_branches(flags):
     (object_level_branches['jets'],
      object_level_float_variables['jets'],
      object_level_int_variables['jets']) = \
-        get_selected_jet_tagged_branches_variables(flags, "bbll", 'b')
+        get_selected_obj_branches_variables(flags, "bbll", "Jet_b")
 
     float_variable_names['jets'] += object_level_float_variables['jets']
     int_variable_names['jets'] += object_level_int_variables["jets"]

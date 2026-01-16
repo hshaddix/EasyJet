@@ -435,10 +435,10 @@ namespace ZQG
       }
 
       // large jet sector
-      for (std::size_t i=0; i<std::min(largeJets ->size(),(std::size_t)1); i++){
+      if(largeJets ->size()>0){
 
-        const xAOD::Jet* largeJet = largeJets->at(i);
-        std::string prefix = "LargeRJet"+std::to_string(i+1);
+        const xAOD::Jet* largeJet = largeJets->at(0);
+        std::string prefix = "LargeRJet";
 
         // calculate Xbb/cc score
         float phbb = m_GN2Xv01_phbb.get(*largeJet, sys);

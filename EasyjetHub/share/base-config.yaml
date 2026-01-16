@@ -102,8 +102,8 @@ Large_R_jet:
   do_parent_decoration: true
   amount: 0
   amount_leadingjet: 0
-  variables_LargeRJets: []
-  variables_int_LargeRJets: []
+  variables: []
+  variables_int: []
   wtag_type: ""
   wtag_wp: ""
   wtag_extra_wps: []
