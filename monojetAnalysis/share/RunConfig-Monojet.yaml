@@ -41,7 +41,6 @@ Large_R_jet:
 
 Electron:
   amount: 0
-  trackSelection: true
   ID: "LooseBLayerLH"
   Iso: "Loose_VarRad"
   min_pT: 7.e+3
@@ -51,7 +50,6 @@ Electron:
 
 Muon:
   amount: 0
-  trackSelection: true
   ID: "Loose"
   Iso: "Loose_VarRad"
   min_pT: 7.e+3
