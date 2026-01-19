@@ -7,6 +7,9 @@ def get_truthmet_branches(flags, input_container, output_prefix):
         output_prefix,
     )
 
-    truthmet_branches.variables = ["mpx", "mpy", "sumet"]
+    truthmet_branches.variables = [
+        (var, None)
+        for var in ["mpx", "mpy", "sumet"]
+    ]
 
     return truthmet_branches.get_output_list()

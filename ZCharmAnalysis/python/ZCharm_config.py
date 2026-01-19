@@ -177,19 +177,22 @@ def get_ZCharmTruthSelectorAlg_variables(flags):
 
     # C tagged jets
 
-    for var in [*flags.Analysis.Small_R_jet.variables_truthjets]:
+    for var in flags.Analysis.Small_R_jet.variables_truthjets:
         for index in range(flags.Analysis.Small_R_jet.amount_cjet):
             # Store the float variables
             if var in flags.Analysis.Small_R_jet.variables_truthjets:
                 float_variable_names += [f"TruthJet_c{index+1}_{var}"]
-            branches += [f"EventInfo.TruthJet_c{index+1}_{var} \
-                        -> ZCharm_TruthJet_c{index+1}_{var}"]
+            branches += [
+                f"EventInfo.TruthJet_c{index+1}_{var}"
+                + f"-> ZCharm_TruthJet_c{index+1}_{var} type=float"
+            ]
 
     # Dilepton
-    for var in [*flags.Analysis.Lepton.variables_truth_Z]:
+    for var in flags.Analysis.Lepton.variables_truth_Z:
         float_variable_names += [f"Truth_ll_{var}"]
-        branches += [f"EventInfo.Truth_ll_{var} \
-                    -> ZCharm_Truth_ll_{var}"]
+        branches += [
+            f"EventInfo.Truth_ll_{var} -> ZCharm_Truth_ll_{var} type=float"
+        ]
 
     return branches, float_variable_names
 
@@ -239,9 +242,12 @@ def ZCharm_branches(flags):
     if flags.Analysis.save_cutflow:
         cutList = flags.Analysis.CutList + flags.Analysis.Categories
         for cut in cutList:
-            branches += [f"EventInfo.{cut}_%SYS% \
-                        -> ZCharm_{cut}_%SYS%"]
-            branches += ["EventInfo.PassCuts_%SYS% -> ZCharm_PassRecoCuts_%SYS%"]
+            branches += [
+                f"EventInfo.{cut}_%SYS% -> ZCharm_{cut}_%SYS% type=char"
+            ]
+            branches += [
+                "EventInfo.PassCuts_%SYS% -> ZCharm_PassRecoCuts_%SYS% type=char"
+            ]
         if flags.Input.isMC:
             truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
             truth_branches, truth_float_variable_names = (
@@ -249,10 +255,9 @@ def ZCharm_branches(flags):
             )
             branches += truth_branches
             for cut in truthcutList:
-                branches += [f"EventInfo.{cut} \
-                            -> ZCharm_{cut}"]
-                branches += ["EventInfo.PassTruthCuts \
-                            -> ZCharm_PassTruthCuts"]
+                branches += [f"EventInfo.{cut} -> ZCharm_{cut} type=char"]
+                branches += [
+                    "EventInfo.PassTruthCuts -> ZCharm_PassTruthCuts type=char"]
 
     # trigger variables do not need to be added to variable_names
     # as it is written out in ZCharmSelectorAlg

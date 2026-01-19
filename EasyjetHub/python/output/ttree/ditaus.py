@@ -23,29 +23,30 @@ def get_ditau_branches(flags, tree_flags, input_container, output_prefix):
         id_wps += flags.Analysis.DiTau.extra_wps
 
     ditau_branches.variables += [
-        f"baselineSelection_{id_wp}_%SYS%"
+        (f"baselineSelection_{id_wp}_%SYS%", None)
         for id_wp in id_wps
     ]
 
     if flags.Analysis.DiTau.score_branches:
-        ditau_branches.variables += ["omni_score"]
+        ditau_branches.variables += [("omni_score", None)]
 
     if flags.Analysis.DiTau.truth_branches:
         ditau_branches.variables += [
-            "IsTruthHadronic",
-            "IsTruthMatched",
-            "TruthVisMass",
-            "TruthVisDeltaR",
-            "TruthLeadPdgID",
-            "TruthVisLeadPt",
-            "TruthVisLeadEta",
-            "TruthVisLeadPhi",
-            "TruthVisLeadM",
-            "TruthSubleadPdgID",
-            "TruthVisSubleadPt",
-            "TruthVisSubleadEta",
-            "TruthVisSubleadPhi",
-            "TruthVisSubleadM",
+            ("IsTruthHadronic", None),
+            ("IsTruthMatched", None),
+        ]
+        ditau_branches.variables += [
+            ("TruthVis" + var, None)
+            for var in ["Mass", "DeltaR"]
+        ]
+        ditau_branches.variables += [
+            ("TruthVis" + i + var, None)
+            for i in ["Lead", "Sublead"]
+            for var in ["Pt", "Eta", "Phi", "M"]
+        ]
+        ditau_branches.variables += [
+            ("Truth" + i + "PdgID", None)
+            for i in ["Lead", "Sublead"]
         ]
 
     return ditau_branches.get_output_list()

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsSemiLepAlg.h"
@@ -80,7 +80,7 @@ namespace VBSHIGGS{
       ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_vbsLRJetHandle));
 
       m_WTag_score = CP::SysReadDecorHandle<float> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Score", this);
-      m_Pass_WTag = CP::SysReadDecorHandle<bool> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
+      m_Pass_WTag = CP::SysReadDecorHandle<char> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
       ATH_CHECK(m_WTag_score.initialize(m_systematicsList, m_vbsLRJetHandle));
       ATH_CHECK(m_Pass_WTag.initialize(m_systematicsList, m_vbsLRJetHandle));
 

@@ -21,65 +21,78 @@ def get_tau_branches(flags, tree_flags, input_container, output_prefix):
         tau_branches.syst_only_for = ["pt"]
 
     tau_branches.add_four_mom_branches(do_mass=False)
-    tau_branches.variables += ["charge", "nProng", "decayMode"]
+    tau_branches.variables += [
+        ("charge", None),
+        ("nProng", "int"),
+        ("decayMode", "int")
+    ]
     if flags.Analysis.do_bbtt_analysis or flags.Analysis.do_bbbbtt_analysis:
-        tau_branches.variables += ["isIDTau", "isAntiTau",
-                                   "trigMatch_Tau35", "trigMatch_Tau25"]
+        tau_branches.variables += [
+            (var, "char")
+            for var in ["isIDTau", "isAntiTau",
+                        "trigMatch_Tau35", "trigMatch_Tau25"]
+        ]
 
     if flags.Analysis.do_overlap_removal:
-        tau_branches.variables += ["passesOR_%SYS%"]
+        tau_branches.variables += [("passesOR_%SYS%", None)]
 
     id_wps = [flags.Analysis.Tau.ID]
     if 'extra_wps' in flags.Analysis.Tau:
         id_wps += flags.Analysis.Tau.extra_wps
 
     tau_branches.variables += [
-        f"baselineSelection_{id_wp}_%SYS%"
+        (f"baselineSelection_{id_wp}_%SYS%", None)
         for id_wp in id_wps
     ]
 
     if tau_output_flags.score_branches:
         tau_branches.variables += [
-            "RNNJetScoreSigTrans",
-            "RNNEleScoreSigTrans_v1"
+            ("RNNJetScoreSigTrans", None),
+            ("RNNEleScoreSigTrans_v1", None)
         ]
 
         gntau_valid_ptag = (
             is_at_least(flags, "p6479") and not flags.Input.isPHYSLITE)
         if gntau_valid_ptag:
             tau_branches.variables += [
-                "GNTauScoreSigTrans_v0prune"
+                ("GNTauScoreSigTrans_v0prune", None)
             ]
 
     if flags.Input.isMC and tau_output_flags.truth_branches:
         tau_branches.variables += [
-            "truth_pt_vis",
-            "truth_eta_vis",
-            "truth_phi_vis",
-            "truth_m_vis",
-            "truth_pdgId",
-            "truth_IsHadronicTau",
-            "truthType",
-            "truthOrigin"
+            (f"truth_{var}_vis", None)
+            for var in ["pt", "eta", "phi", "m"]
+        ]
+        tau_branches.variables += [
+            ("truth_pdgId", None),
+            ("truth_IsHadronicTau", None),
+            ("truthType", None),
+            ("truthOrigin", None)
         ]
 
     if flags.Input.isMC and tau_output_flags.truth_parent_info:
         tau_branches.variables += get_TopHiggs_tau_truth_labels(flags)
 
     if flags.Input.isMC:
-        tau_branches.variables += ["tauTruthJetLabel"]
+        tau_branches.variables += [
+            ("tauTruthJetLabel", "int")
+        ]
 
         tau_branches.variables += [
-            f"effSF_{id_wp}_%SYS%"
+            (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
             if not ("GNTau" in id_wp)
         ]
 
     # Requires TauSelectorAlg to be run
     if tau_output_flags.run_selection:
-        tau_branches.variables += ["isAnalysisTau_%SYS%"]
+        tau_branches.variables += [
+            ("isAnalysisTau_%SYS%", None)
+        ]
         for index in range(flags.Analysis.Tau.amount):
-            tau_branches.variables += [f"isTau{index+1}_%SYS%"]
+            tau_branches.variables += [
+                (f"isTau{index+1}_%SYS%", None)
+            ]
 
     tau_branches.variables += tau_output_flags.extra_variables
     if flags.Input.isMC:

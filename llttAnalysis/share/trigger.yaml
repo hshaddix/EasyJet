@@ -57,14 +57,10 @@ scale_factor:
     #- 'HLT_mu22_mu8noL1_L1MU14FCH'
 
   Electron:
-    # Medium_Loose_VarRad trigger SF not available in
-    # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2018/rel21.2/Precision_Summer2020_v1/map4.txt
-    # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2025/rel22.2/2022_Summer_Prerecom_v1/map4.txt
-    # Tight_Tight_VarRad only combination in common between Run 2 + Run 3
-    ID_Run2: "MediumLH"
-    Iso_Run2: "FCLoose"
-    ID_Run3: "MediumLH"
-    Iso_Run3: "FCLoose"
+    ID_Run2: "TightLH"
+    Iso_Run2: "Loose_VarRad"
+    ID_Run3: "TightLH"
+    Iso_Run3: "Loose_VarRad"
 
     chains:
       '2015':

@@ -68,10 +68,11 @@ Trigger:
   writeOutput: True
   scale_factor:
     Electron:
-      ID_Run2: "TightLH"
-      Iso_Run2: "FCTight"
-      ID_Run3: "Tight"
-      Iso_Run3: "Tight_VarRad"
+      ID_Run2: "MediumLH"
+      Iso_Run2: "Loose_VarRad"
+      # No Medium ID for Run 3 trigger SF
+      ID_Run3: "LooseBLayerLH"
+      Iso_Run3: "Loose_VarRad"
     Muon:
       ID: "Medium"
 

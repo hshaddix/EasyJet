@@ -197,13 +197,14 @@ def resolved_trigger_SF_branches(flags):
             for matchLevel in matchLevels:
                 branches += [
                     f'EventInfo.trigSF_{trig}_{matchLevel}SF'
-                    f'->trigSF_{trig}_{matchLevel}SF',
-                    f'EventInfo.trigSF_{trig}_{matchLevel}SF_stats__1up'
+                    f'->trigSF_{trig}_{matchLevel}SF type=float'
+                ]
+                separ = flags.Analysis.systematics_suffix_separator
+                branches += [
+                    f'EventInfo.trigSF_{trig}_{matchLevel}SF_{syst}'
                     f'->trigSF_{trig}_{matchLevel}SF'
-                    + flags.Analysis.systematics_suffix_separator + 'stats__1up',
-                    f'EventInfo.trigSF_{trig}_{matchLevel}SF_syst__1up'
-                    f'->trigSF_{trig}_{matchLevel}SF'
-                    + flags.Analysis.systematics_suffix_separator + 'syst__1up',
+                    f'{separ}{syst} type=float'
+                    for syst in ["stats__1up", "syst__1up"]
                 ]
                 # more jet-level info for validation
                 if flags.Analysis.Small_R_jet.saveTriggerInfo:
@@ -227,12 +228,12 @@ def resolved_trigger_SF_branches(flags):
 
 
 def resolved_trigger_bucket_branches(flags):
-    branches = ['EventInfo.bucket -> trigger_bucket']
+    branches = ['EventInfo.bucket -> trigger_bucket type=int']
 
     for trig in ["1b", "2b1j", "2bHT", "2b2j", "j75", "j80"]:
         branches += [
             f'EventInfo.pass_trigger_{trig}'
-            f' -> trigger_bucket_{trig}',
+            f' -> trigger_bucket_{trig} type=char',
         ]
 
     if flags.Input.isMC and flags.Analysis.do_resolved_trigger_SF and (
@@ -246,11 +247,11 @@ def resolved_trigger_bucket_branches(flags):
         for matchLevel in matchLevels:
             branches += [
                 f'EventInfo.trigger_smallrjet_sf_{matchLevel.lower()}_nosys'
-                f'-> trigger_SmallRJet_{matchLevel}SF_NOSYS',
+                f'-> trigger_SmallRJet_{matchLevel}SF_NOSYS type=float',
                 f'EventInfo.trigger_smallrjet_sf_{matchLevel.lower()}_stat__1up'
-                f'-> trigger_SmallRJet_{matchLevel}SF_{matchLevel}Stat__1up',
+                f'-> trigger_SmallRJet_{matchLevel}SF_{matchLevel}Stat__1up type=float',
                 f'EventInfo.trigger_smallrjet_sf_{matchLevel.lower()}_syst__1up'
-                f'-> trigger_SmallRJet_{matchLevel}SF_{matchLevel}Syst__1up',
+                f'-> trigger_SmallRJet_{matchLevel}SF_{matchLevel}Syst__1up type=float',
             ]
 
     return branches

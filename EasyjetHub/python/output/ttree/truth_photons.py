@@ -7,6 +7,8 @@ def get_truthphoton_branches(flags, input_container, output_prefix):
         output_prefix,
     )
 
-    truthphoton_branches.variables = ["px", "py", "pz", "e"]
+    truthphoton_branches.variables = [
+        (var, None) for var in ["px", "py", "pz", "e"]
+    ]
 
     return truthphoton_branches.get_output_list()

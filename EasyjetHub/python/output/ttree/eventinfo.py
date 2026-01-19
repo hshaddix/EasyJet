@@ -16,13 +16,13 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
         systematics_option=_syst_option,
         systematics_suffix_separator=flags.Analysis.systematics_suffix_separator,
         variables=[
-            "runNumber",
-            "eventNumber",
-            "lumiBlock",
-            "dataTakingYear",
-            "averageInteractionsPerCrossing",
-            "actualInteractionsPerCrossing",
-            "nPrimaryVertices"
+            ("runNumber", None),
+            ("eventNumber", None),
+            ("lumiBlock", None),
+            ("dataTakingYear", "unsigned"),
+            ("averageInteractionsPerCrossing", None),
+            ("actualInteractionsPerCrossing", None),
+            ("nPrimaryVertices", "unsigned")
         ],
         # Need syst_only_for not to be empty to avoid applying SYST on all
         # branches, except those with %SYS% explicitly in the provided variable name
@@ -32,34 +32,41 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
 
     if flags.Analysis.do_primary_vertex_pos:
         eventinfo_branches.variables += [
-            "beamPosX",
-            "beamPosY",
-            "beamPosZ",
-            "PrimaryVertexPosX",
-            "PrimaryVertexPosY",
-            "PrimaryVertexPosZ",
+            (f"{ref}Pos{var}", None)
+            for var in ["X", "Y", "Z"]
+            for ref in ["beam", "PrimaryVertex"]
         ]
 
     if flags.Analysis.dump_event_cleaning_info:
-        eventinfo_branches.variables += ["DFCommonJets_eventClean_LooseBad"]
+        eventinfo_branches.variables += [
+            ("DFCommonJets_eventClean_LooseBad", None)
+        ]
         if flags.Analysis.add_BadBatman_jet_cleaning:
-            eventinfo_branches.variables += ['DFCommonJets_isBadBatman']
+            eventinfo_branches.variables += [
+                ("DFCommonJets_isBadBatman", None)
+            ]
 
     if flags.Input.isMC:
         eventinfo_branches.variables += [
-            "mcChannelNumber",
-            "RandomRunNumber",
-            "generatorWeight_%SYS%",
+            ("mcChannelNumber", None),
+            ("RandomRunNumber", None),
+            ("generatorWeight_%SYS%", None)
         ]
 
         if not flags.Input.isPHYSLITE:
-            eventinfo_branches.variables += ["RandomLumiBlockNumber"]
+            eventinfo_branches.variables += [
+                ("RandomLumiBlockNumber", "unsigned")
+            ]
 
         if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HSTP_samples:
-            eventinfo_branches.variables += ["PassHSTP"]
+            eventinfo_branches.variables += [
+                ("PassHSTP", "char")
+            ]
 
         if flags.GeoModel.Run is LHCPeriod.Run2:
-            eventinfo_branches.variables += ["beamSpotWeight"]
+            eventinfo_branches.variables += [
+                ("beamSpotWeight", None)
+            ]
 
         HF_valid_ptag = is_at_least(flags, "p6255")
         if (flags.Input.isAnalysisFormat
@@ -67,22 +74,26 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
                 and flags.Input.MCChannelNumber
                 in flags.Analysis.Truth.DSID_HF_class_samples):
             eventinfo_branches.variables += [
-                "HF_SimpleClassification",
-                "HF_Classification"
+                ("HF_SimpleClassification", None),
+                ("HF_Classification", None)
             ]
         if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_nWLep_samples:
-            eventinfo_branches.variables += ["nWLep"]
+            eventinfo_branches.variables += [
+                ("nWLep", "unsigned")
+            ]
 
         if flags.Analysis.Truth.do_STXS:
             eventinfo_branches.variables += [
-                "HTXS_Category_Stage1_2_pTjet30",
-                "HTXS_Category_Stage1_2_Fine_pTjet30",
-                "HTXS_Category_Stage1_2_pTjet25",
-                "HTXS_Category_Stage1_2_Fine_pTjet25",
+                (f"HTXS_Category_Stage1_2_{var}", "int")
+                for var in ["pTjet30", "Fine_pTjet30",
+                            "pTjet25", "Fine_pTjet25"]
             ]
+
             _, _, has_STXS_unc = STXS_info(flags.Input.MCChannelNumber)
             if has_STXS_unc:
-                eventinfo_branches.variables += ["HTXS_Weights_Stage1_2_pTjet30"]
+                eventinfo_branches.variables += [
+                    ("HTXS_Weights_Stage1_2_pTjet30", None)
+                ]
 
         if flags.Analysis.doPRW:
             PRW_config = [flags.Analysis.PileupReweighting]
@@ -91,13 +102,15 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
             for prw in PRW_config:
                 postfix = ("_" + prw.postfix) if altConfig else ""
                 weight = "PileupWeight" + postfix + "_%SYS%"
-                eventinfo_branches.variables += [weight]
+                eventinfo_branches.variables += [
+                    (weight, None)
+                ]
                 altConfig = True
 
     # Replace L1Topo characters, formatting as done by the
     # trigger selection CP alg
     trigger_branches = [
-        f"trigPassed_{c.replace('-', '_').replace('.', 'p')}"
+        (f"trigPassed_{c.replace('-', '_').replace('.', 'p')}", None)
         for c in trigger_chains
     ]
 
@@ -107,9 +120,9 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
     # Event-level scale factors
     trg_vars = []
     if flags.Input.isMC and flags.Analysis.Trigger.scale_factor.doSF:
-        trg_vars.append('globalTriggerEffSF_%SYS%')
+        trg_vars.append(("globalTriggerEffSF_%SYS%", None))
     if flags.Analysis.Trigger.scale_factor.do_trigger_match:
-        trg_vars.append('globalTriggerMatch_%SYS%')
+        trg_vars.append(("globalTriggerMatch_%SYS%", None))
     if trg_vars:
         # Only dump trigger SF and matching flag if computed before
         for year in flags.Analysis.Years:
@@ -140,7 +153,9 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
         for wp in btag_wps:
             if "FixedCutBEff" in wp:
                 continue
-            eventinfo_branches.variables += [f"ftag_effSF_{wp}_%SYS%"]
+            eventinfo_branches.variables += [
+                (f"ftag_effSF_{wp}_%SYS%", None)
+            ]
 
             trigSF_flags = flags.Analysis.Trigger.scale_factor
             if trigSF_flags.doSF and hasattr(trigSF_flags, 'bjet'):
@@ -148,46 +163,80 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
                 for triggerChains in triggerChainsPerYear.values():
                     for chain in triggerChains:
                         eventinfo_branches.variables += [
-                            f"ftag_effSF_{wp}_{chain}_%SYS%"
+                            (f"ftag_effSF_{wp}_{chain}_%SYS%", None)
                         ]
 
         # jvt is effSF is now centrally calculated by CP tools
-        eventinfo_branches.variables += ["jvt_effSF_%SYS%"]
+        eventinfo_branches.variables += [
+            ("jvt_effSF_%SYS%", None)
+        ]
         if flags.Analysis.Small_R_jet.useFJvt:
-            eventinfo_branches.variables += ["fjvt_effSF_%SYS%"]
+            eventinfo_branches.variables += [
+                ("fjvt_effSF_%SYS%", None)
+            ]
 
     if tree_flags.truth_outputs.higgs_particle and flags.Input.isMC:
         eventinfo_branches.variables += [
-            variable
+            (f"truth_H{i}_{var}", "float")
+            for var in ["pt", "eta", "phi", "m"]
+            for i in range(1, flags.Analysis.Truth.nHiggses + 1)
+        ]
+
+        eventinfo_branches.variables += [
+            (f"truth_H{i}_pdgId", "int")
+            for i in range(1, flags.Analysis.Truth.nHiggses + 1)
+        ]
+
+        eventinfo_branches.variables += [
+            (variable, "vector_float")
             for fmt in [
-                "truth_H{:d}_{:s}",
                 "truth_children_fromH{:d}_{:s}",
                 "truth_initial_children_fromH{:d}_{:s}",
             ]
-            for var in ["pt", "eta", "phi", "m", "pdgId"]
+            for var in ["pt", "eta", "phi", "m"]
             for i in range(flags.Analysis.Truth.nHiggses)
             for variable in [fmt.format(i + 1, var)]
         ]
 
         eventinfo_branches.variables += [
-            f"truth_HH_{var}"
+            (variable, "vector_int")
+            for fmt in [
+                "truth_children_fromH{:d}_pdgId",
+                "truth_initial_children_fromH{:d}_pdgId",
+            ]
+            for i in range(flags.Analysis.Truth.nHiggses)
+            for variable in [fmt.format(i + 1)]
+        ]
+
+        eventinfo_branches.variables += [
+            (f"truth_HH_{var}", "float")
             for var in ["pt", "eta", "phi", "m"]
         ]
 
-        eventinfo_branches.variables += ["truth_HH_average_pt",
-                                         "truth_HH_average_eta",
-                                         "truth_HH_abs_cos_theta_star"]
+        eventinfo_branches.variables += [
+            (f"truth_HH_{var}", "float")
+            for var in ["average_pt", "average_eta", "abs_cos_theta_star"]
+        ]
 
         if flags.Analysis.Truth.recordGrandchildren:
             eventinfo_branches.variables += [
-                variable
+                (variable, "vector_vector_float")
                 for fmt in [
                     "truth_grandchildren_fromH{:d}_{:s}",
                     "truth_initial_grandchildren_fromH{:d}_{:s}",
                 ]
-                for var in ["pt", "eta", "phi", "m", "pdgId"]
+                for var in ["pt", "eta", "phi", "m"]
                 for i in range(flags.Analysis.Truth.nHiggses)
                 for variable in [fmt.format(i + 1, var)]
+            ]
+            eventinfo_branches.variables += [
+                (variable, "vector_vector_int")
+                for fmt in [
+                    "truth_grandchildren_fromH{:d}_pdgId",
+                    "truth_initial_grandchildren_fromH{:d}_pdgId",
+                ]
+                for i in range(flags.Analysis.Truth.nHiggses)
+                for variable in [fmt.format(i + 1)]
             ]
 
     if flags.Analysis.GRL.store_decoration:
@@ -195,11 +244,16 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
         for key in getGoodRunsLists().keys():
             for year in flags.Analysis.Years:
                 if str(year) in key:
-                    eventinfo_branches.variables += [key]
+                    eventinfo_branches.variables += [
+                        (key, "char")
+                    ]
+
     # Add VgammaOR if the DSID is relevant&filtering is not applied
     if (
         flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_vgammaOR
         and flags.Analysis.bypass_VGammaOR and flags.Analysis.do_VgammaOR
     ):
-        eventinfo_branches.variables += ["in_vgamma_overlap_%SYS%"]
+        eventinfo_branches.variables += [
+            ("in_vgamma_overlap_%SYS%", None)
+        ]
     return eventinfo_branches.get_output_list()

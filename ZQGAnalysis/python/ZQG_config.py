@@ -219,14 +219,16 @@ def get_ZQGTruthSelectorAlg_variables(flags):
             # Store the float variables
             if var in flags.Analysis.Small_R_jet.variables_truthjets:
                 float_variable_names += [f"TruthJet_c{index+1}_{var}"]
-            branches += [f"TruthEvents.TruthJet_c{index+1}_{var} \
-                        -> ZQG_TruthJet_c{index+1}_{var}"]
+            branches += [
+                f"TruthEvents.TruthJet_c{index+1}_{var} "
+                + f"-> ZQG_TruthJet_c{index+1}_{var} type=float"]
 
     # Dilepton
     for var in [*flags.Analysis.Lepton.variables_truth_Z]:
         float_variable_names += [f"Truth_ll_{var}"]
-        branches += [f"TruthEvents.Truth_ll_{var} \
-                    -> ZQG_Truth_ll_{var}"]
+        branches += [
+            f"TruthEvents.Truth_ll_{var} -> ZQG_Truth_ll_{var} type=float"
+        ]
 
     return branches, float_variable_names
 
@@ -276,9 +278,10 @@ def ZQG_branches(flags):
     if flags.Analysis.save_cutflow:
         cutList = flags.Analysis.CutList + flags.Analysis.Categories
         for cut in cutList:
-            branches += [f"EventInfo.{cut}_%SYS% \
-                        -> ZQG_{cut}_%SYS%"]
-            branches += ["EventInfo.PassCuts_%SYS% -> ZQG_PassRecoCuts_%SYS%"]
+            branches += [f"EventInfo.{cut}_%SYS% -> ZQG_{cut}_%SYS% type=char"]
+            branches += [
+                "EventInfo.PassCuts_%SYS% -> ZQG_PassRecoCuts_%SYS% type=char"
+            ]
         if flags.Input.isMC:
             truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
             truth_branches, truth_float_variable_names = (
@@ -286,10 +289,10 @@ def ZQG_branches(flags):
             )
             branches += truth_branches
             for cut in truthcutList:
-                branches += [f"TruthEvents.{cut} \
-                            -> ZQG_{cut}"]
-                branches += ["TruthEvents.PassTruthCuts \
-                            -> ZQG_PassTruthCuts"]
+                branches += [f"TruthEvents.{cut} -> ZQG_{cut} type=char"]
+                branches += [
+                    "TruthEvents.PassTruthCuts -> ZQG_PassTruthCuts type=char"
+                ]
 
     # trigger variables do not need to be added to variable_names
     # as it is written out in ZQGSelectorAlg

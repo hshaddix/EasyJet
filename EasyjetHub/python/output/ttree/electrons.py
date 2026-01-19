@@ -1,4 +1,5 @@
 from EasyjetHub.output.ttree.branch_manager import BranchManager, SystOption
+from EasyjetHub.output.ttree.truth_electrons import get_TopHiggs_ele_truth_labels
 
 
 def get_electron_branches(flags, tree_flags, input_container, output_prefix):
@@ -19,38 +20,45 @@ def get_electron_branches(flags, tree_flags, input_container, output_prefix):
         electron_branches.syst_only_for = ["pt"]
 
     electron_branches.add_four_mom_branches(do_mass=False)
-    electron_branches.variables += ["charge"]
+    electron_branches.variables += [
+        ("charge", None)
+    ]
 
     if el_output_flags.iso_variables:
         electron_branches.variables += [
-            "topoetcone20",
-            "topoetcone20_CloseByCorr",
-            "ptvarcone30_Nonprompt_All_MaxWeightTTVALooseCone_pt1000"
+            ("topoetcone20", None),
+            ("topoetcone20_CloseByCorr", None),
+            ("ptvarcone30_Nonprompt_All_MaxWeightTTVALooseCone_pt1000", None)
         ]
 
     if el_output_flags.id_variables:
         if not flags.Input.isPHYSLITE:
             electron_branches.variables += [
-                "DFCommonElectronsDNN_pel",
-                "DFCommonElectronsDNN_pcf",
-                "DFCommonElectronsDNN_ppc",
-                "DFCommonElectronsDNN_phf",
-                "DFCommonElectronsDNN_ple",
-                "DFCommonElectronsDNN_plh"
+                (f"DFCommonElectronsDNN_p{c}", None)
+                for c in ["el", "cf", "pc", "hf", "le", "lh"]
             ]
 
     if flags.Analysis.Electron.do_reco_decoration:
-        electron_branches.variables += ["author"]
+        electron_branches.variables += [
+            ("author", None)
+        ]
 
     if flags.Analysis.do_overlap_removal:
-        electron_branches.variables += ["passesOR_%SYS%"]
+        electron_branches.variables += [
+            ("passesOR_%SYS%", None)
+        ]
 
     electron_branches.variables += [
-        "d0_NOSYS", "d0sig_NOSYS", "z0sintheta_NOSYS", "z0sinthetasig_NOSYS"
+        ("d0_%SYS%", None),
+        ("d0sig_%SYS%", None),
+        ("z0sintheta_%SYS%", None),
+        ("z0sinthetasig_%SYS%", None)
     ]
 
     if flags.Analysis.Electron.MergeLRT:
-        electron_branches.variables += ["isLRT"]
+        electron_branches.variables += [
+            ("isLRT", None)
+        ]
 
     id_wps = [f'{flags.Analysis.Electron.ID}_{flags.Analysis.Electron.Iso}']
 
@@ -59,56 +67,57 @@ def get_electron_branches(flags, tree_flags, input_container, output_prefix):
             id_wps.append(wp[0] + "_" + wp[1])
 
     electron_branches.variables += [
-        f"baselineSelection_{id_wp}_%SYS%"
+        (f"baselineSelection_{id_wp}_%SYS%", None)
         for id_wp in id_wps
     ]
 
     if flags.Analysis.Electron.do_track_decoration:
         electron_branches.variables += [
-            "mllConv",
-            "mllConvAtConvV",
-            "radiusConv",
-            "separationMinDCT",
+            ("mllConv", "float"),
+            ("mllConvAtConvV", "float"),
+            ("radiusConv", "float"),
+            ("separationMinDCT", "float")
         ]
         if not flags.Input.isPHYSLITE:
             electron_branches.variables += [
-                "DFCommonAddAmbiguity",
-                "ambiguityType"
+                ("DFCommonAddAmbiguity", None),
+                ("ambiguityType", None)
             ]
 
     if flags.Input.isMC and \
        flags.Analysis.Electron.do_IFF_decoration:
         electron_branches.variables += [
-            "IFFClass_NOSYS",
-            "truthType",
-            "truthOrigin",
-            "firstEgMotherTruthType",
-            "firstEgMotherTruthOrigin",
-            "firstEgMotherPdgId"
+            ("IFFClass_NOSYS", None),
+            ("truthType", None),
+            ("truthOrigin", None),
+            ("firstEgMotherTruthType", None),
+            ("firstEgMotherTruthOrigin", None),
+            ("firstEgMotherPdgId", None)
         ]
 
     if flags.Input.isMC and el_output_flags.truth_parent_info:
-        truth_labels = []
-        if not flags.Input.isPHYSLITE:
-            truth_labels += [
-                *[f"parent{p}ParentsMask" for p in ["Higgs", "Z", "Top"]],
-            ]
-        electron_branches.variables += truth_labels
+        electron_branches.variables += get_TopHiggs_ele_truth_labels(flags)
 
     if flags.Input.isMC:
         electron_branches.variables += [
-            f"effSF_{id_wp}_%SYS%"
+            (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
             if not ("DNN" in id_wp or "NoPix" in id_wp)
         ]
 
     # Requires ElectronSelectorAlg to be run
     if el_output_flags.run_selection:
-        electron_branches.variables += ["isAnalysisElectron_%SYS%"]
+        electron_branches.variables += [
+            ("isAnalysisElectron_%SYS%", None)
+        ]
         for index in range(flags.Analysis.Electron.amount):
-            electron_branches.variables += [f"isElectron{index+1}_%SYS%"]
+            electron_branches.variables += [
+                (f"isElectron{index+1}_%SYS%", None)
+            ]
         for index in range(flags.Analysis.Lepton.amount):
-            electron_branches.variables += [f"isLepton{index+1}_%SYS%"]
+            electron_branches.variables += [
+                (f"isLepton{index+1}_%SYS%", None)
+            ]
 
     electron_branches.variables += el_output_flags.extra_variables
     if flags.Input.isMC:

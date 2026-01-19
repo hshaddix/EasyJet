@@ -31,22 +31,32 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
     # If object selector are run OR + JVT selection flags are combined into
     # isAnalysisJet
     if jet_output_flags.run_selection:
-        small_R_jet_branches.variables += ["isAnalysisJet_%SYS%"]
+        small_R_jet_branches.variables += [
+            ("isAnalysisJet_%SYS%", None)
+        ]
         for index in range(flags.Analysis.Small_R_jet.amount_bjet):
-            small_R_jet_branches.variables += [f"isbjet{index+1}_%SYS%"]
+            small_R_jet_branches.variables += [
+                (f"isbjet{index+1}_%SYS%", None)
+            ]
     else:
         if flags.Analysis.do_overlap_removal:
-            small_R_jet_branches.variables += ["passesOR_%SYS%"]
+            small_R_jet_branches.variables += [
+                ("passesOR_%SYS%", None)
+            ]
 
         if flags.Analysis.Small_R_jet.jet_type != "reco4EMTopoJet":
-            small_R_jet_branches.variables += ["jvt_selection"]
+            small_R_jet_branches.variables += [
+                ("jvt_selection", None)
+            ]
             if flags.Analysis.Small_R_jet.useFJvt:
-                small_R_jet_branches.variables += ["fjvt_selection"]
+                small_R_jet_branches.variables += [
+                    ("fjvt_selection", None)
+                ]
 
     if flags.Analysis.Small_R_jet.jet_type != "reco4EMTopoJet":
         if flags.Input.isMC:
             # truth label used by Jet/Etmiss - always add it when running on MC
-            small_R_jet_branches.variables += ["PartonTruthLabelID"]
+            small_R_jet_branches.variables += [("PartonTruthLabelID", None)]
 
         if jet_output_flags.btag_info:
             btag_wps = []
@@ -64,22 +74,24 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
                 btag_wps += ["GN2v01_Continuous"]
 
             small_R_jet_branches.variables += [
-                f"ftag_select_{btag_wp}"
+                (f"ftag_select_{btag_wp}", None)
                 for btag_wp in btag_wps if "Continuous" not in btag_wp
             ]
             small_R_jet_branches.variables += [
-                f"ftag_quantile_{btag_wp}"
+                (f"ftag_quantile_{btag_wp}", None)
                 for btag_wp in btag_wps if "Continuous" in btag_wp
             ]
 
             if flags.Input.isMC:
                 # always add btag truth label if btag is used, when running on MC
-                small_R_jet_branches.variables += ["HadronConeExclTruthLabelID"]
+                small_R_jet_branches.variables += [
+                    ("HadronConeExclTruthLabelID", None)
+                ]
                 for wp in btag_wps:
                     if "FixedCutBEff" in wp:
                         continue
                     small_R_jet_branches.variables += [
-                        f"ftag_effSF_{wp}_%SYS%"
+                        (f"ftag_effSF_{wp}_%SYS%", None)
                     ]
 
                     # Add trigger SF
@@ -90,21 +102,27 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
                         for triggerChains in triggerChainsPerYear.values():
                             for chain in triggerChains:
                                 small_R_jet_branches.variables += [
-                                    f"ftag_jetTrigMatching_{chain}_%SYS%",
-                                    f"ftag_bTagTrigMatching_{chain}_%SYS%"]
+                                    (f"ftag_jetTrigMatching_{chain}_%SYS%", None),
+                                    (f"ftag_bTagTrigMatching_{chain}_%SYS%", None)
+                                ]
 
         if flags.Analysis.Small_R_jet.runBJetPtCalib:
             if jet_output_flags.no_bjet_calib_p4:
-                small_R_jet_branches.variables += ["n_muons_%SYS%"]
+                small_R_jet_branches.variables += [
+                    ("n_muons_%SYS%", None)
+                ]
                 if flags.Input.isMC:
-                    small_R_jet_branches.variables += ["bJetTruthPt", "bJetTruthDR"]
+                    small_R_jet_branches.variables += [
+                        (f"bJetTruth{var}", "float")
+                        for var in ["Pt", "DR"]
+                    ]
 
                 small_R_jet_branches.variables += [
-                    f"NoBJetCalibMomentum_{var}"
+                    (f"NoBJetCalibMomentum_{var}", "float")
                     for var in ["pt", "eta", "phi", "m"]
                 ]
                 small_R_jet_branches.variables += [
-                    f"MuonCorrMomentum_{var}"
+                    (f"MuonCorrMomentum_{var}", "float")
                     for var in ["pt", "eta", "phi", "m"]
                 ]
                 if tree_flags.slim_variables_with_syst:
@@ -112,23 +130,27 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
                         "NoBJetCalibMomentum_pt",
                         "NoBJetCalibMomentum_m",
                         "MuonCorrMomentum_pt",
-                        "MuonCorrMomentum_m",
+                        "MuonCorrMomentum_m"
                     ]
 
         if jet_output_flags.JVT_details:
             small_R_jet_branches.variables += [
-                "Jvt",
-                "JvtRpt",
-                "JVFCorr",
-                "NNJvt",
-                "NNJvtRpt",
-                "DFCommonJets_fJvt",
+                ("Jvt", None),
+                ("JvtRpt", None),
+                ("JVFCorr", None),
+                ("NNJvt", None),
+                ("NNJvtRpt", None),
+                ("DFCommonJets_fJvt", None)
             ]
 
             if flags.Input.isMC:
-                small_R_jet_branches.variables += ["jvt_effSF_%SYS%"]
+                small_R_jet_branches.variables += [
+                    ("jvt_effSF_%SYS%", None)
+                ]
                 if flags.Analysis.Small_R_jet.useFJvt:
-                    small_R_jet_branches.variables += ["fjvt_effSF_%SYS%"]
+                    small_R_jet_branches.variables += [
+                        ("fjvt_effSF_%SYS%", None)
+                    ]
 
     if flags.Input.isMC and jet_output_flags.truth_parent_info:
         small_R_jet_branches.variables += get_TopHiggs_jet_truth_labels(flags)
@@ -138,19 +160,13 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
             trig = trig.replace("-", "_").replace(".", "p")
             if flags.Analysis.Small_R_jet.doL1Matching:
                 small_R_jet_branches.variables += [
-                    f'match{trig}_L1et',
-                    f'match{trig}_L1eta',
-                    f'match{trig}_L1phi',
-                    f'match{trig}_L1dr',
-                    f'match{trig}_L1thresholds'
+                    (f"match{trig}_L1{var}", None)
+                    for var in ["et", "eta", "phi", "dr", "thresholds"]
                 ]
             if flags.Analysis.Small_R_jet.doHLTMatching:
                 small_R_jet_branches.variables += [
-                    f'match{trig}_HLTpt',
-                    f'match{trig}_HLTeta',
-                    f'match{trig}_HLTphi',
-                    f'match{trig}_HLTdr',
-                    f'match{trig}_HLTthresholds'
+                    (f"match{trig}_HLT{var}", None)
+                    for var in ["pt", "eta", "phi", "dr", "thresholds"]
                 ]
 
     # ftag scores pb, pc, pl
@@ -163,10 +179,8 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
 
     if jet_output_flags.btag_details and gn2v01_valid_ptag:
         small_R_jet_branches.variables += [
-            "GN2v01_pb",
-            "GN2v01_pc",
-            "GN2v01_pu",
-            "GN2v01_ptau",
+            (f"GN2v01_p{c}", None)
+            for c in ["b", "c", "u", "tau"]
         ]
 
     if jet_output_flags.gn3_scores and gn3_valid_ptag:
@@ -174,13 +188,13 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
         # b,c,s,ud,g,tau -> 'u' = ud,s,g, 'quark' = ud,s
         for prob in ['b', 'c', 's', 'ud', 'g', 'tau', 'u', 'quark']:
             small_R_jet_branches.variables += [
-                f"GN3PflowMuonsV00_p{prob}"
+                (f"GN3PflowMuonsV00_p{prob}", None)
             ]
         # The two ablation models we store only the final 4 scores needed
         for gn3t in ['GN3V00', 'GN3PflowV00', 'GN3MuonsV00']:
             for prob in ['b', 'c', 'tau', 'u', ]:
                 small_R_jet_branches.variables += [
-                    f"{gn3t}_p{prob}"
+                    (f"{gn3t}_p{prob}", None)
                 ]
 
     small_R_jet_branches.variables += jet_output_flags.extra_variables

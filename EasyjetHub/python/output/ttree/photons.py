@@ -21,7 +21,9 @@ def get_photon_branches(flags, tree_flags, input_container, output_prefix):
     photon_branches.add_four_mom_branches(do_mass=False)
 
     if flags.Analysis.do_overlap_removal:
-        photon_branches.variables += ["passesOR_%SYS%"]
+        photon_branches.variables += [
+            ("passesOR_%SYS%", None)
+        ]
 
     id_wps = [f'{flags.Analysis.Photon.ID}_{flags.Analysis.Photon.Iso}']
     if 'extra_wps' in flags.Analysis.Photon:
@@ -29,50 +31,45 @@ def get_photon_branches(flags, tree_flags, input_container, output_prefix):
             id_wps.append(wp[0] + "_" + wp[1])
 
     photon_branches.variables += [
-        f"baselineSelection_{id_wp}_%SYS%"
+        (f"baselineSelection_{id_wp}_%SYS%", None)
         for id_wp in id_wps
     ]
 
     if ph_output_flags.shower_shapes:
         photon_branches.variables += [
-            "Rhad",
-            "Rhad1",
-            "Reta",
-            "Rphi",
-            "weta1",
-            "weta2",
-            "f1",
-            "f3",
-            "fracs1",
-            "wtots1",
-            "DeltaE",
-            "Eratio",
+            (var, None)
+            for var in ["Rhad", "Rhad1", "Reta", "Rphi", "weta1", "weta2",
+                        "f1", "f3", "fracs1", "wtots1", "DeltaE", "Eratio"]
         ]
 
     if ph_output_flags.iso_variables:
         photon_branches.variables += [
-            "ptcone20",
-            "topoetcone20",
-            "topoetcone40",
+            ("ptcone20", None),
+            ("topoetcone20", None),
+            ("topoetcone40", None)
         ]
 
     if flags.Input.isMC and ph_output_flags.truth_labels:
         photon_branches.variables += [
-            "truthType",
-            "truthOrigin",
+            ("truthType", None),
+            ("truthOrigin", None)
         ]
 
     if flags.Input.isMC:
         photon_branches.variables += [
-            f"effSF_{id_wp}_%SYS%"
+            (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
         ]
 
     # Requires PhotonSelectorAlg to be run
     if ph_output_flags.run_selection:
-        photon_branches.variables += ["isAnalysisPhoton_%SYS%"]
+        photon_branches.variables += [
+            ("isAnalysisPhoton_%SYS%", None)
+        ]
         for index in range(flags.Analysis.Photon.amount):
-            photon_branches.variables += [f"isPhoton{index+1}_%SYS%"]
+            photon_branches.variables += [
+                (f"isPhoton{index+1}_%SYS%", None)
+            ]
 
     photon_branches.variables += ph_output_flags.extra_variables
     if flags.Input.isMC:

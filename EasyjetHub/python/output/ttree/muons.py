@@ -1,4 +1,5 @@
 from EasyjetHub.output.ttree.branch_manager import BranchManager, SystOption
+from EasyjetHub.output.ttree.truth_muons import get_TopHiggs_muon_truth_labels
 
 
 def get_muon_branches(flags, tree_flags, input_container, output_prefix):
@@ -19,58 +20,62 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
         muon_branches.syst_only_for = ["pt"]
 
     muon_branches.add_four_mom_branches(do_mass=False)
-    muon_branches.variables += ["charge"]
+    muon_branches.variables += [
+        ("charge", None)
+    ]
 
     if mu_output_flags.iso_variables:
         muon_branches.variables += [
-            "neflowisol20",
-            "neflowisol20_CloseByCorr",
-            "topoetcone20",
-            "topoetcone20_CloseByCorr",
-            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt500",
-            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt500_CloseByCorr",
-            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt1000",
-            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt1000_CloseByCorr"
+            ("neflowisol20", None),
+            ("neflowisol20_CloseByCorr", None),
+            ("topoetcone20", None),
+            ("topoetcone20_CloseByCorr", None)
+        ]
+        muon_branches.variables += [
+            (f"ptvarcone30_Nonprompt_All_MaxWeightTTVA_{suff}", None)
+            for suff in ["pt500", "pt500_CloseByCorr", "pt1000", "pt1000_CloseByCorr"]
         ]
 
     if flags.Analysis.do_overlap_removal:
-        muon_branches.variables += ["passesOR_%SYS%"]
+        muon_branches.variables += [
+            ("passesOR_%SYS%", None)
+        ]
 
     muon_branches.variables += [
-        "d0_NOSYS", "d0sig_NOSYS", "z0sintheta_NOSYS", "z0sinthetasig_NOSYS"
+        ("d0_%SYS%", None),
+        ("d0sig_%SYS%", None),
+        ("z0sintheta_%SYS%", None),
+        ("z0sinthetasig_%SYS%", None)
     ]
 
     if flags.Analysis.Muon.do_reco_decoration:
-        muon_branches.variables += ["author", "muonType"]
+        muon_branches.variables += [
+            ("author", None),
+            ("muonType", None)
+        ]
 
     if flags.Analysis.Muon.MergeLRT:
-        muon_branches.variables += ["isLRT"]
+        muon_branches.variables += [("isLRT", None)]
 
     if flags.Analysis.Muon.do_track_decoration:
         muon_branches.variables += [
-            "idtrack_pt",
-            "idtrack_eta",
-            "idtrack_phi",
-            "idtrack_d0",
-            "idtrack_z0",
-            "idtrack_chi2OverDoF",
-            "idtrack_nIBL",
-            "idtrack_nPIX",
-            "idtrack_nPIX_shared",
-            "idtrack_nSCT",
-            "idtrack_nSCT_shared",
-            "cbtrack_d0",
-            "cbtrack_z0",
-            "cbtrack_chi2OverDoF",
-            "numberOfPrecisionLayers",
-            "numberOfPrecisionHoleLayers"
+            (f"idtrack_{var}", None)
+            for var in ["pt", "eta", "phi", "d0", "z0", "chi2OverDoF",
+                        "nIBL", "nPIX", "nPIX_shared", "nSCT", "nSCT_shared"]
+        ]
+        muon_branches.variables += [
+            (f"cbtrack_{var}", None)
+            for var in ["d0", "z0", "chi2OverDoF"]
+        ]
+        muon_branches.variables += [
+            ("numberOfPrecisionLayers", None),
+            ("numberOfPrecisionHoleLayers", None)
         ]
 
         if (flags.Input.ProcessingTags == ["StreamDAOD_LLP1"]):
             muon_branches.variables += [
-                "idtrack_nNextToIBL",
-                "idtrack_nPIX_split",
-                "idtrack_nTRT"
+                (f"idtrack_{var}", None)
+                for var in ["nNextToIBL", "nPIX_split", "nTRT"]
             ]
 
     id_wps = [f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}']
@@ -97,39 +102,40 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
                 id_wps.append(wp[0] + "_" + wp[1])
 
     muon_branches.variables += [
-        f"baselineSelection_{id_wp}_%SYS%"
+        (f"baselineSelection_{id_wp}_%SYS%", None)
         for id_wp in id_wps
     ]
 
     if flags.Input.isMC and \
        flags.Analysis.Muon.do_IFF_decoration:
         muon_branches.variables += [
-            "IFFClass_NOSYS",
-            "truthType",
-            "truthOrigin"
+            ("IFFClass_NOSYS", None),
+            ("truthType", None),
+            ("truthOrigin", None)
         ]
 
     if flags.Input.isMC and mu_output_flags.truth_parent_info:
-        truth_labels = []
-        if not flags.Input.isPHYSLITE:
-            truth_labels += [
-                *[f"parent{p}ParentsMask" for p in ["Higgs", "Z", "Top"]],
-            ]
-        muon_branches.variables += truth_labels
+        muon_branches.variables += get_TopHiggs_muon_truth_labels(flags)
 
     if flags.Input.isMC:
         muon_branches.variables += [
-            f"effSF_{id_wp}_%SYS%"
+            (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
         ]
 
     # Requires MuonSelectorAlg to be run
     if mu_output_flags.run_selection:
-        muon_branches.variables += ["isAnalysisMuon_%SYS%"]
+        muon_branches.variables += [
+            ("isAnalysisMuon_%SYS%", None)
+        ]
         for index in range(flags.Analysis.Muon.amount):
-            muon_branches.variables += [f"isMuon{index+1}_%SYS%"]
+            muon_branches.variables += [
+                (f"isMuon{index+1}_%SYS%", None)
+            ]
         for index in range(flags.Analysis.Lepton.amount):
-            muon_branches.variables += [f"isLepton{index+1}_%SYS%"]
+            muon_branches.variables += [
+                (f"isLepton{index+1}_%SYS%", None)
+            ]
 
     muon_branches.variables += mu_output_flags.extra_variables
     if flags.Input.isMC:

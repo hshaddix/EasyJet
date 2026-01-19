@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+# Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
@@ -300,14 +300,15 @@ def get_BaselineVarsbbttAlg_highlevelvariables(flags):
 def bbtt_branches(flags):
     # a list of strings which maps the variable name in the c++ code
     # to the outputname:
-    # "EventInfo.<var> -> <outputvarname>"
+    # "EventInfo.<var> -> <outputvarname> type=..."
     branches = []
+    float_var_names = []
+    int_var_names = []
 
     # this will be all the variables that are calculated by the
     # BaselineVarsbbttAlg algorithm
-    all_baseline_variable_names = []
-    float_variable_names = []
-    int_variable_names = []
+    float_baseline_var_names = []
+    int_baseline_var_names = []
 
     # these are the variables that will always be stored by easyjet specific to HHbbtt
     # further below there are more high level variables which can be
@@ -315,48 +316,53 @@ def bbtt_branches(flags):
     if flags.Analysis.store_high_level_variables:
         baseline_float_variables, baseline_int_variables \
             = get_BaselineVarsbbttAlg_variables(flags)
-        float_variable_names += baseline_float_variables
-        int_variable_names += baseline_int_variables
+        float_baseline_var_names += baseline_float_variables
+        float_var_names += baseline_float_variables
+        int_baseline_var_names += baseline_int_variables
+        int_var_names += baseline_int_variables
 
     if flags.Input.isMC:
-        all_baseline_variable_names.append("eventTriggerSF")
+        float_var_names.append("eventTriggerSF")
 
     if flags.Analysis.do_mmc:
-        # do not append mmc variables to float_variable_names
-        # or int_variable_names as they are stored by the
-        # mmc algortithm not BaselineVarsbbttAlg
-        for var in ["status", "pt", "eta", "phi", "m"]:
-            all_baseline_variable_names.append(f"mmc_{var}")
-        for var in ["pt", "eta", "phi", "m"]:
-            all_baseline_variable_names.append(f"mmc_nu1_{var}")
-            all_baseline_variable_names.append(f"mmc_nu2_{var}")
+        # do not append mmc variables to float_baseline_var_names
+        # or int_baseline_var_names as they are stored by the
+        # mmc algorithm not BaselineVarsbbttAlg
+        int_var_names += ["mmc_status"]
+        for part in ["", "nu1_", "nu2_"]:
+            for var in ["pt", "eta", "phi", "m"]:
+                float_var_names += [f"mmc_{part}{var}"]
 
     if flags.Analysis.store_high_level_variables:
         high_level_float_variables, high_level_int_variables \
             = get_BaselineVarsbbttAlg_highlevelvariables(flags)
-        float_variable_names += high_level_float_variables
-        int_variable_names += high_level_int_variables
+        float_baseline_var_names += high_level_float_variables
+        float_var_names += high_level_float_variables
+        int_baseline_var_names += high_level_int_variables
+        int_var_names += high_level_int_variables
 
-    all_baseline_variable_names += [*float_variable_names, *int_variable_names]
-
-    for var in all_baseline_variable_names:
+    for var in float_var_names:
         branches += [f"EventInfo.{var}_%SYS% -> bbtt_{var}"
-                     + flags.Analysis.systematics_suffix_separator + "%SYS%"]
+                     + flags.Analysis.systematics_suffix_separator + "%SYS%"
+                     + " type=float"]
+    for var in int_var_names:
+        branches += [f"EventInfo.{var}_%SYS% -> bbtt_{var}"
+                     + flags.Analysis.systematics_suffix_separator + "%SYS%"
+                     + " type=int"]
 
     # These are the variables always saved with the objects selected by the analysis
     # This is tunable with the flags amount and variables
     # in the object configs.
-    object_level_branches, object_level_float_variables, object_level_int_variables \
-        = get_selected_objects_branches_variables(flags, "bbtt")
-    float_variable_names += object_level_float_variables
-    int_variable_names += object_level_int_variables
-
     if flags.Analysis.store_high_level_variables:
-        branches += object_level_branches
+        obj_branches, obj_float_variables, obj_int_variables = \
+            get_selected_objects_branches_variables(flags, "bbtt")
+        float_baseline_var_names += obj_float_variables
+        int_baseline_var_names += obj_int_variables
 
-    if flags.Analysis.store_high_level_variables:
+        branches += obj_branches
         branches += ["EventInfo.bbtt_pass_presel_%SYS% -> bbtt_pass_presel"
-                     + flags.Analysis.systematics_suffix_separator + "%SYS%"]
+                     + flags.Analysis.systematics_suffix_separator + "%SYS%"
+                     + " type=char"]
 
     # special jet branches only for bbtautau
     smalljetkey = flags.Analysis.container_names.output.reco4PFlowJet
@@ -364,19 +370,18 @@ def bbtt_branches(flags):
         "recojet_antikt4"
         + flags.Analysis.Small_R_jet.jet_type.replace("reco4", "").replace("Jet", "")  # noqa: E501
     )
+    syst_suff = flags.Analysis.systematics_suffix_separator + "%SYS%"
     branches += [
-        f'{smalljetkey}.trigMatch_L1_onlinept'
-        f'->{small_R_prefix}_trigMatch_L1_onlinept'
-        + flags.Analysis.systematics_suffix_separator + "%SYS%",
-        f'{smalljetkey}.trigMatch_L1_onlineeta'
-        f'->{small_R_prefix}_trigMatch_L1_onlineeta'
-        + flags.Analysis.systematics_suffix_separator + "%SYS%"
+        (f"{smalljetkey}.trigMatch_L1_online{var}"
+         + f"->{small_R_prefix}_trigMatch_L1_online{var}" + syst_suff
+         + " type=float")
+        for var in ["pt", "eta"]
     ]
     if flags.GeoModel.Run is LHCPeriod.Run3:
         branches += [
-            f'{smalljetkey}.trigMatch_HLT_onlinept'
-            f'->{small_R_prefix}_trigMatch_HLT_onlinept'
-            + flags.Analysis.systematics_suffix_separator + "%SYS%"
+            f"{smalljetkey}.trigMatch_HLT_onlinept"
+            + f"->{small_R_prefix}_trigMatch_HLT_onlinept" + syst_suff
+            + " type=float"
         ]
 
     categories = ["SR", "SLT", "STT", "DTT",
@@ -425,4 +430,4 @@ def bbtt_branches(flags):
             + flags.Analysis.systematics_suffix_separator + "%SYS%"
         ]
 
-    return branches, float_variable_names, int_variable_names
+    return branches, float_baseline_var_names, int_baseline_var_names

@@ -72,16 +72,22 @@ class BranchManager(object):
 
         return _input_container
 
-    def output_string(self, var):
+    def output_string(self, var, type):
         incont = self.full_input_container(var)
         outvar = self.full_output_var(var).replace("_NOSYS", "")
         outstr = f"{incont}.{var} -> {outvar}"
+        if type:
+            outstr += f" type={type}"
         return outstr
 
     def add_four_mom_branches(self, do_mass):
-        self.variables += ["pt", "eta", "phi"]
+        self.variables += [
+            ("pt", None),
+            ("eta", None),
+            ("phi", None)
+        ]
         if do_mass:
-            self.variables += ["m"]
+            self.variables += [("m", None)]
 
     def get_output_list(self):
         for req in self.required_flags:
@@ -92,5 +98,5 @@ class BranchManager(object):
                     f" to {self.full_output_prefix()}"
                 )
         return [
-            self.output_string(var) for var in self.variables
+            self.output_string(var, type) for var, type in self.variables
         ]

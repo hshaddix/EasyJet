@@ -116,7 +116,7 @@ private:
     Gaudi::Property<std::string> m_WTag_WP
       { this, "wtag_wp", "", "WTagger wp from the bbVV config"};
     CP::SysReadDecorHandle<float> m_WTag_score{"", this};
-    CP::SysReadDecorHandle<bool> m_Pass_WTag{"", this};
+    CP::SysReadDecorHandle<char> m_Pass_WTag{"", this};
 
     std::vector<CP::SysReadDecorHandle<float>> m_tau_wta;
     std::vector<CP::SysReadDecorHandle<float>> m_ecf;

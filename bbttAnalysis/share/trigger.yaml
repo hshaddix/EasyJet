@@ -26,7 +26,7 @@ scale_factor:
 
   Electron:
     ID_Run2: "TightLH"
-    Iso_Run2: "FCTight"
+    Iso_Run2: "Tight_VarRad"
     ID_Run3: "TightLH"
     Iso_Run3: "Tight_VarRad"
 

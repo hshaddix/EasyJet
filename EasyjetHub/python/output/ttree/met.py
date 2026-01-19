@@ -14,7 +14,9 @@ def get_met_branches(flags, input_container, output_prefix):
     )
 
     met_branches.variables += [
-        "met", "phi", "sumet"
+        ("met", None),
+        ("phi", None),
+        ("sumet", None)
     ]
 
     return met_branches.get_output_list()

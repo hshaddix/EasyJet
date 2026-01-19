@@ -7,10 +7,13 @@ def get_truth_event_info_branches(flags):
         input_container="TruthEvents",
         output_prefix="truth",
         variables=[
-            "PDFID1", "PDFID2",
-            "PDGID1", "PDGID2",
-            "Q",
-            "X1", "X2"
+            ("PDFID1", None),
+            ("PDFID2", None),
+            ("PDGID1", None),
+            ("PDGID2", None),
+            ("Q", None),
+            ("X1", None),
+            ("X2", None)
         ]
     )
 
