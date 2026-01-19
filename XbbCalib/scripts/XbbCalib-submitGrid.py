@@ -51,6 +51,7 @@ MC_PROCESSES_BY_ANALYSIS = {
     ],
     "tt": [
         "Diboson",
+        "Zll",
         "Wjet",
         "singletop",
         "ttbar_nonallhad",

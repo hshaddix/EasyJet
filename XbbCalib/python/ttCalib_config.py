@@ -110,6 +110,7 @@ def get_BaselineVarsttCalibAlg_variables(flags):
 
     for var in flags.Analysis.Large_R_jet.GN2X_hbb_wps:
         int_variable_names += ["probe_jet_Pass_GN2X_" + var]
+    int_variable_names.append("probe_jet_truthid")
 
     return float_variable_names, int_variable_names
 

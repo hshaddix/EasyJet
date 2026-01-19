@@ -95,6 +95,10 @@ private:
     IntHandle_t m_ele_firstEgMotherPdgId{"firstEgMotherPdgId", this};
     CharHandle_t m_eleECIDS { this, "ElectronsECIDS", "DFCommonElectronsECIDS", "Charge ID Selector" };
 
+    // Large Jet Truth information
+    IntHandle_t m_probeJetTruthLabel{this,"probeJetTruthLabel","R10TruthLabel_R22v1","Large-R jet truth label"};
+
+
     // muon truth decorations
     IntHandle_t m_mu_truthOrigin{"truthOrigin", this};
     IntHandle_t m_mu_truthType{"truthType", this};

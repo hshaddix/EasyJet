@@ -35,6 +35,9 @@ namespace XBBCALIB
             ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
             ATH_CHECK (m_mu_SF.initialize(m_systematicsList, m_muonHandle));
 
+	    // initialize large jet truth decorator
+	    ATH_CHECK(m_probeJetTruthLabel.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+
         }
 
 
@@ -162,6 +165,10 @@ namespace XBBCALIB
 
             if (tagjet && hasProbeJetCandidate) {
                 probejet = lrjets->at(0);
+                if(m_isMC){
+       		    int truthLabel = m_probeJetTruthLabel.get(*probejet, systematic);
+                    m_intBranches.at("probe_jet_truthid").set(*event, truthLabel, systematic);
+                }
                 float phbb = m_GN2Xv01_phbb.get(*probejet, systematic);
                 float phcc = m_GN2Xv01_phcc.get(*probejet, systematic);
                 float pqcd = m_GN2Xv01_pqcd.get(*probejet, systematic);
