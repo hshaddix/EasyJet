@@ -31,39 +31,51 @@ def get_track_branches(flags, tree_flags, input_container, output_prefix):
     # Core kinematic variables (pt, eta, phi have noSys=True in calibration)
     # For some reason, pt,eta just doesn't work - works in the manual filling though...
     # TODO: Figure out why...
-    track_branches.variables += ["pt", "eta", "phi"]
+    track_branches.variables += [
+        ("pt", None),
+        ("eta", None),
+        ("phi", None)
+    ]
 
     # other variables (noSys=True in calibration)
-    track_branches.variables += ["charge", "qOverP"]
+    track_branches.variables += [
+        ("charge", None),
+        ("qOverP", None)
+    ]
 
     # Impact parameters I think - these HAVE systematics (d0/z0 smearing in MC)
-    track_branches.variables += ["d0", "z0"]
+    track_branches.variables += [
+        ("d0", None),
+        ("z0", None)
+    ]
 
     # Vertex position (noSys=True in calibration)
-    track_branches.variables += ["vz"]
+    track_branches.variables += [("vz", None)]
 
     # Track summary information (detector hits, etc.)
     # Only if configured to output this info
     # Note: These are only available if outputTrackSummaryInfo=True in calibration
     if flags.Analysis.Track.outputTrackSummaryInfo:
         track_branches.variables += [
-            "numberOfInnermostPixelLayerHits_NOSYS",
-            "numberOfPixelDeadSensors_NOSYS",
-            "numberOfPixelHits_NOSYS",
-            "numberOfPixelHoles_NOSYS",
-            "numberOfPixelSharedHits_NOSYS",
-            "numberOfSCTDeadSensors_NOSYS",
-            "numberOfSCTHits_NOSYS",
-            "numberOfSCTHoles_NOSYS",
-            "numberOfSCTSharedHits_NOSYS",
-            "numberOfTRTHits_NOSYS",
-            "numberOfTRTOutliers_NOSYS",
+            ("numberOfInnermostPixelLayerHits", None),
+            ("numberOfPixelDeadSensors", None),
+            ("numberOfPixelHits", None),
+            ("numberOfPixelHoles", None),
+            ("numberOfPixelSharedHits", None),
+            ("numberOfSCTDeadSensors", None),
+            ("numberOfSCTHits", None),
+            ("numberOfSCTHoles", None),
+            ("numberOfSCTSharedHits", None),
+            ("numberOfTRTHits", None),
+            ("numberOfTRTOutliers", None)
         ]
 
     # Selection decorations for working points
     if flags.Analysis.Track.working_points:
         for wp in flags.Analysis.Track.working_points:
-            track_branches.variables += [f"baselineSelection_{wp}_%SYS%"]
+            track_branches.variables += [
+                (f"baselineSelection_{wp}_%SYS%", None)
+            ]
 
     # Kinematic selection decorations (created by InDetTracks calibration)
     # Note: InDetTracks creates selectPt and selectEta separately, not selectPtEta
