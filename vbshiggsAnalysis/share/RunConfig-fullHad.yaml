@@ -6,3 +6,34 @@ channels: ["FullHad"]
 Small_R_jet:
   amount: 4
 
+expert_mode_warning_level: default
+
+do_resolved: true
+
+# Use VBFRNN tagger
+UseVBFRNN : false
+
+# Toggles for object types
+do_met : true
+
+Truth:
+#  DSID_nWLep_samples:
+
+  DSID_vgammaOR:
+    - 410470 # PhPy8EG_A14_ttbar_hdamp258p75_nonallhad
+
+
+OverlapRemoval:
+  # Enable overlap removal between large-R jets and objects for which
+  # large-R jet OR removal is implemented in Athena
+  do_large_R_jets: true
+  do_small_R_jet_large_R_jet: false
+
+
+Trigger:
+  include: [vbshiggsAnalysis/trigger-lep.yaml]
+
+CutList :
+      - PASS_TRIGGER
+
+
