@@ -10,6 +10,7 @@
 #include "../PhotonJetVarsAlg.h"
 #include "../TopRecoAlg.h"
 #include "../HyyHHbbyyMVAAlg.h"
+#include "../bbyyFilterggHBjetsAlg.h"
 
 DECLARE_COMPONENT(HHBBYY::MbbKinFitDecoratorAlg)
 DECLARE_COMPONENT(HHBBYY::BaselineVarsbbyyAlg)
@@ -17,6 +18,7 @@ DECLARE_COMPONENT(HHBBYY::LeptonVarsbbyyAlg)
 DECLARE_COMPONENT(HHBBYY::PhotonVarsbbyyAlg)
 DECLARE_COMPONENT(HHBBYY::bbyySelectorAlg)
 DECLARE_COMPONENT(HHBBYY::bbyyFilterDalitzAlg)
+DECLARE_COMPONENT(HHBBYY::bbyyFilterggHBjetsAlg)
 DECLARE_COMPONENT(SHBBYY::ResonantPNNbbyyAlg)
 DECLARE_COMPONENT(HHBBYY::BoostedVarsbbyyAlg)
 DECLARE_COMPONENT(HHBBYY::JetVarsAlg)

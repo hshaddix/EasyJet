@@ -30,6 +30,7 @@ do_tight_jet_cleaning: false
 do_bbtt_analysis: false
 do_bbbbtt_analysis: false
 do_bbyy_analysis: false
+do_ggHbjetFilter: false
 # LLP1 filtering
 do_vertex_filtering: false
 VSI_container_suffix: ""

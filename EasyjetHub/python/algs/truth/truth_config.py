@@ -127,3 +127,37 @@ def bbyy_filter_dalitz_cfg(flags):
     )
 
     return cfg
+
+
+def is_ggHInclusive(input):
+    if isinstance(input, int):
+        dsid = str(input)
+    else:
+        dsid = str(input.Input.MCChannelNumber)
+
+    def FullPath(rawpath):
+        fpath = pathlib.Path(rawpath)
+        for dirpath in [""] + os.environ["DATAPATH"].split(":"):
+            fullpath = dirpath / fpath
+            if fullpath.exists():
+                return fullpath
+
+    # file name hard-coded
+    with open(FullPath("EasyjetHub/ggHInclusive.txt"), 'r') as file_in:
+        dataset_list = file_in.readlines()
+        for dataset in dataset_list:
+            if dsid in dataset:
+                return True
+    return False
+
+
+def bbyy_filter_ggHBjets_cfg(flags):
+    cfg = ComponentAccumulator()
+
+    cfg.addEventAlgo(
+        CompFactory.HHBBYY.bbyyFilterggHBjetsAlg(
+            "bbyyFilterggHBjetsAlg",
+        ),
+    )
+
+    return cfg

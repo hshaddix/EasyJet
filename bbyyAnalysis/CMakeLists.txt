@@ -20,6 +20,7 @@ atlas_add_component(bbyyAnalysis
   src/PhotonJetVarsAlg.cxx
   src/TopRecoAlg.cxx
   src/HyyHHbbyyMVAAlg.cxx
+  src/bbyyFilterggHBjetsAlg.cxx
   src/components/bbyyAnalysis_entries.cxx
   src/ResonantPNNbbyyAlg.cxx
   src/BoostedVarsbbyyAlg.cxx

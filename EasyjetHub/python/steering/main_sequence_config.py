@@ -102,9 +102,13 @@ def preselection_cfg(flags, seqname):
 
     if flags.Analysis.do_bbyy_analysis and flags.Input.isMC:
         from EasyjetHub.algs.truth.truth_config import (
-            contain_dalitz, bbyy_filter_dalitz_cfg, sumofweightsalg_cfg)
+            contain_dalitz, bbyy_filter_dalitz_cfg,
+            is_ggHInclusive, bbyy_filter_ggHBjets_cfg, sumofweightsalg_cfg)
         if contain_dalitz(flags):
             cfg.merge(bbyy_filter_dalitz_cfg(flags), seqname)
+            cfg.merge(sumofweightsalg_cfg(flags), seqname)
+        if is_ggHInclusive(flags) and flags.Analysis.do_ggHbjetFilter:
+            cfg.merge(bbyy_filter_ggHBjets_cfg(flags), seqname)
             cfg.merge(sumofweightsalg_cfg(flags), seqname)
 
     if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HSTP_samples:
