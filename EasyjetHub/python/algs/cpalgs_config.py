@@ -1,7 +1,6 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AnalysisAlgorithmsConfig.ConfigAccumulator import ConfigAccumulator
 from AnalysisAlgorithmsConfig.ConfigSequence import ConfigSequence
-from AnalysisAlgorithmsConfig.ConfigAccumulator import ExpertModeWarning
 
 from AthenaConfiguration.ComponentFactory import CompFactory
 from EasyjetHub.algs.calibration.jets import (
@@ -28,15 +27,10 @@ from EasyjetHub.algs.postprocessing.overlap_removal import overlap_sequence
 from EasyjetHub.algs.postprocessing.thinning import thinning_sequence
 from EasyjetHub.algs.calibration.triggerSF import triggerSF_sequence
 from EasyjetHub.steering.utils.log_helper import log
-from EasyjetHub.steering.utils.systematics_helper import consolidate_systematics_regex
 
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
 from EasyjetHub.algs.event_info_global_alg_config import event_info_global_alg_cfg
 
-import pathlib
-import os
-import yaml
-import warnings
 
 # Map object types to sequence configurators
 analysis_seqs = {
@@ -54,58 +48,9 @@ def cpalgs_cfg(flags):
 
     log.debug(f"Containers available in dataset: {flags.Input.Collections}")
 
-    # Set the warning level for expert mode options
-    if level := flags.Analysis.expert_mode_warning_level:
-        warnings.simplefilter(level, ExpertModeWarning)
-
     cfg = ComponentAccumulator()
     if not flags.Analysis.suppress_metadata_json:
         cfg.merge(event_counter_cfg("n_input"))
-
-    # Create SystematicsSvc explicitly:
-    sysSvc = CompFactory.CP.SystematicsSvc("SystematicsSvc")
-    cfg.addService(sysSvc)
-
-    sys_weight_name = get_sys_weight_name(flags)
-
-    if flags.Analysis.do_CP_systematics or (bool)(sys_weight_name):
-        sysSvc.sigmaRecommended = 1
-
-        # if already selecting all systematics, no need to check for special one
-        if (set(flags.Analysis.systematics_regex) == {'.*'}):
-            systs = consolidate_systematics_regex(flags.Analysis.systematics_regex)
-
-        # if not already selection all systematics,
-        # add special one (if there is one) to the list
-        else:
-            if (bool)(sys_weight_name):
-                # Convert sys weight name to be consolidated
-                sys_weight_name = [f".*{sys_weight_name}"]
-                # Join the CP systematics with the sys weight name
-                if flags.Analysis.do_CP_systematics:
-                    sys_weight_name += list(flags.Analysis.systematics_regex)
-                systs = consolidate_systematics_regex(sys_weight_name)
-            else:
-                systs = consolidate_systematics_regex(flags.Analysis.systematics_regex)
-
-        log.info("Systematics regex:")
-        log.info(systs)
-        sysSvc.systematicsRegex = systs
-
-        syslistalg = CompFactory.CP.SysListDumperAlg(
-            "SysList",
-            histogramName="systematics",
-            systematicsService=sysSvc,
-        )
-        if hasattr(flags.Analysis, "ttree_output"):
-            syslistalg.RootStreamName = ('CBK' if flags.Analysis.splitCBK else
-                                         flags.Analysis.ttree_output.stream_name)
-
-        cfg.addEventAlgo(syslistalg)
-
-    # Create SelectionNameSvc explicitly
-    selectionSvc = CompFactory.CP.SelectionNameSvc("SelectionNameSvc")
-    cfg.addService(selectionSvc)
 
     # Extra decoration algorithms
 
@@ -217,40 +162,3 @@ def cpalgs_cfg(flags):
     cfg.merge(configAccumulator.CA)
 
     return cfg
-
-
-def get_sys_weight_name(input):
-    # Determine if input is flags or an integer DSID
-    if isinstance(input, int):
-        dsid = input
-    else:
-        dsid = int(input.Input.MCChannelNumber)
-
-    def FullPath(rawpath):
-        fpath = pathlib.Path(rawpath)
-        for dirpath in [""] + os.environ["DATAPATH"].split(":"):
-            fullpath = dirpath / fpath
-            if fullpath.exists():
-                return fullpath
-
-    # file name hard-coded
-    with open(FullPath("EasyjetHub/SpecialWeightIndices.yaml"), 'r') as file_in:
-        try:
-            content = yaml.safe_load(file_in)
-        except yaml.YAMLError as exc:
-            raise ValueError(f"Error in configuration file: {exc}")
-
-        for entry in content:
-            if entry['DSID'] == dsid:
-                sys_weight_name = entry.get("sysWeightName", "")
-
-                # Exception in case I forgot to map the DSID with
-                # the sys weight name for a MC sample.
-                if sys_weight_name is None:
-                    raise ValueError(
-                        f"DSID {dsid} must have sysWeightName"
-                    )
-
-                return sys_weight_name if sys_weight_name else ""
-
-    return ""  # in case no matching DSID is found

@@ -23,6 +23,28 @@ do_small_R_jets: true
 do_large_R_UFO_jets: true
 do_VR_jets: false
 
+# Adjust reduced truth content wrt PHYS
+Truth:
+  truthParticleContainersToFix:
+    - "TruthBoson"
+    - "TruthBosonsWithDecayParticles"
+    - "TruthElectrons"
+    - "TruthMuons"
+    - "TruthPhotons"
+    - "TruthNeutrinos"
+    - "TruthTaus"
+    - "TruthTop"
+    - "TruthBottom"
+    - "TruthCharm"
+    - "TruthHFWithDecayParticles"
+    - "TruthForwardProtons"
+    - "TruthBSM"
+    - "TruthBSMWithDecayParticles"
+    - "BornLeptons"
+  truthVertexContainersToFix:
+    - "TruthBosonsWithDecayVertices"
+    - "TruthBSMWithDecayVertices"
+
 Muon:
   ID: "Medium"
   Iso: "PflowLoose_VarRad"

@@ -47,6 +47,8 @@ Truth:
   include: [DSID_samples.yaml]
   nHiggses: 2
   recordGrandchildren: false
+  truthParticleContainersToFix: []
+  truthVertexContainersToFix: []
 
 # Toggles for reconstructed objects properties
 Small_R_jet:

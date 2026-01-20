@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 #
-#  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+#  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
 #
 
 # Basic postProcess jobOptions, to be adapted for each analysis
@@ -17,7 +17,7 @@ from AthenaConfiguration.ComponentFactory import CompFactory
 from AthenaConfiguration.AllConfigFlags import initConfigFlags
 from AthenaConfiguration.MainServicesConfig import MainServicesCfg
 
-from EasyjetHub.algs.cpalgs_config import get_sys_weight_name
+from EasyjetHub.algs.common_services import get_sys_weight_name
 from EasyjetPlus.PostProcessTools import mergeFiles
 
 

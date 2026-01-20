@@ -16,6 +16,7 @@ from EasyjetHub.algs.event_counter_config import (
     event_counter_cfg,
     makeEventCounterConfig,
 )
+from EasyjetHub.algs.common_services import common_services_sequence
 from EasyjetHub.algs.preselection.preselection_config import (
     event_selection_sequence,
     trigger_sequence,
@@ -83,6 +84,8 @@ def preselection_cfg(flags, seqname):
         algSeq=weightSeq,
         flags=flags,
     )
+
+    weightConfigSeq += common_services_sequence(flags, weightConfigAccumulator)
 
     if not flags.Analysis.disable_calib:
         if flags.Analysis.doPRW:

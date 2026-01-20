@@ -1,7 +1,7 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
 
-from EasyjetHub.algs.cpalgs_config import get_sys_weight_name
+from EasyjetHub.algs.common_services import get_sys_weight_name
 from EasyjetHub.algs.postprocessing.trigger_matching import TriggerMatchingToolCfg
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     PhotonSelectorAlgCfg, MuonSelectorAlgCfg, ElectronSelectorAlgCfg,

@@ -3,8 +3,6 @@ from AthenaConfiguration.ComponentFactory import CompFactory
 from EasyjetHub.steering.utils.log_helper import log
 from EasyjetHub.algs.truth.parent_decorator_config import parent_decorator_cfg
 from EasyjetHub.algs.truth.truth_particle_info_config import truth_particle_info_cfg
-from EasyjetHub.algs.truth.UIDDecoratorAlgConfig import UIDDecoratorAlgCfg
-from EasyjetHub.steering.sample_metadata import is_at_least
 
 import pathlib
 import os
@@ -14,11 +12,6 @@ def truth_info_cfg(
     flags,
 ):
     cfg = ComponentAccumulator()
-
-    has_uid = is_at_least(flags, "p7017")
-
-    if not has_uid:
-        cfg.merge(UIDDecoratorAlgCfg(flags))
 
     if not flags.Input.isPHYSLITE:
         # truth record seems to be broken in physlite
