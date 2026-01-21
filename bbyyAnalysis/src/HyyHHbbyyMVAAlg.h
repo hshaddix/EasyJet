@@ -33,23 +33,6 @@ namespace HHBBYY
     float              binary_score;
   };
 
-  enum HyyBDTAllVariables {
-    pT_yy, yAbs_yy, ph0_eta, ph1_eta,
-    Dy_y_y, pTt_yy, phiStar_yy,
-    N_j_central,  N_j, N_j_btag, m_jj, pT_yyjj,
-    N_j_central30,  N_j_30, N_j_btag30, m_jj_30, pT_yyjj_30,
-    pT_jj, pT_j1_30, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, m_yyj, m_yyjj,
-    Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj,
-    N_lep, N_e, N_mu, m_ee, m_mumu,
-    met_TST, sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET,
-    flag_eTmiss,
-    HT_30, Zepp,
-    mu,
-    score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT,
-    score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT,
-    fwdjet_eta, m_fwdJyy, deltaR_Wb_t2
-  };
-
   /// \brief An algorithm for counting containers
   class HyyHHbbyyMVAAlg final : public AthHistogramAlgorithm
   {
@@ -106,38 +89,23 @@ namespace HHBBYY
     std::vector<std::unique_ptr<MVAUtils::BDT>> m_bdts;
 
     // HyyMultiBDT helper methods
-    std::vector<std::vector<float>> HyyMultiBDT_get_boundaries_multiclass();
-    std::vector<float>              HyyMultiBDT_get_weight_multiclass();
-    std::vector<std::string>        HyyMultiBDT_get_multiclass_names();
-
     void HyyMultiBDT_init(const std::string &folder);
-
-    HyyMultiBDTResults HyyMultiBDT_perform(
-      const xAOD::EventInfo *event,
-      const auto            &sys,
-      const xAOD::MissingET *met,
-      const int              n_photons,
-      const TLorentzVector  &ph1,
-      const TLorentzVector  &ph2,
-      int                    nCentralJets,
-      int                    nJets,
-      int                    nBJets
-    );
+    void HyyMultiBDT_createVariableMap(const xAOD::EventInfo *event,
+                                       const auto &sys,
+                                       const xAOD::MissingET *met,
+                                       const int n_photons,
+                                       const TLorentzVector &ph1,
+                                       const TLorentzVector &ph2,
+                                       const int &nCentralJets,
+                                       const int &nJets,
+                                       const int &nBJets);
+    HyyMultiBDTResults HyyMultiBDT_perform();
 
     template<typename T>
     T var_or_nan(T value, T default_value);
 
-    std::vector<float> get_HyyBDTInput(
-      const std::vector<HyyBDTAllVariables> &var_ids,
-      const xAOD::EventInfo                 *event,
-      const auto                            &sys,
-      const xAOD::MissingET                 *met,
-      const int                              n_photons,
-      const TLorentzVector                  &ph1,
-      const TLorentzVector                  &ph2,
-      const int                             &nCentralJets,
-      const int                             &nJets,
-      const int                             &nBJets
+    std::vector<float> get_HyyHHbbyyMVAInput(
+      const std::vector<std::string> &variables
     );
 
     // Configuration: Hyy multiclass
@@ -146,6 +114,27 @@ namespace HHBBYY
 
     Gaudi::Property<std::string> m_HyyMultiBDT_folder
       { this, "HyyMultiBDT_folder", "", "Path to H-yy Couplings multiclass BDT" };
+
+    Gaudi::Property<std::string> m_MulticlassBDT_model_name
+      { this, "MulticlassBDT_model_name", "", "MulticlassBDT model name" };
+
+    Gaudi::Property<std::map<int, std::string>> m_MulticlassBDT_bins
+      { this, "MulticlassBDT_bins", {}, "MulticlassBDT output index and its corresponding bin name" };
+      
+    Gaudi::Property<std::vector<std::string>> m_MulticlassBDT_variables
+      { this, "MulticlassBDT_variables", {}, "Input variables for MulticlassBDT" };
+
+    Gaudi::Property<std::vector<std::string>> m_BinaryBDT_model_names
+      { this, "BinaryBDT_model_names", {}, "BinaryBDT models names" };
+
+    Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_BinaryBDT_variables
+      { this, "BinaryBDT_variables", {}, "BinaryBDT bin names and corresponding input variables" };
+
+    Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_BinaryBDT_boundaries
+      { this, "BinaryBDT_boundaries", {}, "BinaryBDT bin names and corresponding boundaries" };
+
+    Gaudi::Property<std::map<std::string, std::string>> m_BinaryBDT_weights
+      { this, "BinaryBDT_weights", {}, "BinaryBDT bin names and corresponding weights" };
 
     // Dynamic decoration variable lists: photon-jets
     Gaudi::Property<std::vector<std::string>> m_intVariables_BDTInput
@@ -161,11 +150,8 @@ namespace HHBBYY
     // Declare HyyMultiBDT
     std::unique_ptr<MVAUtils::BDT>              HyyMultiBDT_multiclass;
     std::vector<std::unique_ptr<MVAUtils::BDT>> HyyMultiBDT_binaries;
-
-    unsigned int                                HyyMultiBDT_num_classes = 0;
     std::vector<int>                            HyyMultiBDT_offset_cat;
-    std::vector<std::vector<float>>             HyyMultiBDT_boundaries;
-    std::vector<float>                          HyyMultiBDT_weight_multiclass;
+    std::unordered_map<std::string, float>      HyyMultiBDT_VariableMap;
 
     // Systematics control
     Gaudi::Property<bool> m_doSystematics

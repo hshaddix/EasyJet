@@ -236,6 +236,13 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                 + int_variables['leptons']
             )
 
+            (MulticlassBDT_model_name,
+             MulticlassBDT_variables,
+             MulticlassBDT_bins,
+             BinaryBDT_boundaries,
+             BinaryBDT_weights,
+             BinaryBDT_variables) = get_HyyHHbbyyMVAAlgConfig(flags)
+
             cfg.addEventAlgo(
                 CompFactory.HHBBYY.HyyHHbbyyMVAAlg(
                     "HyyHHbbyyMVAAlg",
@@ -245,7 +252,13 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                     floatVariableList=float_variables['HyyMVA'],
                     intVariableList=int_variables['HyyMVA'],
                     doHyy_multiclass=flags.Analysis.do_Hyy_multiclass,
-                    HyyMultiBDT_folder=flags.Analysis.HyyMultiBDT_folder
+                    HyyMultiBDT_folder=flags.Analysis.HyyMultiBDT_folder,
+                    MulticlassBDT_model_name=MulticlassBDT_model_name,
+                    MulticlassBDT_variables=MulticlassBDT_variables,
+                    MulticlassBDT_bins=MulticlassBDT_bins,
+                    BinaryBDT_boundaries=BinaryBDT_boundaries,
+                    BinaryBDT_weights=BinaryBDT_weights,
+                    BinaryBDT_variables=BinaryBDT_variables
                 )
             )
 
@@ -328,10 +341,38 @@ def get_BaselineVarsHyyHHbbyyMVAAlg(flags):
 
     float_variable_names += ["HyyMultiBDT_binary_score"]
     int_variable_names += ["HyyMultiBDT_multiclass_index", "HyyMultiBDT_binary_index"]
-
-    float_variable_names += list(flags.Analysis.Hyy_multiclass_bins)
+    if (flags.Analysis.do_HHbbyy_Hyy_Analysis):
+        float_variable_names += list(flags.Analysis.HyyMultiBDT_config.BinaryBDT.keys())
 
     return float_variable_names, int_variable_names
+
+
+def get_HyyHHbbyyMVAAlgConfig(flags):
+    def _aslist_str(_list):
+        return [str(n) for n in _list]
+
+    HyyMultiBDT_config = flags.Analysis.HyyMultiBDT_config
+
+    MulticlassBDT_model_name = HyyMultiBDT_config.MulticlassBDT.model_name
+    MulticlassBDT_variables = HyyMultiBDT_config.MulticlassBDT.variables
+    MulticlassBDT_bins = {
+        HyyMultiBDT_config.BinaryBDT[bin_name]['index']: bin_name
+        for bin_name in HyyMultiBDT_config.BinaryBDT.keys()
+    }
+    BinaryBDT_weights = {
+        bin_name: str(HyyMultiBDT_config.BinaryBDT[bin_name]['weight'])
+        for bin_name in MulticlassBDT_bins.values()
+    }
+    BinaryBDT_boundaries = {
+        bin_name: _aslist_str(HyyMultiBDT_config.BinaryBDT[bin_name]['boundaries'])
+        for bin_name in MulticlassBDT_bins.values()
+    }
+    BinaryBDT_variables = {
+        bin_name: _aslist_str(HyyMultiBDT_config.BinaryBDT[bin_name]['variables'])
+        for bin_name in MulticlassBDT_bins.values()
+    }
+    return (MulticlassBDT_model_name, MulticlassBDT_variables, MulticlassBDT_bins,
+            BinaryBDT_boundaries, BinaryBDT_weights, BinaryBDT_variables)
 
 
 def get_BaselineVarsbbyyAlg_variables(flags):

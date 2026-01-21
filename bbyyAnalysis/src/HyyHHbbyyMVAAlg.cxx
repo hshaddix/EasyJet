@@ -69,7 +69,6 @@ namespace HHBBYY
       ATH_CHECK(m_Ibranches.at(string_var)
                   .initialize(m_systematicsList, m_eventHandle));
     }
-
     // Init H-yy Couplings multiclass BDT
     if (m_doHyy_multiclass) {
       HyyMultiBDT_init(m_HyyMultiBDT_folder);
@@ -124,20 +123,19 @@ namespace HHBBYY
       int nJets        = m_nJets.get(*event, sys);
       int nBJets       = m_nBJets.get(*event, sys);
 
+    HyyMultiBDT_createVariableMap(event, sys, met, n_photons, ph1, ph2,
+                                  nCentralJets, nJets, nBJets);
+
       // H-yy Couplings multiclass BDT Implementation
       if (m_doHyy_multiclass) {
-        HHBBYY::HyyMultiBDTResults r =
-          HyyMultiBDT_perform(event, sys, met,
-                              n_photons, ph1, ph2,
-                              nCentralJets, nJets, nBJets);
+        HHBBYY::HyyMultiBDTResults r = HyyMultiBDT_perform();
 
         m_Ibranches.at("HyyMultiBDT_multiclass_index").set(*event, r.multiclass_index, sys);
         m_Ibranches.at("HyyMultiBDT_binary_index").set(*event, r.binary_index, sys);
         m_Fbranches.at("HyyMultiBDT_binary_score").set(*event, r.binary_score, sys);
 
-        const std::vector<std::string> names = HyyMultiBDT_get_multiclass_names();
-        for (std::size_t i = 0; i < names.size(); ++i) {
-            m_Fbranches.at(names[i]).set(*event, r.multi_response[i], sys);
+        for (std::size_t i = 0; i < m_MulticlassBDT_bins.size(); ++i) {
+            m_Fbranches.at(m_MulticlassBDT_bins[i]).set(*event, r.multi_response[i], sys);
         }
       }
       
@@ -146,102 +144,11 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  // NOLINT(modernize-use-std-numbers)
-  std::vector<std::vector<float>>
-  HyyHHbbyyMVAAlg::HyyMultiBDT_get_boundaries_multiclass()
-  {
-    // high threshold means very pure
-    // (0) <<-- less pure | -->> more pure (1)
-    return {
-      {0.5390599866365131},                               // GG2H_0J_PTH_0_10
-      {},                                                 // GG2H_0J_PTH_GT10
-      {0.4343733552631579},                               // GG2H_1J_PTH_0_60  // NOLINT(modernize-use-std-numbers)
-      {0.39341917660361847},                              // GG2H_1J_PTH_60_120
-      {0.4069370836759869},                               // GG2H_1J_PTH_120_200
-      {0.4342382085376101,  0.6557343291836714},          // GG2H_GE2J_MJJ_0_350_PTH_0_60  // NOLINT(modernize-use-std-numbers)
-      {0.47669769736842105},                              // GG2H_GE2J_MJJ_0_350_PTH_60_120
-      {0.43264573396381584},                              // GG2H_GE2J_MJJ_0_350_PTH_120_200
-      {0.3389567359095229,  0.5089861528541939},          // GG2H_GE2J_MJJ_350_700_PTH_0_200
-      {0.3338366090473377,  0.5253786871659128},          // GG2H_GE2J_MJJ_700_1000_PTH_0_200
-      {0.3508147210384671,  0.49530318037836085},         // GG2H_GE2J_MJJ_GT1000_PTH_0_200
-      {0.44375187088815793},                              // GG2H_PTH_200_300
-      {0.36541900773287594, 0.5900783270997434},          // GG2H_PTH_300_450
-      {0.3855770829037619,  0.5199264422215908},          // GG2H_PTH_450_650
-      {},                                                 // GG2H_PTH_GT650
-      {0.5634193801202272, 0.7814422454407337},           // QQ2HQQ_0J  // NOLINT(modernize-use-std-numbers)
-      {0.4326597320289005, 0.6491818407456339},           // QQ2HQQ_1J
-      {0.4669492103360201, 0.6934343304219999},           // QQ2HQQ_GE2J_MJJ_0_60  // NOLINT(modernize-use-std-numbers)
-      {0.2961276033308943, 0.5364035198556749},           // QQ2HQQ_GE2J_MJJ_60_120
-      {0.38908549970702133, 0.6637830841014256},          // QQ2HQQ_GE2J_MJJ_120_350
-      {0.34979975924209555, 0.636725186309061},           // QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200
-      {0.5324046078330593},                               // QQ2HQQ_GE2J_MJJ_700_1000_PTH_0_200
-      {0.476258195415296},                                // QQ2HQQ_GE2J_MJJ_GT1000_PTH_0_200
-      {0.37367643416555274, 0.6316457307514391},          // QQ2HQQ_GE2J_MJJ_350_700_PTH_GT200
-      {0.5409615234375},                                  // QQ2HQQ_GE2J_MJJ_700_1000_PTH_GT200
-      {0.4950179893092106},                               // QQ2HQQ_GE2J_MJJ_GT1000_PTH_GT200
-      {0.5228712273848684},                               // QQ2HLNU_PTV_0_75
-      {0.44227105263157895},                              // QQ2HLNU_PTV_75_150
-      {0.1504621710526317},                               // QQ2HLNU_PTV_150_250
-      {0.06807878289473687},                              // QQ2HLNU_PTV_GT250
-      {0.861470538651316},                                // QQ2HLL_PTV_0_75
-      {0.059182894736842115},                             // QQ2HLL_PTV_75_150
-      {0.24136918174342106},                              // QQ2HLL_PTV_150_250
-      {},                                                 // QQ2HLL_PTV_GT250
-      {0.3319628949617084,  0.6013439724570825},          // QQ2HNUNU_PTV_0_75
-      {0.54043133354187,    0.7930990196629575},          // QQ2HNUNU_PTV_75_150
-      {0.27316551303612563, 0.5415385652767984},          // QQ2HNUNU_PTV_150_250
-      {0.18128626644736845},                              // QQ2HNUNU_PTV_GT250
-      {0.38235748350973175, 0.6472071170665714},          // TTH_PTH_0_60
-      {0.42209490388569076},                              // TTH_PTH_60_120
-      {0.40546262078536194},                              // TTH_PTH_120_200
-      {0.28798660567434214},                              // TTH_PTH_200_300
-      {0.09902368421052643},                              // TTH_PTH_GT300
-      {0.5233851562500003},                               // THJB
-      {0.3789814453124999},                               // THW
-    };
-  }
-
-  std::vector<float>
-  HyyHHbbyyMVAAlg::HyyMultiBDT_get_weight_multiclass()
-  {
-    return {
-      5.09811663,  8.74027068, 11.07907091, 10.87102167,  1.09818254, 36.9685032,
-      14.5968635,  1.92228768,  2.47051653,  2.26252078,  0.65508076,  2.229232,
-      1.0823288,   1.75996132,  0.23804092,  9.67751662,  4.75482342,  2.30044847,
-      2.79506629,  9.91884314,  1.10576635,  0.63304991,  0.2797203,   1.16530436,
-      2.03488271,  0.25374325,  0.69646131,  0.48343818,  0.30569068,  0.5135227,
-      2.90510798,  0.18207231,  1.09179819,  0.46709051,  5.47657648,  2.85129545,
-      0.77661606,  0.40344227,  0.40326453,  0.18133248,  0.17405083,  0.11171737,
-      0.20540754,  0.24098085,  0.62998928
-    };
-  }
-
-  std::vector<std::string>
-  HyyHHbbyyMVAAlg::HyyMultiBDT_get_multiclass_names()
-  {
-    return {
-      /* 0  */ "GG2H_0J_PTH_0_10", "GG2H_0J_PTH_GT10",
-      /* 2  */ "GG2H_1J_PTH_0_60", "GG2H_1J_PTH_60_120", "GG2H_1J_PTH_120_200",
-      /* 5  */ "GG2H_GE2J_MJJ_0_350_PTH_0_60", "GG2H_GE2J_MJJ_0_350_PTH_60_120", "GG2H_GE2J_MJJ_0_350_PTH_120_200",
-      /* 8  */ "GG2H_GE2J_MJJ_350_700_PTH_0_200", "GG2H_GE2J_MJJ_700_1000_PTH_0_200", "GG2H_GE2J_MJJ_GT1000_PTH_0_200",
-      /* 11 */ "GG2H_PTH_200_300", "GG2H_PTH_300_450", "GG2H_PTH_450_650", "GG2H_PTH_GT650",
-      /* 15 */ "QQ2HQQ_0J", "QQ2HQQ_1J",
-      /* 17 */ "QQ2HQQ_GE2J_MJJ_0_60", "QQ2HQQ_GE2J_MJJ_60_120", "QQ2HQQ_GE2J_MJJ_120_350",
-      /* 20 */ "QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200", "QQ2HQQ_GE2J_MJJ_700_1000_PTH_0_200", "QQ2HQQ_GE2J_MJJ_GT1000_PTH_0_200",
-      /* 23 */ "QQ2HQQ_GE2J_MJJ_350_700_PTH_GT200", "QQ2HQQ_GE2J_MJJ_700_1000_PTH_GT200", "QQ2HQQ_GE2J_MJJ_GT1000_PTH_GT200",
-      /* 26 */ "QQ2HLNU_PTV_0_75", "QQ2HLNU_PTV_75_150", "QQ2HLNU_PTV_150_250", "QQ2HLNU_PTV_GT250",
-      /* 30 */ "QQ2HLL_PTV_0_75", "QQ2HLL_PTV_75_150", "QQ2HLL_PTV_150_250", "QQ2HLL_PTV_GT250",
-      /* 34 */ "QQ2HNUNU_PTV_0_75", "QQ2HNUNU_PTV_75_150", "QQ2HNUNU_PTV_150_250", "QQ2HNUNU_PTV_GT250",
-      /* 38 */ "TTH_PTH_0_60", "TTH_PTH_60_120", "TTH_PTH_120_200", "TTH_PTH_200_300", "TTH_PTH_GT300",
-      /* 43 */ "THJB", "THW"
-    };
-  }
-
   void HyyHHbbyyMVAAlg::HyyMultiBDT_init(const std::string &folder)
   {
     std::string resolvedFolder = PathResolverFindCalibDirectory(folder);
 
-    const std::string filename_multiclass = resolvedFolder + "/model1_HyymulticlassMVA.root";
+    const std::string filename_multiclass = resolvedFolder + "/" + m_MulticlassBDT_model_name;
     TFile *file_multiclass = TFile::Open(filename_multiclass.c_str());
     TTree *tree_multiclass = nullptr;
 
@@ -249,10 +156,8 @@ namespace HHBBYY
     HyyMultiBDT_multiclass = std::make_unique<MVAUtils::BDT>(tree_multiclass);
     file_multiclass->Close();
 
-    const std::vector<std::string> names = HyyMultiBDT_get_multiclass_names();
-
-    for (const std::string &suffix : names) {
-      const std::string filename_binary = resolvedFolder + "/model2_" + suffix + ".root";
+    for (const auto &[index, bin_name] : m_MulticlassBDT_bins) {
+      const std::string filename_binary = resolvedFolder + "/model2_" + bin_name + ".root";
       TFile *file_binary = TFile::Open(filename_binary.c_str());
       TTree *tree_binary = nullptr;
       file_binary->GetObject("lgbm", tree_binary);
@@ -263,15 +168,12 @@ namespace HHBBYY
     }
 
     int offset = 0;
-    HyyMultiBDT_boundaries   = HyyMultiBDT_get_boundaries_multiclass();
-    HyyMultiBDT_num_classes  = HyyMultiBDT_boundaries.size();
 
-    for (const auto &b : HyyMultiBDT_boundaries) {
+    for (const auto &[bin, boundary] : m_BinaryBDT_boundaries) {
       HyyMultiBDT_offset_cat.push_back(offset);
-      offset += b.size() + 1;
+      offset += boundary.size() + 1;
     }
 
-    HyyMultiBDT_weight_multiclass = HyyMultiBDT_get_weight_multiclass();
   }
 
   template<typename T>
@@ -283,31 +185,20 @@ namespace HHBBYY
   }
 
   HyyMultiBDTResults
-  HyyHHbbyyMVAAlg::HyyMultiBDT_perform(const xAOD::EventInfo *event,
-                                       const auto &sys,
-                                       const xAOD::MissingET *met,
-                                       const int n_photons,
-                                       const TLorentzVector &ph1,
-                                       const TLorentzVector &ph2,
-                                       int nCentralJets,
-                                       int nJets,
-                                       int nBJets)
+  HyyHHbbyyMVAAlg::HyyMultiBDT_perform()
   {
-    const std::vector<std::vector<HyyBDTAllVariables>> vars_ids = {
-      #include "HyyBDTInputVariables.def"
-    };
-
     std::vector<float> multiBDT_Input =
-      get_HyyBDTInput(vars_ids[0], event, sys, met,
-                      n_photons, ph1, ph2,
-                      nCentralJets, nJets, nBJets);
+      get_HyyHHbbyyMVAInput(m_MulticlassBDT_variables);
 
     const std::vector<float> raw_multi_response =
-      HyyMultiBDT_multiclass->GetMultiResponse(multiBDT_Input, HyyMultiBDT_num_classes);
+      HyyMultiBDT_multiclass->GetMultiResponse(
+        multiBDT_Input, m_MulticlassBDT_bins.size()
+    );
 
     std::vector<float> multi_response(raw_multi_response.size());
     for (std::size_t i = 0; i != multi_response.size(); ++i) {
-      multi_response[i] = raw_multi_response[i] * HyyMultiBDT_weight_multiclass[i];
+      multi_response[i] = raw_multi_response[i] 
+      * std::stof(m_BinaryBDT_weights[m_MulticlassBDT_bins[i]]);
     }
 
     const int multiclass_index =
@@ -317,26 +208,30 @@ namespace HHBBYY
 
     int   binary_bin   = 0;
     float binary_score = 0;
-
-    if (HyyMultiBDT_boundaries[multiclass_index].size() != 0) {
-
+    const std::string multiclassBDT_bin = m_MulticlassBDT_bins[multiclass_index];
+    if (m_BinaryBDT_boundaries[multiclassBDT_bin].size() != 0) {
       std::vector<float> BinaryBDT_Input =
-        get_HyyBDTInput(vars_ids[multiclass_index + 1], event, sys, met,
-                        n_photons, ph1, ph2,
-                        nCentralJets, nJets, nBJets);
+        get_HyyHHbbyyMVAInput(
+            m_BinaryBDT_variables[multiclassBDT_bin]
+        );
 
       binary_score =
         HyyMultiBDT_binaries[multiclass_index]->GetClassification(BinaryBDT_Input);
 
-      const auto boundaries = HyyMultiBDT_boundaries[multiclass_index];
+      const auto boundaries = m_BinaryBDT_boundaries[multiclassBDT_bin];
 
       // remember that pure bins (higher value) have lower index.
       // Extremes (0, 1) and not inside boundaries
-      binary_bin =
-        std::distance(std::upper_bound(std::begin(boundaries),
-                                       std::end(boundaries),
-                                       binary_score),
-                      std::end(boundaries));
+      auto upper_it = std::upper_bound(
+        boundaries.begin(), 
+        boundaries.end(),
+        binary_score,
+        [](float score, const std::string& boundary_str) {
+          float boundary_value = std::stof(boundary_str);
+          return score < boundary_value;
+        }
+      );
+      binary_bin = std::distance(upper_it, boundaries.end());
     }
 
     return HHBBYY::HyyMultiBDTResults(
@@ -347,17 +242,16 @@ namespace HHBBYY
     );
   }
 
-  std::vector<float>
-  HyyHHbbyyMVAAlg::get_HyyBDTInput(const std::vector<HyyBDTAllVariables> &var_ids,
-                                   const xAOD::EventInfo *event,
-                                   const auto &sys,
-                                   const xAOD::MissingET *met,
-                                   const int n_photons,
-                                   const TLorentzVector &ph1,
-                                   const TLorentzVector &ph2,
-                                   const int &nCentralJets,
-                                   const int &nJets,
-                                   const int &nBJets)
+  void
+  HyyHHbbyyMVAAlg::HyyMultiBDT_createVariableMap(const xAOD::EventInfo *event,
+                                                const auto &sys,
+                                                const xAOD::MissingET *met,
+                                                const int n_photons,
+                                                const TLorentzVector &ph1,
+                                                const TLorentzVector &ph2,
+                                                const int &nCentralJets,
+                                                const int &nJets,
+                                                const int &nBJets)
   {
     TLorentzVector H_yy(0., 0., 0., 0.);
 
@@ -392,303 +286,82 @@ namespace HHBBYY
         std::sqrt(1.0 - std::pow(std::tanh((ph1.Eta() - ph2.Eta()) / 2.0), 2.0));
     }
 
+    HyyMultiBDT_VariableMap = {
+      {"pT_yy", pT_yy},
+      {"yAbs_yy", yAbs_yy},
+      {"ph0_eta", ph0_eta},
+      {"ph1_eta", ph1_eta},
+      {"Dy_y_y", Dy_y_y},
+      {"pTt_yy", pTt_yy},
+      {"phiStar_yy", phiStar_yy},
+      {"N_j_central", nCentralJets},
+      {"N_j", nJets},
+      {"N_j_btag", std::min(nBJets, 3)},
+      {"m_jj", var_or_nan<float>(m_Fbranches_BDTInput.at("m_jj").get(*event, sys), -99)},
+      {"pT_yyjj", var_or_nan<float>(m_Fbranches_BDTInput.at("pT_yyjj").get(*event, sys), -99)},
+      {"N_j_central30", static_cast<float>(m_Ibranches_BDTInput.at("nCentralJets_30").get(*event, sys))},
+      {"N_j_30", static_cast<float>(m_Ibranches_BDTInput.at("nJets_30").get(*event, sys))},
+      {"N_j_btag30", static_cast<float>(std::min(m_Ibranches_BDTInput.at("nBJets_30").get(*event, sys), 3))},
+      {"m_jj_30", var_or_nan<float>(m_Fbranches_BDTInput.at("m_jj_30").get(*event, sys), -99)},
+      {"pT_yyjj_30", var_or_nan<float>(m_Fbranches_BDTInput.at("pT_yyjj_30").get(*event, sys), -99)},
+      {"pT_jj", var_or_nan<float>(m_Fbranches_BDTInput.at("pT_jj").get(*event, sys), -99)},
+      {"pT_j1_30", var_or_nan<float>(m_Fbranches_BDTInput.at("pT_j1_30").get(*event, sys), -99)},
+      {"Dy_j_j", var_or_nan<float>(m_Fbranches_BDTInput.at("Dy_j_j").get(*event, sys), -99)},
+      {"Dphi_j_j", var_or_nan<float>(m_Fbranches_BDTInput.at("Dphi_j_j").get(*event, sys), -99)},
+      {"Deta_j_j", var_or_nan<float>(m_Fbranches_BDTInput.at("Deta_j_j").get(*event, sys), -99)},
+      {"pT_yyj", var_or_nan<float>(m_Fbranches_BDTInput.at("pT_yyj").get(*event, sys), -99)},
+      {"m_yyj", var_or_nan<float>(m_Fbranches_BDTInput.at("m_yyj").get(*event, sys), -99)},
+      {"m_yyjj", var_or_nan<float>(m_Fbranches_BDTInput.at("m_yyjj").get(*event, sys), -99)},
+      {"Dphi_yy_jj", var_or_nan<float>(m_Fbranches_BDTInput.at("Dphi_yy_jj").get(*event, sys), -99)},
+      {"DRmin_y_j", var_or_nan<float>(m_Fbranches_BDTInput.at("DRmin_y_j").get(*event, sys), -99)},
+      {"Dy_yy_jj", var_or_nan<float>(m_Fbranches_BDTInput.at("Dy_yy_jj").get(*event, sys), -99)},
+      {"m_alljet", var_or_nan<float>(m_Fbranches_BDTInput.at("m_alljets").get(*event, sys), -99)},
+      {"cosTS_yyjj", var_or_nan<float>(m_Fbranches_BDTInput.at("cosTS_yyjj").get(*event, sys), -99)},
+      {"N_lep", static_cast<float>(m_Ibranches_BDTInput.at("nLeptons").get(*event, sys))},
+      {"N_e", static_cast<float>(m_Ibranches_BDTInput.at("nElectrons").get(*event, sys))},
+      {"N_mu", static_cast<float>(m_Ibranches_BDTInput.at("nMuons").get(*event, sys))},
+      {"m_ee", var_or_nan<float>(m_Fbranches_BDTInput.at("m_ee_os").get(*event, sys), -99)},
+      {"m_mumu", var_or_nan<float>(m_Fbranches_BDTInput.at("m_mumu_os").get(*event, sys), -99)},
+      {"met_TST", var_or_nan<float>(met->met(), -99)},
+      {"sumet_TST", var_or_nan<float>(met->sumet(), -99)},
+      {"MET_sig", var_or_nan<float>(m_met_sig.get(*met, sys), -99)},
+      {"phi_TST", var_or_nan<float>(met->phi(), -99)},
+      {"pT_ll", var_or_nan<float>(m_Fbranches_BDTInput.at("pT_ll_os_max").get(*event, sys), -99)},
+      {"pTlepMET", var_or_nan<float>(m_Fbranches_BDTInput.at("pTlepMET").get(*event, sys), -99)},
+      {"mTlepMET", m_Fbranches_BDTInput.at("mTlepMET").get(*event, sys)},
+      {"flag_eTmiss", m_Fbranches_BDTInput.at("metTST_HVTST_flag").get(*event, sys)},
+      {"HT_30", var_or_nan<float>(m_Fbranches_BDTInput.at("HT_30").get(*event, sys), 0.)},
+      {"Zepp", var_or_nan<float>(m_Fbranches_BDTInput.at("Zepp").get(*event, sys), -99)},
+      {"mu", event->actualInteractionsPerCrossing()},
+      {"score_recotop", var_or_nan<float>(m_Fbranches_BDTInput.at("score_recotop1").get(*event, sys), -1.)},
+      {"recotop_m", var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_m").get(*event, sys), 0.)},
+      {"recotop_phi", var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_phi").get(*event, sys), 0.)},
+      {"recotop_eta", var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_eta").get(*event, sys), 0.)},
+      {"recotop_pT", var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_pT").get(*event, sys), 0.)},
+      {"score_hybrtop", var_or_nan<float>(m_Fbranches_BDTInput.at("score_recotop2").get(*event, sys), -1.)},
+      {"hybrtop_m", var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_m").get(*event, sys), 0.)},
+      {"hybrtop_phi", var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_phi").get(*event, sys), 0.)},
+      {"hybrtop_eta", var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_eta").get(*event, sys), 0.)},
+      {"hybrtop_pT", var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_pT").get(*event, sys), 0.)},
+      {"fwdjet_eta", std::fabs(var_or_nan<float>(m_Fbranches_BDTInput.at("fwdJet_eta").get(*event, sys), -99.))},
+      {"m_fwdJyy", var_or_nan<float>(m_Fbranches_BDTInput.at("m_fwdJet_yy").get(*event, sys), -99)},
+      {"deltaR_Wb_t2", m_Fbranches_BDTInput.at("dR_Wb_t2").get(*event, sys)}
+    };
+  }
+
+  std::vector<float>
+  HyyHHbbyyMVAAlg::get_HyyHHbbyyMVAInput(const std::vector<std::string> &variables)
+  {
     std::vector<float> result;
-    result.reserve(var_ids.size());
-
-    for (const auto var_id : var_ids) {
-      switch (var_id) {
-
-        case HyyBDTAllVariables::pT_yy:
-          result.push_back(pT_yy);
-          break;
-
-        case HyyBDTAllVariables::yAbs_yy:
-          result.push_back(yAbs_yy);
-          break;
-
-        case HyyBDTAllVariables::ph0_eta:
-          result.push_back(ph0_eta);
-          break;
-
-        case HyyBDTAllVariables::ph1_eta:
-          result.push_back(ph1_eta);
-          break;
-
-        case HyyBDTAllVariables::Dy_y_y:
-          result.push_back(Dy_y_y);
-          break;
-
-        case HyyBDTAllVariables::pTt_yy:
-          result.push_back(pTt_yy);
-          break;
-
-        case HyyBDTAllVariables::phiStar_yy:
-          result.push_back(phiStar_yy);
-          break;
-
-        case HyyBDTAllVariables::N_j_central:
-          result.push_back(nCentralJets);
-          break;
-
-        case HyyBDTAllVariables::N_j:
-          result.push_back(nJets);
-          break;
-
-        case HyyBDTAllVariables::N_j_btag:
-          result.push_back(std::min(nBJets, 3));
-          break;
-
-        case HyyBDTAllVariables::m_jj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_jj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::pT_yyjj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pT_yyjj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::N_j_central30:
-          result.push_back(
-            m_Ibranches_BDTInput.at("nCentralJets_30").get(*event, sys));
-          break;
-
-        case HyyBDTAllVariables::N_j_30:
-          result.push_back(
-            m_Ibranches_BDTInput.at("nJets_30").get(*event, sys));
-          break;
-
-        case HyyBDTAllVariables::N_j_btag30:
-          result.push_back(
-            std::min(m_Ibranches_BDTInput.at("nBJets_30").get(*event, sys), 3));
-          break;
-
-        case HyyBDTAllVariables::m_jj_30:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_jj_30").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::pT_yyjj_30:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pT_yyjj_30").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::pT_jj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pT_jj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::pT_j1_30:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pT_j1_30").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::Dy_j_j:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("Dy_j_j").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::Dphi_j_j:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("Dphi_j_j").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::Deta_j_j:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("Deta_j_j").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::pT_yyj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pT_yyj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::m_yyj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_yyj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::m_yyjj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_yyjj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::Dphi_yy_jj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("Dphi_yy_jj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::DRmin_y_j:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("DRmin_y_j").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::Dy_yy_jj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("Dy_yy_jj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::m_alljet:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_alljets").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::cosTS_yyjj:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("cosTS_yyjj").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::N_lep:
-          result.push_back(
-            m_Ibranches_BDTInput.at("nLeptons").get(*event, sys));
-          break;
-
-        case HyyBDTAllVariables::N_e:
-          result.push_back(
-            m_Ibranches_BDTInput.at("nElectrons").get(*event, sys));
-          break;
-
-        case HyyBDTAllVariables::N_mu:
-          result.push_back(
-            m_Ibranches_BDTInput.at("nMuons").get(*event, sys));
-          break;
-
-        case HyyBDTAllVariables::m_ee:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_ee_os").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::m_mumu:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_mumu_os").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::met_TST:
-          result.push_back(
-            var_or_nan<float>(met->met(), -99));
-          break;
-
-        case HyyBDTAllVariables::sumet_TST:
-          result.push_back(
-            var_or_nan<float>(met->sumet(), -99));
-          break;
-
-        case HyyBDTAllVariables::MET_sig:
-          result.push_back(
-            var_or_nan<float>(m_met_sig.get(*met, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::phi_TST:
-          result.push_back(
-            var_or_nan<float>(met->phi(), -99));
-          break;
-
-        case HyyBDTAllVariables::pT_ll:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pT_ll_os_max").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::pTlepMET:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("pTlepMET").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::mTlepMET:
-          result.push_back(
-            m_Fbranches_BDTInput.at("mTlepMET").get(*event, sys));  // $ 0 to follow same bug in training
-          break;
-
-        case HyyBDTAllVariables::flag_eTmiss:
-          result.push_back(
-            m_Fbranches_BDTInput.at("metTST_HVTST_flag").get(*event, sys));
-          break;
-
-        case HyyBDTAllVariables::HT_30:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("HT_30").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::Zepp:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("Zepp").get(*event, sys), -99));
-          break;
-
-        case HyyBDTAllVariables::mu:
-          // This affects only data, since mu and actualMu are the same on MC
-          result.push_back(event->actualInteractionsPerCrossing());
-          break;
-
-        case HyyBDTAllVariables::score_recotop:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("score_recotop1").get(*event, sys), -1.));
-          break;
-
-        case HyyBDTAllVariables::recotop_m:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_m").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::recotop_phi:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_phi").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::recotop_eta:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_eta").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::recotop_pT:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("recotop1_pT").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::score_hybrtop:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("score_recotop2").get(*event, sys), -1.));
-          break;
-
-        case HyyBDTAllVariables::hybrtop_m:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_m").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::hybrtop_phi:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_phi").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::hybrtop_eta:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_eta").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::hybrtop_pT:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("hybrtop_pT").get(*event, sys), 0.));
-          break;
-
-        case HyyBDTAllVariables::fwdjet_eta:
-          result.push_back(
-            std::fabs(var_or_nan<float>(m_Fbranches_BDTInput.at("fwdJet_eta")
-                                          .get(*event, sys),
-                                        -99.)));
-          break;
-
-        case HyyBDTAllVariables::m_fwdJyy:
-          result.push_back(
-            var_or_nan<float>(m_Fbranches_BDTInput.at("m_fwdJet_yy")
-                                .get(*event, sys),
-                              -99));
-          break;
-
-        case HyyBDTAllVariables::deltaR_Wb_t2:
-          result.push_back(
-            m_Fbranches_BDTInput.at("dR_Wb_t2").get(*event, sys));
-          break;
+    result.reserve(variables.size());
+    for (const auto& var_name : variables) {
+      auto it = HyyMultiBDT_VariableMap.find(var_name);
+      if (it != HyyMultiBDT_VariableMap.end()) {
+        result.push_back(it->second);
+      } else {
+        result.push_back(-99.0f);
       }
     }
-
     return result;
   }
 

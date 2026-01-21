@@ -171,7 +171,8 @@ save_detailed_Input_variables: true
 do_Hyy_multiclass: true
 
 HyyMultiBDT_folder: "bbyyAnalysis/HyyMultiBDT"
-
+HyyMultiBDT_config:
+  include: [bbyyAnalysis/HyyHHbbyyMVAAlg.yaml]
 Hyy_multiclass_bins: ["GG2H_0J_PTH_0_10", "GG2H_0J_PTH_GT10",
                       "GG2H_1J_PTH_0_60", "GG2H_1J_PTH_60_120", 
                       "GG2H_1J_PTH_120_200", "GG2H_GE2J_MJJ_0_350_PTH_0_60", 

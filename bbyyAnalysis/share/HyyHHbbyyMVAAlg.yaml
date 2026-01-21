@@ -1,0 +1,650 @@
+# HyyMultiBDT Configuration - Compact Format
+MulticlassBDT:
+  model_name: model1_HyymulticlassMVA.root
+  variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, pTt_yy, phiStar_yy, 
+              N_j_central,  N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30,  N_j_30, 
+              N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, pT_j1_30, Dy_j_j, 
+              Dphi_j_j, Deta_j_j, pT_yyj, m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, 
+              Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, 
+              met_TST, sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+              flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+              recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+              hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+              deltaR_Wb_t2]
+  
+# categories:
+BinaryBDT:
+  GG2H_0J_PTH_0_10:
+    index: 0
+    boundaries: [0.5390599866365131]
+    weight: 5.09811663
+    variables: [pT_yy, ph0_eta, ph1_eta, Dy_y_y, pTt_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp,
+                mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  GG2H_0J_PTH_GT10:
+    index: 1
+    boundaries: []
+    weight: 8.74027068
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, pTt_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, 
+                mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  GG2H_1J_PTH_0_60:
+    index: 2
+    boundaries: [0.4343733552631579]
+    weight: 11.07907091
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, pTt_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, 
+                mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_1J_PTH_60_120:
+    index: 3
+    boundaries: [0.39341917660361847]
+    weight: 10.87102167
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT,
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_1J_PTH_120_200:
+    index: 4
+    boundaries: [0.4069370836759869]
+    weight: 1.09818254
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_GE2J_MJJ_0_350_PTH_0_60:
+    index: 5
+    boundaries: [0.4342382085376101, 0.6557343291836714]
+    weight: 36.9685032
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, pTt_yy, N_j_central, 
+                N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_GE2J_MJJ_0_350_PTH_60_120:
+    index: 6
+    boundaries: [0.47669769736842105]
+    weight: 14.5968635
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_GE2J_MJJ_0_350_PTH_120_200:
+    index: 7
+    boundaries: [0.43264573396381584]
+    weight: 1.92228768
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  GG2H_GE2J_MJJ_350_700_PTH_0_200:
+    index: 8
+    boundaries: [0.3389567359095229, 0.5089861528541939]
+    weight: 2.47051653
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, 
+                pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_GE2J_MJJ_700_1000_PTH_0_200:
+    index: 9
+    boundaries: [0.3338366090473377, 0.5253786871659128]
+    weight: 2.26252078
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_GE2J_MJJ_GT1000_PTH_0_200:
+    index: 10
+    boundaries: [0.3508147210384671, 0.49530318037836085]
+    weight: 0.65508076
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30,
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta,
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  GG2H_PTH_200_300:
+    index: 11
+    boundaries: [0.44375187088815793]
+    weight: 2.229232
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  GG2H_PTH_300_450:
+    index: 12
+    boundaries: [0.36541900773287594, 0.5900783270997434]
+    weight: 1.0823288
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  GG2H_PTH_450_650:
+    index: 13
+    boundaries: [0.3855770829037619, 0.5199264422215908]
+    weight: 1.75996132
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  GG2H_PTH_GT650:
+    index: 14
+    boundaries: []
+    weight: 0.23804092
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, N_j_central, N_j, N_j_btag, 
+                m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, m_jj_30, 
+                pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, Dphi_yy_jj, DRmin_y_j, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+                deltaR_Wb_t2]
+
+  QQ2HQQ_0J:
+    index: 15
+    boundaries: [0.5634193801202272, 0.7814422454407337]
+    weight: 9.67751662
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, pTt_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp,
+                mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta,
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HQQ_1J:
+    index: 16
+    boundaries: [0.4326597320289005, 0.6491818407456339]
+    weight: 4.75482342
+    variables: [pT_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, N_j_btag, 
+                m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, m_jj_30, 
+                pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, m_yyjj,
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_0_60:
+    index: 17
+    boundaries: [0.4669492103360201, 0.6934343304219999]
+    weight: 2.30044847
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_60_120:
+    index: 18
+    boundaries: [0.2961276033308943, 0.5364035198556749]
+    weight: 2.79506629
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_120_350:
+    index: 19
+    boundaries: [0.38908549970702133, 0.6637830841014256]
+    weight: 9.91884314
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, 
+                N_j_30, N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_350_700_PTH_0_200:
+    index: 20
+    boundaries: [0.34979975924209555, 0.636725186309061]
+    weight: 1.10576635
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, 
+                N_j_30, N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_700_1000_PTH_0_200:
+    index: 21
+    boundaries: [0.5324046078330593]
+    weight: 0.63304991
+    variables: [pT_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, N_j_btag, 
+                m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, m_jj_30, 
+                pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, DRmin_y_j, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_GT1000_PTH_0_200:
+    index: 22
+    boundaries: [0.476258195415296]
+    weight: 0.2797203
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, 
+                pT_yyj, m_yyjj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_350_700_PTH_GT200:
+    index: 23
+    boundaries: [0.37367643416555274, 0.6316457307514391]
+    weight: 1.16530436
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_700_1000_PTH_GT200:
+    index: 24
+    boundaries: [0.5409615234375]
+    weight: 2.03488271
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HQQ_GE2J_MJJ_GT1000_PTH_GT200:
+    index: 25
+    boundaries: [0.4950179893092106]
+    weight: 0.25374325
+    variables: [pT_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, N_j_btag, 
+                m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, m_jj_30, 
+                pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, m_yyj,
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, m_alljet, cosTS_yyjj, N_lep, N_e, 
+                N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, pT_ll, 
+                pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, score_recotop, 
+                recotop_m, recotop_phi, recotop_eta, recotop_pT, score_hybrtop, 
+                hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, 
+                m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HLNU_PTV_0_75:
+    index: 26
+    boundaries: [0.5228712273848684]
+    weight: 0.69646131
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+                deltaR_Wb_t2]
+
+  QQ2HLNU_PTV_75_150:
+    index: 27
+    boundaries: [0.44227105263157895]
+    weight: 0.48343818
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, pTt_yy, N_j_central, 
+                N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, 
+                mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HLNU_PTV_150_250:
+    index: 28
+    boundaries: [0.1504621710526317]
+    weight: 0.30569068
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+                deltaR_Wb_t2]
+
+  QQ2HLNU_PTV_GT250:
+    index: 29
+    boundaries: [0.06807878289473687]
+    weight: 0.5135227
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+                deltaR_Wb_t2]
+
+  QQ2HLL_PTV_0_75:
+    index: 30
+    boundaries: [0.861470538651316]
+    weight: 2.90510798
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, 
+                pT_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HLL_PTV_75_150:
+    index: 31
+    boundaries: [0.059182894736842115]
+    weight: 0.18207231
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+                deltaR_Wb_t2]
+
+  QQ2HLL_PTV_150_250:
+    index: 32
+    boundaries: [0.24136918174342106]
+    weight: 1.09179819
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, 
+                N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, 
+                sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, 
+                flag_eTmiss, HT_30, Zepp, mu, score_recotop, recotop_m, 
+                recotop_phi, recotop_eta, recotop_pT, score_hybrtop, hybrtop_m, 
+                hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, m_fwdJyy, 
+                deltaR_Wb_t2]
+
+  QQ2HLL_PTV_GT250:
+    index: 33
+    boundaries: []
+    weight: 0.46709051
+    variables: [pT_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, N_j_central, 
+                N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, 
+                N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, 
+                phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  QQ2HNUNU_PTV_0_75:
+    index: 34
+    boundaries: [0.3319628949617084, 0.6013439724570825]
+    weight: 5.47657648
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, pTt_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, Dphi_yy_jj, 
+                DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, 
+                m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, pT_ll, 
+                pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, score_recotop, 
+                recotop_m, recotop_phi, recotop_eta, recotop_pT, score_hybrtop, 
+                hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, 
+                deltaR_Wb_t2]
+
+  QQ2HNUNU_PTV_75_150:
+    index: 35
+    boundaries: [0.54043133354187, 0.7930990196629575]
+    weight: 2.85129545
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HNUNU_PTV_150_250:
+    index: 36
+    boundaries: [0.27316551303612563, 0.5415385652767984]
+    weight: 0.77661606
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  QQ2HNUNU_PTV_GT250:
+    index: 37
+    boundaries: [0.18128626644736845]
+    weight: 0.40344227
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  TTH_PTH_0_60:
+    index: 38
+    boundaries: [0.38235748350973175, 0.6472071170665714]
+    weight: 0.40326453
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, pTt_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  TTH_PTH_60_120:
+    index: 39
+    boundaries: [0.42209490388569076,]
+    weight: 0.18133248
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, pTt_yy, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, 
+                N_j_30, N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, 
+                Deta_j_j, pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
+
+  TTH_PTH_120_200:
+    index: 40
+    boundaries: [0.40546262078536194]
+    weight: 0.17405083
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, cosTS_yyjj, N_lep, 
+                N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, 
+                pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, 
+                score_recotop, recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, 
+                fwdjet_eta, deltaR_Wb_t2]
+
+  TTH_PTH_200_300:
+    index: 41
+    boundaries: [0.28798660567434214]
+    weight: 0.11171737
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj,
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST,
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30,
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta,  
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  TTH_PTH_GT300:
+    index: 42
+    boundaries: [0.09902368421052643]
+    weight: 0.20540754
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                m_yyj, m_yyjj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, m_alljet, 
+                cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, met_TST, sumet_TST, 
+                MET_sig, phi_TST, pT_ll, pTlepMET, mTlepMET, flag_eTmiss, HT_30, 
+                Zepp, mu, score_recotop, recotop_m, recotop_phi, recotop_eta, 
+                recotop_pT, score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, m_fwdJyy, deltaR_Wb_t2]
+
+  THJB:
+    index: 43
+    boundaries: [0.5233851562500003]
+    weight: 0.24098085
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, phiStar_yy, N_j_central, N_j, 
+                N_j_btag, m_jj, pT_yyjj, N_j_central30, N_j_30, N_j_btag30, 
+                m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, Dphi_j_j, Deta_j_j, pT_yyj, 
+                Dphi_yy_jj, DRmin_y_j, m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, 
+                m_ee, m_mumu, met_TST, sumet_TST, MET_sig, phi_TST, pT_ll, 
+                pTlepMET, mTlepMET, flag_eTmiss, HT_30, Zepp, mu, score_recotop, 
+                recotop_m, recotop_phi, recotop_eta, recotop_pT, score_hybrtop, 
+                hybrtop_m, hybrtop_phi, hybrtop_eta, hybrtop_pT, fwdjet_eta, 
+                deltaR_Wb_t2]
+
+  THW:
+    index: 44
+    boundaries: [0.3789814453124999]
+    weight: 0.62998928
+    variables: [pT_yy, yAbs_yy, ph0_eta, ph1_eta, Dy_y_y, phiStar_yy, 
+                N_j_central, N_j, N_j_btag, m_jj, pT_yyjj, N_j_central30, 
+                N_j_30, N_j_btag30, m_jj_30, pT_yyjj_30, pT_jj, Dy_j_j, 
+                Dphi_j_j, Deta_j_j, pT_yyj, Dphi_yy_jj, DRmin_y_j, Dy_yy_jj, 
+                m_alljet, cosTS_yyjj, N_lep, N_e, N_mu, m_ee, m_mumu, 
+                met_TST, sumet_TST, MET_sig, phi_TST, pT_ll, pTlepMET, 
+                mTlepMET, flag_eTmiss, HT_30, Zepp, mu, score_recotop, 
+                recotop_m, recotop_phi, recotop_eta, recotop_pT, 
+                score_hybrtop, hybrtop_m, hybrtop_phi, hybrtop_eta, 
+                hybrtop_pT, fwdjet_eta, deltaR_Wb_t2]
