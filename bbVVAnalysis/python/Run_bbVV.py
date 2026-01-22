@@ -88,7 +88,10 @@ def run_grid(
     if process == "data":
         List = ListDir + "data_*.txt"
     else:
-        List = ListDir + campaign + "_" + process + "_p6697.txt"
+        if "mc23" in campaign:
+            List = ListDir + campaign + "_" + process + "_p7017.txt"
+        else:
+            List = ListDir + campaign + "_" + process + "_p7018.txt"
 
     lep_channel = "1lep" if lepton else "0lep"
     boosted_channel = boosted
@@ -140,7 +143,8 @@ if __name__ == "__main__":
         "--SampleDir", help="Type your PHYS directory",
         default="/eos/atlas/atlascerngroupdisk/phys-higp/higgs-pairs/bbVV/")
     parser.add_argument(
-        "--campaign", help="mc23a, mc23d, mc23e", default="mc23a")
+        "--campaign", help="mc20a, mc20d, mc20e / "
+                           "mc23a, mc23d, mc23e", default="mc23a")
     parser.add_argument(
         "--tag", help="Custom tag pattern", default="NONE")
     parser.add_argument(
