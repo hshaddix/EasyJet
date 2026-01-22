@@ -1107,11 +1107,11 @@ namespace MULTILEPTON
       m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::leadingtau] = 36. * Athena::Units::GeV;
       m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::subleadingtau] = 26. * Athena::Units::GeV;
     }
-    else if(year>=2017) {
+    else if(year==2017) {
       m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::leadingtau] = 81. * Athena::Units::GeV;
       m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::subleadingtau] = 51. * Athena::Units::GeV;
     }
-    else if(year>=2018) {
+    else if(year==2018) {
       m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::leadingtau] = 81. * Athena::Units::GeV;
       m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::subleadingtau] = 61. * Athena::Units::GeV;
     }
