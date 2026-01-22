@@ -13,52 +13,14 @@ UseVBFRNN : false
 # Add truth VBS quark info
 AddTruthVBSQuarks : false
 
-# expand list to store nWLep truth information
-Truth:
-  DSID_nWLep_samples:
-    - 525362 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_klp1
-    - 525363 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_klp2
-    - 525364 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_klp5
-    - 525365 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_klp10
-    - 525366 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_klm5
-    - 525367 # MGPy8EG_ssWWhjj_ltvvbbjj_EW8_LO_klp1
-    - 525368 # MGPy8EG_ssWWhjj_ltvvbbjj_EW8_LO_klp2
-    - 525369 # MGPy8EG_ssWWhjj_ltvvbbjj_EW8_LO_klp5
-    - 525370 # MGPy8EG_ssWWhjj_ltvvbbjj_EW8_LO_klp10
-    - 525371 # MGPy8EG_ssWWhjj_ltvvbbjj_EW8_LO_klm5
-    - 545778 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vm7
-    - 545779 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vm4
-    - 545780 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vm2
-    - 545781 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2v0
-    - 545782 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vp2
-    - 545783 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vp4
-    - 545784 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vp6
-    - 545785 # MGPy8EG_ssWWhjj_llvvbbjj_EW8_LO_k2vp8
-
-  DSID_vgammaOR:
-    - 410470 # PhPy8EG_A14_ttbar_hdamp258p75_nonallhad
-    - 410472 # PhPy8EG_A14_ttbar_hdamp258p75_dil
 
 # Toggles for object types
-do_muons: true
-do_electrons: true
+do_muons: false
+do_electrons: false
 do_met : true
 do_small_R_jets: true
 do_large_R_UFO_jets: true
 
-Electron:
-  ID: "MediumLH"
-  Iso: "Loose_VarRad"
-  amount: 0
-  ## Only correlation scheme supported
-  correlationModelId: "TOTAL"
-
-Muon:
-  ID: "Medium"
-  Iso: "PflowLoose_VarRad"
-  amount: 0
-
-Lepton:
   amount: 0
 
 Met:
