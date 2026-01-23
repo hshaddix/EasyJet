@@ -31,7 +31,10 @@ namespace ZQG
     ATH_CHECK (m_filterParams.initialize(m_systematicsList));
     
     ATH_CHECK (m_jetHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_largejetHandle.initialize(m_systematicsList));
+    // STDM13 COMPATIBILITY: Only initialize large-R jet handle if container name is not empty
+    if (!m_largejetHandle.empty()) {
+      ATH_CHECK (m_largejetHandle.initialize(m_systematicsList));
+    }
 
     for (const std::string &var : m_PCBTnames){
       ATH_MSG_DEBUG("initializing PCBT: " << var);
@@ -125,7 +128,10 @@ namespace ZQG
       }
 
       const xAOD::JetContainer *largeJets = nullptr;
-      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys));
+      // STDM13 COMPATIBILITY: Only retrieve large-R jets if handle is initialized
+      if (!m_largejetHandle.empty()) {
+        ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys));
+      }
 
       const xAOD::MuonContainer *muons = nullptr;
       ANA_CHECK (m_muonHandle.retrieve (muons, sys));
@@ -179,7 +185,10 @@ namespace ZQG
       evaluateLeptonCuts(*electrons, *muons, m_ZQGCuts);
       evaluateBJetCuts(*bjets, m_ZQGCuts);
       evaluateCJetCuts(*cjets, m_ZQGCuts);
-      evaluateLargeJetCuts(largeJets);
+      // STDM13 COMPATIBILITY: Only evaluate large jet cuts if large-R jets are available
+      if (largeJets != nullptr) {
+        evaluateLargeJetCuts(largeJets);
+      }
       
       bool pass_baseline=true;
       for (const auto& [key, value] : m_boolnames) {

@@ -23,7 +23,10 @@ namespace ZQG
   {
     // Read syst-aware input handles
     ATH_CHECK (m_ZQGJetHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_ZQGLRJetHandle.initialize(m_systematicsList));
+    // STDM13 COMPATIBILITY: Only initialize large-R jet handle if not empty
+    if (!m_ZQGLRJetHandle.empty()) {
+      ATH_CHECK (m_ZQGLRJetHandle.initialize(m_systematicsList));
+    }
     ATH_CHECK (m_ZQGElectronHandle.initialize(m_systematicsList));
     ATH_CHECK (m_ZQGMuonHandle.initialize(m_systematicsList));
     ATH_CHECK (m_trackHandle.initialize(m_systematicsList));
@@ -74,10 +77,13 @@ namespace ZQG
       ATH_CHECK(m_Ibranches.at(var).initialize(m_systematicsList, m_eventHandle));
     };
     
-    ATH_CHECK (m_GN2Xv01_phbb.initialize(m_systematicsList, m_ZQGLRJetHandle));
-    ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_ZQGLRJetHandle));
-    ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_ZQGLRJetHandle));
-    ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_ZQGLRJetHandle));
+    // STDM13 COMPATIBILITY: Only initialize large-R jet decorators if handle is available
+    if (!m_ZQGLRJetHandle.empty()) {
+      ATH_CHECK (m_GN2Xv01_phbb.initialize(m_systematicsList, m_ZQGLRJetHandle));
+      ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_ZQGLRJetHandle));
+      ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_ZQGLRJetHandle));
+      ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_ZQGLRJetHandle));
+    }
 
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize());
@@ -100,7 +106,10 @@ namespace ZQG
       ANA_CHECK (m_ZQGJetHandle.retrieve (jets, sys));
 
       const xAOD::JetContainer *largeJets  = nullptr;
-      ANA_CHECK (m_ZQGLRJetHandle.retrieve (largeJets , sys));
+      // STDM13 COMPATIBILITY: Only retrieve large-R jets if handle is initialized
+      if (!m_ZQGLRJetHandle.empty()) {
+        ANA_CHECK (m_ZQGLRJetHandle.retrieve (largeJets , sys));
+      }
 
       const xAOD::MuonContainer *muons = nullptr;
       ANA_CHECK (m_ZQGMuonHandle.retrieve (muons, sys));
@@ -435,7 +444,8 @@ namespace ZQG
       }
 
       // large jet sector
-      if(largeJets ->size()>0){
+      // STDM13 COMPATIBILITY: Only process large-R jets if available
+      if(largeJets != nullptr && largeJets->size()>0){
 
         const xAOD::Jet* largeJet = largeJets->at(0);
         std::string prefix = "LargeRJet";
@@ -462,7 +472,7 @@ namespace ZQG
         m_Fbranches.at(prefix+"_GN2Xv01_DXcc").set(*event, XccScore, sys);
 
       }
-      m_Ibranches.at("nLargeRJets").set(*event, largeJets ->size(), sys);
+      m_Ibranches.at("nLargeRJets").set(*event, largeJets != nullptr ? largeJets->size() : 0, sys);
 
     }
     return StatusCode::SUCCESS;

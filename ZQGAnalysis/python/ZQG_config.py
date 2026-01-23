@@ -48,13 +48,15 @@ def ZQG_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
                                 maxEta=flags.Analysis.Small_R_jet.max_eta_ZQG
                                 ))
 
-    cfg.merge(JetSelectorAlgCfg(flags, name="LargeRJet_SelectorAlg",
-                                containerInKey=largejetkey,
-                                containerOutKey="ZQGAnalysisLargeJets_%SYS%",
-                                minPt=250 * Units.GeV,
-                                maxEta=2.5,
-                                selectBjet=False
-                                ))
+    # STDM13 COMPATIBILITY: Only add large-R jet selector if large-R jets are available
+    if largejetkey is not None:
+        cfg.merge(JetSelectorAlgCfg(flags, name="LargeRJet_SelectorAlg",
+                                    containerInKey=largejetkey,
+                                    containerOutKey="ZQGAnalysisLargeJets_%SYS%",
+                                    minPt=250 * Units.GeV,
+                                    maxEta=2.5,
+                                    selectBjet=False
+                                    ))
 
     from EasyjetHub.algs.postprocessing.trigger_matching import TriggerMatchingToolCfg
 
@@ -72,6 +74,8 @@ def ZQG_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
         CompFactory.ZQG.ZQGSelectorAlg(
             "ZQGSelectorAlg",
             isMC=flags.Input.isMC,
+            # STDM13 COMPATIBILITY: Set large-R jet container to empty if not available
+            largejets="" if largejetkey is None else "ZQGAnalysisLargeJets_%SYS%",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorList=["ftag_quantile_" + pcbt_wp for pcbt_wp in btag_pcbt_wps],
             eventDecisionOutputDecoration="ZQG_pass_sr_%SYS%",
@@ -96,6 +100,8 @@ def ZQG_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             isMC=flags.Input.isMC,
             electrons=electronkey, eleWP=ElectronWPLabel,
             muons=muonkey, muonWP=MuonWPLabel,
+            # STDM13 COMPATIBILITY: Set large-R jet container to empty if not available
+            ZQGLRJets="" if largejetkey is None else "ZQGAnalysisLargeJets_%SYS%",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorList=["ftag_quantile_" + pcbt_wp for pcbt_wp in btag_pcbt_wps],
             floatVariableList=float_variables,
