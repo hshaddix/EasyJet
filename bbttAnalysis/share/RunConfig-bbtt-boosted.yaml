@@ -42,7 +42,13 @@ ttree_output:
       no_bjet_calib_p4: true
       run_selection: true
       # the QGTransformer_ConstScore is only available for PHYS with p6846+
-      extra_variables: [QGTransformer_ConstScore]
+      extra_variables: 
+        - ["QGTransformer_ConstScore", null]
+    ditaus:
+      score_branches: true
+      truth_branches: true
+      subjet_branches: true
+
   truth_outputs:
     large_R_jets: 'container_names.input.truth10SoftDropJet'
     small_R_jets: 'container_names.input.truth4Jet'

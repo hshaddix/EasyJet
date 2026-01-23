@@ -6,6 +6,7 @@ do_ditaus: true
 
 DiTau:
   ID: "Tight"
+  extra_wps: ["Loose", "Medium"]
 
 # overlap removal
 OverlapRemoval:

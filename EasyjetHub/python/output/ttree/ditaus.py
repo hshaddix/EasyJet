@@ -6,6 +6,8 @@ def get_ditau_branches(flags, tree_flags, input_container, output_prefix):
     if flags.Analysis.disable_calib:
         _syst_option = SystOption.NONE
 
+    ditau_output_flags = tree_flags.collection_options.ditaus
+
     ditau_branches = BranchManager(
         input_container,
         output_prefix,
@@ -27,26 +29,41 @@ def get_ditau_branches(flags, tree_flags, input_container, output_prefix):
         for id_wp in id_wps
     ]
 
-    if flags.Analysis.DiTau.score_branches:
+    if ditau_output_flags.score_branches:
         ditau_branches.variables += [("omni_score", None)]
 
-    if flags.Analysis.DiTau.truth_branches:
+    if ditau_output_flags.truth_branches:
         ditau_branches.variables += [
-            ("IsTruthHadronic", None),
-            ("IsTruthMatched", None),
+            ("IsTruthHadronic", "char"),
+            ("IsTruthMatched", "char"),
         ]
         ditau_branches.variables += [
-            ("TruthVis" + var, None)
+            ("TruthVis" + var, "float")
             for var in ["Mass", "DeltaR"]
         ]
         ditau_branches.variables += [
-            ("TruthVis" + i + var, None)
+            ("TruthVis" + i + var, "float")
             for i in ["Lead", "Sublead"]
             for var in ["Pt", "Eta", "Phi", "M"]
         ]
         ditau_branches.variables += [
-            ("Truth" + i + "PdgID", None)
+            ("Truth" + i + "PdgID", "int")
             for i in ["Lead", "Sublead"]
         ]
+
+    if ditau_output_flags.subjet_branches:
+        for sjet in ["lead", "sublead"]:
+            ditau_branches.variables += [
+                (f"{sjet}Subjet{float_var}", "float")
+                for float_var in ["Pt", "Eta", "Phi", "E"]
+            ]
+            ditau_branches.variables += [
+                (f"{sjet}Subjet{int_var}", "int")
+                for int_var in ["NTracks", "Charge"]
+            ]
+
+    ditau_branches.variables += ditau_output_flags.extra_variables
+    if flags.Input.isMC:
+        ditau_branches.variables += ditau_output_flags.mc_extra_variables
 
     return ditau_branches.get_output_list()

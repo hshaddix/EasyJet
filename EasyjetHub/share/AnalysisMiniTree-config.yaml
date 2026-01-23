@@ -77,6 +77,13 @@ collection_options:
     extra_variables: []
     mc_extra_variables: []
 
+  ditaus:
+    score_branches: false
+    truth_branches: false
+    subjet_branches: false
+    extra_variables: []
+    mc_extra_variables: []
+
 # turned off automatically if MC
 truth_outputs:
   small_R_jets: ''
