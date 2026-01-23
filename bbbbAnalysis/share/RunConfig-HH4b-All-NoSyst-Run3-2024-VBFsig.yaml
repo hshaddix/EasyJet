@@ -1,0 +1,7 @@
+include: [bbbbAnalysis/RunConfig-HH4b-All-NoSyst-Run3-2024.yaml]
+
+ttree_output:
+  collection_options:
+    small_R_jets:
+      gn3_scores: false
+
