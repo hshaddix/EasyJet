@@ -312,6 +312,6 @@ def bbbbtt_branches(flags):
     if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HHH4b2tau_KappaReweight:
         reweight_vars = get_ReweightingVars()
         for var in reweight_vars:
-            branches += [f"EventInfo.{var} -> KappaReweighting__{var}"]
+            branches += [f"EventInfo.{var} -> KappaReweighting__{var} type=float"]
 
     return branches, float_variable_names, int_variable_names

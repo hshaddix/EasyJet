@@ -44,7 +44,7 @@ namespace HHHBBBBTT
         ATH_CHECK(event.isValid());
 
         for (const std::string &var : m_reweightVars){
-            SG::WriteDecorHandle<xAOD::EventInfo, double> 
+            SG::WriteDecorHandle<xAOD::EventInfo, float> 
                 whandle(m_Fbranches.at(var));
             whandle(*event) = m_wgtHandle->getWeight(event.cptr(), var);
         };
