@@ -74,7 +74,7 @@ def ttCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             minMet=flags.Analysis.MET.min_met,
             muonWP=MuonWPLabel,
             eleWP=ElectronWPLabel,
-            GN2X_WPs=flags.Analysis.Large_R_jet.GN2X_hbb_wps,
+            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01,
         )
     )
 
@@ -108,7 +108,7 @@ def get_BaselineVarsttCalibAlg_variables(flags):
             'Lepton1_effSF']:
         float_variable_names.append(object)
 
-    for var in flags.Analysis.Large_R_jet.GN2X_hbb_wps:
+    for var in flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01:
         int_variable_names += ["probe_jet_Pass_GN2X_" + var]
     int_variable_names.append("probe_jet_truthid")
 

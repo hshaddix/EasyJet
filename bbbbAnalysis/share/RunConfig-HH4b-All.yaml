@@ -38,16 +38,18 @@ Large_R_jet:
   max_eta: 2.0
   runMuonJetPtCorr: true
   do_thinning: true
-  GN2X_hbb_wps:
-    - "FlatMassQCDEff_0p25"
-    - "FlatMassQCDEff_0p3"
-    - "FlatMassQCDEff_0p37"
-    - "FlatMassQCDEff_0p46"
-    - "FlatMassQCDEff_0p58"
-    - "FlatMassQCDEff_0p74"
-    - "FlatMassQCDEff_0p94"
-    - "FlatMassQCDEff_1p25"
-    - "FlatMassQCDEff_1p55"
+  flat_mass_selections:
+    taggers:
+      GN2Xv01:
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p3"
+        - "FlatMassQCDEff_0p37"
+        - "FlatMassQCDEff_0p46"
+        - "FlatMassQCDEff_0p58"
+        - "FlatMassQCDEff_0p74"
+        - "FlatMassQCDEff_0p94"
+        - "FlatMassQCDEff_1p25"
+        - "FlatMassQCDEff_1p55"
 
 Muon:
   ID: "Loose"

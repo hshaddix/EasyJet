@@ -52,8 +52,10 @@ Large_R_jet:
   maxEta: 2.0
   runMuonJetPtCorr: false
   amount: 1
-  GN2X_hbb_wps:
-    - "FlatMassQCDEff_1p55"
+  flat_mass_selections:
+    taggers:
+      GN2Xv01:
+        - "FlatMassQCDEff_1p55"
     
 # list of triggers per year to consider
 Trigger:

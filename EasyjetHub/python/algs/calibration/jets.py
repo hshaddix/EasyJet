@@ -248,17 +248,20 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq += makeConfig('Jets.Uncertainties')
     configSeq.setOptionValue('.containerName', output_name)
     configSeq.setOptionValue('.jetInput', "UFO")
+    if flags.Analysis.Large_R_jet.flat_mass_selections:
+        jsonCalibFile = find_datafile(
+            flags.Analysis.Large_R_jet.flat_mass_selections['calib_file']
+        )
+    for tagger, wps in flags.Analysis.Large_R_jet.flat_mass_selections.taggers.items():
 
-    for GN2X_wp in flags.Analysis.Large_R_jet.GN2X_hbb_wps:
-        jSONCalibFile = find_datafile(
-            "EasyjetHub/Xbb_lookup_table_prelim_Oct30_2024.json")
-        configSeq += config.makeConfig('Jets.XbbTagging')
-        configSeq.setOptionValue('.containerName', output_name)
-        # no eff SF provided for the moment
-        configSeq.setOptionValue('.noEffSF', True)
-        configSeq.setOptionValue('.calibFile', jSONCalibFile)
-        configSeq.setOptionValue('.Xbbtagger', "GN2Xv01")
-        configSeq.setOptionValue('.XbbWP', GN2X_wp)
+        for wp in wps:
+            configSeq += config.makeConfig('Jets.XbbTagging')
+            configSeq.setOptionValue('.containerName', output_name)
+            # no eff SF provided for the moment
+            configSeq.setOptionValue('.noEffSF', True)
+            configSeq.setOptionValue('.calibFile', jsonCalibFile)
+            configSeq.setOptionValue('.Xbbtagger', tagger)
+            configSeq.setOptionValue('.XbbWP', wp)
 
     # Optional muon-in-jet correction for large-R jets
     if flags.Analysis.Large_R_jet.runMuonJetPtCorr:

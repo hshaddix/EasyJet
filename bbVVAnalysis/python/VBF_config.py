@@ -77,7 +77,7 @@ def vbf_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, taukey,
             cutList=flags.Analysis.CutList,
             bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
                     else False),
-            GN2X_WPs=flags.Analysis.Large_R_jet.GN2X_hbb_wps
+            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01
         )
     )
 
@@ -92,7 +92,7 @@ def vbf_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, taukey,
             floatVariableList=float_variables,
             intVariableList=int_variables,
             channel=flags.Analysis.channel,
-            GN2X_WPs=flags.Analysis.Large_R_jet.GN2X_hbb_wps,
+            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01,
             wtag_type=flags.Analysis.Large_R_jet.wtag_type,
             wtag_wp=flags.Analysis.Large_R_jet.wtag_wp
         )

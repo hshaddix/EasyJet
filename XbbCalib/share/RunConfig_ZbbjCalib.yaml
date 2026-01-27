@@ -26,16 +26,14 @@ Large_R_jet:
   min_pT: 200.e+3
   maxEta: 2.0
   runMuonJetPtCorr: false
-  GN2X_hbb_wps:
-    - "FlatMassQCDEff_0p25"
-    - "FlatMassQCDEff_0p3"
-    - "FlatMassQCDEff_0p37"
-    - "FlatMassQCDEff_0p46"
-    - "FlatMassQCDEff_0p58"
-    - "FlatMassQCDEff_0p74"
-    - "FlatMassQCDEff_0p94"
-    - "FlatMassQCDEff_1p25"
-    - "FlatMassQCDEff_1p55"
+  flat_mass_selections:
+    taggers:
+      GN3XPV01_hbb:
+        - "FlatMassQCDEff_0p08"
+        - "FlatMassQCDEff_0p15"
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p4"
+        - "FlatMassQCDEff_0p6"
 
 
 Electron:

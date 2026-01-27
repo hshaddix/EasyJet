@@ -19,14 +19,16 @@ Large_R_jet:
   runMuonJetPtCorr: true
   # TODO: __BOOSTED__ which working point do we need ??
   # b-tag efficiency working points, do we have to select just one ?
-  GN2X_hbb_wps:
-    - "FlatMassQCDEff_0p25"
-    - "FlatMassQCDEff_0p3"
-    - "FlatMassQCDEff_0p37"
-    - "FlatMassQCDEff_0p46"
-    - "FlatMassQCDEff_0p58"
-    - "FlatMassQCDEff_0p74"
-    - "FlatMassQCDEff_0p94"
-    - "FlatMassQCDEff_1p25"
-    - "FlatMassQCDEff_1p55"
+  flat_mass_selections:
+    taggers:
+      GN2Xv01:
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p3"
+        - "FlatMassQCDEff_0p37"
+        - "FlatMassQCDEff_0p46"
+        - "FlatMassQCDEff_0p58"
+        - "FlatMassQCDEff_0p74"
+        - "FlatMassQCDEff_0p94"
+        - "FlatMassQCDEff_1p25"
+        - "FlatMassQCDEff_1p55"
   amount_leadingjet: 2

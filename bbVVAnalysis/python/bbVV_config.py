@@ -65,7 +65,7 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             isMC=flags.Input.isMC,
             bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
                     else False),
-            GN2X_WPs=flags.Analysis.Large_R_jet.GN2X_hbb_wps
+            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01
         )
     )
 
@@ -79,7 +79,7 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             floatVariableList=float_variables,
             intVariableList=int_variables,
             channel=flags.Analysis.channel,
-            GN2X_WPs=flags.Analysis.Large_R_jet.GN2X_hbb_wps,
+            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01,
             wtag_type=flags.Analysis.Large_R_jet.wtag_type,
             wtag_wp=flags.Analysis.Large_R_jet.wtag_wp
         )
@@ -113,7 +113,7 @@ def get_BaselineVarshhbbVVAlg_variables(flags):
                                  + "_" + wtag_wp + "_Score"]
 
     for obj in objects:
-        for var in flags.Analysis.Large_R_jet.GN2X_hbb_wps:
+        for var in flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01:
             int_variable_names += [obj + "_Jet_Pass_GN2X_" + var]
         int_variable_names += [obj + "_Jet_Pass_" + wtag_type
                                    + "_" + wtag_wp]

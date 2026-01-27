@@ -100,8 +100,11 @@ def bbtt_SelectorAlgCfg(flags):
 
     muon_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
     ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
-    GN2X_WP = (f"xbb_select_GN2Xv01_{flags.Analysis.Large_R_jet.GN2X_hbb_wps[0]}"
-               if flags.Analysis.do_large_R_UFO_jets else "")
+    GN2X_WP = (
+        ("xbb_select_GN2Xv01_"
+            f"{flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01[0]}")
+        if flags.Analysis.do_large_R_UFO_jets else ""
+    )
     cfg.addEventAlgo(
         CompFactory.HHBBTT.HHbbttSelectorAlg(
             "HHbbttSelectorAlg",
@@ -170,8 +173,11 @@ def bbtt_BaselineVarsAlgCfg(flags, muonkey, electronkey, taukey,
     cfg = ComponentAccumulator()
 
     if flags.Analysis.do_boosted_dihiggs:
-        GN2X_WP = (f"xbb_select_GN2Xv01_{flags.Analysis.Large_R_jet.GN2X_hbb_wps[0]}"
-                   if flags.Analysis.do_large_R_UFO_jets else "")
+        GN2X_WP = (
+            ("xbb_select_GN2Xv01_"
+                f"{flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01[0]}")
+            if flags.Analysis.do_large_R_UFO_jets else ""
+        )
         cfg.addEventAlgo(
             CompFactory.HHBBTT.BaselineVarsBoostedbbttAlg(
                 "BaselineVarsBoostedbbttAlg",

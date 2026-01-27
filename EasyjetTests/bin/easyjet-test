@@ -66,8 +66,6 @@ declare -A DATAFILES=(
     [ttcalib-mc20]=${PHYS_TTBAR_MC20}
     [zllycalib-mc20]=${PHYS_TTBAR_MC20}
     [zlljcalib-mc20]=${PHYS_TTBAR_MC20}
-    [zbbycalib-mc20]=${PHYS_TTBAR_MC20}
-    [zbbjcalib-mc20]=${PHYS_TTBAR_MC20}
     [bbbbtt-mc20]=${PHYS_TTBAR_MC20}
     # MC20 AF3
     [sh4b-mc20af3]=${PHYS_SH4B_BOOSTED_MC20_AF3}
@@ -107,13 +105,15 @@ declare -A DATAFILES=(
 SMALL_TTBAR_MC23=p7017/daod/DAOD_PHYS.601229.e8514_e8528_s4159_s4114_r15530_r15514_p6697.small.pool.root
 SMALL_ZBBY_MC23=p7017/daod/DAOD_PHYS.701286.e8582_e8586_s4369_s4370_r16083_r15970_p6697.small.pool.root
 SMALL_ZBBY_MC23_P7017=p7017/daod/DAOD_PHYS.701286.e8582_e8586_s4369_s4370_r16083_r15970_p7017.small.pool.root
+SMALL_ZBB_MC20_P7018=p7018/daod/DAOD_PHYS.700855.e8536_s3681_r13144_p7018.small.pool.root
 declare -A SMALL_DATAFILES=(
     # this zbby sample also works fine to pass the jet selection
+    [zbbjcalib-mc20]=${SMALL_ZBB_MC20_P7018}
+    [zbbycalib-mc20]=${SMALL_ZBB_MC20_P7018}
     [zbbjcalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zbbycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zlljcalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zllycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
-
 )
 
 declare -A TESTS=(
