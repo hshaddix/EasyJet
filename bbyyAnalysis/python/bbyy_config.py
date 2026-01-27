@@ -39,12 +39,25 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
 
     cfg.merge(JetSelectorAlgCfg(
         flags,
+        name="bbyyJetSelectorAlg",
         containerInKey=smalljetkey,
         containerOutKey="bbyyAnalysisJets_%SYS%",
         PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
         minPt=float(flags.Analysis.Small_R_jet.min_pT),
         pTsort=False,
         PCBTsort=True,
+        bTagWPDecorName="",
+        selectBjet=False))
+
+    cfg.merge(JetSelectorAlgCfg(
+        flags,
+        name="HyyJetSelectorAlg",
+        containerInKey=smalljetkey,
+        containerOutKey="HyyAnalysisJets_%SYS%",
+        PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
+        minPt=20e3,
+        pTsort=True,
+        PCBTsort=False,
         bTagWPDecorName="",
         selectBjet=False))
 
@@ -194,7 +207,8 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                 bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
                 floatVariableList=floatVariableList_jets,
                 intVariableList=intVariableList_jets,
-                doSystematics=flags.Analysis.do_CP_systematics
+                doSystematics=flags.Analysis.do_CP_systematics,
+                jets="HyyAnalysisJets_%SYS%"
             )
         )
 
@@ -203,7 +217,8 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                 "PhotonJetVarsAlg",
                 floatVariableList=floatVariableList_photonjets,
                 intVariableList=intVariableList_photonjets,
-                doSystematics=flags.Analysis.do_CP_systematics
+                doSystematics=flags.Analysis.do_CP_systematics,
+                jets="HyyAnalysisJets_%SYS%"
             )
         )
 
@@ -215,7 +230,8 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                 floatVariableList=floatVariableList_top,
                 intVariableList=intVariableList_top,
                 BDT_path=flags.Analysis.TopReconstruction.BDT_path,
-                doSystematics=flags.Analysis.do_CP_systematics
+                doSystematics=flags.Analysis.do_CP_systematics,
+                jets="HyyAnalysisJets_%SYS%"
             )
         )
 
