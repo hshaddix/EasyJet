@@ -15,4 +15,5 @@ ttree_output:
     large_R_jets:
       substructure_info: true
       bjet_regression: true
-      extra_variables: ["Tau4_wta"]
+      extra_variables:
+        - ["Tau4_wta", null]
