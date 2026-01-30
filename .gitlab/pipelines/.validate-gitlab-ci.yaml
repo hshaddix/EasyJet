@@ -84,6 +84,16 @@ validator_SHbbyy_data22_lite:
 
 # MC20
 
+validator_bbbb_mc20:
+  extends: .ntuple_validation
+  needs:
+    - job: compile
+      artifacts: true
+    - job: ntupler_bbbb_mc20
+      artifacts: false
+  script:
+    - easyjet-validate bbbb-mc20
+
 validator_bbyy_mc20_syst:
   extends: .ntuple_validation
   needs:

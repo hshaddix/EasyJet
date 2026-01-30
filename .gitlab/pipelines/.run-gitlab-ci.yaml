@@ -54,6 +54,11 @@ ntupler_SHbbyy_data22_lite:
 
 # MC20
 
+ntupler_bbbb_mc20:
+  extends: .ntupler
+  script:
+    - easyjet-test bbbb-mc20
+
 ntupler_bbyy_mc20_syst:
   extends: .ntupler
   script:
