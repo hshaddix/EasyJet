@@ -7,6 +7,7 @@ mc_list=(
     "$dir_samples/mc23_DAOD_PHYS_HH4b_nonres.txt"
     "$dir_samples/mc23_DAOD_PHYS_HH4b_resonant.txt"
     "$dir_samples/mc23_DAOD_PHYS_HH4b_background.txt"
+    "$dir_samples/mc23_DAOD_PHYS_HH4b_validation.txt"
 )
 
 #data

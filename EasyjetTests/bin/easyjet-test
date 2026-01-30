@@ -196,7 +196,7 @@ declare -A CONFIGS=(
     [HHandHyy-data22]=bbyyAnalysis/RunConfig-HH_H-skimming-bypass.yaml
     [SHbbyy-data22-lite]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
     # MC20
-    [bbbb-mc20]=bbbbAnalysis/RunConfig-HH4b-All-NoSyst-bypass.yaml
+    [bbbb-mc20]=bbbbAnalysis/RunConfig-HH4b-bypass.yaml
     [bbyy-mc20-syst]=bbyyAnalysis/RunConfig-bbyy-bypass-syst.yaml
     [bbyy-mc20-lite]=bbyyAnalysis/RunConfig-bbyy-skimming-legacy-bypass.yaml
     [HHandHyy-mc20]=bbyyAnalysis/RunConfig-HH_H-skimming-bypass.yaml
@@ -227,7 +227,7 @@ declare -A CONFIGS=(
     [sh4b-mc20af3]=bbbbAnalysis/RunConfig-SH4b.yaml
     [SHbbyy-mc20af3-lite]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
     # MC23
-    [bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-All-NoSyst-bypass.yaml
+    [bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-bypass.yaml
     [bbtt-mc23]=bbttAnalysis/RunConfig-bbtt-all-channels-bypass.yaml
     [bbVV-mc23]=bbVVAnalysis/RunConfig-bbVV-bypass.yaml
     [bbVVVBF-mc23]=bbVVAnalysis/RunConfig-VBF-bypass.yaml
