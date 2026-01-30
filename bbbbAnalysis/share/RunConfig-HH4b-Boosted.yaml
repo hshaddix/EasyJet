@@ -26,16 +26,23 @@ Large_R_jet:
   runMuonJetPtCorr: true
   amount_leadingjet: 2
   flat_mass_selections:
-    GN2Xv01:
-      - "FlatMassQCDEff_0p25"
-      - "FlatMassQCDEff_0p3"
-      - "FlatMassQCDEff_0p37"
-      - "FlatMassQCDEff_0p46"
-      - "FlatMassQCDEff_0p58"
-      - "FlatMassQCDEff_0p74"
-      - "FlatMassQCDEff_0p94"
-      - "FlatMassQCDEff_1p25"
-      - "FlatMassQCDEff_1p55"
+    taggers:
+      GN2Xv01:
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p3"
+        - "FlatMassQCDEff_0p37"
+        - "FlatMassQCDEff_0p46"
+        - "FlatMassQCDEff_0p58"
+        - "FlatMassQCDEff_0p74"
+        - "FlatMassQCDEff_0p94"
+        - "FlatMassQCDEff_1p25"
+        - "FlatMassQCDEff_1p55"
+      GN3XPV01_hbb:
+        - "FlatMassQCDEff_0p08"
+        - "FlatMassQCDEff_0p15"
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p4"
+        - "FlatMassQCDEff_0p6"
 
 Muon:
   ID: "Loose"
@@ -79,7 +86,6 @@ ttree_output:
     met: 'container_names.output.met'
   collection_options:
     small_R_jets:
-      JVT_details: true
       no_bjet_calib_p4: true
     large_R_jets:
       truth_labels: true

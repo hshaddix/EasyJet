@@ -4,8 +4,9 @@ triggerSFBranchSaveStrategy: "both"
 do_CP_systematics: false
 systematics_regex: []
 
-# Only dump gn3 scores for no-systematics runs
+# Only dump btag scores for no-systematics runs
 ttree_output:
   collection_options:
     small_R_jets:
+      btag_details: true
       gn3_scores: true
