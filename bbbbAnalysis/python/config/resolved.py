@@ -25,9 +25,7 @@ def resolved_trigger_SF_cfg(flags, smalljetkey):
                     containerOutKey="trigL1MatchedSmallRJets",
                     triggers=resolved_chain,
                     years=flags.Analysis.Years,
-                    matchingLevel="L1",
-                    doL1SF=flags.Analysis.Small_R_jet.doL1Matching,
-                    doHLTSF=flags.Analysis.Small_R_jet.doHLTMatching
+                    matchingLevel="L1"
                 )
             )
         if flags.Analysis.Small_R_jet.doHLTMatching:
@@ -38,9 +36,7 @@ def resolved_trigger_SF_cfg(flags, smalljetkey):
                     containerOutKey="trigHLTMatchedSmallRJets",
                     triggers=resolved_chain,
                     years=flags.Analysis.Years,
-                    matchingLevel="HLT",
-                    doL1SF=flags.Analysis.Small_R_jet.doL1Matching,
-                    doHLTSF=flags.Analysis.Small_R_jet.doHLTMatching
+                    matchingLevel="HLT"
                 )
             )
 

@@ -51,8 +51,6 @@ private:
 
     Gaudi::Property<std::vector<std::string>> m_triggers{ this, "triggers", {}, "List of triggers"};
     Gaudi::Property<std::vector<unsigned int>> m_years{ this, "years", {}, "List of years"};
-    Gaudi::Property<bool> m_doL1SF{this, "doL1SF", false, "Calculate jet trigger L1 SF"};
-    Gaudi::Property<bool> m_doHLTSF{this, "doHLTSF", false, "Calculate jet trigger HLT SF"};
     Gaudi::Property<std::string> m_matchingLevel{this, "matchingLevel", "HLT", "do L1 or HLT matching and SF"};
 
     std::unordered_map<std::string, std::vector<int>> m_triggerLegThresholds;
