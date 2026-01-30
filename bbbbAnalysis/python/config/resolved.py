@@ -8,7 +8,7 @@ from EasyjetHub.output.ttree.selected_objects import (
 )
 
 
-def resolved_trigger_SF_cfg(flags, smalljetkey):
+def resolved_trigger_SF_cfg(flags):
     cfg = ComponentAccumulator()
 
     # This is a jet trigger scale factor block
@@ -47,12 +47,10 @@ def resolved_trigger_bucket_cfg(flags):
     cfg = ComponentAccumulator()
 
     # calculate trigger buckets
-    jets_name = "smallRJetsForTriggerMatching"
-
     cfg.addEventAlgo(
         CompFactory.HH4B.TriggerDecoratorAlg(
             "HH4bTriggerDecoratorAlg",
-            jets=jets_name,
+            jets="smallRJetsForTriggerMatching",
             triggerLists=flags.Analysis.TriggerChains,
             doL1SF=flags.Analysis.Small_R_jet.doL1Matching,
             doHLTSF=flags.Analysis.Small_R_jet.doHLTMatching,

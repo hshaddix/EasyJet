@@ -61,8 +61,8 @@ namespace Easyjet
       this, "isMC", false, "is this simulation?"
     };
 
-    Gaudi::Property<bool> m_doL1Matching{this, "doL1Matching", false, "do trigger HLT matching?" };
-    Gaudi::Property<bool> m_doHLTMatching{this, "doHLTMatching", false, "do trigger L1 matching?" };
+    Gaudi::Property<bool> m_doL1Matching{this, "doL1Matching", false, "do trigger L1 matching?" };
+    Gaudi::Property<bool> m_doHLTMatching{this, "doHLTMatching", false, "do trigger HLT matching?" };
 
     PublicToolHandle<Trig::TrigDecisionTool> m_trigDecTool{
       this, "TrigDecisionTool", "", "Trigger decision tool"

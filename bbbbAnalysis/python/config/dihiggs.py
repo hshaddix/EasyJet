@@ -173,10 +173,7 @@ def dihiggs_cfg(
 
     if flags.Analysis.do_resolved_trigger_SF:
         cfg.merge(
-            resolved_trigger_SF_cfg(
-                flags,
-                smalljetkey=smalljetkey,
-            )
+            resolved_trigger_SF_cfg(flags)
         )
 
     if flags.Analysis.do_resolved_trigger_bucket:
