@@ -13,7 +13,6 @@ mc_list=(
 easyjet-gridsubmit --data-list $dir_samples/data_DAOD_PHYS_Run3.txt \
     --run-config ${runConfig} \
     --exec ${executable} \
-    --nGBperJob 5 \
     --campaign ${campaignName} \
     --noTag \
     --dest-se CERN-PROD_LOCALGROUPDISK

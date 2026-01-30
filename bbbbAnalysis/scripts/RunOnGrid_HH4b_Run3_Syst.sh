@@ -12,7 +12,7 @@ mc_list=(
 easyjet-gridsubmit --mc-list <(cat "${mc_list[@]}") \
     --run-config ${runConfig} \
     --exec ${executable} \
-    --nGBperJob 2 \
+    --nGBperJob 5 \
     --campaign ${campaignName} \
     --noTag \
     --dest-se CERN-PROD_LOCALGROUPDISK
