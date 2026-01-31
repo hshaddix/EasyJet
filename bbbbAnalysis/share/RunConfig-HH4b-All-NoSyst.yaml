@@ -9,4 +9,4 @@ ttree_output:
   collection_options:
     small_R_jets:
       btag_details: true
-      gn3_scores: true
+      # gn3_scores: true
