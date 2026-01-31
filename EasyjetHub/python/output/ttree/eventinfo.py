@@ -120,7 +120,7 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
     # Event-level scale factors
     trg_vars = []
     if flags.Input.isMC and flags.Analysis.Trigger.scale_factor.doSF:
-        trg_vars.append(("globalTriggerEffSF_%SYS%", None))
+        trg_vars.append(("globalTriggerEffSF_%SYS%", "float"))
     if flags.Analysis.Trigger.scale_factor.do_trigger_match:
         trg_vars.append(("globalTriggerMatch_%SYS%", None))
     if trg_vars:
