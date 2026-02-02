@@ -37,6 +37,16 @@ Large_R_jet:
         - "FlatMassQCDEff_0p94"
         - "FlatMassQCDEff_1p25"
         - "FlatMassQCDEff_1p55"
+      GN2Xv01_ftop0p0_hbb:
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p3"
+        - "FlatMassQCDEff_0p37"
+        - "FlatMassQCDEff_0p46"
+        - "FlatMassQCDEff_0p58"
+        - "FlatMassQCDEff_0p74"
+        - "FlatMassQCDEff_0p94"
+        - "FlatMassQCDEff_1p25"
+        - "FlatMassQCDEff_1p55"
       GN3XPV01_hbb:
         - "FlatMassQCDEff_0p08"
         - "FlatMassQCDEff_0p15"
