@@ -100,7 +100,7 @@ namespace ZCC
       const xAOD::EventInfo *event = nullptr;
       ANA_CHECK (m_eventHandle.retrieve (event, sys));
                 
-      bool pass_truth_baseline = false;
+      char pass_truth_baseline = false;
       if (m_isMC){
         // Find truth decision
         SG::ReadDecorHandle<xAOD::EventInfo, char> m_passTruthCuts(m_passTruthCutsKey);
@@ -127,8 +127,8 @@ namespace ZCC
         for(const xAOD::Jet* jet : *jets) {
           int pcbt = m_PCBTs.at(ftag2D_WP).get(*jet, sys);
           bool is_ctag = std::find(ctag_values.begin(), ctag_values.end(), pcbt) != ctag_values.end();
-          bool eta_cut = std::abs(jet->eta()) < 2.5;
-          if (is_ctag && eta_cut) {
+          bool y_cut = std::abs(jet->rapidity()) < 2.5;
+          if (is_ctag && y_cut) {
             cjets->push_back(jet);
           }
         }
@@ -191,7 +191,7 @@ namespace ZCC
           pass_baseline &= m_bools.at(key);
         }
       }
-      
+      pass_baseline &= (jets->size() >= 1);
       m_pass_cuts.set(*event, pass_baseline, sys);
 
       // do the CUTFLOW only with sys="" -> NOSYS
@@ -227,9 +227,6 @@ namespace ZCC
       for (auto& [key, var] : m_bools) {
         m_Bbranches.at(key).set(*event, var, sys);
       }
-
-      ATH_MSG_VERBOSE("pass_baseline = " << pass_baseline);
-      ATH_MSG_VERBOSE("pass_truth_baseline = " << pass_truth_baseline);
 
       if (pass_baseline != pass_truth_baseline) {
         ATH_MSG_VERBOSE("Baseline cuts do not match truth baseline cuts! "

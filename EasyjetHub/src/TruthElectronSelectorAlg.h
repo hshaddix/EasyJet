@@ -58,6 +58,7 @@ private:
     Gaudi::Property<int>   m_minimumAmount    {this, "minimumAmount", -1, "Minimum number of electrons to consider"}; // -1 means ignores this
     Gaudi::Property<bool>  m_pTsort           {this, "pTsort", true, "Sort electrons by pT"};
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra electrons after pT sorting"}; // -1 means keep them all
+    Gaudi::Property<bool>  m_useDressedQuantities {this, "useDressedQuantities", false, "Use dressed quantities for selection"};
 
   };
 }

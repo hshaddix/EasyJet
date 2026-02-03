@@ -85,6 +85,7 @@ private:
     Gaudi::Property<bool>  m_pTsort           {this, "pTsort", true, "Sort jets by pT"};
     Gaudi::Property<bool>  m_PCBTsort         {this, "PCBTsort", false, "Sort jets by PCBT scores"};
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra jets after pT sorting"}; // -1 means keep them all
+    Gaudi::Property<bool>  m_useRapidity      {this, "useRapidity", false, "Use rapidity instead of eta"};
 
     Gaudi::Property<bool>  m_selectBjet       {this, "selectBjet", false, "Apply bjet selection"};
     Gaudi::Property<int>   m_bjetAmount       {this, "bjetAmount", -1, "Number of jets to consider for isbjetXX decoration"};

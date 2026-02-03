@@ -122,7 +122,7 @@ namespace Easyjet
         // cuts
         if (!m_select.empty() && !m_select.get(*jet, sys))
           continue;
-        if (jet->pt() < m_minPt || std::abs(jet->eta()) > m_maxEta)
+        if (jet->pt() < m_minPt || (m_useRapidity ? std::abs(jet->rapidity()) > m_maxEta : std::abs(jet->eta()) > m_maxEta))
           continue;
         // cuts for calibrated large-R jet
         if (m_maxPt > 0 && jet->pt() > m_maxPt)
@@ -135,7 +135,7 @@ namespace Easyjet
         bool isSelected = false;
         // select btagging wp if given and select_bjet flag is on. if not given always push back
         // check if want to apply btagging
-        if (!m_selectBjet || (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5)) 
+        if (!m_selectBjet || (m_isBtag.get(*jet, sys) && (m_useRapidity ? std::abs(jet->rapidity())<2.5 : std::abs(jet->eta())<2.5))) 
         {
           workContainer->push_back(jet);
           isSelected = true;
@@ -196,7 +196,7 @@ namespace Easyjet
         }
         //lead/sublead bjet
         if(dobjet){
-          if (WPgiven &&  m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5){
+          if (WPgiven &&  m_isBtag.get(*jet, sys) && (m_useRapidity ? std::abs(jet->rapidity())<2.5 : std::abs(jet->eta())<2.5)){
               m_bleadBranches.at(nbjet).set(*jet, true, sys);
               nbjet++;
           }

@@ -68,10 +68,6 @@ namespace ZCC
       SG::ReadHandleKey<xAOD::TruthParticleContainer>
       m_truthmuonInKey{ this, "truthMuonInContainer", "", "Truth muon container to read" };
 
-      // std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_bjetDecorHandleKeys;
-
-      // std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_cjetDecorHandleKeys;
-
       SG::ReadDecorHandleKey<xAOD::JetContainer> m_jetTruthFlavourKey{this, "jetTruthFlavourDecoration", "", "Name of jet truth flavour decoration"};
 
       long long int m_total_events{0};
@@ -109,8 +105,8 @@ namespace ZCC
 
       std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>> m_Fbranches;
 
-      void truthOverlapRemoval(const xAOD::JetContainer& truthJets, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
-      void evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, CutManager& ZCharmTruthCuts);
+      void truthOverlapRemoval(const xAOD::JetContainer& truthJets, ConstDataVector<xAOD::TruthParticleContainer>& truthElectrons, ConstDataVector<xAOD::TruthParticleContainer>& truthMuons, ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
+      void evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, CutManager& ZCharmTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection);
       void evaluateTruthCJetCuts(const ConstDataVector<xAOD::JetContainer>& truthCjets, CutManager& ZCharmTruthCuts);
       void setThresholds(const xAOD::EventInfo* event);
       StatusCode initialiseCutflow(); 

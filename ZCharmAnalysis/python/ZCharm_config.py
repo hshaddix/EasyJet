@@ -45,7 +45,8 @@ def ZCharm_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
                                 containerOutKey="ZCharmAnalysisJets_%SYS%",
                                 bTagWPDecorName="",
                                 minPt=flags.Analysis.Small_R_jet.min_pT_ZCharm,
-                                maxEta=flags.Analysis.Small_R_jet.max_eta_ZCharm
+                                maxEta=flags.Analysis.Small_R_jet.max_eta_ZCharm,
+                                useRapidity=True
                                 ))
 
     from EasyjetHub.algs.postprocessing.trigger_matching import TriggerMatchingToolCfg
@@ -110,13 +111,16 @@ def ZCharmTruth_cfg(flags, truthsmalljetkey, truthlargejetkey, truthmuonkey,
                                       containerInKey=truthmuonkey,
                                       containerOutKey="ZCharmTruthMuons",
                                       minPt=25 * Units.GeV,
-                                      maxEta=flags.Analysis.Muon.max_eta_ZCharm))
+                                      maxEta=flags.Analysis.Muon.max_eta_ZCharm,
+                                      useDressedQuantities=True
+                                      ))
 
     cfg.merge(TruthElectronSelectorAlgCfg(flags,
                                           containerInKey=truthelectronkey,
                                           containerOutKey="ZCharmTruthElectrons",
                                           minPt=25 * Units.GeV,
-                                          maxEta=2.5
+                                          maxEta=2.5,
+                                          useDressedQuantities=True
                                           ))
 
     cfg.merge(TruthLeptonOrderingAlgCfg(flags,
@@ -132,7 +136,9 @@ def ZCharmTruth_cfg(flags, truthsmalljetkey, truthlargejetkey, truthmuonkey,
                                      truthLabelDecorName=truthsmalljetkey
                                      + ".HadronConeExclTruthLabelID",
                                      decorOutName="TruthEvents.nSmallJets",
-                                     decoration=truthsmalljetkey + ".isTruthJet"))
+                                     decoration=truthsmalljetkey + ".isTruthJet",
+                                     useRapidity=True
+                                     ))
 
     cfg.addEventAlgo(
         CompFactory.ZCC.ZCharmTruthSelectorAlg(
@@ -161,6 +167,9 @@ def get_BaselineVarsZCharmAlg_variables(flags):
     int_variable_names += ["nJets", "nCJets"]
     int_variable_names += ["nElectrons", "nMuons", "nLeptons"]
 
+    # Do flavour classification and store the category in ntuple
+    int_variable_names += ["flavourCategory"]
+
     return float_variable_names, int_variable_names
 
 
@@ -182,18 +191,21 @@ def get_ZCharmTruthSelectorAlg_variables(flags):
             # Store the float variables
             if var in flags.Analysis.Small_R_jet.variables_truthjets:
                 float_variable_names += [f"TruthJet_c{index+1}_{var}"]
-            branches += [
-                f"EventInfo.TruthJet_c{index+1}_{var}"
-                + f"-> ZCharm_TruthJet_c{index+1}_{var} type=float"
-            ]
+                float_variable_names += [f"TruthJet_{index+1}_{var}"]
+            branches += [f"EventInfo.TruthJet_c{index+1}_{var}"
+                         + f"-> ZCharm_TruthJet_c{index+1}_{var} type=float"]
+            branches += [f"EventInfo.TruthJet_{index+1}_{var}"
+                         + f"-> ZCharm_TruthJet_{index+1}_{var} type=float"]
 
-    # Dilepton
-    for var in flags.Analysis.Lepton.variables_truth_Z:
+    # Leptons and Z boson
+    for var in [*flags.Analysis.Lepton.variables_truth]:
         float_variable_names += [f"Truth_ll_{var}"]
-        branches += [
-            f"EventInfo.Truth_ll_{var} -> ZCharm_Truth_ll_{var} type=float"
-        ]
-
+        branches += [f"EventInfo.Truth_ll_{var}"
+                     + f"-> ZCharm_Truth_ll_{var} type=float"]
+        for lepton in range(1, 3):
+            float_variable_names += [f"TruthLepton_{lepton}_{var}"]
+            branches += [f"EventInfo.TruthLepton_{lepton}_{var}"
+                         + f"-> ZCharm_TruthLepton_{lepton}_{var} type=float"]
     return branches, float_variable_names
 
 

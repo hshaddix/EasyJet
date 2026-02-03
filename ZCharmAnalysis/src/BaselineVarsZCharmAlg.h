@@ -98,6 +98,8 @@ private:
 
     std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
     
+    FlavourCategory getEventFlavourCategory(const auto& jets, const auto& sys);
+    
  };
 }
 #endif

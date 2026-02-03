@@ -47,6 +47,8 @@ namespace Easyjet
         
     SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedMuon(m_isSelectedMuonKey);
     SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey);
+    SG::ConstAccessor<float> dressedMuonPt("pt_dressed");
+    SG::ConstAccessor<float> dressedMuonEta("eta_dressed");
 
 
     // loop over muons 
@@ -54,8 +56,10 @@ namespace Easyjet
     {
       m_isSelectedMuon(*muon) = false;
 
-      if (muon->pt() < m_minPt || std::abs(muon->eta()) > m_maxEta)
-          continue;
+      if (!m_useDressedQuantities && (muon->pt() < m_minPt || std::abs(muon->eta()) > m_maxEta)) continue;
+      if (m_useDressedQuantities) {
+        if (dressedMuonPt(*muon) < m_minPt || std::abs(dressedMuonEta(*muon)) > m_maxEta) continue;
+      }
       
       // If cuts are passed, save the object
       workContainer->push_back(muon);

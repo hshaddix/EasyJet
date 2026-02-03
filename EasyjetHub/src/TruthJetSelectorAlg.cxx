@@ -76,7 +76,7 @@ namespace Easyjet
 
       m_isSelectedJet(*jet) = false; // default to not selected
       // cuts
-      if (jet->pt() < m_minPt || std::abs(jet->eta()) > m_maxEta)
+      if (jet->pt() < m_minPt || (m_useRapidity ? std::abs(jet->rapidity()) > m_maxEta : std::abs(jet->eta()) > m_maxEta))
         continue;
       // cuts for calibrated large-R jet
       if (m_maxPt > 0 && jet->pt() > m_maxPt)
@@ -125,7 +125,7 @@ namespace Easyjet
       int njet = 0;
       for (const xAOD::Jet *jet : *workContainer) {
         int truthLabel = (*m_truthLabel)(*jet);
-        if (truthLabel == 5 && std::abs(jet->eta())<2.5){
+        if (truthLabel == 5 && (m_useRapidity ? std::abs(jet->rapidity())<2.5 : std::abs(jet->eta())<2.5)){
           SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_bleadBranchesKeys.at(njet));
           handle(*jet) = true;
           njet++;
@@ -139,7 +139,7 @@ namespace Easyjet
       int njet = 0;
       for (const xAOD::Jet *jet : *workContainer) {
         int truthLabel = (*m_truthLabel)(*jet);
-        if (truthLabel == 4 && std::abs(jet->eta())<2.5){
+        if (truthLabel == 4 && (m_useRapidity ? std::abs(jet->rapidity())<2.5 : std::abs(jet->eta())<2.5)){
           SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_cleadBranchesKeys.at(njet));
           handle(*jet) = true;
           njet++;

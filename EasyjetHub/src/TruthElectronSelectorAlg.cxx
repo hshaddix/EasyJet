@@ -45,14 +45,20 @@ namespace Easyjet
     SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedElectron(m_isSelectedElectronKey);
     SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey);
 
+    SG::ConstAccessor<float> dressedLeptonPt("pt_dressed");
+    SG::ConstAccessor<float> dressedLeptonEta("eta_dressed");
+
     // loop over electrons 
     for (const xAOD::TruthParticle *electron : *inContainer)
     {
       m_isSelectedElectron(*electron) = false;
 
 
-      if (electron->pt() < m_minPt || std::abs(electron->eta()) > m_maxEta)
-          continue;
+      if (!m_useDressedQuantities && (electron->pt() < m_minPt || std::abs(electron->eta()) > m_maxEta)) continue;
+      
+      if (m_useDressedQuantities) {
+        if (dressedLeptonPt(*electron) < m_minPt || std::abs(dressedLeptonEta(*electron)) > m_maxEta) continue;
+      }
       
       // If cuts are passed, save the object
       workContainer->push_back(electron);

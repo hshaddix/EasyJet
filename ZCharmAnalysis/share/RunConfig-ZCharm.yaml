@@ -18,6 +18,11 @@ do_ZCharm_analysis: true
 
 bypass: false
 
+# Include systematics
+do_CP_systematics: false
+# systematics_regex: [".*"]
+systematics_regex: [".*(MUON|EG|EL|JET|FT|extrapolation_pt|PRW|GEN).*"]
+
 # Toggles for object types
 do_small_R_jets: true
 do_muons: true
@@ -64,13 +69,13 @@ Muon:
 Lepton:
   amount: 2
   variables_int: ["isPrompt","truthOrigin", "truthType"]
-  variables_truth_Z: ["pt", "eta", "phi", "E", "m"]
+  variables_truth: ["pt", "eta", "phi", "E", "m"]
 
 # list of triggers per year to consider
 Trigger:
   include: [ZCharmAnalysis/trigger.yaml]
 # apply trigger lists to filter events
-do_trigger_filtering: true
+do_trigger_filtering: false
 
 # write objects with overlap removal applied
 # turning this on you have to decide on one large R jet collection
@@ -121,7 +126,3 @@ ttree_output:
   slim_variables_with_syst: true
   reco_outputs:
     met : 'container_names.output.met'
-  truth_outputs:
-    electrons: "ZCharmTruthElectrons"
-    muons: "ZCharmTruthMuons"
-    small_R_jets: "ZCharmTruthJets"

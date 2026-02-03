@@ -112,6 +112,17 @@ namespace ZCC
 
       // Count jets
       int n_jets = jets->size();
+      
+      // Determine event flavour category
+      if(m_isMC) {
+        auto analysis_jets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
+        for(const xAOD::Jet* jet : *jets) {
+          if (std::abs(jet->rapidity())<2.5) {
+            analysis_jets->push_back(jet);
+          }
+        }
+        m_Ibranches.at("flavourCategory").set(*event, getEventFlavourCategory(analysis_jets, sys), sys);
+      }
 
       // c-jet sector
       std::string ftag2D_WP = "ftag_quantile_GN2v01_Continuous2D";
@@ -121,7 +132,7 @@ namespace ZCC
       {
         for(const xAOD::Jet* jet : *jets) {
           int pcbt = m_PCBTs.at(ftag2D_WP).get(*jet, sys);
-          if (std::find(ctag_values.begin(), ctag_values.end(), pcbt)!=ctag_values.end() && std::abs(jet->eta())<2.5) {
+          if (std::find(ctag_values.begin(), ctag_values.end(), pcbt)!=ctag_values.end() && std::abs(jet->rapidity())<2.5) {
             cjets->push_back(jet);
           }
         }
@@ -263,6 +274,54 @@ namespace ZCC
 
     }
     return StatusCode::SUCCESS;
+  }
+  
+  FlavourCategory BaselineVarsZCharmAlg::getEventFlavourCategory(const auto& jets, const auto& sys) {
+    int nCHadMatchJets = 0;
+    float maxCHadPt = 0.0;
+    int nBHadMatchJets = 0;
+    float maxBHadPt = 0.0;
+    
+    // count b and c jets
+    // for (const auto& jet : *jets) {
+    for (UInt_t i = 0; i < jets->size(); ++i) {
+        int label = m_truthFlav.get(*jets->at(i), sys);
+        float pt = jets->at(i)->pt();
+
+        if (std::abs(label) == 4) { 
+            nCHadMatchJets++;
+            if (pt > maxCHadPt) maxCHadPt = pt;
+        }
+        if (std::abs(label) == 5) { 
+            nBHadMatchJets++;
+            if (pt > maxBHadPt) maxBHadPt = pt;
+        }
+    }
+    
+    // determine the category based on 2 leading jets
+    FlavourCategory result = FlavourCategory::flavUNDEFINED;
+    if (((nCHadMatchJets == 1) && (nBHadMatchJets == 0)) || 
+        ((nCHadMatchJets == 1) && (nBHadMatchJets > 0) && (maxCHadPt > maxBHadPt))) {
+        result = FlavourCategory::flav1C; // 1C
+    }
+    else if (((nCHadMatchJets > 1) && (nBHadMatchJets == 0)) || 
+              ((nCHadMatchJets > 1) && (nBHadMatchJets > 0) && (maxCHadPt > maxBHadPt))) {
+        result = FlavourCategory::flavNC; // 2C
+    }
+    else if (((nBHadMatchJets == 1) && (nCHadMatchJets == 0)) || 
+              ((nBHadMatchJets == 1) && (nCHadMatchJets > 0) && (maxBHadPt > maxCHadPt))) {
+        result = FlavourCategory::flav1B; // 1B
+    }
+    else if (((nBHadMatchJets > 1) && (nCHadMatchJets == 0)) || 
+              ((nBHadMatchJets > 1) && (nCHadMatchJets > 0) && (maxBHadPt > maxCHadPt))) {
+        result = FlavourCategory::flavNB; // 2B
+    }
+    else{
+        result = FlavourCategory::flavL; // L
+    }
+
+    return result;
+
   }
 
 }

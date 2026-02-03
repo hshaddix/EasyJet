@@ -68,6 +68,7 @@ private:
     Gaudi::Property<int>   m_maximumAmount    {this, "maximumAmount", -1, "Maximum number of jets to consider"};
     Gaudi::Property<bool>  m_pTsort           {this, "pTsort", true, "Sort jets by pT"};
     Gaudi::Property<int>   m_truncateAtAmount {this, "truncateAtAmount", -1, "Remove extra jets after pT sorting"}; // -1 means keep them all
+    Gaudi::Property<bool>  m_useRapidity      {this, "useRapidity", false, "Use rapidity instead of eta"};
 
     Gaudi::Property<bool>  m_hasTruthLabel    {this, "hasTruthLabel", false, "Does input container have a truth label for flavour selection?"};
     Gaudi::Property<int>   m_bjetAmount       {this, "bjetAmount", -1, "Number of jets to consider for isbjetXX decoration"};

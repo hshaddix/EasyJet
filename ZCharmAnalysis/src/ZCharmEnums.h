@@ -52,5 +52,15 @@ namespace ZCC
     ONE_LARGE_JET_TRUTH,
     
   };
+  
+  enum FlavourCategory 
+  {
+    flavUNDEFINED = 0,
+    flav1C = 1,
+    flavNC = 2,
+    flav1B = 3,
+    flavNB = 4,
+    flavL  = 5
+  };
 };
 #endif
