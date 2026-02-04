@@ -42,3 +42,5 @@ save_nonresonant_BDTInput_variables: false
 
 Truth:
   do_STXS: false
+
+always_do_CBK_systematics: true

@@ -61,7 +61,8 @@ def generator_sequence(flags):
                                  flags.Analysis.ttree_output.stream_name)
     configSeq.setOptionValue('.runNumber', flags.Input.RunNumbers[0])
     configSeq.setOptionValue('.cutBookkeepersSystematics', doCBK
-                             and flags.Analysis.do_CP_systematics)
+                             and (flags.Analysis.do_CP_systematics
+                                  or flags.Analysis.always_do_CBK_systematics))
     configSeq.setOptionValue('.histPattern', flags.Analysis.cbkHistPattern)
 
     return configSeq

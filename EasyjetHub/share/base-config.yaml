@@ -292,6 +292,7 @@ systematics_regex: []
 systematics_suffix_separator: "_"
 # CutBookKeeper histPattern
 cbkHistPattern: "CutBookkeeper_%DSID%_%RUN%_%SYS%"
+always_do_CBK_systematics: false
 
 # Store high level variables by default 
 # when the config file set the high level variables

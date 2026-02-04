@@ -170,3 +170,5 @@ ttree_output:
 do_HHbbyy_Hyy_Analysis: false
 save_detailed_Input_variables: false
 do_Hyy_multiclass: false
+
+always_do_CBK_systematics: true
