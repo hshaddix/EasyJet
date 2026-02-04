@@ -55,7 +55,7 @@ Muon:
 
 # photon ID and isolation requirements
 Photon:
-  min_pT_bbyy: 22.e+3 # minimum pT of selected Photons. Separate from min pT of photons used for OR.
+  min_pT_bbyy: 10.e+3 # minimum pT of selected Photons. Separate from min pT of photons used for OR.
   ID: "Loose" # Loose, Tight
   Iso: "NonIso"
   amount: 2
@@ -98,7 +98,7 @@ do_resonant_onebtag: false
 
 # flag that toggles single photon trigger in the cutflow
 # so that PASS_TRIGGER = single || diphoton
-enable_single_photon_trigger: false
+enable_single_photon_trigger: true
 
 # flag that toggles run-through mode in SelectorAlg
 bypass: false
@@ -116,7 +116,7 @@ do_nonresonant_BDTs: true
 save_VBF_vars: true
 save_extra_vars: true
 save_nonresonant_BDTInput_variables: true
-save_HbbCand_vars: true
+save_HbbCand_vars: false
 save_pass_trigger_info: true
 
 BDT_path:

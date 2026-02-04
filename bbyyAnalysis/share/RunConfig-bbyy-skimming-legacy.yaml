@@ -19,10 +19,10 @@ CutList :
       - LESS_THAN_SIX_CENTRAL_JETS
       - EXACTLY_TWO_B_JETS
 
-save_extra_vars: false
+save_extra_vars: true
 do_GNN2bjetSelection: false
-save_HbbCand_vars: false
-save_pass_trigger_info: false
+save_HbbCand_vars: true
+save_pass_trigger_info: true
 
 Truth:
   do_STXS: false

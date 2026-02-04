@@ -87,7 +87,12 @@ namespace HHBBYY
       m_Bbranches.emplace(value, var);
       ATH_CHECK(m_Bbranches.at(value).initialize(m_systematicsList, m_eventHandle));
     };
-  
+
+    std::string bucket = "rel_pT_bucket";
+    CP::SysWriteDecorHandle<int> Branch_rel_pT_bucket {bucket+"_%SYS%", this};
+    m_Ibranches.emplace(bucket, Branch_rel_pT_bucket);
+    ATH_CHECK(m_Ibranches.at(bucket).initialize(m_systematicsList, m_eventHandle));
+
     // special flag for all cuts
     ATH_CHECK (m_passallcuts.initialize(m_systematicsList, m_eventHandle));
 
@@ -163,10 +168,12 @@ namespace HHBBYY
       }
       if (m_saveTriggerInfo){
         m_Bbranches.at("pass_trigger_single_photon").set(*event, m_bools.at(HHBBYY::pass_trigger_single_photon), sys);
-        m_Bbranches.at("pass_trigger_diphoton").set(*event, m_bools.at(HHBBYY::pass_trigger_diphoton), sys);
+        m_Bbranches.at("pass_trigger_diphoton_g35_g25").set(*event, m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25), sys);
+        m_Bbranches.at("pass_trigger_diphoton_g45_g20").set(*event, m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20), sys);
 
         m_Bbranches.at("pass_matching_trigger_single_photon").set(*event, m_bools.at(HHBBYY::pass_matching_trigger_single_photon), sys);
-        m_Bbranches.at("pass_matching_trigger_diphoton").set(*event, m_bools.at(HHBBYY::pass_matching_trigger_diphoton), sys);
+        m_Bbranches.at("pass_matching_trigger_diphoton_g35_g25").set(*event, m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25), sys);
+        m_Bbranches.at("pass_matching_trigger_diphoton_g45_g20").set(*event, m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20), sys);
       }
 
       if (m_bbyyCuts.exists("TWO_LOOSE_PHOTONS"))
@@ -202,10 +209,11 @@ namespace HHBBYY
       }
 
 
-
+      rel_pT_bucket = -1;
       if (n_TightID_NonIso_photons >=2 || n_LooseID_Iso_photons >=2 || n_photons >=2){
         evaluatePhotonCuts(sel_photons, n_TightID_NonIso_photons, n_LooseID_Iso_photons, n_photons, m_bbyyCuts);
       }
+      m_Ibranches.at("rel_pT_bucket").set(*event, rel_pT_bucket, sys);
       evaluateLeptonCuts(*electrons, *muons, m_bbyyCuts);
       evaluateJetCuts(*bjets, *jets, m_bbyyCuts);
 
@@ -213,9 +221,9 @@ namespace HHBBYY
       for (CutEntry& cut : m_bbyyCuts) {
         passedall = passedall && cut.passed;
         if (not m_enableSinglePhotonTrigger and cut.name == "PASS_TRIGGER")
-          passedall = passedall && m_bools.at(HHBBYY::pass_trigger_diphoton);
+          passedall = passedall && (m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20));
         else if (not m_enableSinglePhotonTrigger and cut.name == "PASS_TRIGGER_MATCHING")
-          passedall = passedall && m_bools.at(HHBBYY::pass_matching_trigger_diphoton);
+          passedall = passedall && (m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20));
         m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
       }
       m_passallcuts.set(*event, passedall, sys);
@@ -237,9 +245,9 @@ namespace HHBBYY
             if (m_bbyyCuts(cut).passed) {
               bool pass = true;
               if (not m_enableSinglePhotonTrigger and cut == "PASS_TRIGGER") 
-                pass = m_bools.at(HHBBYY::pass_trigger_diphoton);
+                pass = m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20);
               else if (not m_enableSinglePhotonTrigger and cut == "PASS_TRIGGER_MATCHING")
-                pass = m_bools.at(HHBBYY::pass_matching_trigger_diphoton);
+                pass = m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20);
               m_bbyyCuts(cut).counter += pass;
               if (m_isMC) m_bbyyCuts(cut).w_counter += m_generatorWeight.get(*event, sys) * pass;
             }
@@ -254,12 +262,12 @@ namespace HHBBYY
 	    std::string cut = m_inputCutList.value().at(i);
             if (not m_enableSinglePhotonTrigger and
 		cut == "PASS_TRIGGER"){
-              if (not m_bools.at(HHBBYY::pass_trigger_diphoton)) break;
-              consecutive_cuts += m_bools.at(HHBBYY::pass_trigger_diphoton);
+              if (not (m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20))) break;
+              consecutive_cuts += m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20);
             } else if (not m_enableSinglePhotonTrigger and
 		       cut == "PASS_TRIGGER_MATCHING"){
-              if (not m_bools.at(HHBBYY::pass_matching_trigger_diphoton)) break;
-              consecutive_cuts += m_bools.at(HHBBYY::pass_matching_trigger_diphoton);
+              if (not (m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20))) break;
+              consecutive_cuts += m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20);
             }else
               consecutive_cuts++;
           }
@@ -273,9 +281,9 @@ namespace HHBBYY
           std::string cut = m_inputCutList.value().at(i);
           bool pass = true;
           if (not m_enableSinglePhotonTrigger and cut == "PASS_TRIGGER")
-            pass = m_bools.at(HHBBYY::pass_trigger_diphoton);
+            pass = m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20);
           else if (not m_enableSinglePhotonTrigger and cut == "PASS_TRIGGER_MATCHING")
-            pass = m_bools.at(HHBBYY::pass_matching_trigger_diphoton);
+            pass = m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) || m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20);
           m_bbyyCuts[i].relativeCounter += pass;
           if (m_isMC) m_bbyyCuts(cut).w_relativeCounter += m_generatorWeight.get(*event, sys) * pass;
         }
@@ -345,7 +353,8 @@ namespace HHBBYY
         return;
 
     bool pass_trigger_single_photon = false;
-    bool pass_trigger_diphoton = false;
+    bool pass_trigger_diphoton_g35_g25 = false;
+    bool pass_trigger_diphoton_g45_g20 = false;                                                
 
     for (const std::string &trigger : photonTriggers)
     {
@@ -362,15 +371,25 @@ namespace HHBBYY
         else
           pass_trigger_single_photon |= m_triggerDecorHandle(event);
       }
-      else
+      else if (m_triggerMap.at(trigger) == "diphoton_g35_g25")
       {
-        pass_trigger_diphoton |= m_triggerDecorHandle(event);
+        pass_trigger_diphoton_g35_g25 |= m_triggerDecorHandle(event);
       }
-     
+      else if (m_triggerMap.at(trigger) == "diphoton_g45_g20")
+      {
+        if (!m_bools.at(HHBBYY::is24))
+        {
+          continue;
+        }
+        else
+          pass_trigger_diphoton_g45_g20 |= m_triggerDecorHandle(event);
+      }
+
     }
     // OR between single and double photon triggers
-    bbyyCuts("PASS_TRIGGER").passed = pass_trigger_diphoton || pass_trigger_single_photon;
-    m_bools.at(HHBBYY::pass_trigger_diphoton) = pass_trigger_diphoton;
+    bbyyCuts("PASS_TRIGGER").passed = pass_trigger_diphoton_g35_g25 || pass_trigger_diphoton_g45_g20 || pass_trigger_single_photon;
+    m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25) = pass_trigger_diphoton_g35_g25;
+    m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20) = pass_trigger_diphoton_g45_g20;
     m_bools.at(HHBBYY::pass_trigger_single_photon) = pass_trigger_single_photon;
   }
 
@@ -382,7 +401,8 @@ namespace HHBBYY
         return;
 
     bool pass_matching_trigger_single_photon = false;
-    bool pass_matching_trigger_diphoton = false;
+    bool pass_matching_trigger_diphoton_g35_g25 = false;
+    bool pass_matching_trigger_diphoton_g45_g20 = false;
     if (photons->size() >= 2){
 
       for (const std::string &trigger : photonTriggers)
@@ -397,18 +417,29 @@ namespace HHBBYY
           else
             pass_matching_trigger_single_photon |= m_matchingTool->match(*photons->at(0), trigger) || m_matchingTool->match(*photons->at(1), trigger);
         }
-        else
+
+        else if (m_triggerMap.at(trigger) == "diphoton_g35_g25")
         {
-          pass_matching_trigger_diphoton |= m_matchingTool->match({photons->at(0), photons->at(1)}, trigger);
+          pass_matching_trigger_diphoton_g35_g25 |= m_matchingTool->match({photons->at(0), photons->at(1)}, trigger);
         }
-     
+
+        else if (m_triggerMap.at(trigger) == "diphoton_g45_g20")
+        {
+          if (!m_bools.at(HHBBYY::is24))
+          {
+            continue;
+          }
+          else
+            pass_matching_trigger_diphoton_g45_g20 |= m_matchingTool->match({photons->at(0), photons->at(1)}, trigger);
+        }
       }
     
     }
     //OR between single and di-photon trigger for matching studies
-    bbyyCuts("PASS_TRIGGER_MATCHING").passed = pass_matching_trigger_single_photon || pass_matching_trigger_diphoton;
+    bbyyCuts("PASS_TRIGGER_MATCHING").passed = pass_matching_trigger_single_photon || pass_matching_trigger_diphoton_g35_g25 || pass_matching_trigger_diphoton_g45_g20;
     m_bools.at(HHBBYY::pass_matching_trigger_single_photon) = pass_matching_trigger_single_photon;
-    m_bools.at(HHBBYY::pass_matching_trigger_diphoton) = pass_matching_trigger_diphoton;
+    m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) = pass_matching_trigger_diphoton_g35_g25;
+    m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20) = pass_matching_trigger_diphoton_g45_g20;
 
   }
 
@@ -434,8 +465,37 @@ namespace HHBBYY
       ptOverMasses.push_back(photon->pt() / myy);
     }
 
-    if (ptOverMasses[0] > 0.35 && ptOverMasses[1] > 0.25 && bbyyCuts.exists("PASS_RELPT"))
-      bbyyCuts("PASS_RELPT").passed = true;
+    // Always calculate rel_pT_bucket for analysis studies, regardless of whether PASS_RELPT is in cut list
+    // For MC, use trigger matching flags; for data, use trigger pass flags
+    bool use_g35_g25 = m_isMC ? m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g35_g25) 
+                               : m_bools.at(HHBBYY::pass_trigger_diphoton_g35_g25);
+    bool use_g45_g20 = m_isMC ? m_bools.at(HHBBYY::pass_matching_trigger_diphoton_g45_g20) 
+                               : m_bools.at(HHBBYY::pass_trigger_diphoton_g45_g20);
+    bool use_g140 = m_isMC ? m_bools.at(HHBBYY::pass_matching_trigger_single_photon) 
+                           : m_bools.at(HHBBYY::pass_trigger_single_photon);
+    
+    if (ptOverMasses[0] > 0.35 && ptOverMasses[1] > 0.25 && use_g35_g25)
+    {
+      rel_pT_bucket = 1;
+    }
+    else if (ptOverMasses[0] > 1.35 && ptOverMasses[1] > 0.10 && use_g140)
+    {
+      rel_pT_bucket = 2;
+    }
+    else if (ptOverMasses[0] > 0.45 && ptOverMasses[1] > 0.20 && use_g45_g20)
+    {
+      rel_pT_bucket = 3;
+    }
+    else
+    {
+      rel_pT_bucket = -1;
+    }
+    
+    // Set PASS_RELPT cut flag only if the cut exists in the cut list
+    if (bbyyCuts.exists("PASS_RELPT"))
+    {
+      bbyyCuts("PASS_RELPT").passed = rel_pT_bucket != -1;
+    }
     if (myy >= 105. * Athena::Units::GeV && myy < 160. * Athena::Units::GeV && bbyyCuts.exists("DIPHOTON_MASS"))
       bbyyCuts("DIPHOTON_MASS").passed = true;
     if (myy >= 90. * Athena::Units::GeV && myy < 175. * Athena::Units::GeV && bbyyCuts.exists("DIPHOTON_MASS_LOOSE"))
@@ -496,6 +556,7 @@ namespace HHBBYY
 
     m_bools.at(HHBBYY::is15) = 266904 <= rdmNumber && rdmNumber <= 284484;
     m_bools.at(HHBBYY::is16) = 296939 <= rdmNumber && rdmNumber <= 311481;
+    m_bools.at(HHBBYY::is24) = 473235 <= rdmNumber && rdmNumber <= 486706;
   }
 
   StatusCode bbyySelectorAlg::initialiseCutflow(){

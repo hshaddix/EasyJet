@@ -687,9 +687,12 @@ def bbyy_branches(flags):
     if (flags.Analysis.save_pass_trigger_info):
         photon_triggers = [
             "pass_trigger_single_photon",
-            "pass_trigger_diphoton",
+            "pass_trigger_diphoton_g35_g25",
+            "pass_trigger_diphoton_g45_g20",
             "pass_matching_trigger_single_photon",
-            "pass_matching_trigger_diphoton"]
+            "pass_matching_trigger_diphoton_g35_g25",
+            "pass_matching_trigger_diphoton_g45_g20",
+            "rel_pT_bucket"]
 
         for trigger in photon_triggers:
             branches += [f"EventInfo.{trigger}_{sys_suffix} -> {trigger}"

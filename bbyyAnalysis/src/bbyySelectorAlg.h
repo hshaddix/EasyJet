@@ -39,10 +39,13 @@ namespace HHBBYY
     {
         is15,
         is16,
+        is24,
         pass_trigger_single_photon,
-        pass_trigger_diphoton,
+        pass_trigger_diphoton_g35_g25,
+        pass_trigger_diphoton_g45_g20,
         pass_matching_trigger_single_photon,
-        pass_matching_trigger_diphoton,
+        pass_matching_trigger_diphoton_g35_g25,
+        pass_matching_trigger_diphoton_g45_g20,
     };
 
   /// \brief An algorithm for counting containers
@@ -167,14 +170,18 @@ namespace HHBBYY
 
 
       std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
+      std::unordered_map<std::string, CP::SysWriteDecorHandle<int> > m_Ibranches;
       std::unordered_map < HHBBYY::Booleans, bool > m_bools;
       std::unordered_map < HHBBYY::Booleans, std::string > m_boolnames{
           {HHBBYY::is15, "is15"},
           {HHBBYY::is16, "is16"},
+          {HHBBYY::is24, "is24"},
           {HHBBYY::pass_trigger_single_photon, "pass_trigger_single_photon"},
-          {HHBBYY::pass_trigger_diphoton, "pass_trigger_diphoton"},
+          {HHBBYY::pass_trigger_diphoton_g35_g25, "pass_trigger_diphoton_g35_g25"},
+          {HHBBYY::pass_trigger_diphoton_g45_g20, "pass_trigger_diphoton_g45_g20"},
           {HHBBYY::pass_matching_trigger_single_photon, "pass_matching_trigger_single_photon"},
-          {HHBBYY::pass_matching_trigger_diphoton, "pass_matching_trigger_diphoton"},
+          {HHBBYY::pass_matching_trigger_diphoton_g35_g25, "pass_matching_trigger_diphoton_g35_g25"},
+          {HHBBYY::pass_matching_trigger_diphoton_g45_g20, "pass_matching_trigger_diphoton_g45_g20"},
       };
 
       // map to check if single or diphoton trigger
@@ -183,10 +190,10 @@ namespace HHBBYY
         {"HLT_g140_loose", "single_photon"},
         {"HLT_g140_loose_L1EM22VHI", "single_photon"},
         {"HLT_g140_loose_L1eEM26M", "single_photon"},
-        {"HLT_g35_loose_g25_loose", "diphoton"},
-        {"HLT_g35_medium_g25_medium_L12EM20VH", "diphoton"},
-        {"HLT_g35_medium_g25_medium_L12eEM24L", "diphoton"},
-        {"HLT_g45_medium_g20_medium_L1eEM40L_2eEM18L", "diphoton"}
+        {"HLT_g35_loose_g25_loose", "diphoton_g35_g25"},
+        {"HLT_g35_medium_g25_medium_L12EM20VH", "diphoton_g35_g25"},
+        {"HLT_g35_medium_g25_medium_L12eEM24L", "diphoton_g35_g25"},
+        {"HLT_g45_medium_g20_medium_L1eEM40L_2eEM18L", "diphoton_g45_g20"}
     };
 
       CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
@@ -206,7 +213,7 @@ namespace HHBBYY
 
       CP::SysReadDecorHandle<float>
         m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
-
+      int rel_pT_bucket{ -1 };
   };
 
 }
