@@ -188,13 +188,13 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
         # b,c,s,ud,g,tau -> 'u' = ud,s,g, 'quark' = ud,s
         for prob in ['b', 'c', 's', 'ud', 'g', 'tau', 'u', 'quark']:
             small_R_jet_branches.variables += [
-                (f"GN3PflowMuonsV00_p{prob}", None)
+                (f"GN3PflowMuonsV00_p{prob}", "float")
             ]
         # The two ablation models we store only the final 4 scores needed
         for gn3t in ['GN3V00', 'GN3PflowV00', 'GN3MuonsV00']:
             for prob in ['b', 'c', 'tau', 'u', ]:
                 small_R_jet_branches.variables += [
-                    (f"{gn3t}_p{prob}", None)
+                    (f"{gn3t}_p{prob}", "float")
                 ]
 
     small_R_jet_branches.variables += jet_output_flags.extra_variables
