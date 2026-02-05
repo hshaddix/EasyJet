@@ -6,6 +6,7 @@ Truth:
 
 CutList :
   - pass_2lsc
+  - pass_2loc
 
 Small_R_jet:
   amount_bjet: 0

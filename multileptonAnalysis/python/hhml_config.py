@@ -210,6 +210,7 @@ def hhml_branches(flags):
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
     for ch_cut in ["pass_2lsc",
+                   "pass_2loc",
                    "pass_3l",
                    "pass_bb4l",
                    "pass_1l2tau",

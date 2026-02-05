@@ -65,8 +65,8 @@ namespace MULTILEPTON
       reorder_3l();
       m_sub_channel_flavor = static_cast<int>(classify_flavor_3L());
     }
-    else if (m_sub_channel_id == CH_ID::hh2lsc || m_sub_channel_id == CH_ID::hh2l2tau ||
-             m_sub_channel_id == CH_ID::hh2lsc1tau)
+    else if (m_sub_channel_id == CH_ID::hh2lsc || m_sub_channel_id == CH_ID::hh2loc || 
+             m_sub_channel_id == CH_ID::hh2l2tau || m_sub_channel_id == CH_ID::hh2lsc1tau)
     {
       m_sub_channel_flavor = static_cast<int>(classify_flavor_2L());
     }
@@ -91,8 +91,10 @@ namespace MULTILEPTON
     {
       if (m_n_leptons == 3 && std::abs(m_total_charge_lep) == 1)
         return CH_ID::hh3l;
-      else if (m_n_leptons == 2)
+      else if (m_n_leptons == 2 && std::abs(m_total_charge_lep) == 2)
         return CH_ID::hh2lsc;
+      else if (m_n_leptons == 2 && m_total_charge_lep == 0)
+        return CH_ID::hh2loc;
     }
     else if (m_n_taus > 0)
     {

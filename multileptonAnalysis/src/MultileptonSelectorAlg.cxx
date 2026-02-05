@@ -883,9 +883,28 @@ namespace MULTILEPTON
     auto sub_channel_id = classify.getSubChannelId();
     if (!hhmlCuts.exists("pass_2lsc") || sub_channel_id != CH_ID::hh2lsc) return false;
     bool pass_selection = true;
+        
+    // Pass Lepton Trigger
+    pass_selection &= (m_bools.at(MULTILEPTON::pass_trigger_SLT) || m_bools.at(MULTILEPTON::pass_trigger_DLT));
+    // Lepton pT requirements
+    pass_selection &= classify.check_lep_pT(20. * Athena::Units::GeV);
+    // Low mass veto
+    pass_selection &= classify.check_low_mass(12. * Athena::Units::GeV);
 
-    // TODO: ID & prompt lepton isolation WP cut
+    return pass_selection;
+  }
 
+  bool MultileptonSelectorAlg::evaluate2locSelection(
+      const SubChannelClassify &classify,
+        CutManager& hhmlCuts){
+    auto sub_channel_id = classify.getSubChannelId();
+    if (!hhmlCuts.exists("pass_2loc") || sub_channel_id != CH_ID::hh2loc) return false;
+    bool pass_selection = true;
+
+    // Pass Lepton Trigger
+    pass_selection &= (m_bools.at(MULTILEPTON::pass_trigger_SLT) || m_bools.at(MULTILEPTON::pass_trigger_DLT));
+    // Lepton pT requirements
+    pass_selection &= classify.check_lep_pT(20. * Athena::Units::GeV);
     // Low mass veto
     pass_selection &= classify.check_low_mass(12. * Athena::Units::GeV);
 
@@ -1007,8 +1026,10 @@ namespace MULTILEPTON
     auto classifier = SubChannelClassify(&muons, &electrons, &taus, &bjets);
 
     if (hhmlCuts.exists("pass_2lsc")){
-      m_bools.at(MULTILEPTON::pass_2lsc) =
-          evaluate2lscSelection(classifier, hhmlCuts);
+      m_bools.at(MULTILEPTON::pass_2lsc) = evaluate2lscSelection(classifier, hhmlCuts);
+    }
+    if (hhmlCuts.exists("pass_2loc")){
+      m_bools.at(MULTILEPTON::pass_2loc) = evaluate2locSelection(classifier, hhmlCuts);
     }
     if (hhmlCuts.exists("pass_3l")){
       m_bools.at(MULTILEPTON::pass_3l) = evaluate3lSelection(classifier, hhmlCuts);

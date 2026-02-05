@@ -62,6 +62,7 @@ namespace MULTILEPTON
         PASS_TRIGGER,
 
         pass_2lsc,
+        pass_2loc,
         pass_3l,
         pass_bb4l,
         pass_1l2tau,
@@ -153,6 +154,7 @@ private:
         {MULTILEPTON::PASS_TRIGGER, "PASS_TRIGGER"},
 
         {MULTILEPTON::pass_2lsc, "pass_2lsc"},
+        {MULTILEPTON::pass_2loc, "pass_2loc"},
         {MULTILEPTON::pass_3l, "pass_3l"},
         {MULTILEPTON::pass_bb4l, "pass_bb4l"},
         {MULTILEPTON::pass_1l2tau, "pass_1l2tau"},
@@ -204,6 +206,9 @@ private:
         const CP::SystematicSet& sys);
 
     bool evaluate2lscSelection(const SubChannelClassify &classify,
+        CutManager& hhmlCuts);
+
+    bool evaluate2locSelection(const SubChannelClassify &classify,
         CutManager& hhmlCuts);
 
     bool evaluate3lSelection(const SubChannelClassify &classify,
