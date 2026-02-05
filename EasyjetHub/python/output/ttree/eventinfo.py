@@ -92,7 +92,7 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
             _, _, has_STXS_unc = STXS_info(flags.Input.MCChannelNumber)
             if has_STXS_unc:
                 eventinfo_branches.variables += [
-                    ("HTXS_Weights_Stage1_2_pTjet30", None)
+                    ("HTXS_Weights_Stage1_2_pTjet30", "vector_float")
                 ]
 
         if flags.Analysis.doPRW:

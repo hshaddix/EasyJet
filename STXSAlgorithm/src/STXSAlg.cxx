@@ -107,10 +107,10 @@ namespace Easyjet
     HTXSBinFine25DecorHandle(*eventInfo) = HTXS_Stage1p2Fine_pTjet25;
 
     if(!m_twTools.empty()) {
-        std::vector<double> HTXS_w = STXSWeights(*eventInfo,HTXS_Njets_pTjet30,HTXS_Stage1_pTjet30,HTXS_pTH,
+        std::vector<float> HTXS_w = STXSWeights(*eventInfo,HTXS_Njets_pTjet30,HTXS_Stage1_pTjet30,HTXS_pTH,
           HTXS_Stage1p2_pTjet30,HTXS_Stage1p2Fine_pTjet30);
 
-        SG::WriteDecorHandle <xAOD::EventInfo, std::vector<double>> HTXSWeightsDecorHandle
+        SG::WriteDecorHandle <xAOD::EventInfo, std::vector<float>> HTXSWeightsDecorHandle
             (m_HTXSWeightsDecorKey);
         HTXSWeightsDecorHandle(*eventInfo) = HTXS_w;
     }
@@ -136,21 +136,23 @@ namespace Easyjet
   }
 
 
-  std::vector<double> STXSAlg::STXSWeights(
+  std::vector<float> STXSAlg::STXSWeights(
     const xAOD::EventInfo &eventInfo, int HTXS_Njets30, int HTXS_Stage1, float HTXS_pTH, int HTXS_Stage1p2, int HTXS_Stage1p2Fine)
   {
-    std::vector<double> HTXS_w;
+    std::vector<double> HTXS_w_double;
     TruthWeightTools::HiggsWeights hw = m_twTools->getHiggsWeights(HTXS_Njets30, HTXS_pTH, HTXS_Stage1, HTXS_Stage1p2, HTXS_Stage1p2Fine, &eventInfo);
-    if (m_prodmode == STXSProdMode::ggF) HTXS_w = hw.ggF_scheme;
-    else if (m_prodmode == STXSProdMode::VBF) HTXS_w = hw.qq2Hqq_scheme;
+    if (m_prodmode == STXSProdMode::ggF) HTXS_w_double = hw.ggF_scheme;
+    else if (m_prodmode == STXSProdMode::VBF) HTXS_w_double = hw.qq2Hqq_scheme;
     else if (m_prodmode == STXSProdMode::qqZH ||
-	     m_prodmode == STXSProdMode::WH) HTXS_w = hw.qq2Hll_scheme;
-    else if (m_prodmode == STXSProdMode::ggZH) HTXS_w = hw.gg2Hll_scheme;
-    else if (m_prodmode == STXSProdMode::ttH) HTXS_w = hw.ttH_scheme;
-    for (const auto &w: HTXS_w) {
+	     m_prodmode == STXSProdMode::WH) HTXS_w_double = hw.qq2Hll_scheme;
+    else if (m_prodmode == STXSProdMode::ggZH) HTXS_w_double = hw.gg2Hll_scheme;
+    else if (m_prodmode == STXSProdMode::ttH) HTXS_w_double = hw.ttH_scheme;
+    for (const auto &w: HTXS_w_double) {
       ATH_MSG_DEBUG("++++ found HTXS weight (printing array) " << w);
     }
 		
+    // converting as vector_double not supported in TreeBranchHelpers
+    std::vector<float> HTXS_w(HTXS_w_double.begin(), HTXS_w_double.end());
     return HTXS_w;
   }
 
