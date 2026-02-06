@@ -39,8 +39,12 @@ namespace HHBBTT
       ATH_CHECK (m_lRjetHandle.initialize(m_systematicsList));
     }
 
-    if (!m_Pass_GN2X.empty()) {
-      ATH_CHECK (m_Pass_GN2X.initialize(m_systematicsList, m_lRjetHandle));  
+    if (!m_Pass_GN3XPV01_hbb.empty()) {
+      ATH_CHECK (m_Pass_GN3XPV01_hbb.initialize(m_systematicsList, m_lRjetHandle));  
+    }
+
+    if (!m_Pass_GN3XPV01_htt.empty()) {
+      ATH_CHECK (m_Pass_GN3XPV01_htt.initialize(m_systematicsList, m_lRjetHandle));  
     }
 
     if (!m_isBtag.empty()) {
@@ -272,15 +276,22 @@ namespace HHBBTT
         int n_boosted_b_jets = 0;
         int n_boosted_tau_jets = 0;
         for (const xAOD::Jet *lRjet : *lRjets) {
-            if (m_Pass_GN2X.get(*lRjet, sys)) n_boosted_b_jets++;
-        }
-        // TODO: __BOOSTED__ activate tau Tagging.
-        n_boosted_tau_jets = 1;
+          
+          // b tagging
+          if (m_Pass_GN3XPV01_hbb.get(*lRjet, sys)) n_boosted_b_jets++;
 
+          // tau tagging
+          if (m_Pass_GN3XPV01_htt.get(*lRjet, sys)) n_boosted_tau_jets++;
+
+        }
+      
         // check if there are at least 2 boosted jets
         m_bools.at(HHBBTT::AT_LEAST_TWO_LRJETS) = (n_boosted_jets >= 2);
+        m_bools.at(HHBBTT::AT_LEAST_ONE_BTAG_LRJET) = (n_boosted_b_jets >= 1);
+        m_bools.at(HHBBTT::AT_LEAST_ONE_TAUTAG_LRJET) = (n_boosted_tau_jets >= 1);
 
-        bool pass_boosted = (n_boosted_b_jets >= 1 && n_boosted_tau_jets >= 1);
+        // Events must have: 2 large Jets and at least one tagged jet
+        bool pass_boosted = n_boosted_jets >= 2;
         m_bools.at(HHBBTT::pass_Boosted) = pass_boosted;
 
       }
@@ -692,6 +703,10 @@ namespace HHBBTT
           }
         }
       }
+
+      // flags to veto isolated leptons in boosted analysis
+      m_bools.at(HHBBTT::AT_LEAST_ONE_TIGHTID_LEP) = n_leptons_tightId_iso >= 1;
+      m_bools.at(HHBBTT::AT_LEAST_ONE_LOOSEID_LEP) = n_leptons_looseId_iso >= 1;
 
       // Boosted selection
       m_bools.at(HHBBTT::pass_Boosted) = (

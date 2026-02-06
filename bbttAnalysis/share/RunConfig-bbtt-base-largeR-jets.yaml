@@ -7,20 +7,36 @@ do_ditaus: true
 DiTau:
   ID: "Tight"
   extra_wps: ["Loose", "Medium"]
+  score_branches: true
+  truth_branches: true
 
 # overlap removal
 OverlapRemoval:
   do_small_R_jet_large_R_jet: false
   do_photon_jet: false
+  # make the dR exclusion cone pt dependent.
+  do_boostedLeptons: true 
 
 Large_R_jet:
   # correction for the b-jet correction
   # adding back muon pt inside the large-R jet. 
   runMuonJetPtCorr: true
-  # TODO: __BOOSTED__ which working point do we need ??
-  # b-tag efficiency working points, do we have to select just one ?
+  # Use the most loose working point for selection here.
   flat_mass_selections:
     taggers:
+      GN3XPV01_hbb:
+        - "FlatMassQCDEff_0p08"
+        - "FlatMassQCDEff_0p15"
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p4"
+        - "FlatMassQCDEff_0p6"
+      GN3XPV01_htt:
+        - "FlatHttEff_0p93"
+        - "FlatHttEff_0p98"
+      # legacy taggers
+      GN2XTauV00_htt:
+        - "FlatHttEff_0p93"
+        - "FlatHttEff_0p98"
       GN2Xv01:
         - "FlatMassQCDEff_0p25"
         - "FlatMassQCDEff_0p3"

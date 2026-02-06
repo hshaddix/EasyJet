@@ -32,7 +32,7 @@ def get_ditau_branches(flags, tree_flags, input_container, output_prefix):
     if ditau_output_flags.score_branches:
         ditau_branches.variables += [("omni_score", None)]
 
-    if ditau_output_flags.truth_branches:
+    if flags.Input.isMC and ditau_output_flags.truth_branches:
         ditau_branches.variables += [
             ("IsTruthHadronic", "char"),
             ("IsTruthMatched", "char"),

@@ -74,6 +74,7 @@ private:
     Gaudi::Property<bool> m_doLargeRJets
       { this, "doLargeRJets", false, "Read the Large-R jets, used for boosted channel" };
       
+
     /// \brief Setup syst-aware input container handles
     CP::SysListHandle m_systematicsList {this};
 
@@ -104,7 +105,9 @@ private:
     m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
 
     CP::SysReadDecorHandle<int> 
-    m_Pass_GN2X{this, "GN2X_WP", "", "GN2X b-tagging working point"}; 
+    m_Pass_GN3XPV01_hbb{this, "GN3XPV01_hbb_WP", "", "GN3XPV01 b-tagging working point"}; 
+    CP::SysReadDecorHandle<int> 
+    m_Pass_GN3XPV01_htt{this, "GN3XPV01_htt_WP", "", "GN3XPV01 tau-tagging working point"}; 
 
     CP::SysReadDecorHandle<unsigned int> m_year
       {this, "year", "dataTakingYear", ""};
@@ -198,6 +201,10 @@ private:
     {HHBBTT::pass_trigger_uniqueRNNTauTrig18, "pass_trigger_uniqueRNNTauTrig18"},
     {HHBBTT::TWO_JETS, "TWO_JETS"},
     {HHBBTT::AT_LEAST_TWO_LRJETS, "AT_LEAST_TWO_LRJETS"},
+    {HHBBTT::AT_LEAST_ONE_BTAG_LRJET, "AT_LEAST_ONE_BTAG_LRJET"},
+    {HHBBTT::AT_LEAST_ONE_TAUTAG_LRJET, "AT_LEAST_ONE_TAUTAG_LRJET"},
+    {HHBBTT::AT_LEAST_ONE_TIGHTID_LEP, "AT_LEAST_ONE_TIGHTID_LEP"},
+    {HHBBTT::AT_LEAST_ONE_LOOSEID_LEP, "AT_LEAST_ONE_LOOSEID_LEP"},
     {HHBBTT::TWO_BJETS, "TWO_BJETS"},
     {HHBBTT::ONE_BJET, "ONE_BJET"},
     {HHBBTT::MTAUTAU_VIS_MASS_CUT_LEPHAD, "MTAUTAU_VIS_MASS_CUT_LEPHAD"},

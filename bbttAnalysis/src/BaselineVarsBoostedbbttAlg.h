@@ -51,7 +51,10 @@ private:
       {this, "floatVariableList", {}, "Name list of floating variables"};
     
     CP::SysReadDecorHandle<int> 
-    m_Pass_GN2X{this, "GN2X_WP", "", "GN2X b-tagging working point"}; 
+    m_Pass_GN3XPV01_hbb{this, "GN3XPV01_hbb_WP", "", "GN3XPV01 b-tagging working point"}; 
+
+    CP::SysReadDecorHandle<int> 
+    m_Pass_GN3XPV01_htt{this, "GN3XPV01_htt_WP", "", "GN3XPV01 tau-tagging working point"}; 
 
     std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
 

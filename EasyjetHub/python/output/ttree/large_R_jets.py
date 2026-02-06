@@ -137,7 +137,9 @@ def get_large_R_jet_branches(
     ):
         taggers = flags.Analysis.Large_R_jet.variables_in_ptag.p7017
         if jet_output_flags.tautag_details:
-            taggers += ['GN2XTauV00_htt_score', 'GN3XPV01_htt_score']
+            large_R_jet_branches.variables += [
+                ('GN2XTauV00_htt_score', "float"), ('GN3XPV01_htt_score', "float")
+            ]
         large_R_jet_branches.variables += [
             (tag, None) for tag in taggers
         ]

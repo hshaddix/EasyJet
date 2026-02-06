@@ -1,6 +1,6 @@
-include: [bbttAnalysis/RunConfig-bbtt-base-largeR-jets.yaml]
+include: [bbttAnalysis/RunConfig-bbtt-base.yaml]
 
-channels: ["HadHad","LepHad","ZCR","TopEMuCR","Boosted"]
+channels: ["HadHad","LepHad","ZCR","TopEMuCR"]
 
 Trigger:
   selection:

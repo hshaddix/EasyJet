@@ -22,7 +22,8 @@ namespace HHBBTT
 
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK (m_lRjetHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_Pass_GN2X.initialize(m_systematicsList, m_lRjetHandle));
+    ATH_CHECK (m_Pass_GN3XPV01_hbb.initialize(m_systematicsList, m_lRjetHandle));
+    ATH_CHECK (m_Pass_GN3XPV01_htt.initialize(m_systematicsList, m_lRjetHandle));
 
     // make decorators
     for (const std::string &string_var: m_floatVariables) {
@@ -57,35 +58,35 @@ namespace HHBBTT
       // large jet sector
       if (n_largeRjets >= 2)
       {
-        for (int i=0; i<2; i++) {
-          TLorentzVector h_v4 = largeRjets->at(i)->p4();
-          std::string prefix = "boosted_h"+std::to_string(i+1);
+        const xAOD::Jet* b_jet = nullptr;
+        const xAOD::Jet* tau_jet = nullptr;
+  
+        for (const xAOD::Jet *lRjet : *largeRjets) {
+
+          // Get tagged jets 
+          if (m_Pass_GN3XPV01_hbb.get(*lRjet, sys) && !b_jet) {
+            b_jet = lRjet;
+          } else if ( m_Pass_GN3XPV01_htt.get(*lRjet, sys) && !tau_jet) {
+            tau_jet = lRjet;
+          }
+        }
+        if (!tau_jet || !b_jet) continue;
+        
+        TLorentzVector higgs_jet_v4[] = {b_jet->p4(), tau_jet->p4()};
+        for (int i = 0; i < 2; ++i) {
+          TLorentzVector h_v4 = higgs_jet_v4[i];
+          std::string prefix = "boosted_h" + std::to_string(i+1);
           m_Fbranches.at(prefix+"_m").set(*eventInfo, h_v4.M(), sys);
           m_Fbranches.at(prefix+"_pt").set(*eventInfo, h_v4.Pt(), sys);
           m_Fbranches.at(prefix+"_eta").set(*eventInfo, h_v4.Eta(), sys);
           m_Fbranches.at(prefix+"_phi").set(*eventInfo, h_v4.Phi(), sys);
         }
 
-        const xAOD::Jet* b_jet = nullptr;
-        const xAOD::Jet* tau_jet = nullptr;
-        
-        // TODO: __BOOSTED__ use tau tagging
-        for (const xAOD::Jet *lRjet : *largeRjets) {
-          if (m_Pass_GN2X.get(*lRjet, sys) && !b_jet) {
-            b_jet = lRjet;
-          } else if (!tau_jet) {
-            tau_jet = lRjet;
-          }
-        }
-        if (!tau_jet || !b_jet) continue;
-
-        TLorentzVector h1_v4 = b_jet->p4();
-        TLorentzVector h2_v4 = tau_jet->p4();
-        TLorentzVector hh_v4 = h1_v4 + h2_v4;
+        TLorentzVector hh_v4 = higgs_jet_v4[0] + higgs_jet_v4[1];
         m_Fbranches.at("boosted_hh_m").set(*eventInfo, hh_v4.M(), sys);
         m_Fbranches.at("boosted_hh_pt").set(*eventInfo, hh_v4.Pt(), sys);
-        m_Fbranches.at("boosted_hh_delta_eta").set(*eventInfo, h1_v4.Eta() - h2_v4.Eta(), sys);
-        m_Fbranches.at("boosted_hh_delta_phi").set(*eventInfo, h1_v4.DeltaPhi(h2_v4), sys);
+        m_Fbranches.at("boosted_hh_delta_eta").set(*eventInfo, higgs_jet_v4[0].Eta() - higgs_jet_v4[1].Eta(), sys);
+        m_Fbranches.at("boosted_hh_delta_phi").set(*eventInfo,  higgs_jet_v4[0].DeltaPhi(higgs_jet_v4[1]), sys);
       }
     }
     return StatusCode::SUCCESS;

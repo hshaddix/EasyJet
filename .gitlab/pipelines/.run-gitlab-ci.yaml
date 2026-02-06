@@ -37,6 +37,11 @@ ntupler_bbtt_data22:
   script:
     - easyjet-test bbtt-data22
 
+ntupler_bbtt_data22_boosted:
+  extends: .ntupler
+  script:
+    - easyjet-test bbtt-data22-boosted
+
 ntupler_bbyy_data22_lite:
   extends: .ntupler
   script:
@@ -207,6 +212,11 @@ ntupler_bbtt_mc23:
   extends: .ntupler
   script:
     - easyjet-test bbtt-mc23
+
+ntupler_bbtt_mc23_boosted:
+  extends: .ntupler
+  script:
+    - easyjet-test bbtt-mc23-boosted
 
 ntupler_bbVV_mc23:
   extends: .ntupler

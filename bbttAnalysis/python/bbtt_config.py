@@ -100,11 +100,12 @@ def bbtt_SelectorAlgCfg(flags):
 
     muon_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
     ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
-    GN2X_WP = (
-        ("xbb_select_GN2Xv01_"
-            f"{flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01[0]}")
-        if flags.Analysis.do_large_R_UFO_jets else ""
-    )
+    if flags.Analysis.do_large_R_UFO_jets:
+        taggers_cfg = flags.Analysis.Large_R_jet.flat_mass_selections.taggers
+        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{taggers_cfg.GN3XPV01_hbb[-1]}"
+        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{taggers_cfg.GN3XPV01_htt[-1]}"
+    else:
+        GN3XPV01_hbb_WP = GN3XPV01_htt_WP = ""
     cfg.addEventAlgo(
         CompFactory.HHBBTT.HHbbttSelectorAlg(
             "HHbbttSelectorAlg",
@@ -129,7 +130,8 @@ def bbtt_SelectorAlgCfg(flags):
             RootStreamName=('CBK' if flags.Analysis.splitCBK else
                             flags.Analysis.ttree_output.stream_name),
             doLargeRJets=flags.Analysis.do_large_R_UFO_jets,
-            GN2X_WP=GN2X_WP,
+            GN3XPV01_hbb_WP=GN3XPV01_hbb_WP,
+            GN3XPV01_htt_WP=GN3XPV01_htt_WP
         )
     )
 
@@ -173,17 +175,16 @@ def bbtt_BaselineVarsAlgCfg(flags, muonkey, electronkey, taukey,
     cfg = ComponentAccumulator()
 
     if flags.Analysis.do_boosted_dihiggs:
-        GN2X_WP = (
-            ("xbb_select_GN2Xv01_"
-                f"{flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN2Xv01[0]}")
-            if flags.Analysis.do_large_R_UFO_jets else ""
-        )
+        taggers_cfg = flags.Analysis.Large_R_jet.flat_mass_selections.taggers
+        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{taggers_cfg.GN3XPV01_hbb[-1]}"
+        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{taggers_cfg.GN3XPV01_htt[-1]}"
         cfg.addEventAlgo(
             CompFactory.HHBBTT.BaselineVarsBoostedbbttAlg(
                 "BaselineVarsBoostedbbttAlg",
                 isMC=flags.Input.isMC,
                 floatVariableList=float_variables,
-                GN2X_WP=GN2X_WP,
+                GN3XPV01_hbb_WP=GN3XPV01_hbb_WP,
+                GN3XPV01_htt_WP=GN3XPV01_htt_WP
             )
         )
 

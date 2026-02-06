@@ -29,6 +29,7 @@ ttree_output:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     taus: 'container_names.output.taus'
     ditaus: 'container_names.output.ditaus'
+    met : 'container_names.output.met'
   collection_options:
     large_R_jets:
       substructure_info: true
@@ -36,6 +37,7 @@ ttree_output:
       btag_info: true
       truth_parent_info: true
       run_selection: true
+      tautag_details: true
     small_R_jets:
       btag_info: true
       ruth_parent_info: true
@@ -54,11 +56,17 @@ ttree_output:
     small_R_jets: 'container_names.input.truth4Jet'
     higgs_particle: 'container_names.output.truthHHParticles'
     taus: 'container_names.input.truthtaus'
+    met: 'container_names.input.truthmet'
 
 # Enable cutflow 
 CutList:
+  - pass_trigger_LARGE_R_JETS
   - AT_LEAST_TWO_LRJETS
+  - AT_LEAST_ONE_BTAG_LRJET
+  - AT_LEAST_ONE_TAUTAG_LRJET
   - pass_Boosted
+  - pass_HadHad_1B
+  - pass_HadHad_2B
   - pass_HadHad
 
 

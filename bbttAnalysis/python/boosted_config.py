@@ -36,17 +36,26 @@ def boosted_branches_variables(flags):
             float_variables.append(var)
 
     # Add selection decision
-    branches += [
-        "EventInfo.bbtt_pass_presel_%SYS% -> bbtt_pass_presel_"
-        + flags.Analysis.systematics_suffix_separator
-        + "%SYS%"
-    ]
-
-    for cat in ["Boosted", "baseline_HadHad", "HadHad"]:
+    for cat in ["Boosted", "baseline_HadHad", "HadHad", "HadHad_1B", "HadHad_2B"]:
         branches += [
             f"EventInfo.pass_{cat}_%SYS% -> bbtt_pass_{cat}"
             + flags.Analysis.systematics_suffix_separator
             + "%SYS%"
         ]
 
+    for tag in ["BTAG", "TAUTAG"]:
+        tag_branch = f"AT_LEAST_ONE_{tag}_LRJET"
+        branches.append(
+            f"EventInfo.{tag_branch}_%SYS% -> bbtt_boosted_{tag_branch}"
+            + flags.Analysis.systematics_suffix_separator
+            + "%SYS%"
+        )
+
+    for tag in ["LOOSE", "TIGHT"]:
+        tag_branch = f"AT_LEAST_ONE_{tag}ID_LEP"
+        branches.append(
+            f"EventInfo.{tag_branch}_%SYS% -> bbtt_boosted_{tag_branch}"
+            + flags.Analysis.systematics_suffix_separator
+            + "%SYS%"
+        )
     return branches, float_variables

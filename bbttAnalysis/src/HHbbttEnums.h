@@ -88,6 +88,10 @@ namespace HHBBTT
     pass_trigger_uniqueRNNTauTrig18,
     
     AT_LEAST_TWO_LRJETS,
+    AT_LEAST_ONE_BTAG_LRJET,
+    AT_LEAST_ONE_TAUTAG_LRJET,
+    AT_LEAST_ONE_TIGHTID_LEP,
+    AT_LEAST_ONE_LOOSEID_LEP,
     TWO_JETS,
     TWO_BJETS,
     ONE_BJET,
