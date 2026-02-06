@@ -1,55 +1,62 @@
-/*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
-*/
+#ifndef VBSHIGGSANALYSIS_BASELINEVARSFULLHADALG_H
+#define VBSHIGGSANALYSIS_BASELINEVARSFULLHADALG_H
 
-
-#ifndef VBSHIGGSANALYSIS_BASELINEVARFULLHADALG_H
-#define VBSHIGGSANALYSIS_BASELINEVARFULLHADALG_H
+#include <AthenaBaseComps/AthHistogramAlgorithm.h>
 #include <SystematicsHandles/SysReadHandle.h>
-#include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
-
-#include <AthContainers/ConstDataVector.h>
+#include <SystematicsHandles/SysListHandle.h>
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
+#include <xAODMissingET/MissingETContainer.h>
 
-namespace VBSHIGGS{
-    /// \brief An algorithm for counting containers
-    class BaselineVarsFullHadAlg final : public AthHistogramAlgorithm {
-        /// \brief The standard constructor
-        public: 
-            BaselineVarsFullHadAlg(const std::string &name, ISvcLocator *pSvcLocator);
+#include <unordered_map>
+#include <vector>
+#include <string>
 
-            /// \brief Initialisation method, for setting up tools and other persistent
-            /// configs
-            StatusCode initialize() override;
-            /// \brief Execute method, for actions to be taken in the event loop
-            StatusCode execute() override;
-            /// We use default finalize() -- this is for cleanup, and we don't do any
+namespace VBSHIGGS {
 
-        private:
-        /// \brief Setup syst-aware input container handles
-        CP::SysListHandle m_systematicsList {this};
+class BaselineVarsFullHadAlg final : public AthHistogramAlgorithm {
 
-        CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
+public:
+  BaselineVarsFullHadAlg(const std::string&, ISvcLocator*);
+  StatusCode initialize() override;
+  StatusCode execute() override;
 
-        CP::SysReadHandle<xAOD::JetContainer> m_jetHandle{ this, "jets", "vbshiggsAnalysisJets_%SYS%", "Jet container to read" };
+private:
+  CP::SysListHandle m_systematicsList{this};
 
-        CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
+  CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
+    this, "event", "EventInfo", ""};
 
-        Gaudi::Property<bool> m_isMC { this, "isMC", false, "Is this simulation?" };
-        
-        Gaudi::Property<std::vector<std::string>> m_floatVariables {this, "floatVariableList", {}, "Name list of floating variables"};
+  CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{
+    this, "met", "AnalysisMET_%SYS%", ""};
 
-        Gaudi::Property<std::vector<std::string>> m_intVariables {this, "intVariableList", {}, "Name list of integer variables"};
+  CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{
+    this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", ""};
 
-        /// \brief Setup sys-aware output decorations
-        std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
+  CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{
+    this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", ""};
 
-        std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
-        
-    };
+  CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{
+    this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", ""};
+
+  CP::SysReadDecorHandle<char> m_isBtag{
+    this, "isBtag", "DFCommonJets_btagged_%SYS%", ""};
+
+  Gaudi::Property<bool> m_doResolved{this, "do_resolved", false};
+
+  Gaudi::Property<std::vector<std::string>> m_floatVariables{
+    this, "floatVariableList", {}};
+
+  Gaudi::Property<std::vector<std::string>> m_intVariables{
+    this, "intVariableList", {}};
+
+  std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
+  std::unordered_map<std::string, CP::SysWriteDecorHandle<int>>   m_Ibranches;
+};
+
 }
+
 #endif

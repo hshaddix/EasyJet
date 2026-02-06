@@ -2,45 +2,59 @@
   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
 */
 
-#ifndef VBSHIGGSANALYSIS_FULLHADSELECTORALG_H
-#define VBSHIGGSANALYSIS_FULLHADSELECTORALG_H
-
 #include <memory>
 
 #include "AnaAlgorithm/AnaAlgorithm.h"
+#include <AsgDataHandles/ReadDecorHandleKey.h>
 
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysListHandle.h>
+#include <SystematicsHandles/SysWriteDecorHandle.h>
+#include <SystematicsHandles/SysReadDecorHandle.h>
+#include <SystematicsHandles/SysFilterReporterParams.h>
+
+#include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
+#include <xAODMissingET/MissingETContainer.h>
 
+#include "TriggerMatchingTool/IMatchingTool.h"
 #include <EasyjetHub/CutManager.h>
+#include "vbshiggsEnums.h"
+
+namespace VBSHIGGS {
+
+class FullHadSelectorAlg : public EL::AnaAlgorithm {
+public:
+    FullHadSelectorAlg(const std::string& name, ISvcLocator* pSvcLocator);
+
+    StatusCode initialize() override;
+    StatusCode execute() override;
+    StatusCode finalize() override;
+
+private:
+    CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{this, "event", "EventInfo", "Event info container to read"};
+    CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{this, "smallJets", "SmallJets", "Signal small jets"};
+    CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "LargeJets", "Large boosted jets"};
+    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "Electrons", "Electron container"};
+    CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "Muons", "Muon container"};
+    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "MET", "Missing ET container" };
+
+    std::map<Booleans, bool> m_bools;
+    std::map<Booleans, std::string> m_boolnames{
+        {PASS_EXACTLY_TWO_SMALL_JETS, "PASS_EXACTLY_TWO_SMALL_JETS"},
+        {PASS_TWO_LARGE_JETS, "PASS_TWO_LARGE_JETS"},
+        {PASS_ALL_CUTS, "PASS_ALL_CUTS"}
+    };
 
 
-namespace VBSHIGGS{
-  
-  /// \brief An algorithm for counting containers
-  class FullHadSelectorAlg final : public EL::AnaAlgorithm{
-    public:
-      FullHadSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    CutManager m_vbshiggsCuts;
+    unsigned int m_totalEvents{0};
+    bool m_doBoosted{true};
+    bool m_doResolved{true};
 
-      /// \brief Initialisation method, for setting up tools and other persistent
-      /// configs
-      StatusCode initialize() override;
-      /// \brief Execute method, for actions to be taken in the event loop
-      StatusCode execute() override;
-      /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+    StatusCode initialiseCutflow();
+};
 
-      CP::SysListHandle m_systematicsList {this};
-      CP::SysReadHandle<xAOD::JetContainer> m_jetHandle{ this, "jets", "vbshiggsAnalysisJets_%SYS%", "Jet container to read" };
-      CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "vbshiggsAnalysisElectrons_%SYS%", "Electron container to read" };
-      CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Muon container to read" };
-
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      Gaudi::Property<bool> m_bypass{ this, "bypass", false, "Run selector algorithm in pass-through mode" };
-  };
-}
-#endif
+} 
