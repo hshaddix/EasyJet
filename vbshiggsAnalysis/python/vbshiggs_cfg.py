@@ -57,7 +57,7 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
         )
 
     if flags.Analysis.UseVBFRNN:
-        vbftagger = CompFactory.VBFTagger("VBFTaggerTool", modelTag="VBFRNNv1p1p0")
+        vbftagger = CompFactory.VBFTagger("VBFTaggerTool", modelTag="VBFRNNv2p3p2")
         # VBF-RNN tagger: boosted
         cfg.addEventAlgo(
             CompFactory.VBFTaggerAlgSys(
@@ -67,7 +67,7 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
                 containerSigLargeRJetsKey="vbshiggsAnalysisLargeJets_%SYS%",
                 OnlyFirstLargeRJet=True,
                 pTCut=20.e3,
-                nMaxJets=2,
+                nMaxJets=4,
                 DecTag="_boostedCategory"
             )
         )
