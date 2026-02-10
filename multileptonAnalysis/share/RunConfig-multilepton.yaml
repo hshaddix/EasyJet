@@ -14,6 +14,13 @@ cbkHistPattern: "CutBookkeeper_%RUN%_%SYS%"
 
 bypass: false
 
+# VgammaORTool Setup
+# details can be found in https://atlas-radiative-decays.docs.cern.ch/latest/analysis/event_selections/#photon-overlap-removal
+do_VgammaOR: true
+bypass_VGammaOR: true 
+VGammaOR_ypT_cuts: [7.e+3] #photon pT in MeV
+
+
 # Toggles for object types
 do_small_R_jets: true
 do_muons: true
@@ -25,6 +32,20 @@ Truth:
   do_STXS: false
   nHiggses: 2
   recordGrandchildren: true
+  # VgammaORTool Setup
+  DSID_vgammaOR:
+    - 700901
+    - 700902
+    - 700903
+  DSID_vgammaOR_keep:
+    - 700770
+    - 700771
+    - 700772
+    - 700773
+    - 700774
+    - 700775
+    - 700776
+    - 701170
 
 
 # Toggles for reconstructed objects decorations

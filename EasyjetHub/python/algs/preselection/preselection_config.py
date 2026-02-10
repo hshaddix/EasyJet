@@ -80,8 +80,8 @@ def overlap_VGammaOR(flags):
         configSeq.setOptionValue('dR_lepton_photon_cuts',
                                  list(flags.Analysis.VGammaOR_dR_lepton_photon_cuts))
     # Add option later if any analysis needs to modify the default list
-    # configSeq.setOptionValue('keepInOverlap',
-    # [700011, 700012, 700013, 700014, 700015, 700016, 700017])
+    configSeq.setOptionValue('keepInOverlap',
+                             list(flags.Analysis.Truth.DSID_vgammaOR_keep))
     # Added DSIDs correpsonding to the needs of XbbCalib, VBSHiggs analysis
     configSeq.setOptionValue('removeInOverlap',
                              list(flags.Analysis.Truth.DSID_vgammaOR))
