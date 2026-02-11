@@ -30,6 +30,12 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
       ATH_CHECK(m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
     }
   }
+  if (m_doResolved){
+    if (!m_isBtag.empty()) {
+      ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
+    }
+        
+
 
   for (const auto& var : m_floatVariables) {
     CP::SysWriteDecorHandle<float> h(var + "_%SYS%", this);
@@ -70,7 +76,8 @@ StatusCode BaselineVarsFullHadAlg::execute() {
     int nCentralJets = 0;
     int nForwardJets = 0;
     int nLargeJets   = largeJets->size();
-
+    bool WPgiven = !m_isBtag.empty();
+    
     if (m_doResolved) {
       const xAOD::JetContainer* signalJets = nullptr;
       const xAOD::JetContainer* HJets = nullptr;
@@ -79,8 +86,13 @@ StatusCode BaselineVarsFullHadAlg::execute() {
 
       int nJets = signalJets->size();
       int nBJets = 0;
+    
 
       for (const xAOD::Jet* jet : *signalJets) {
+	if (WPgiven) {
+	  if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets->push_back(jet);
+	}
+      }
         if (std::abs(jet->eta()) < 2.5) nCentralJets++;
         else nForwardJets++;
 

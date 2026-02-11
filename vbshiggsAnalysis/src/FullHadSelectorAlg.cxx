@@ -24,6 +24,9 @@ StatusCode FullHadSelectorAlg::initialize() {
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_metHandle.initialize(m_systematicsList));
+    if (!m_isBtag.empty() && m_doResolved) {
+      ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
+    }
 
     
     ATH_CHECK(initialiseCutflow());
@@ -48,6 +51,16 @@ StatusCode FullHadSelectorAlg::execute() {
 	ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
 	ANA_CHECK(m_muonHandle.retrieve(muons, sys));
 	ANA_CHECK(m_metHandle.retrieve(metCont, sys));
+	bool WPgiven = !m_isBtag.empty();
+	std::vector<const xAOD::Jet*> bjets;
+
+	if (m_doResolved){
+	  for(const xAOD::Jet* jet : *signalJets) {
+	    if (WPgiven) {
+	      if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets.push_back(jet);
+	    }
+	  }
+	}
 
 
         for (auto& [key, _] : m_bools) m_bools[key] = false;
