@@ -95,6 +95,9 @@ def overlap_sequence(flags):
     for objtype, coll in preOR_collections.items():
         configSeq.setOptionValue(f'.{objtype}', coll)
 
+    # Allow no PV for OR if specified in config
+    configSeq.setOptionValue('.allowNoPV', flags.Analysis.OverlapRemoval.allowNoPV)
+
     # Config for TauAntiTauOR
     # Should be equivalent to regular tau-jet OR for taus + b-jets
     # Differences expected for light-jets

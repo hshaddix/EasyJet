@@ -224,6 +224,9 @@ OverlapRemoval:
   # Enable overlap removal between jet and photon
   # Athena default is true
   do_photon_jet: true
+  # Allow events with no PV to run in OR. 
+  # Athena default is false
+  allowNoPV: false
 
 # list of triggers to apply
 # "Auto" configures mc from the r-tag, data from year, e.g. data22
