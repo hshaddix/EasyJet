@@ -74,12 +74,12 @@ def common_services_sequence(flags, configAcc):
     if truthVertContFix:
         configSeq.setOptionValue('.truthVertexContainersToFix', truthVertContFix)
 
-    configSeq.setOptionValue('.runSystematics', flags.Analysis.do_CP_systematics)
+    sys_weight_name = get_sys_weight_name(flags)
+    configSeq.setOptionValue('.runSystematics',
+                             flags.Analysis.do_CP_systematics or bool(sys_weight_name))
 
     # Keeping systematics regex config unchanged for now
     # Check later how onlySystematicsCategories can be used
-
-    sys_weight_name = get_sys_weight_name(flags)
 
     if flags.Analysis.do_CP_systematics or sys_weight_name:
         # if already selecting all systematics, no need to check for special one
