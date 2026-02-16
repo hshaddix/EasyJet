@@ -57,6 +57,7 @@ namespace HHBBVV
       m_tauWPDecorHandle = CP::SysReadDecorHandle<char>
         ("baselineSelection_" + m_tauWPName+"_%SYS%", this);
     }
+
     
     ATH_CHECK(m_eleWPDecorHandle.initialize(m_systematicsList, m_electronHandle));
     ATH_CHECK(m_muonWPDecorHandle.initialize(m_systematicsList, m_muonHandle));
@@ -69,13 +70,12 @@ namespace HHBBVV
     ATH_CHECK(m_matched_el.initialize(m_systematicsList, m_electronHandle));
     ATH_CHECK(m_matched_mu.initialize(m_systematicsList, m_muonHandle));
 
-    ATH_CHECK(m_Whad.initialize(m_systematicsList, m_lrjetHandle));
-    ATH_CHECK(m_Hbb.initialize(m_systematicsList, m_lrjetHandle));
-
     // special flag for all cuts
     ATH_CHECK (m_passallcuts.initialize(m_systematicsList, m_eventHandle));
-
-
+      
+    ATH_CHECK(m_Whad.initialize(m_systematicsList, m_lrjetHandle));
+    ATH_CHECK(m_Hbb.initialize(m_systematicsList, m_lrjetHandle));
+    
     if (!m_isBtag.empty()) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_jetHandle));
     }
@@ -95,6 +95,8 @@ namespace HHBBVV
       m_triggerdecos.emplace(trig, deco);
       ATH_CHECK(m_triggerdecos.at(trig).initialize(m_systematicsList, m_eventHandle));
     }
+    // Weight for cutflow
+    if (m_saveCutFlow) ATH_CHECK (m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
 
     // Intialise syst-aware output decorators
     ATH_CHECK(m_pass_sr.initialize(m_systematicsList, m_eventHandle));
@@ -104,11 +106,10 @@ namespace HHBBVV
       
     for ( auto name : m_channel_names){
       if ( name == "VBFBoosted1Lep") m_channels.push_back(HHBBVV::VBFboosted1Lep);
-      else if ( name == "VBFSplitboosted1Lep") m_channels.push_back(HHBBVV::VBFsplitboosted1Lep);
       else{
         ATH_MSG_ERROR("Unknown channel: "
           << name << std::endl
-          << "Available are: [\"VBFBoosted1Lep\", \"VBFSplitBoosted1Lep\"]");
+          << "Available are: [\"VBFBoosted1Lep\"]");
         return StatusCode::FAILURE;
       }
     }
@@ -161,6 +162,9 @@ namespace HHBBVV
         cut.passed = false;
       }
       n_evt+=1;
+      if (m_saveCutFlow && m_isMC) {
+        m_total_mcEventWeight+= m_generatorWeight.get(*event, sys);
+      }
 
 
       // Apply selection
@@ -169,7 +173,6 @@ namespace HHBBVV
       // flags
       bool TWO_LRJETS = false;
       bool ONE_LEP = false;
-      bool ONEVBFJET = false;
       bool TWOVBFJET = false;
         
 
@@ -189,7 +192,7 @@ namespace HHBBVV
         bool passElectronWP = m_eleWPDecorHandle.get(*electron, sys);
         m_selected_el.set(*electron, false, sys);
         m_matched_el.set(*electron, false, sys);
-        if (passElectronWP && electron->pt() > 5. * Athena::Units::GeV)
+        if (passElectronWP)
         {
           TightId_ele = m_ele_TightTighTrackOnlyDecorHandle.get(*electron, sys);
           // give passing electron decoration "selected_el"
@@ -210,7 +213,7 @@ namespace HHBBVV
         bool passMuonWP = m_muonWPDecorHandle.get(*muon, sys);
         m_selected_mu.set(*muon, false, sys);
         m_matched_mu.set(*muon, false, sys);
-        if (passMuonWP && std::abs(muon->eta()) < 2.5 && muon->pt() > 5. * Athena::Units::GeV)
+        if (passMuonWP && std::abs(muon->eta()) < 2.5)
         {
           TightId_mu = m_mu_TightPflowLooseDecorHandle.get(*muon, sys);
           m_selected_mu.set(*muon, true, sys); // currently could be multiple selected per event?
@@ -232,7 +235,6 @@ namespace HHBBVV
       //************
       // pflow jet
       //************
-      int n_bjets = 0;
       bool WPgiven = !m_isBtag.empty();
       auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
           SG::VIEW_ELEMENTS);
@@ -240,9 +242,8 @@ namespace HHBBVV
           SG::VIEW_ELEMENTS);
 
 
-      const xAOD::Jet *fwjet1 = nullptr;
-      const xAOD::Jet *fwjet2 = nullptr;
       const xAOD::Jet *lrjet = nullptr;
+      const xAOD::Jet *sublrjet = nullptr;
 
       for (const xAOD::Jet *jet : *jets) {
         if (jet->pt() < 20. * Athena::Units::GeV) continue;
@@ -250,7 +251,6 @@ namespace HHBBVV
           if (WPgiven) {
             if (m_isBtag.get(*jet, sys)){
               bjets->push_back(jet);
-              n_bjets += 1;
             }else{
               smallRjets->push_back(jet);
             }
@@ -267,57 +267,39 @@ namespace HHBBVV
       //************
       int n_lrjets = lrjets->size();
       float leadLRJ_pt = -999.;
-      float subleadLRJ_pt = -999.;
-
+       
       for (const xAOD::Jet *lrjet : *lrjets)
       {
-        m_Hbb.set(*lrjet,false,sys);
+        m_Hbb.set(*lrjet,false,sys);  
         m_Whad.set(*lrjet,false,sys);
-      }
+      }  
+        
       ATH_MSG_DEBUG("# lrjets: " << n_lrjets);
       if (n_lrjets >= 2)
       {
-        TWO_LRJETS = true;
-        m_bbVVCuts("AT_LEAST_TWO_LRJETS").passed = true;
+        
+        if(n_lrjets == 2){
+            TWO_LRJETS = true;
+            m_bbVVCuts("EXACTLY_TWO_LRJETS").passed = true;
+        }
         //further selections can go here
           
         leadLRJ_pt = lrjets->get(0)->pt();
         lrjet = lrjets->get(0);
-        subleadLRJ_pt = lrjets->get(1)->pt();
+        sublrjet = lrjets->get(1);
 
       }
-
-      // use different classification methods for different channels
-      //const xAOD::Jet *Hbb = nullptr;
-      const xAOD::Jet *Whad = nullptr;
 
       for(const auto& channel : m_channels){
         ATH_MSG_DEBUG("channel: " << channel);
         if(channel == HHBBVV::VBFboosted1Lep)
         {
           ATH_MSG_DEBUG("---VBF BOOSTED 1LEP JET CLASSIFICATION---");
-          if (n_lrjets >= 2 && ONE_LEP)
+          if (TWO_LRJETS && ONE_LEP)
           {
-            if(leadLRJ_pt > 200 * Athena::Units::GeV && leadLRJ_pt < 3000 * Athena::Units::GeV ){
-              if(fwjet1 && fwjet2) m_bbVVCuts("2VBF_JETS").passed = true;
-            }
+            VBFJetSelectionboosted(*jets, TWOVBFJET, lrjet, sublrjet);
           }
         }
-        
-        else if(channel == HHBBVV::VBFsplitboosted1Lep)
-        {
-          ATH_MSG_DEBUG("---VBF SPLITBOOSTED 1LEP JET CLASSIFICATION---");
-          if (n_lrjets >= 1 && ONE_LEP && n_bjets >= 2)
-          {
-            if((leadLRJ_pt > 200 * Athena::Units::GeV && leadLRJ_pt < 3000 * Athena::Units::GeV) || 
-               (subleadLRJ_pt > 200 * Athena::Units::GeV && subleadLRJ_pt < 3000 * Athena::Units::GeV ) ){
-          
-              VBFMassJetClassification(*lrjets, Whad, sys);
-            }
-       
-          }
-        }
-
 
       }
 
@@ -359,7 +341,6 @@ namespace HHBBVV
         }
      }
      
-
       m_Bbranches.at(HHBBVV::pass_trigger_SLT).set(*event, m_bools.at(HHBBVV::pass_trigger_SLT), sys);
       m_Bbranches.at(HHBBVV::pass_trigger_LRT).set(*event, m_bools.at(HHBBVV::pass_trigger_LRT), sys);
       
@@ -391,6 +372,7 @@ namespace HHBBVV
       // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
       for (unsigned int i=0; i<consecutive_cuts; i++) {
         m_bbVVCuts[i].relativeCounter+=1;
+        if (m_isMC) m_bbVVCuts[i].w_relativeCounter += m_generatorWeight.get(*event, sys);
       }
 
 
@@ -403,8 +385,7 @@ namespace HHBBVV
       bool pass = false;
       //implement dedicated selection flags here
       for(const auto& channel : m_channels){
-        if(channel == HHBBVV::VBFboosted1Lep) pass |= (TWO_LRJETS && ONE_LEP && (m_bools.at(HHBBVV::pass_trigger_SLT) || m_bools.at(HHBBVV::pass_trigger_LRT)));
-        else if(channel == HHBBVV::VBFsplitboosted1Lep) pass |= (ONE_LEP && (ONEVBFJET || TWOVBFJET));
+        if(channel == HHBBVV::VBFboosted1Lep) pass |= (TWO_LRJETS && ONE_LEP && TWOVBFJET && (m_bools.at(HHBBVV::pass_trigger_SLT) || m_bools.at(HHBBVV::pass_trigger_LRT)));
       }
       ATH_MSG_DEBUG("pass:" << pass);
       ATH_MSG_DEBUG("NEXT EVENT");
@@ -426,6 +407,7 @@ namespace HHBBVV
       m_bbVVCuts.DoAbsoluteEfficiency(n_evt, efficiency("AbsoluteEfficiency"));
       m_bbVVCuts.DoRelativeEfficiency(n_evt, efficiency("RelativeEfficiency"));
       m_bbVVCuts.DoStandardCutFlow(n_evt, efficiency("StandardCutFlow"));
+      if (m_isMC) m_bbVVCuts.DoWeightedStandardCutFlow(m_total_mcEventWeight, efficiency("WeightedStandardCutFlow"));
       m_bbVVCuts.DoCutflowLabeling(n_evt, hist("EventsPassed_BinLabeling"));
     }
 
@@ -438,87 +420,8 @@ namespace HHBBVV
     return StatusCode::SUCCESS;
   }
 
-
-  void VBFSelectorAlg::distJetClassification(const xAOD::JetContainer& lrjets, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad, const TLorentzVector& lepton, const CP::SystematicSet& sys) {
-    // the closest jet to the lepton is labeled as Whad
-    // the pT leading jet and not Whad is labeled as Hbb
-    double dRmin = 99.;
-    Hbb = nullptr;
-    Whad = nullptr;
-    // Find the jet which is closest to the signal lep
-    for (const auto lrjet : lrjets){
-      float dR = lrjet->p4().DeltaR(lepton);
-      if (dR < dRmin){
-        dRmin = dR;
-        Whad = lrjet;
-      }
-    }
-
-    // Hbb is chosen to be the leading pt jet from the rest
-    for (const auto lrjet : lrjets){
-      if(lrjet==Whad) continue;
-      Hbb = lrjet; break;
-    }
-
-    for (const auto lrjet : lrjets){
-      if(Whad) m_Whad.set(*lrjet, lrjet==Whad, sys);
-      if(Hbb) m_Hbb.set(*lrjet, lrjet==Hbb, sys);
-    }
-
-  }
-
-  void VBFSelectorAlg::massJetClassification(const xAOD::JetContainer& lrjets, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad, const CP::SystematicSet& sys) {
-    //classify jets as coming from W and H
-    // The logic apply mH first, then from the remaining LRJs apply mW method
-    double closest_dist_Hbb = FLT_MAX; // Tolerance for finding the jet mass closet to mW
-    double closest_dist_Whad = FLT_MAX;
-    Hbb = nullptr;
-    Whad = nullptr;
-
-    for (const auto lrjet : lrjets){
-      float dist = std::abs(lrjet->m() - m_Hmass); // HMass distance
-      if (dist < closest_dist_Hbb){
-        closest_dist_Hbb = dist;
-        Hbb = lrjet;
-      }
-    }
-
-    // Find the jet which has the closest jet mass to the W boson
-    for (const auto lrjet : lrjets){
-      if(lrjet == Hbb)continue;
-      float dist = std::abs(lrjet->m() - m_Wmass); // WMass distance
-      if (dist < closest_dist_Whad){
-        closest_dist_Whad = dist;
-        Whad = lrjet;
-      }
-    }
-
-    for (const auto lrjet : lrjets){
-      if(Whad) m_Whad.set(*lrjet, lrjet==Whad, sys);
-      if(Hbb) m_Hbb.set(*lrjet, lrjet==Hbb, sys);
-    }
-  }
-
-  void VBFSelectorAlg::VBFMassJetClassification(const xAOD::JetContainer& lrjets, const xAOD::Jet *&Whad, const CP::SystematicSet& sys) {
-        double closest_dist_Whad = FLT_MAX;
-        Whad = nullptr;
-        for ( const auto lrjet : lrjets)
-        {
-           float dist = std::abs(lrjet-> m() -m_Wmass);
-           if(dist < closest_dist_Whad)
-           {
-              closest_dist_Whad = dist;
-              Whad = lrjet;
-           }
-        }
-        for (const auto lrjet : lrjets){
-           if(Whad) m_Whad.set(*lrjet, lrjet==Whad, sys);
-        }
-  }
-  void VBFSelectorAlg::VBFJetSelectionboosted(const xAOD::JetContainer& jets,const xAOD::Jet *&fwjet1, const xAOD::Jet *&fwjet2, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad){
-        fwjet1 = nullptr;
-        fwjet2 = nullptr;
-        ROOT::Math::PtEtaPhiMVector fwjet1_vec, fwjet2_vec, fwjj_vec;
+  void VBFSelectorAlg::VBFJetSelectionboosted(const xAOD::JetContainer& jets, bool & TWOVBFJET, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad){
+        ROOT::Math::PtEtaPhiMVector fwjet1_vec, fwjet2_vec;
         auto fwjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
 
         for (const auto jet : (jets))
@@ -532,53 +435,19 @@ namespace HHBBVV
            }
         }
         if((*fwjets).size() >= 2){
-          fwjet1_vec.SetCoordinates((*fwjets)[0]->pt(),(*fwjets)[0]->eta(),(*fwjets)[0]->phi(),(*fwjets)[0]->m());
-          fwjet2_vec.SetCoordinates((*fwjets)[1]->pt(),(*fwjets)[1]->eta(),(*fwjets)[1]->phi(),(*fwjets)[1]->m()); 
-          fwjj_vec = fwjet1_vec + fwjet2_vec;
-          if(fwjj_vec.M() > 1000 * Athena::Units::GeV && 
-             (*fwjets)[0]->p4().DeltaR((*fwjets)[1]->p4()) > 3 ){
-            fwjet1 = (*fwjets)[0];
-            fwjet2 = (*fwjets)[1];
-          }
+          int nfwjets = (*fwjets).size();
+          for ( int i=0; i < nfwjets; i++){
+              for ( int j = i; j < nfwjets; j++){
+                  fwjet1_vec.SetCoordinates((*fwjets)[i]->pt(),(*fwjets)[i]->eta(),(*fwjets)[i]->phi(),(*fwjets)[i]->m());
+                  fwjet2_vec.SetCoordinates((*fwjets)[j]->pt(),(*fwjets)[j]->eta(),(*fwjets)[j]->phi(),(*fwjets)[j]->m()); 
+                  if( std::abs(fwjet1_vec.Eta()-fwjet2_vec.Eta()) > 3.5 ){
+                      TWOVBFJET = true;
+                      break;
+                  }
+              }
+          }    
         }
-  }
-
-
-  void VBFSelectorAlg::VBFJetSelectionsplitboosted(const xAOD::JetContainer& jets,const xAOD::Jet *&fwjet1,const xAOD::Jet *&fwjet2,  const xAOD::Jet *&Whad){
-        fwjet1 = nullptr;
-        fwjet2 = nullptr;
-        auto VBFjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
-        auto fwjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
-
-        for (const auto jet : jets)
-        {
-           if (std::abs(jet->eta())<2.5)continue;
-           fwjets->push_back(jet);
-        }
-
-
-        for(const auto fwjet : (*fwjets))
-        {
-           float DeltaR_Whad =  (Whad->p4()).DeltaR(fwjet->p4());
-        
-           if (DeltaR_Whad > 1.4)
-           {
-              VBFjets->push_back(fwjet);
-           }
-        }
-        if((*VBFjets).size() >= 2){
-              fwjet1 = (*VBFjets)[0];
-              fwjet2 = (*VBFjets)[1];
-        }
-        if((*VBFjets).size() == 1){
-              fwjet1 = (*VBFjets)[0];
-        }
-  }
-
-  void VBFSelectorAlg::signalBtagging(const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad, const CP::SystematicSet& sys, bool& HBB_BTAG, bool& WHAD_BTAG) {
-
-    if(Hbb)HBB_BTAG = (bool)m_Pass_GN2X.get(*Hbb, sys); // Choose the first GN2X wp
-    if(Whad)WHAD_BTAG = (bool)m_Pass_GN2X.get(*Whad, sys);
+      if (TWOVBFJET) m_bbVVCuts("2VBF_JETS").passed = true;
   }
 
   void VBFSelectorAlg::evaluateSingleLeptonTrigger(const xAOD::EventInfo *event, const xAOD::Electron *ele, const xAOD::Muon *mu, const CP::SystematicSet& sys)
@@ -594,48 +463,26 @@ namespace HHBBVV
         "HLT_e120_lhloose"
       };
     }
-    else if(year == 2016){
-      single_ele_paths = {
-	"HLT_e24_lhtight_nod0_ivarloose",
-        "HLT_e26_lhtight_nod0_ivarloose",
-	"HLT_e60_lhmedium_nod0",
-	"HLT_e60_medium",
-        "HLT_e140_lhloose_nod0",
-	"HLT_e300_etcut"
-      };
-    }
-    else if(year==2017){
+    else if(year == 2016 || year==2017 || year == 2018){
       single_ele_paths = {
 	"HLT_e26_lhtight_nod0_ivarloose",
 	"HLT_e60_lhmedium_nod0",
 	"HLT_e140_lhloose_nod0",
-	"HLT_e300_etcut"
       };   
-    }
-    else if(year == 2018){
-      single_ele_paths = {
-	"HLT_e26_lhtight_nod0_ivarloose",
-	"HLT_e26_lhtight_nod0",
-	"HLT_e60_lhmedium_nod0",
-	"HLT_e140_lhloose_nod0",
-	"HLT_e300_etcut"
-      };
     }
     else if(year==2022){
       single_ele_paths = {
         "HLT_e26_lhtight_ivarloose_L1EM22VHI",
 	"HLT_e60_lhmedium_L1EM22VHI",
-        "HLT_e140_lhloose_L1EM22VHI",
-	"HLT_e300_etcut_L1EM22VHI"
+        "HLT_e140_lhloose_L1EM22VHI"
       };
     }
-    else if(year==2023){
+    // same for 2024
+    else if(year==2023 || year == 2024){
       single_ele_paths = {
         "HLT_e26_lhtight_ivarloose_L1eEM26M",
 	"HLT_e60_lhmedium_L1eEM26M",
-        "HLT_e140_lhloose_L1eEM26M",
-	"HLT_e140_lhloose_noringer_L1eEM26M",
-        "HLT_e300_etcut_L1eEM26M"
+        "HLT_e140_lhloose_L1eEM26M"
       };
     }
 
@@ -656,35 +503,20 @@ namespace HHBBVV
     if(year==2015){
       single_mu_paths = {
 	"HLT_mu20_iloose_L1MU15",
-	"HLT_mu40",
-	"HLT_mu60_0eta105_msonly"
+	"HLT_mu40"
       };
     }
-    else if(year == 2016){
+    else if(year == 2016 || year == 2017 || year == 2018){
       single_mu_paths = {
-	"HLT_mu24_iloose",
-	"HLT_mu24_ivarloose",
-	"HLT_mu24_ivarmedium",
-	"HLT_mu24_imedium",
 	"HLT_mu26_ivarmedium",
-	"HLT_mu40",
 	"HLT_mu50"
       };
     }
-    else if(year == 2017 || year == 2018){
-      single_mu_paths = {
-	"HLT_mu26_ivarmedium",
-	"HLT_mu50",
-	"HLT_mu60_0eta105_msonly"
-      };
-    }
-    else if(year == 2022 || year == 2023){
+    // same for 2024
+    else if(year == 2022 || year == 2023 || year == 2024){
       single_mu_paths = {
         "HLT_mu24_ivarmedium_L1MU14FCH",
-	"HLT_mu50_L1MU14FCH",
-        "HLT_mu60_0eta105_msonly_L1MU14FCH",
-	"HLT_mu60_L1MU14FCH",
-        "HLT_mu80_msonly_3layersEC_L1MU14FCH"
+	"HLT_mu50_L1MU14FCH"
       };
     }
 
@@ -820,6 +652,7 @@ namespace HHBBVV
     ANA_CHECK (book (TEfficiency("AbsoluteEfficiency","Absolute Efficiency of HH->bbVV cuts;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));
     ANA_CHECK (book (TEfficiency("RelativeEfficiency","Relative Efficiency of HH->bbVV cuts;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));
     ANA_CHECK (book (TEfficiency("StandardCutFlow","StandardCutFlow of HH->bbVV cuts;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));
+    if (m_isMC) ANA_CHECK (book (TEfficiency("WeightedStandardCutFlow","Weighted StandardCutFlow of HH->bbVV cuts. Needs rescaling to sumOfWeights.;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));
     ANA_CHECK (book (TH1F("EventsPassed_BinLabeling", "Events passed by each cut / Bin labeling", nbins, 0.5, nbins + 0.5)));
 
     return StatusCode::SUCCESS;

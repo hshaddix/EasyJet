@@ -141,7 +141,7 @@ private:
     // Local variables and functions
 
     bool m_run_lep = false;
-    bool m_bbVV_tau = false;
+    bool m_bbVV_VBF = false;
 
   };
 }

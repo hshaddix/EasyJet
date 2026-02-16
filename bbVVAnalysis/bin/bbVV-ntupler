@@ -103,7 +103,6 @@ def bbVV_job_cfg():
     # Explicitly call the minituple config because we want to provide
     # additional branches, the list of which is generated dynamically
     # rather than statically in the yaml
-    extra_branches = extra_bbVV_branches + extra_orth_branches
     outcfg, ntuple_output_file_list = output_cfg(
         flags,
         seqname,

@@ -5,6 +5,3 @@ channel: ["VBFBoosted1Lep"]
 Lepton:
   amount: 1
 do_trigger_filtering: true
-
-
-

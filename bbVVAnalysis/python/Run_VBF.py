@@ -32,55 +32,76 @@ def get_sample_dir(path, dsid_str):
 
 
 def io_manager(
-        process="Signal", Sample_dir="", k_vv=""):
+        process="Signal",
+        Sample_dir="", kfactor=""):
 
     outFile = "ejOutput_PHYS_bbVV_"
 
     configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-1lep-boosted-VBF.yaml"
     outFile += "1lep_boosted_"
 
-    if process == "signal":
+    if process == "Signal":
 
         sample = get_sample_dir(
-            Sample_dir, sample_DSID_Dict[k_vv])
-        outFile += k_vv + "_VBF.root"
+            Sample_dir, sample_DSID_Dict[kfactor])
+        outFile += kfactor + "_VBF.root"
 
     return sample, outFile, configFile
 
 
 def run_local(
-        process="vbfHHbbWW1lep", sample_dir="",):
-    k_vv = ["cvv0", "cvv0p5", "cvv1", "cvv1p5", "cvv2", "cvv3"]
-    for entry in k_vv:
+        process="Signal",
+        sample_dir="", campaign=""):
+    kfactor = ["cvv0", "cvv0p5", "cvv1", "cvv1p5", "cvv2", "cvv3"]
+    for entry in kfactor:
         inputFile, outputFile, configFile = io_manager(
             process, sample_dir, entry)
         input = '"' + inputFile + '*"'
-        command = ("bbVV-ntupler " + input + " --run-config " + configFile
-                   + " --out-file " + outputFile)
+        command = ("bbVV-ntupler " + input + " --run-config "
+                   + configFile + " --out-file " + outputFile)
 
         os.chdir(easyjet_run_dir)  # Move to the easyjet/run directory
 
         print(command)
         subprocess.run(command, shell=True)
         print(
-            "End of Run_bbVV.py, check your output\nOutFile:",
+            "End of Run_VBF.py, check your output\nOutFile:",
             os.path.realpath(outputFile))
 
 
-def run_grid(process="vbfHHbbWW1lep", campaign="mc20a"):
+def run_grid(process="vbfHHbbWW1lep", campaign="", notag=False):
     executable = "bbVV-ntupler"
-    ListDir = easyjet_build_dir + "/data/bbVVAnalysis/PHYS/nominal/" + campaign + "/"
+    ListDir = easyjet_build_dir + "/data/bbVVAnalysis/PHYS/nominal/"
 
-    List = ListDir + campaign + "_" + process + "_p*.txt"
+    configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-1lep-boosted-VBF.yaml"
 
-    configFile = "bbVVAnalysis/RunConfig-bbVV-bypass.yaml"
-
-    command = ("easyjet-gridsubmit --mc-list "
-               + List + " --run-config " + configFile + " --exec " + executable
-               + " --nGBperJob 10 " + " --campaign " + campaign + "_%Y_%m_%d")
+    if notag:
+        notag = " --noTag"
+    else:
+        notag = " "
+    if process == "data":
+        if campaign == "mc20a":
+            year = "20152016"
+        if campaign == "mc20d":
+            year = "2017"
+        if campaign == "mc20e":
+            year = "2018"
+        if campaign == "mc23a":
+            year = "2022"
+        if campaign == "mc23d":
+            year = "2023"
+        List = ListDir + campaign + "/" + process + "_" + year + "_p*.txt"
+        command = ("easyjet-gridsubmit --data-list "
+                   + List + " --run-config " + configFile + " --exec " + executable
+                   + " --nGBperJob 5 " + " --campaign " + campaign + notag)
+    else:
+        List = ListDir + campaign + "/" + campaign + "_" + process + "_p*.txt"
+        command = ("easyjet-gridsubmit --mc-list "
+                   + List + " --run-config " + configFile + " --exec " + executable
+                   + " --nGBperJob 5 " + " --campaign " + campaign + notag)
     print(command)
     subprocess.run(command, shell=True)
-    print("End of Run_bbVV.py, check your BigPanda!")
+    print("End of Run_VBF.py, check your BigPanda!")
 
 
 if __name__ == "__main__":
@@ -88,28 +109,35 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
         "--Process",
-        help="""Define which process: vbfHHbbWW1lep, vbfHHbbWW1lepFASTSIM, /
-        "diboson, dijet, singleTop, singleHiggs, ttbar, Wjets, Zjets""",
-        default="vbfHHbbWW1lep")
+        help="""Define which process: vbfHHbbWW1lep, vbfHHbbWW1lepFASTSIM, dijet,
+        singleTop, singleHiggs, ttV, ttbar, Wjets, Zjets, diboson, data_{year}""",
+        default="Signal")
     parser.add_argument("--GridRun", help="Run on Grid", action='store_true')
     parser.add_argument(
         "--SampleDir", help="Type your PHYS directory",
-        default="/eos/atlas/atlascerngroupdisk/phys-higp/higgs-pairs/bbVV/")
+        default="/eos/user/c/cstauch/PostProcessing_HH/run/Sample_Lists/mc20a/Signal/")
     parser.add_argument(
         "--campaign", help="mc20a, mc20d, mc20e, mc23a, mc23d", default="mc20a")
+    parser.add_argument(
+        "--noTag", help="Skip git tag creation", action="store_true")
+
     args = parser.parse_args()
     process = args.Process
     grid = args.GridRun
     sample_dir = args.SampleDir
     campaign = args.campaign
+    notag = args.noTag
     print(
         "Process:", process,
         "\tGrid:", grid, "\tSampleDir:", sample_dir, "\tCampaign", campaign)
 
+    if notag:
+        print("noTag = true : no git tag will be created")
+
     # Need to synchronize with io_manager / run_grid
     if grid:
         print("Running on Grid.")
-        run_grid(process, campaign)
+        run_grid(process, campaign, notag)
     else:
         print("Running locally.")
         run_local(process, sample_dir)

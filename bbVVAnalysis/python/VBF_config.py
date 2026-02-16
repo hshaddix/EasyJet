@@ -72,6 +72,7 @@ def vbf_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, taukey,
             muonWP=TightMuonWPLabel,
             eleWP=TightEleWPLabel,
             triggerLists=trigger_branches,
+            isMC=flags.Input.isMC,
             trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
             channel=flags.Analysis.channel,
             cutList=flags.Analysis.CutList,
@@ -103,11 +104,8 @@ def vbf_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, taukey,
 
 def get_BaselineVarshhbbVVAlg_variables(flags):
 
-    int_variable_names = ["lrjets_n", "srjets_n", "Selected_Lepton_n"]
-    float_variable_names = ["Whad_Jet_DeltaR"]
-
-    for var in ["matched", "leptype"]:
-        int_variable_names += ["Lepton_" + var]
+    int_variable_names = ["lrjets_n"]
+    float_variable_names = []
 
     return float_variable_names, int_variable_names
 
@@ -141,10 +139,6 @@ def vbf_branches(flags):
     int_variable_names += object_level_int_variables
 
     branches += object_level_branches
-
-    # cuts in ttree
-    branches += ["EventInfo.PassAllCuts_%SYS% -> PassAllCuts"
-                 + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
     for var in ["_trigger_"]:
         for cat in ["LRT", "SLT"]:

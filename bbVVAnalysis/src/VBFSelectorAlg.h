@@ -51,25 +51,13 @@ public:
 
 private:
 
-    void distJetClassification(const xAOD::JetContainer& lrjets, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad,
-                               const TLorentzVector& lepton, const CP::SystematicSet& sys);
-
-    void massJetClassification(const xAOD::JetContainer& lrjets, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad,
-                             const CP::SystematicSet& sys);
-                             
-    void signalBtagging(const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad, const CP::SystematicSet& sys, bool& HBB_BTAG, bool& WHAD_BTAG);
-    
-    void VBFMassJetClassification(const xAOD::JetContainer& lrjets, const xAOD::Jet *&Whad, const CP::SystematicSet& sys);
-
-    void VBFJetSelectionboosted(const xAOD::JetContainer& jets, const xAOD::Jet *&fwjet1, const xAOD::Jet *&fwjet2, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad);
-
-    void VBFJetSelectionsplitboosted(const xAOD::JetContainer& jets, const xAOD::Jet *&fwjet1,const xAOD::Jet *&fwjet2 , const xAOD::Jet *&Whad);
+    void VBFJetSelectionboosted(const xAOD::JetContainer& jets, bool& TWOVBFJET, const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad);
 
     StatusCode initialiseCutflow();
 
     const std::vector<std::string> m_STANDARD_CUTS{
           // add more standard cuts
-          "AT_LEAST_TWO_LRJETS",
+          "EXACTLY_TWO_LRJETS",
           "EXACTLY_ONE_LEPTON", // For 1lep channels
           "DR_CUT", // DR btw lepton and WHad. dR < 1.0 to define boosted 1-lep. dR > 1.0 for split-boosted 1-lep
           "HBB_PT", // Hbb_lrjet pass pt > 500 GeV cut
@@ -187,6 +175,7 @@ private:
     // counter vars (for debugging)
     int Jet_evt = 0; // Need to decide whether bbVV needs AT_LEAST_TWO_JETS
     long long int n_evt = 0;
+    double m_total_mcEventWeight{0.0};
 
     const double m_Wmass = 80.379 * Athena::Units::GeV; // This is the W mass used in earlier study
     const double m_Hmass = 125.09 * Athena::Units::GeV; // This is the H mass used in earlier study
@@ -198,7 +187,7 @@ private:
     CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
     
     std::unordered_map < HHBBVV::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
-    std::unordered_map < HHBBVV::Booleans, bool > m_bools;
+    std::unordered_map < HHBBVV::Booleans, bool> m_bools;
     std::unordered_map < HHBBVV::Booleans, std::string > m_boolnames{
         {HHBBVV::pass_trigger_SET, "pass_trigger_SET"},
         {HHBBVV::pass_trigger_SMT, "pass_trigger_SMT"},
@@ -210,6 +199,11 @@ private:
     void evaluateSingleLeptonTrigger(const xAOD::EventInfo* event, const xAOD::Electron* ele, const xAOD::Muon* mu, const CP::SystematicSet& sys);
     void evaluateLRJetTrigger(const xAOD::EventInfo *event, const xAOD::Jet *lrjet, const CP::SystematicSet& sys);
     void setThresholds(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
+    
+    Gaudi::Property<bool> m_isMC
+      { this, "isMC", false, "Is this simulation?" };
+    CP::SysReadDecorHandle<float>
+        m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
     
   };
 }

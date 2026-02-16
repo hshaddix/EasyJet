@@ -101,7 +101,7 @@ namespace HHBBVV
 
     for(const std::string &channel : m_channel_names){
       if (channel.std::string::find("1Lep") != std::string::npos)m_run_lep = true;
-      if (channel.std::string::find("VBF") != std::string::npos) m_bbVV_tau = true;
+      if (channel.std::string::find("VBF") != std::string::npos) m_bbVV_VBF = true;
 
       if( channel == "Boosted1Lep") m_channels.push_back(HHBBVV::Boosted1Lep);
       else if ( channel == "SplitBoosted1Lep") m_channels.push_back(HHBBVV::SplitBoosted1Lep);
@@ -109,11 +109,10 @@ namespace HHBBVV
       else if ( channel == "SplitBoosted0Lep") m_channels.push_back(HHBBVV::SplitBoosted0Lep);
       else if ( channel == "Common0Lep") m_channels.push_back(HHBBVV::Common0Lep);
       else if ( channel == "VBFBoosted1Lep") m_channels.push_back(HHBBVV::VBFboosted1Lep);
-      else if ( channel == "VBFSplitboosted1Lep") m_channels.push_back(HHBBVV::VBFsplitboosted1Lep);
       else{
         ATH_MSG_ERROR("Unknown channel: "
           << channel << std::endl
-          << "Available are: [\"Boosted1Lep\", \"SplitBoosted1Lep\", \"Boosted0Lep\", \"SplitBoosted0lep\", \"Common0lep\", \"VBFSplitboosted1Lep\", \"VBFBoosted1Lep\"]");
+          << "Available are: [\"Boosted1Lep\", \"SplitBoosted1Lep\", \"Boosted0Lep\", \"SplitBoosted0lep\", \"Common0lep\", \"VBFBoosted1Lep\"]");
         return StatusCode::FAILURE;
       }
       ATH_MSG_DEBUG("Running Channel: " << channel);
@@ -147,7 +146,7 @@ namespace HHBBVV
       ANA_CHECK (m_bbVVElectronHandle.retrieve (electrons, sys));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      if(m_bbVV_tau){
+      if(m_bbVV_VBF){
         ANA_CHECK (m_bbVVTauHandle.retrieve (taus, sys));
       }
 
@@ -175,13 +174,13 @@ namespace HHBBVV
       float signal_lepton_SF = -99.;
       int signal_lepton_charge = -99;
       int signal_lepton_id = -99;
-      int signal_lepton_match = -99;
+      //int signal_lepton_match = -99;
       const xAOD::TauJet* tau0 = nullptr;
 
       for(const xAOD::Electron* electron : *electrons) {
         if (m_selected_el.get(*electron, sys)){
           signal_lepton = electron->p4();
-          signal_lepton_SF = m_ele_SF.get(*electron, sys);
+          if(m_isMC){signal_lepton_SF = m_ele_SF.get(*electron, sys);}
           signal_lepton_charge = electron->charge();
           signal_lepton_id = signal_lepton_charge > 0 ? -11 : 11;
           break; // At most one lepton selected
@@ -190,7 +189,7 @@ namespace HHBBVV
       for(const xAOD::Muon* muon : *muons) {
         if (m_selected_mu.get(*muon, sys)){
           signal_lepton = muon->p4();
-          signal_lepton_SF = m_mu_SF.get(*muon, sys);
+          if(m_isMC){signal_lepton_SF = m_mu_SF.get(*muon, sys);}
           signal_lepton_charge = muon->charge();
           signal_lepton_id = signal_lepton_charge > 0 ? -13 : 13;
           break; 
@@ -202,7 +201,7 @@ namespace HHBBVV
         m_Fbranches.at("Lepton_eta").set(*event, signal_lepton.Eta(), sys);
         m_Fbranches.at("Lepton_phi").set(*event, signal_lepton.Phi(), sys);
         m_Fbranches.at("Lepton_E").set(*event, signal_lepton.E(), sys);
-        m_Fbranches.at("Lepton_effSF").set(*event, signal_lepton_SF, sys);
+        if(m_isMC){m_Fbranches.at("Lepton_effSF").set(*event, signal_lepton_SF, sys);}
         m_Ibranches.at("Lepton_charge").set(*event, signal_lepton_charge, sys);
         m_Ibranches.at("Lepton_pdgid").set(*event, signal_lepton_id, sys);
         
@@ -210,13 +209,6 @@ namespace HHBBVV
       // VBF Boosted Triggermatched Leptons and Tau's
       for(const std::string &channel : m_channel_names){
           if (channel == "VBFBoosted1Lep"){
-            for(const xAOD::Muon* muon : *muons) {
-                signal_lepton_match = m_matched_mu.get(*muon, sys);
-            }
-            for(const xAOD::Electron* electron : *electrons) {
-                signal_lepton_match = m_matched_el.get(*electron, sys);
-            }
-            m_Ibranches.at("Lepton_matched").set(*event, signal_lepton_match, sys);
             for(const xAOD::TauJet* tau : *taus) {
                 if(m_selected_tau.get(*tau, sys) && !tau0) tau0 = tau;
                 else{
@@ -263,6 +255,7 @@ namespace HHBBVV
           }
         }
 
+
         if(!prefix.empty()){
           m_Fbranches.at(prefix + "_pt").set(*event, lrjet->pt(), sys);
           m_Fbranches.at(prefix + "_eta").set(*event, lrjet->eta(), sys);
@@ -291,12 +284,12 @@ namespace HHBBVV
         }
       }
 
-      m_Ibranches.at("lrjets_n").set(*event, lrjets->size(), sys);
-      if(m_run_lep){
-        m_Ibranches.at("srjets_n").set(*event, jets->size(), sys);
-        m_Ibranches.at("Selected_Lepton_n").set(*event, (electrons->size()+muons->size()), sys);      
-      }
 
+      m_Ibranches.at("lrjets_n").set(*event, lrjets->size(), sys);
+      if(m_run_lep && !m_bbVV_VBF){
+          m_Ibranches.at("srjets_n").set(*event, jets->size(), sys);
+          m_Ibranches.at("Selected_Lepton_n").set(*event, (electrons->size()+muons->size()), sys);      
+      }
       // DiHiggs mass 
       TLorentzVector bb(0,0,0,0);
       TLorentzVector VV(0,0,0,0);

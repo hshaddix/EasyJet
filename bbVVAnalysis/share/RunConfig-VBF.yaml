@@ -20,10 +20,11 @@ do_met : true
 
 # Toggles for reconstructed objects decorations
 Small_R_jet:
+  useFJvt: true
   max_eta: 4.5
+  min_pT: 20000
   # btagging nominal working point
   btag_wp: "GN2v01_FixedCutBEff_90"
-
   btag_extra_wps:
     - GN2v01_Continuous
     - GN2v01_FixedCutBEff_85
@@ -52,24 +53,32 @@ Large_R_jet:
   
 
 Electron:
+  min_pT: 10000
+  max_eta: 2.47
   do_IFF_decoration: true
   ID: "LooseBLayerLH"
-  Iso: "TightTrackOnly_VarRad"
+  Iso: "NonIso"
   extra_wps:
+    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
     - ["MediumLH","TightTrackOnly_VarRad"]
     - ["TightLH", "TightTrackOnly_VarRad"]
+  correlationModelId: "TOTAL"
 
 
 Muon:
+  min_pT: 10000
+  max_eta: 2.5
   do_IFF_decoration: true
   ID: "Loose"
-  Iso: "PflowLoose_VarRad"
+  Iso: "NonIso"
   extra_wps:
+    - ["Loose","PflowLoose_VarRad"] 
     - ["Medium","PflowLoose_VarRad"]
     - ["Tight", "PflowLoose_VarRad"]
 
 
 Tau:
+  min_pT: 20000
   ID: "RNNLoose"
   variables: ["pt","eta","phi","E","effSF"]
   variables_int: ["charge","nprong","decayMode"]
@@ -85,6 +94,10 @@ Trigger:
   include: [bbVVAnalysis/VBF_trigger.yaml]
   writeOutput: false
 
+do_CP_systematics: false
+systematics_regex: [".*"]
+systematics_suffix_separator: "___"
+
 # write objects with overlap removal applied
 # turning this on you have to decide on one large R jet collection
 do_overlap_removal: true
@@ -94,11 +107,13 @@ OverlapRemoval:
   do_boostedLeptons: true
 
 CutList : # Only include general cuts
-      - AT_LEAST_TWO_LRJETS
-      - EXACTLY_ONE_LEPTON
       - PASS_TRIGGER
+      - EXACTLY_TWO_LRJETS
+      - EXACTLY_ONE_LEPTON
+      - 2VBF_JETS
       - NO_TAU
       - SIGNAL_LEPTON
+      
 
 # Enable cutflow
 save_bbVV_cutflow: true
@@ -115,12 +130,15 @@ ttree_output:
     taus: 'container_names.output.taus'
     met : 'container_names.output.met'
   collection_options:
+    muons:
+      iso_variables: true
+    electrons:
+      iso_variables: true
     small_R_jets:
       btag_info: true
     large_R_jets:
       truth_labels: true
       truth_parent_info: true
   truth_outputs:
-    small_R_jets: 'container_names.input.truth4Jet'
     higgs_particle: 'container_names.output.truthHHParticles'
 
