@@ -40,7 +40,7 @@ def get_h5_cfg(flags):
     types |= {x: "CUSTOM" for x in kinematics}
     btagging = [f"GN2v01_p{x}" for x in "cub"]
     types |= {x: "HALF" for x in btagging}
-    associations = {x: f"btaggingLink/{x}" for x in btagging}
+    associations = {}
     primitives += kinematics + btagging
     if flags.Input.isMC:
         mc_primatives, mc_types, mc_assoc = _get_truth_types(flags)

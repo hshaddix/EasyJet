@@ -119,6 +119,7 @@ declare -A SMALL_DATAFILES=(
     [zbbycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zlljcalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zllycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [h5-fast-mc23]=${SMALL_TTBAR_MC23}
 )
 
 declare -A TESTS=(
@@ -411,6 +412,9 @@ has-eos() {
 
 # Check for the existence of a valid grid proxy, which allows reading via xrootd without the eos credentials
 has-grid-proxy() {
+    if ! type voms-proxy-info >& /dev/null; then
+        return 1
+    fi
     return `voms-proxy-info -acexists atlas`
 }
 
