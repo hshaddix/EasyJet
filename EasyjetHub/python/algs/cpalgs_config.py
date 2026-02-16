@@ -7,7 +7,6 @@ from EasyjetHub.algs.calibration.jets import (
     jet_sequence, lr_jet_sequence, rc_jet_sequence)
 from EasyjetHub.output.ttree.wtag_decor_config import wtag_decor_cfg
 from EasyjetHub.output.ttree.tau_decor_config import tau_decor_cfg
-from EasyjetHub.output.ttree.ditau_decor_config import ditau_decor_cfg
 from EasyjetHub.output.ttree.jet_decor_config import (
     jet_decor_cfg, large_R_jet_decor_cfg
 )
@@ -66,9 +65,6 @@ def cpalgs_cfg(flags):
 
     if flags.Analysis.do_taus:
         cfg.merge(tau_decor_cfg(flags))
-
-    if flags.Analysis.do_ditaus:
-        cfg.merge(ditau_decor_cfg(flags))
 
     if flags.Analysis.do_electrons:
         cfg.merge(electron_decor_config(flags))

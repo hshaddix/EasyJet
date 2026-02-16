@@ -184,13 +184,6 @@ Tau:
   extra_wps: []
   antiTauScoreThreshold: 0
 
-DiTau:
-  ID: ""
-  do_thinning: true
-  # Activate when DiTau decoration is needed with samples < p7017 
-  do_score_decoration: false
-
-
 Lepton:
   amount: 0
   variables: ["pt", "eta", "phi", "E", "effSF"]

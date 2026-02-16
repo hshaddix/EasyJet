@@ -5,8 +5,6 @@ do_large_R_UFO_jets: true
 do_ditaus: true
 
 DiTau:
-  ID: "Tight"
-  extra_wps: ["Loose", "Medium"]
   score_branches: true
   truth_branches: true
 

@@ -65,6 +65,9 @@ def common_services_sequence(flags, configAcc):
 
     configSeq += makeConfig('CommonServices')
 
+    # Use Easyjet MetaDataHistogram for now
+    configSeq.setOptionValue('.metadataHistogram', '')
+
     has_uid = is_at_least(flags, "p7017")
     configSeq.setOptionValue('.fixDAODTruthRecord', not has_uid)
     truthParContFix = list(flags.Analysis.Truth.truthParticleContainersToFix)

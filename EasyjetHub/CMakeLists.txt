@@ -41,7 +41,6 @@ atlas_add_library( EasyjetHubLib
                    BoostedJetTaggersLib 
                    JetAnalysisInterfacesLib
                    EventBookkeeperToolsLib
-                   DiTauRecToolsLib
                    TrigBtagEmulationToolLib
 )
 

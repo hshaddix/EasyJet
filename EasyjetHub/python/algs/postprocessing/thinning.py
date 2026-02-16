@@ -14,17 +14,15 @@ def thinning_sequence(flags):
     objmap = {'electrons': 'Electron',
               'photons': 'Photon',
               'muons': 'Muon',
-              'taus': 'Tau',
-              'ditaus': 'DiTau'}
+              'taus': 'Tau'}
 
     objflags = {x: f'do_{x}' for x in ['electrons', 'photons', 'muons',
-                                       'taus', 'ditaus']}
+                                       'taus']}
     selections = dict(
         electrons=f'{flags.Analysis.Electron.ID}_{flags.Analysis.Electron.Iso}',
         photons=f'{flags.Analysis.Photon.ID}_{flags.Analysis.Photon.Iso}',
         muons=f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}',
         taus=flags.Analysis.Tau.ID,
-        ditaus=flags.Analysis.DiTau.ID,
     )
 
     for objtype, objflag in objflags.items():
