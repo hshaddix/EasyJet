@@ -37,6 +37,14 @@ Large_R_jet:
   min_pT: 200.e+3
   max_eta: 2.0
   runMuonJetPtCorr: false
+  flat_mass_selections:
+    taggers:
+      GN3XPV01_hbb:
+        - "FlatMassQCDEff_0p08"
+        - "FlatMassQCDEff_0p15"
+        - "FlatMassQCDEff_0p25"
+        - "FlatMassQCDEff_0p4"
+        - "FlatMassQCDEff_0p6"
 
 Photon:
   ID: "Tight" # Loose, Tight
