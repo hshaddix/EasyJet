@@ -83,8 +83,10 @@ ttree_output:
       # btag_details: true
     large_R_jets:
       run_selection: true
+      btag_details: true
       # substructure_info: true
       truth_labels: true
+      bjet_regression: true
     muons:
       run_selection: true
     electrons:
