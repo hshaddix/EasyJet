@@ -21,28 +21,5 @@ Large_R_jet:
   runMuonJetPtCorr: true
   # Use the most loose working point for selection here.
   flat_mass_selections:
-    taggers:
-      GN3XPV01_hbb:
-        - "FlatMassQCDEff_0p08"
-        - "FlatMassQCDEff_0p15"
-        - "FlatMassQCDEff_0p25"
-        - "FlatMassQCDEff_0p4"
-        - "FlatMassQCDEff_0p6"
-      GN3XPV01_htt:
-        - "FlatHttEff_0p93"
-        - "FlatHttEff_0p98"
-      # legacy taggers
-      GN2XTauV00_htt:
-        - "FlatHttEff_0p93"
-        - "FlatHttEff_0p98"
-      GN2Xv01:
-        - "FlatMassQCDEff_0p25"
-        - "FlatMassQCDEff_0p3"
-        - "FlatMassQCDEff_0p37"
-        - "FlatMassQCDEff_0p46"
-        - "FlatMassQCDEff_0p58"
-        - "FlatMassQCDEff_0p74"
-        - "FlatMassQCDEff_0p94"
-        - "FlatMassQCDEff_1p25"
-        - "FlatMassQCDEff_1p55"
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml, EasyjetHub/xbb-taggers/GN2XTauV00_htt.yaml, EasyjetHub/xbb-taggers/GN2Xv01.yaml]
   amount_leadingjet: 2

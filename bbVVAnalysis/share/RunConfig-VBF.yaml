@@ -35,17 +35,7 @@ Small_R_jet:
 
 Large_R_jet:
   flat_mass_selections:
-    taggers:
-      GN2Xv01:
-        - "FlatMassQCDEff_0p25"
-        - "FlatMassQCDEff_0p3"
-        - "FlatMassQCDEff_0p37"
-        - "FlatMassQCDEff_0p46"
-        - "FlatMassQCDEff_0p58"
-        - "FlatMassQCDEff_0p74"
-        - "FlatMassQCDEff_0p94"
-        - "FlatMassQCDEff_1p25"
-        - "FlatMassQCDEff_1p55"
+    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml]
   wtag_type: "ANN" # ANN, DNN
   wtag_wp: "70"
   wtag_extra_wps: ["50","60","80","90"]

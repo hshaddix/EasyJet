@@ -248,13 +248,10 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq += makeConfig('Jets.Uncertainties')
     configSeq.setOptionValue('.containerName', output_name)
     configSeq.setOptionValue('.jetInput', "UFO")
-    if flags.Analysis.Large_R_jet.flat_mass_selections:
-        jsonCalibFile = find_datafile(
-            flags.Analysis.Large_R_jet.flat_mass_selections['calib_file']
-        )
-    for tagger, wps in flags.Analysis.Large_R_jet.flat_mass_selections.taggers.items():
+    for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
+        jsonCalibFile = find_datafile(tagger_cfg['file'])
 
-        for wp in wps:
+        for wp in tagger_cfg['wps']:
             configSeq += config.makeConfig('Jets.XbbTagging')
             configSeq.setOptionValue('.containerName', output_name)
             # no eff SF provided for the moment

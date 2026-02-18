@@ -14,7 +14,7 @@ copiedVariablePrefix = "Zcand_"
 
 
 def _working_points(flags):
-    wps = flags.Analysis.Large_R_jet.flat_mass_selections.taggers.GN3XPV01_hbb
+    wps = flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps
     return [f"xbb_select_GN3XPV01_hbb_{x}" for x in wps]
 
 

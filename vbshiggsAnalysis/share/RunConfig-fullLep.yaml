@@ -53,8 +53,9 @@ Large_R_jet:
   runMuonJetPtCorr: false
   amount: 1
   flat_mass_selections:
-    taggers:
-      GN2Xv01:
+    GN2Xv01:
+      file: EasyjetHub/Xbb_GN2Xv01.json
+      wps:
         - "FlatMassQCDEff_1p55"
     
 # list of triggers per year to consider

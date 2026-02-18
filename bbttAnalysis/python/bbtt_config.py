@@ -101,9 +101,9 @@ def bbtt_SelectorAlgCfg(flags):
     muon_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
     ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
     if flags.Analysis.do_large_R_UFO_jets:
-        taggers_cfg = flags.Analysis.Large_R_jet.flat_mass_selections.taggers
-        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{taggers_cfg.GN3XPV01_hbb[-1]}"
-        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{taggers_cfg.GN3XPV01_htt[-1]}"
+        fms = flags.Analysis.Large_R_jet.flat_mass_selections
+        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{fms.GN3XPV01_hbb.wps[-1]}"
+        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{fms.GN3XPV01_htt.wps[-1]}"
     else:
         GN3XPV01_hbb_WP = GN3XPV01_htt_WP = ""
     cfg.addEventAlgo(
@@ -175,9 +175,9 @@ def bbtt_BaselineVarsAlgCfg(flags, muonkey, electronkey, taukey,
     cfg = ComponentAccumulator()
 
     if flags.Analysis.do_boosted_dihiggs:
-        taggers_cfg = flags.Analysis.Large_R_jet.flat_mass_selections.taggers
-        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{taggers_cfg.GN3XPV01_hbb[-1]}"
-        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{taggers_cfg.GN3XPV01_htt[-1]}"
+        fms = flags.Analysis.Large_R_jet.flat_mass_selections
+        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{fms.GN3XPV01_hbb.wps[-1]}"
+        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{fms.GN3XPV01_htt.wps[-1]}"
         cfg.addEventAlgo(
             CompFactory.HHBBTT.BaselineVarsBoostedbbttAlg(
                 "BaselineVarsBoostedbbttAlg",

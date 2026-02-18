@@ -1,0 +1,5 @@
+GN2XTauV00_htt:
+  file: EasyjetHub/Xbb_GN2XTauV00_htt.json
+  wps:
+    - "FlatHttEff_0p93"
+    - "FlatHttEff_0p98"

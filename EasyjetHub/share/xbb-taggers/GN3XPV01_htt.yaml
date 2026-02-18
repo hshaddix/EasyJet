@@ -1,0 +1,5 @@
+GN3XPV01_htt:
+  file: EasyjetHub/Xbb_GN3XPV01_htt.json
+  wps:
+    - "FlatHttEff_0p93"
+    - "FlatHttEff_0p98"

@@ -109,7 +109,7 @@ def get_large_R_jet_branches(
             large_R_jet_branches.variables += get_large_R_gn2_branches(
                 is_valid_for_v02
             )
-        if flags.Analysis.Large_R_jet.flat_mass_selections.taggers:
+        if flags.Analysis.Large_R_jet.flat_mass_selections:
             large_R_jet_branches.variables += get_large_R_fm_tag_branches(flags)
 
     if (
@@ -202,8 +202,8 @@ def get_large_R_gn2_tag_branches(flags):
 
 def get_large_R_fm_tag_branches(flags):
     fm_tag_branches = []
-    for tagger, wps in flags.Analysis.Large_R_jet.flat_mass_selections.taggers.items():
-        for wp_name in wps:
+    for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
+        for wp_name in tagger_cfg['wps']:
             fm_tag_branches += [(f"xbb_select_{tagger}_{wp_name}", None)]
     return fm_tag_branches
 

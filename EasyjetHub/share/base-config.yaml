@@ -95,9 +95,10 @@ Small_R_jet:
 
 Large_R_jet:
   flat_mass_selections: 
-    calib_file: EasyjetHub/Xbb_lookup_table_prelim_Nov20_2025.json
-    taggers:
-      GN2Xv01: []
+  
+    GN2X: 
+      file: EasyjetHub/Xbb_GN2Xv01.json
+      wps: []
   
   min_pT: 200.e+3
   max_pT: -1
