@@ -8,19 +8,10 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
-from EasyjetHub.steering.sample_metadata import is_at_least
+
+from .vars_to_copy import lrj_floats_to_copy, lrj_gn3x_working_points
 
 copiedVariablePrefix = "Zcand_"
-
-
-def _working_points(flags):
-    wps = flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps
-    return [f"xbb_select_GN3XPV01_hbb_{x}" for x in wps]
-
-
-def _taggers(flags):
-    by_tag = flags.Analysis.Large_R_jet.variables_in_ptag
-    return by_tag.p7017 if is_at_least(flags, "p7017") else []
 
 
 def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonkey,
@@ -91,8 +82,8 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             "BaselineVarsZbbyCalibAlg",
             lrjets=z_candidate_jets,
             photons=selected_photons,
-            floatsToCopy=_taggers(flags),
-            intsToCopy=_working_points(flags),
+            floatsToCopy=lrj_floats_to_copy(flags),
+            intsToCopy=lrj_gn3x_working_points(flags),
             copiedVariablePrefix=copiedVariablePrefix,
         )
     )
@@ -109,11 +100,11 @@ def get_BaselineVarsZbbyCalibAlg_variables(flags):
             float_variable_names.append(f"{object}_{var}")
 
     float_variable_names += [
-        f'{copiedVariablePrefix}{x}' for x in _taggers(flags)
+        f'{copiedVariablePrefix}{x}' for x in lrj_floats_to_copy(flags)
     ]
 
     int_variable_names += [
-        f'{copiedVariablePrefix}{x}' for x in _working_points(flags)
+        f'{copiedVariablePrefix}{x}' for x in lrj_gn3x_working_points(flags)
     ]
 
     return float_variable_names, int_variable_names

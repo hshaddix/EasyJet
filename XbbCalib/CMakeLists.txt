@@ -52,6 +52,7 @@ atlas_install_python_modules(
   python/ZlljCalib_config.py
   python/ZllyCalib_config.py
   python/ZtautauCalib_config.py
+  python/vars_to_copy.py
 )
 atlas_install_runtime( scripts/*.py POST_BUILD_CMD ${ATLAS_FLAKE8} )
 atlas_install_data(
