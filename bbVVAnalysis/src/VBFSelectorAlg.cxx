@@ -321,7 +321,7 @@ namespace HHBBVV
       if(n_taus == 0) m_bbVVCuts("NO_TAU").passed = true;
         
       if(m_useTriggerSel && (ele0 || mu0) && ONE_LEP){
-        if(leadLRJ_pt > 500. * Athena::Units::GeV){
+        if(leadLRJ_pt > 520. * Athena::Units::GeV){
             evaluateLRJetTrigger(event, lrjet, sys);
         }
         else{
@@ -607,6 +607,17 @@ namespace HHBBVV
 	"HLT_j460_a10_lcw_subjes_L1J100",
 	"HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100",
 	"HLT_j420_35smcINF_a10t_lcw_jes_L1J100"
+      };
+    }
+    else if(year==2024){
+      single_lr_paths = {
+	"HLT_j360_a10t_lcw_jes_L1jJ160",
+    "HLT_j420_a10sd_cssk_pf_jes_ftf_preselj225_L1jJ160",
+    "HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1jJ160",
+    "HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1gLJ140p0ETA25",
+    "HLT_j460_a10t_lcw_jes_L1jJ160",
+    "HLT_j460_a10r_L1jJ160",
+    "HLT_j460_a10_lcw_subjes_L1jJ160"
       };
     }
     bool pass = false;
