@@ -94,6 +94,11 @@ ntupler_bbVV_mc20:
   script:
     - easyjet-test bbVV-mc20
 
+ntupler_bbVVVBF_mc20:
+  extends: .ntupler
+  script:
+    - easyjet-test bbVVVBF-mc20
+
 ntupler_ttHH_mc20:
   extends: .ntupler
   script:

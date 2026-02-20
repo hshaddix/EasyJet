@@ -154,6 +154,26 @@ validator_bbtt_mc20:
   script:
     - easyjet-validate bbtt-mc20
 
+validator_bbVV_mc20:
+  extends: .ntuple_validation
+  needs:
+    - job: compile
+      artifacts: true
+    - job: ntupler_bbVV_mc20
+      artifacts: false
+  script:
+    - easyjet-validate bbVV-mc20
+
+validator_bbVVVBF_mc20:
+  extends: .ntuple_validation
+  needs:
+    - job: compile
+      artifacts: true
+    - job: ntupler_bbVVVBF_mc20
+      artifacts: false
+  script:
+    - easyjet-validate bbVVVBF-mc20
+
 validator_ttHH_mc20:
   extends: .ntuple_validation
   needs:
