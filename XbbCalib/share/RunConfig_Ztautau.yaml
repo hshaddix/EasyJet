@@ -36,7 +36,9 @@ Large_R_jet:
   min_pT: 200.e+3
   maxEta: 2.0
   runMuonJetPtCorr: false
-
+  flat_mass_selections:
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml, EasyjetHub/xbb-taggers/GN2XTauV00_htt.yaml]
+        
 Photon:
   ID: "Loose"
   Iso: "FixedCutLoose"
@@ -71,8 +73,7 @@ OverlapRemoval:
   # disable overlap with photons and small-R jets
   do_small_R_jet_large_R_jet: false
   do_photon_jet: false
-  # TODO: __TauTauCalib__ try this option ? 
-  # do_boostedLeptons: false  # make the dR exclusion cone pt dependent, get less large-R jets (false)
+  do_boostedLeptons: true  # make the dR exclusion cone pt dependent
 
 # Include the TTree configuration and update details
 ttree_output:

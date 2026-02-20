@@ -29,7 +29,7 @@ Large_R_jet:
   maxEta: 2.0
   runMuonJetPtCorr: false
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml]
+    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml, EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml]
 
 
 Electron:
@@ -66,6 +66,9 @@ OverlapRemoval:
   # Enable overlap removal between small-R jets and large-R jets
   # Athena default is true
   do_small_R_jet_large_R_jet: false
+  doTauAntiTauJet: false
+  do_photon_jet: false
+  do_boostedLeptons: true
 
 # Include the TTree configuration and update details
 ttree_output:
@@ -75,13 +78,18 @@ ttree_output:
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     muons: 'container_names.output.muons'
     electrons: 'container_names.output.electrons'
-  # truth_outputs:
-  #   # small_R_jets: 'container_names.output.truth4Jet'
-  #   large_R_jets: 'container_names.output.truth10SoftDropJet'
+  truth_outputs:
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+    electrons: 'container_names.input.truthelectrons'
+    muons: 'container_names.input.truthmuons'
   collection_options:
     large_R_jets:
       run_selection: true
+      truth_parent_info: true
+      truth_labels: true
     electrons:
       run_selection: true
+      truth_parent_info: true
     muons:
       run_selection: true
+      truth_parent_info: true
