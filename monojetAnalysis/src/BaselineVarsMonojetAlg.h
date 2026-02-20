@@ -95,7 +95,7 @@ private:
     CP::SysReadDecorHandle<float> m_GN2Xv01_pqcd{this, "pqcd", "GN2Xv01_pqcd", "GN2Xv01_pqcd"};
     CP::SysReadDecorHandle<float> m_GN2Xv01_ptop{this, "ptop", "GN2Xv01_ptop", "GN2Xv01_ptop"};
 	
-    CP::SysReadDecorHandle<char> m_TightClean{this,"tightclean", "DFCommonJets_jetClean_TightBad","Tight cleaning flag"};
+    CP::SysReadDecorHandle<char> m_TightCleanPass{this,"tightclean", "DFCommonJets_jetClean_TightBad","Jet passing tight cleaning flag"};
 
     // jss
     std::vector<std::string> m_JSS_list = {"ECF1", "ECF2", "ECF3", "Split12", "Split23", "Tau1_wta", "Tau2_wta", "Tau3_wta", "Qw"};

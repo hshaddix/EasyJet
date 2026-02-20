@@ -1,0 +1,10 @@
+#s-chan
+mc23_13p6TeV.601348.PhPy8EG_tb_lep_antitop.deriv.DAOD_PHYS.e8514_s4162_r14622_p7017
+mc23_13p6TeV.601349.PhPy8EG_tb_lep_top.deriv.DAOD_PHYS.e8514_s4162_r14622_p7017
+#t-chan
+mc23_13p6TeV.601350.PhPy8EG_tqb_lep_antitop.deriv.DAOD_PHYS.e8514_s4162_r14622_p7017
+mc23_13p6TeV.601351.PhPy8EG_tqb_lep_top.deriv.DAOD_PHYS.e8514_s4162_r14622_p7017
+tW
+mc23_13p6TeV.601352.PhPy8EG_tW_dyn_DR_incl_antitop.deriv.DAOD_PHYS.e8551_s4162_r14622_p7017
+mc23_13p6TeV.601355.PhPy8EG_tW_dyn_DR_incl_top.deriv.DAOD_PHYS.e8551_s4162_r14622_p7017
+#601353,601354 no because thery are included in the tW ones

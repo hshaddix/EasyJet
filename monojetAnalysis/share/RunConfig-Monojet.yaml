@@ -6,7 +6,7 @@ bypass: false
 met_cut: 200
 
 do_small_R_jets: true
-do_large_R_Topo_jets: true
+do_large_R_UFO_jets: true
 do_muons: true
 do_electrons: true
 do_taus: true
@@ -25,7 +25,7 @@ Small_R_jet:
   btag_extra_wps:
     - GN2v01_Continuous
   monojet_btagWPs: ["90","77","65"]
-  variables_int_allJets: ["pcbt","TIGHT"]
+  variables_int_allJets: ["pcbt","TightJetCleaningPass"]
   do_parent_decoration: false
 
 
@@ -41,6 +41,7 @@ Large_R_jet:
 
 Electron:
   amount: 0
+  trackSelection: true
   ID: "LooseBLayerLH"
   Iso: "Loose_VarRad"
   min_pT: 7.e+3
@@ -50,6 +51,7 @@ Electron:
 
 Muon:
   amount: 0
+  trackSelection: true
   ID: "Loose"
   Iso: "Loose_VarRad"
   min_pT: 7.e+3
@@ -61,7 +63,7 @@ Tau:
   ID: "Loose"
   min_pT: 20.e+3
   max_eta: 2.5
-
+  
 
 Trigger:
   include: [monojetAnalysis/trigger_MET.yaml]
@@ -71,8 +73,8 @@ do_trigger_filtering: false
 do_overlap_removal: true
 OverlapRemoval:
   # Enable overlap removal between large-R jets and objects for which 
-  # large-R jet OR removal is implemented in Athena
-  do_large_R_jets: false
+  # large-R jet OR removal is implemented in Athena (electrons)
+  do_large_R_jets: true
   do_small_R_jet_large_R_jet: false
 
   

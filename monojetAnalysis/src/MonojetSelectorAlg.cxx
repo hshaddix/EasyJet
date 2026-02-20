@@ -35,7 +35,7 @@ namespace MONOJET
     if (!m_isBtag.empty()) {
       ATH_CHECK(m_isBtag.initialize(m_systematicsList, m_jetHandle));
     }
-    ATH_CHECK (m_TightClean.initialize(m_systematicsList, m_jetHandle));
+    ATH_CHECK (m_TightCleanPass.initialize(m_systematicsList, m_jetHandle));
 
 
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
@@ -55,7 +55,7 @@ namespace MONOJET
     // make trigger decorators
     for (auto trig : m_triggers) {
       std::string triggerDecorName = "trigPassed_"+trig;
-      CP::SysReadDecorHandle<bool> deco{triggerDecorName, this};
+      CP::SysReadDecorHandle<bool> deco{ this, "trig" + triggerDecorName, triggerDecorName, "Name of trigger" };
       m_triggerdecos.emplace(triggerDecorName, deco);
       ATH_CHECK(m_triggerdecos.at(triggerDecorName).initialize(m_systematicsList, m_eventHandle));
     }
@@ -267,12 +267,13 @@ namespace MONOJET
   void MonojetSelectorAlg::evaluateTIGHTCuts
   (const xAOD::JetContainer& jets, CutManager& MonojetCuts, const CP::SystematicSet& sys)
   {
-    if(jets.size() >= 1){
-    	const xAOD::Jet* ljet = jets.at(0);
-   	 if (MonojetCuts.exists("TIGHT_LEADING_CUT") && (std::abs(ljet->eta()) <= 2.4) && 
-	  (m_TightClean.get(*ljet,sys))) {
-        MonojetCuts("TIGHT_LEADING_CUT").passed = true;
-         }
+    if ((jets.size() >= 1) && (MonojetCuts.exists("TIGHT_LEADING_CUT"))){
+    	const xAOD::Jet* leading_jet = jets.at(0);
+   	if ((std::abs(leading_jet->eta()) <= 2.4) && 
+	  (!m_TightCleanPass.get(*leading_jet,sys))) {
+	        MonojetCuts("TIGHT_LEADING_CUT").passed = false; 
+	}
+	else MonojetCuts("TIGHT_LEADING_CUT").passed = true;
     }
   }
 

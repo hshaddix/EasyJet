@@ -86,7 +86,7 @@ namespace MONOJET
       CP::SysReadDecorHandle<char>
       m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
 
-      CP::SysReadDecorHandle<char> m_TightClean{this,"tightclean", "DFCommonJets_jetClean_TightBad","Tight cleaning flag"};
+      CP::SysReadDecorHandle<char> m_TightCleanPass{this,"tightclean", "DFCommonJets_jetClean_TightBad","Jet passing tight cleaning flag"};
 
       Gaudi::Property<std::vector<std::string>> m_PCBTnames
         {this, "PCBTDecorList", {}, "Name list of pseudo-continuous b-tagging decorator"};
@@ -114,6 +114,7 @@ namespace MONOJET
       { this, "triggerLists", {}, "Name list of trigger" };
 
       std::unordered_map<std::string, CP::SysReadDecorHandle<bool> > m_triggerdecos;
+
 
       std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;
 

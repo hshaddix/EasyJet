@@ -62,7 +62,7 @@ namespace MONOJET
     ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_largejetHandle));
     ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_largejetHandle));
     ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_largejetHandle));
-    ATH_CHECK (m_TightClean.initialize(m_systematicsList, m_jetHandle));  
+    ATH_CHECK (m_TightCleanPass.initialize(m_systematicsList, m_jetHandle));  
 
     //jet substruture
     for(auto jss : m_JSS_list){
@@ -128,8 +128,9 @@ namespace MONOJET
       float DeltaPhi_MET_jets = 1000.;
       float DeltaPhi_MET_largeJets = 1000.;
 
-      int bad_jet_event = 0;
+      int tight_pass_event = 1;
       int bad_jet_number = 0;
+
 
       for(const xAOD::Jet* jet : *jets) {
 
@@ -164,9 +165,9 @@ namespace MONOJET
           if(a < DeltaPhi_MET_jets) DeltaPhi_MET_jets = a;
 
 	  //get bad tight jet flag
-	  bool tightclean = m_TightClean.get(*jet, sys);
+	  bool tightclean = m_TightCleanPass.get(*jet, sys);
 	  if (!tightclean) {
-		  bad_jet_event = 1;
+		  tight_pass_event = 0;
 	  	  bad_jet_number++;
 	  }
       }
@@ -208,8 +209,8 @@ namespace MONOJET
       m_Fbranches.at("DeltaPhi_MET_jets").set(*event,DeltaPhi_MET_jets,sys);
       m_Fbranches.at("DeltaPhi_MET_largeJets").set(*event,DeltaPhi_MET_largeJets,sys);
 	
-      m_Ibranches.at("TIGHTBAD_event").set(*event,bad_jet_event,sys);
-
+      m_Ibranches.at("TightJetCleaningPass_event").set(*event,tight_pass_event,sys);
+     
       //MET Significance
       float METSig = m_METSig.get(*met, sys);
       m_Fbranches.at("METSig").set(*event, METSig, sys);
@@ -226,8 +227,8 @@ namespace MONOJET
         m_Fbranches.at(prefix+ "_phi").set(*event, jet->phi(), sys);
         m_Fbranches.at(prefix+ "_E").set(*event, jet->e(), sys);
 	
-	bool tightclean = m_TightClean.get(*jet, sys);
-	m_Ibranches.at(prefix+"_TIGHT").set(*event, tightclean, sys);
+	bool tightclean = m_TightCleanPass.get(*jet, sys);
+	m_Ibranches.at(prefix+"_TightJetCleaningPass").set(*event, tightclean, sys);
 
 
         if(!m_PCBT.empty())
