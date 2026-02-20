@@ -35,22 +35,22 @@ def get_large_R_jet_branches(
     # Similar run_selection as small_R_jets to avoid ordering issues
     if jet_output_flags.run_selection:
         large_R_jet_branches.variables += [
-            ("isAnalysisJet_%SYS%", None)
+            ("isAnalysisJet_%SYS%", "char")
         ]
         for index in range(flags.Analysis.Large_R_jet.amount_leadingjet):
             large_R_jet_branches.variables += [
-                (f"isjet{index+1}_%SYS%", None)
+                (f"isjet{index+1}_%SYS%", "char")
             ]
     else:
         if flags.Analysis.do_overlap_removal:
             large_R_jet_branches.variables += [
-                ("passesOR_%SYS%", None)
+                ("passesOR_%SYS%", "char")
             ]
 
     if flags.Analysis.Large_R_jet.runMuonJetPtCorr:
         if jet_output_flags.no_bjet_calib_p4:
             large_R_jet_branches.variables += [
-                ("n_muons_%SYS%", None)
+                ("n_muons_%SYS%", "int")
             ]
 
             large_R_jet_branches.variables += [
@@ -65,19 +65,19 @@ def get_large_R_jet_branches(
 
     if flags.Input.isMC and jet_output_flags.truth_labels:
         large_R_jet_branches.variables += [
-            ("GhostBHadronsFinalCount", None)
+            ("GhostBHadronsFinalCount", "int")
         ]
         large_R_jet_branches.variables += get_large_R_jet_truth_labels(flags)
 
         if lr_jet_type == "Topo":
             large_R_jet_branches.variables += [
-                ("R10TruthLabel_R21Consolidated", None)
+                ("R10TruthLabel_R21Consolidated", "int")
             ]
         if lr_jet_type == "UFO":
             large_R_jet_branches.variables += [
-                ("GhostCHadronsFinalCount", None),
-                ("R10TruthLabel_R21Precision_2022v1", None),
-                ("R10TruthLabel_R22v1", None)
+                ("GhostCHadronsFinalCount", "int"),
+                ("R10TruthLabel_R21Precision_2022v1", "int"),
+                ("R10TruthLabel_R22v1", "int")
             ]
 
     if jet_output_flags.substructure_info:
@@ -100,8 +100,8 @@ def get_large_R_jet_branches(
         and jet_output_flags.WTransformer_details
     ):
         large_R_jet_branches.variables += [
-            ("WTransformer_massdec_ConstScore", None),
-            ("WTransformer_ConstScore", None)
+            ("WTransformer_massdec_ConstScore", "float"),
+            ("WTransformer_ConstScore", "float")
         ]
 
     if lr_jet_type == "UFO" and is_valid_ptag:
@@ -122,10 +122,10 @@ def get_large_R_jet_branches(
         # which to use.
         prefix = "bJR10v00Ext" if is_valid_for_gn3x else "bJR10v00"
         large_R_jet_branches.variables += [
-            (prefix + "_pt", None),
-            (prefix + "_mass", None),
-            ("bJR10v01_pt", None),
-            ("bJR10v01_mass", None)
+            (prefix + "_pt", "float"),
+            (prefix + "_mass", "float"),
+            ("bJR10v01_pt", "float"),
+            ("bJR10v01_mass", "float")
         ]
 
     if (
@@ -141,7 +141,7 @@ def get_large_R_jet_branches(
                 ('GN2XTauV00_htt_score', "float"), ('GN3XPV01_htt_score', "float")
             ]
         large_R_jet_branches.variables += [
-            (tag, None) for tag in taggers
+            (tag, "float") for tag in taggers
         ]
 
     large_R_jet_branches.variables += jet_output_flags.extra_variables
@@ -153,20 +153,20 @@ def get_large_R_jet_branches(
 
 def get_substructure_branches(flags, lr_jet_type):
     substructure_vars = [
-        (f"Tau{i}_wta", None) for i in range(1, 4)
+        (f"Tau{i}_wta", "float") for i in range(1, 4)
     ]
     substructure_vars += [
         (f"ECF{i}", "float") for i in range(1, 4)
     ]
     substructure_vars += [
-        ("Split12", None),
-        ("Split23", None)
+        ("Split12", "float"),
+        ("Split23", "float")
     ]
     # Trimmed jet vars
     if lr_jet_type == "Topo":
         substructure_vars += [
-            ("NTrimSubjets", None),
-            ("TrackSumPt", None)
+            ("NTrimSubjets", "int"),
+            ("TrackSumPt", "float")
         ]
 
     substructure_vars += [
@@ -177,12 +177,12 @@ def get_substructure_branches(flags, lr_jet_type):
 
 def get_large_R_gn2_branches(is_valid_for_v02):
     gn2_branches = [
-        (f"GN2Xv01_p{c}", None)
+        (f"GN2Xv01_p{c}", "float")
         for c in ["hbb", "hcc", "top", "qcd"]
     ]
     if is_valid_for_v02:
         gn2_branches += [
-            (f"GN2Xv02_p{c}", None)
+            (f"GN2Xv02_p{c}", "float")
             for c in ["hbb", "hcc", "top", "qcd"]
         ]
     return gn2_branches
@@ -192,7 +192,7 @@ def get_large_R_gn2_tag_branches(flags):
     gn2_tag_branches = []
     for wp in flags.Analysis.Large_R_jet.GN2X_hbb_wps:
         gn2_tag_branches += [
-            ("xbb_select_GN2Xv01_" + wp, None)
+            ("xbb_select_GN2Xv01_" + wp, "int")
         ]
         # Disable SF for now to avoid warnings with preliminary json
         # if flags.Input.isMC:
@@ -204,7 +204,7 @@ def get_large_R_fm_tag_branches(flags):
     fm_tag_branches = []
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
         for wp_name in tagger_cfg['wps']:
-            fm_tag_branches += [(f"xbb_select_{tagger}_{wp_name}", None)]
+            fm_tag_branches += [(f"xbb_select_{tagger}_{wp_name}", "int")]
     return fm_tag_branches
 
 

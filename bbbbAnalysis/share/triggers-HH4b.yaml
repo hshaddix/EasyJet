@@ -43,6 +43,9 @@ selection:
       # Symmetric trigger for reference
     - 'HLT_2j35c_020jvt_bgn160_2j35c_020jvt_pf_ftf_presel2j25XX2j25b85_L14J15p0ETA25'
     '2024':
+      # resolved
+    - 'HLT_j140_2j50_0eta290_020jvt_bgn270_pf_ftf_preselj80XX2j45bgtwo90_L1jJ140_3jJ60'
+    - 'HLT_j75c_020jvt_j50c_020jvt_j25c_020jvt_j20c_020jvt_SHARED_2j20c_020jvt_bgn277_pf_ftf_presel2c20XX2c20bgtwo85_L1jJ85p0ETA21_3jJ40p0ETA25'
     # boosted
     - 'HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
     - 'HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1SC111-CJ15'
