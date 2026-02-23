@@ -1,0 +1,8 @@
+GN3XPV01_hbb_bjr:
+  file: EasyjetHub/Xbb_GN3XPV01_hbb_bjr.json
+  wps:
+    - "FlatMassQCDEff_0p08"
+    - "FlatMassQCDEff_0p15"
+    - "FlatMassQCDEff_0p25"
+    - "FlatMassQCDEff_0p4"
+    - "FlatMassQCDEff_0p6"

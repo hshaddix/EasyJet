@@ -39,7 +39,10 @@ Large_R_jet:
   runMuonJetPtCorr: true
   do_thinning: true
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml, EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml]
+    include: 
+      - EasyjetHub/xbb-taggers/GN2Xv01.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
 
 Muon:
   ID: "Loose"

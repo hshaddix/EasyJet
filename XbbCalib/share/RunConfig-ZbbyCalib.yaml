@@ -38,7 +38,9 @@ Large_R_jet:
   max_eta: 2.0
   runMuonJetPtCorr: false
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml]
+    include: 
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
 
 Photon:
   ID: "Tight" # Loose, Tight
