@@ -7,6 +7,7 @@ do_ditaus: true
 DiTau:
   score_branches: true
   truth_branches: true
+  ID: "Tight"
 
 # overlap removal
 OverlapRemoval:

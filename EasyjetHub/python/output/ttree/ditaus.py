@@ -25,7 +25,7 @@ def get_ditau_branches(flags, tree_flags, input_container, output_prefix):
         id_wps += flags.Analysis.DiTau.extra_wps
 
     ditau_branches.variables += [
-        (f"baselineSelection_{id_wp}_%SYS%", None)
+        (f"baselineSelection_{id_wp}_%SYS%", "float")
         for id_wp in id_wps
     ]
 
