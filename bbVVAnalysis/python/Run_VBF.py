@@ -33,11 +33,11 @@ def get_sample_dir(path, dsid_str):
 
 def io_manager(
         process="Signal",
-        Sample_dir="", kfactor=""):
+        Sample_dir="", kfactor="", systematics=False):
 
     outFile = "ejOutput_PHYS_bbVV_"
-
-    configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-1lep-boosted-VBF.yaml"
+    sys = "_sys" if systematics else ""
+    configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-1lep-boosted-VBF" + sys + ".yaml"
     outFile += "1lep_boosted_"
 
     if process == "Signal":
@@ -51,11 +51,11 @@ def io_manager(
 
 def run_local(
         process="Signal",
-        sample_dir="", campaign=""):
+        sample_dir="", campaign="", systematics=False):
     kfactor = ["cvv0", "cvv0p5", "cvv1", "cvv1p5", "cvv2", "cvv3"]
     for entry in kfactor:
         inputFile, outputFile, configFile = io_manager(
-            process, sample_dir, entry)
+            process, sample_dir, entry, systematics)
         input = '"' + inputFile + '*"'
         command = ("bbVV-ntupler " + input + " --run-config "
                    + configFile + " --out-file " + outputFile)
@@ -69,11 +69,12 @@ def run_local(
             os.path.realpath(outputFile))
 
 
-def run_grid(process="vbfHHbbWW1lep", campaign="", notag=False):
+def run_grid(process="vbfHHbbWW1lep", campaign="", notag=False, systematics=False):
     executable = "bbVV-ntupler"
     ListDir = easyjet_build_dir + "/data/bbVVAnalysis/PHYS/nominal/"
 
-    configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-1lep-boosted-VBF.yaml"
+    sys = "_sys" if systematics else ""
+    configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-1lep-boosted-VBF" + sys + ".yaml"
 
     if notag:
         notag = " --noTag"
@@ -120,16 +121,18 @@ if __name__ == "__main__":
         "--campaign", help="mc20a, mc20d, mc20e, mc23a, mc23d", default="mc20a")
     parser.add_argument(
         "--noTag", help="Skip git tag creation", action="store_true")
-
+    parser.add_argument(
+        "--sys", help="Run systematics", action='store_true')
     args = parser.parse_args()
     process = args.Process
     grid = args.GridRun
     sample_dir = args.SampleDir
     campaign = args.campaign
     notag = args.noTag
+    systematics = args.sys
     print(
-        "Process:", process,
-        "\tGrid:", grid, "\tSampleDir:", sample_dir, "\tCampaign", campaign)
+        "Process:", process, "\tGrid:", grid,
+        "\tSampleDir:", sample_dir, "\tCampaign", campaign, "\tSys:", systematics)
 
     if notag:
         print("noTag = true : no git tag will be created")
@@ -137,7 +140,7 @@ if __name__ == "__main__":
     # Need to synchronize with io_manager / run_grid
     if grid:
         print("Running on Grid.")
-        run_grid(process, campaign, notag)
+        run_grid(process, campaign, notag, systematics)
     else:
         print("Running locally.")
-        run_local(process, sample_dir)
+        run_local(process, sample_dir, systematics)
