@@ -157,6 +157,10 @@ def jet_sequence(
                     '.containerName', output_name + '.baselineJvt'
                 )
                 configSeq.setOptionValue('.selectionName', tagger_wp)
+                if jet_flags.do_MCMC_dsid_fix:
+                    for generator_name, dsids in jet_flags.MCMC_dsid_map.items():
+                        if flags.Input.MCChannelNumber in dsids:
+                            configSeq.setOptionValue('.generator', generator_name)
                 configSeq.setOptionValue('.btagger', tagger)
                 configSeq.setOptionValue('.btagWP', pcbt)
                 configSeq.setOptionValue(

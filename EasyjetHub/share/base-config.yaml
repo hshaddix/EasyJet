@@ -92,6 +92,11 @@ Small_R_jet:
   variables_int_cjets: []
   variables_int_ljets: []
   variables_int_allJets: []
+  # A hack for not supported generator in https://gitlab.cern.ch/atlas/athena/-/blob/main/PhysicsAnalysis/JetTagging/JetTagPerformanceCalibration/CalibrationDataInterface/python/MCMCGeneratorHelper.py#L29
+  do_MCMC_dsid_fix: false
+  MCMC_dsid_map: 
+    Sherpa2211: [364335]
+    
 
 Large_R_jet:
   flat_mass_selections: 

@@ -20,6 +20,7 @@ def get_args():
                         nargs='?', help="HMBS production role")
     parser.add_argument("--nGBPerJob", default=-1, type=int)
     parser.add_argument("--memory", default=-1, type=int)
+    parser.add_argument("--txt_files", nargs="+", type=str, help="costum list of files")
 
     return parser.parse_args()
 
@@ -49,17 +50,21 @@ def main(args):
 
     executable = "vbshiggs-ntupler"
     mc_list = []
-    # all submit all signals + bkgs
-    if args.samples == "all":
-        processes = ["EWVVjj", "VH", "Wjets", "Zjets", "stop", "ttH", "ttV", "ttW",
-                     "ttbar", "VVV", "Vgamma", "tty"]
-        mc_list = get_list_files(processes)
+    if args.txt_files:
+        mc_list = args.txt_files
     else:
-        mc_list = get_list_files(args.samples.split())
+        # all submit all signals + bkgs
+        if args.samples == "all":
+            processes = ["EWVVjj", "VH", "Wjets", "Zjets", "stop", "ttH",
+                         "ttV", "ttW", "ttbar", "VVV", "Vgamma", "tty"]
+            mc_list = get_list_files(processes)
+        else:
+            mc_list = get_list_files(args.samples.split())
 
     for mc_file in mc_list:
+        print(f'\tRunning file {mc_file}')
         base_command = (
-            f"easyjet-gridsubmit --mc-list {mc_file} "
+            f"easyjet-gridsubmit --mc-list {os.path.abspath(mc_file)} "
             f"--run-config {args.config} "
             f"--exec {executable} "
             f"--campaign {args.tag} "
