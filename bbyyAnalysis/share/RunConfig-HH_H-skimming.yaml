@@ -23,6 +23,7 @@ save_extra_vars: false
 do_GNN2bjetSelection: false
 save_HbbCand_vars: false
 save_pass_trigger_info: false
-
+Small_R_jet:
+  gn3_scores: true
 Truth:
   do_STXS: true

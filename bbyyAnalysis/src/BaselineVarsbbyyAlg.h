@@ -240,6 +240,10 @@ namespace HHBBYY
     CP::SysReadDecorHandle<unsigned int> m_year
       {this, "year", "dataTakingYear", ""};
 
+    CP::SysReadDecorHandle<float> m_gn3_pb   { this, "GN3_pb",   "GN3PflowMuonsV00_pb",   "GN3 pb decor" };
+    CP::SysReadDecorHandle<float> m_gn3_pc   { this, "GN3_pc",   "GN3PflowMuonsV00_pc",   "GN3 pc decor" };
+    CP::SysReadDecorHandle<float> m_gn3_ptau { this, "GN3_ptau", "GN3PflowMuonsV00_ptau", "GN3 ptau decor" };
+    CP::SysReadDecorHandle<float> m_gn3_pu   { this, "GN3_pu",   "GN3PflowMuonsV00_pu",   "GN3 pu decor" };
     Gaudi::Property<bool> m_isMC
       { this, "isMC", false, "Is this simulation?" };
 

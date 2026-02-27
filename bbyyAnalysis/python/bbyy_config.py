@@ -453,9 +453,24 @@ def get_BaselineVarsbbyyAlg_variables(flags):
                                "KF_with2024_bdtSel_category",
                                "KF_corr_with2024_bdtSel_category"]
 
+        gn3_scores = False
+        try:
+            gn3_scores = bool(flags.Analysis.Small_R_jet.gn3_scores)
+        except Exception:
+            try:
+                smRjets = flags.Analysis.ttree_output.collection_options.small_R_Jets
+                gn3_scores = bool(smRjets.gn3_scores)
+            except Exception:
+                gn3_scores = False
         for i in range(1, 5):
             for var in ["pt", "phi", "eta", "E"]:
                 float_variable_names += [f"KF_Jet{i}_" + var]
+            if gn3_scores:
+                GN3_scores = []
+                for var in ["pb", "pc", "ptau", "pu"]:
+                    GN3_scores += [f"Jet{i}_GN3PflowMuonsV00_" + var]
+                    GN3_scores += [f"KF_Jet{i}_GN3PflowMuonsV00_" + var]
+                float_variable_names += GN3_scores
 
         if flags.Analysis.save_HbbCand_vars:
             for i in range(1, 3):

@@ -10,6 +10,7 @@ CutList :
       - PASS_TRIGGER
       - PASS_TRIGGER_MATCHING
       - DIPHOTON_MASS
-      
+Small_R_jet:
+  gn3_scores: true
 Truth:
   do_STXS: true

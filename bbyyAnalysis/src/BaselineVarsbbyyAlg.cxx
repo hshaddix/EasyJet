@@ -50,6 +50,10 @@ namespace HHBBYY
       ATH_CHECK (m_KF_MBB.initialize(m_systematicsList, m_eventHandle));
     }
 
+    ATH_CHECK(m_gn3_pb.initialize(m_systematicsList, m_bbyyJetHandle));
+    ATH_CHECK(m_gn3_pc.initialize(m_systematicsList, m_bbyyJetHandle));
+    ATH_CHECK(m_gn3_ptau.initialize(m_systematicsList, m_bbyyJetHandle));
+    ATH_CHECK(m_gn3_pu.initialize(m_systematicsList, m_bbyyJetHandle));
     for (const std::string &string_var: m_floatVariables) {
       CP::SysWriteDecorHandle<float> var {string_var+"_%SYS%", this};
       m_Fbranches.emplace(string_var, var);
@@ -198,6 +202,18 @@ namespace HHBBYY
           m_Fbranches.at("Jet"+std::to_string(i+1)+"_E").set(*event, j.E(), sys);
 
           m_Ibranches.at("Jet"+std::to_string(i+1)+"_PassWP").set(*event,j_passWP,sys);
+            
+          const xAOD::Jet* jet = jets->at(i);
+
+          const std::string key_pb   = "Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_pb";
+          const std::string key_pc   = "Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_pc";
+          const std::string key_ptau = "Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_ptau";
+          const std::string key_pu   = "Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_pu";
+
+          if (m_Fbranches.contains(key_pb))   m_Fbranches.at(key_pb).set(*event, m_gn3_pb.get(*jet, sys), sys);
+          if (m_Fbranches.contains(key_pc))   m_Fbranches.at(key_pc).set(*event, m_gn3_pc.get(*jet, sys), sys);
+          if (m_Fbranches.contains(key_ptau)) m_Fbranches.at(key_ptau).set(*event, m_gn3_ptau.get(*jet, sys), sys);
+          if (m_Fbranches.contains(key_pu))   m_Fbranches.at(key_pu).set(*event, m_gn3_pu.get(*jet, sys), sys);
 
           if (PCBTgiven)
             m_Ibranches.at("Jet"+std::to_string(i+1)+"_pcbt").set(*event,PCBTjet,sys);
@@ -310,6 +326,18 @@ namespace HHBBYY
             m_Fbranches.at("KF_Jet"+std::to_string(i+1)+"_eta").set(*event, j.Eta(), sys);
             m_Fbranches.at("KF_Jet"+std::to_string(i+1)+"_phi").set(*event, j.Phi(), sys);
             m_Fbranches.at("KF_Jet"+std::to_string(i+1)+"_E").set(*event, j.E(), sys);
+
+            const xAOD::Jet* KFjet = KFJets->at(i);
+
+            const std::string key_pb   = "KF_Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_pb";
+            const std::string key_pc   = "KF_Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_pc";
+            const std::string key_ptau = "KF_Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_ptau";
+            const std::string key_pu   = "KF_Jet"+std::to_string(i+1)+"_GN3PflowMuonsV00_pu";
+
+            if (m_Fbranches.contains(key_pb))   m_Fbranches.at(key_pb).set(*event, m_gn3_pb.get(*KFjet, sys), sys);
+            if (m_Fbranches.contains(key_pc))   m_Fbranches.at(key_pc).set(*event, m_gn3_pc.get(*KFjet, sys), sys);
+            if (m_Fbranches.contains(key_ptau)) m_Fbranches.at(key_ptau).set(*event, m_gn3_ptau.get(*KFjet, sys), sys);
+            if (m_Fbranches.contains(key_pu))   m_Fbranches.at(key_pu).set(*event, m_gn3_pu.get(*KFjet, sys), sys);
           }
 
           //KF candidate jets, Hbb variables
