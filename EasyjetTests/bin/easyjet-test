@@ -236,7 +236,7 @@ declare -A CONFIGS=(
     [zbbjcalib-mc20]=XbbCalib/RunConfig_ZbbjCalib-bypass.yaml
     [bbbbtt-mc20]=bbbbttAnalysis/RunConfig-bbbbtt-bypass.yaml
     # MC20 AF3
-    [sh4b-mc20af3]=bbbbAnalysis/RunConfig-SH4b.yaml
+    [sh4b-mc20af3]=bbbbAnalysis/RunConfig-SH4b-ResolvedMixed.yaml
     [SHbbyy-mc20af3-lite]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
     # MC23
     [bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-bypass.yaml

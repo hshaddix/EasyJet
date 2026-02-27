@@ -1,0 +1,100 @@
+include: [bbbbAnalysis/RunConfig-bbbb-base.yaml]
+
+
+do_resolved_trigger_SF: true
+triggerSFBranchSaveStrategy: "detail" # "detail": saving SF for all triggers
+
+# Toggles for object types
+do_small_R_jets: true
+do_large_R_UFO_jets: true
+do_muons: true
+
+Small_R_jet:
+  min_pT: 20.e+3 # base config setting
+  max_eta: 4.5
+  btag_wp: "GN2v01_FixedCutBEff_85"
+  btag_extra_wps:
+    - GN2v01_FixedCutBEff_70
+    - GN2v01_FixedCutBEff_77
+  doL1Matching: true
+  doHLTMatching: false
+  saveTriggerInfo: false
+
+Large_R_jet:
+  min_pT: 200.e+3 # base config setting
+  max_pT: -1 # base config setting
+  max_eta: 2.0
+  min_mass: 0
+  max_mass: 10000.e+3 # comically large to include all jets
+  runMuonJetPtCorr: true
+  do_thinning: true
+  flat_mass_selections:
+    include: [EasyjetHub/xbb-taggers/GN2Xv01_ftop0_250pT500yj.yaml]
+
+Muon:
+  ID: "Loose"
+  Iso: "PflowLoose_VarRad"
+
+# apply loose jet cleaning only
+add_BadBatman_jet_cleaning: false
+
+# list of triggers per year to consider
+Trigger:
+  include: [bbbbAnalysis/triggers-SH4b-ResolvedMixed.yaml]
+
+# can alternatively use the CutList to filter events to get trigger eff
+do_trigger_filtering: true
+save_cutflow: false
+
+do_overlap_removal: false
+
+OverlapRemoval:
+  do_small_R_jet_large_R_jet: false
+
+do_CP_systematics: false # use RunConfig-SH4b-ResolvedMixed-Sys.yaml to include systematics
+
+Exclude2015: true
+
+# include b jet GRL branches, but do not filter on them
+GRL:
+  years:
+    include: [EasyjetHub/bjet_grl_years.yaml]
+  store_decoration: true
+
+PileupReweighting:
+  extra_prw:
+    - postfix: "bjet"
+      lumicalc_files:
+        include: [EasyjetHub/lumicalc_bjet.yaml]
+      prw_files:
+        include: [EasyjetHub/prw_bjet.yaml]
+    # these pileup weights do not include 2015 in mc20a
+    - postfix: "boosted"
+      lumicalc_files:
+        include: [EasyjetHub/lumicalc_no2015.yaml]
+
+
+# Include the TTree configuration and update details
+ttree_output:
+  # Our overrides. Most defaults are off
+  reco_outputs:
+    small_R_jets: "container_names.output.reco4PFlowJet"
+    large_R_UFO_jets: "container_names.output.reco10UFOJet"
+  collection_options:
+    small_R_jets:
+      truth_parent_info: true
+      btag_info: true
+      no_bjet_calib_p4: true
+      btag_details: true
+      JVT_details: true
+    large_R_jets:
+      truth_labels: true
+      no_muonInJetCorr: true
+      no_bjet_calib_p4: true
+    muons:
+      run_selection: false
+
+  truth_outputs:
+    small_R_jets: "container_names.input.truth4Jet"
+    large_R_jets: "container_names.input.truth10SoftDropJet"
+    higgs_particle: "container_names.output.truthHHParticles"

@@ -1,0 +1,4 @@
+include: [bbbbAnalysis/RunConfig-SH4b-ResolvedMixed.yaml]
+
+do_CP_systematics: true
+systematics_regex: [".*"]

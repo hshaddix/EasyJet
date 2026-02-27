@@ -103,6 +103,8 @@ Large_R_jet:
   min_pT: 200.e+3
   max_pT: -1
   max_eta: 100
+  min_mass: 40.e+3
+  max_mass: 600.e+3
   runMuonJetPtCorr: false
   do_thinning: true
   do_parent_decoration: true

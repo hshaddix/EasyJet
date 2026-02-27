@@ -244,6 +244,9 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq.setOptionValue('.containerName', output_name)
     configSeq.setOptionValue('.jetCollection', jetColl)
 
+    configSeq.setOptionValue('.minMass', jet_flags.min_mass)
+    configSeq.setOptionValue('.maxMass', jet_flags.max_mass)
+
     # Needs to be added manually for now
     configSeq += makeConfig('Jets.Uncertainties')
     configSeq.setOptionValue('.containerName', output_name)
