@@ -169,7 +169,7 @@ def dihiggs_cfg(
                               containerInKey=smalljetkey.replace("%SYS%", "NOSYS"),
                               containerOutKey="smallRJetsForTriggerMatching",
                               minPt=20 * Units.GeV,
-                              maxEta=2.5))
+                              maxEta=3.1))
 
     if flags.Analysis.do_resolved_trigger_SF:
         cfg.merge(

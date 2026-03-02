@@ -310,7 +310,8 @@ namespace HH4B
               if (m_matchingLevelEnum == TrigMatchingLevel::L1) 
               {
                 if (legThreshold == 45) maxEta = 2.1;
-		else if (legThreshold == 15 || legThreshold == 20 || legThreshold == 30 || legThreshold == 75 || legThreshold == 85) maxEta = 2.5;
+		else if (legThreshold == 15 ) maxEta = 2.5;
+		else if (legThreshold == 20 || legThreshold == 30 || legThreshold == 75 || legThreshold == 85) maxEta = 3.1;
               }
 
               // if SF exists and jet in the valid kinematic region, assign jet-level SF as a function of NoBJetCalibMomentum pt, eta and Threshold.
