@@ -16,7 +16,7 @@ def run_config_arg(rawpath):
                     local = yaml.safe_load(cfgfile)
                     combineConfigFiles(
                         local,
-                        fullpath.parent,
+                        [fullpath.parent],
                         fragment_key='include'
                     )
                     return local
