@@ -8,6 +8,10 @@
 #include <TH1F.h>
 #include <TEfficiency.h>
 
+#include <SystematicsHandles/SysFilterReporter.h>
+#include <SystematicsHandles/SysFilterReporterCombiner.h>
+
+
 namespace VBSHIGGS {
 
 FullHadSelectorAlg::FullHadSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator)
@@ -18,17 +22,26 @@ StatusCode FullHadSelectorAlg::initialize() {
     ATH_MSG_INFO("     FullHadSelectorAlg         ");
     ATH_MSG_INFO("*********************************");
 
+     ATH_CHECK(m_systematicsList.initialize());
+    ATH_CHECK (m_filterParams.initialize(m_systematicsList));
+    if (m_doResolved){
+      ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
+      ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
+    }
+
+
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK(m_smallJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_largeJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
+    ATH_CHECK (m_vbsjetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_metHandle.initialize(m_systematicsList));
     if (!m_isBtag.empty() && m_doResolved) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
     }
 
-    
+    ATH_CHECK (m_systematicsList.initialize());
     ATH_CHECK(initialiseCutflow());
 
     return StatusCode::SUCCESS;
@@ -45,6 +58,17 @@ StatusCode FullHadSelectorAlg::execute() {
 	const xAOD::ElectronContainer* electrons = nullptr;
 	const xAOD::MuonContainer* muons = nullptr;
 	const xAOD::MissingETContainer* metCont = nullptr;
+	const xAOD::JetContainer *signalJets = nullptr;
+	const xAOD::JetContainer *HJets = nullptr;
+
+	if (m_doResolved){
+	  ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys));
+	  ANA_CHECK (m_HCandHandle.retrieve (HJets, sys));
+	}
+	const xAOD::JetContainer *vbsjets = nullptr;
+	if( !m_UseVBFRNN )
+	  ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys));
+
 
 	ANA_CHECK(m_smallJetHandle.retrieve(smallJets, sys));
         ANA_CHECK(m_largeJetHandle.retrieve(largeJets, sys));
@@ -63,6 +87,13 @@ StatusCode FullHadSelectorAlg::execute() {
 	}
 
 
+
+	const xAOD::MissingET* met = (*metCont)["Final"];
+	if (!met) {
+	  ATH_MSG_ERROR("Could not retrieve MET");
+	  return StatusCode::FAILURE;
+	}
+
         for (auto& [key, _] : m_bools) m_bools[key] = false;
 
 
@@ -73,14 +104,14 @@ StatusCode FullHadSelectorAlg::execute() {
         for (auto& [key, val] : m_bools) passAll &= val;
         m_bools[PASS_ALL_CUTS] = passAll;
 
-
-        for (const auto& [key, name] : m_boolnames) {
+	/*
+	for (const auto& [key, name] : m_boolnames) {
             if (m_bools[key]) {
                 m_vbshiggsCuts[name].passed = true;
                 m_vbshiggsCuts[name].counter++;
             }
         }
-
+	*/
         m_totalEvents++;
     }
 

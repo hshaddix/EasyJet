@@ -9,6 +9,9 @@
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
+#include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
+
 #include <xAODMissingET/MissingETContainer.h>
 
 #include <unordered_map>
@@ -29,16 +32,29 @@ private:
 
   CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
     this, "event", "EventInfo", ""};
-
-  CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{
-    this, "met", "AnalysisMET_%SYS%", ""};
-
+ 
   CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{
     this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", ""};
+
+  CP::SysReadHandle<xAOD::JetContainer> m_vbsJetHandle{ this, "vbsJets", "",   "VBS Jet container to read" };
 
   CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{
     this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", ""};
 
+    
+  CP::SysReadHandle<xAOD::JetContainer> m_RNNjetBoostedHandle{ this, "RNNJets_boosted", "RNNJets_boostedCategory_%SYS%", "input RNN jets container for boosted 20 GeV" };
+
+  CP::SysReadHandle<xAOD::JetContainer> m_RNNjetResolvedHandle{ this, "RNNJets_resolved", "RNNJets_resolvedCategory_%SYS%", "input RNN jets container for resolved 20 GeV" };
+
+  CP::SysReadHandle<xAOD::ElectronContainer> m_vbsElectronHandle{ this, "vbsElectrons", "vbshiggsAnalysisElectrons_%SYS%",   "Electron container to read" };
+  CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
+
+  CP::SysReadHandle<xAOD::MuonContainer> m_vbsMuonHandle{ this, "vbsMuons", "vbshiggsAnalysisMuons_%SYS%",   "Muon container to read" };
+  CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
+  
+  CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
+
+  
   CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{
     this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", ""};
 
@@ -55,6 +71,7 @@ private:
 
   std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
   std::unordered_map<std::string, CP::SysWriteDecorHandle<int>>   m_Ibranches;
+  Gaudi::Property<bool> m_UseVBFRNN { this, "UseVBFRNN", false, "Not use VBS tagging jets or yes (i.e. use VBF-RNN jets or not)" };
 };
 
 }
