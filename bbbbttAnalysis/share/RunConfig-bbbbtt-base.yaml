@@ -33,7 +33,11 @@ do_mmc : true
 
 GRL:
   store_decoration: true
-
+  years:
+    include: [bbbbttAnalysis/bbbbtt_grl_years.yaml]
+  files:
+    include: [bbbbttAnalysis/bbbbtt_grl.yaml]
+  
 # Toggles for reconstructed objects decorations
 Small_R_jet:
   useFJvt: true

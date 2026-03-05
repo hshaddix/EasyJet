@@ -11,7 +11,7 @@ from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
 from EasyjetHub.steering.analysis_configuration import (
-    get_trigger_legs_scale_factor_list)
+    get_trigger_legs_scale_factor_list, get_trigger_chains_scale_factor)
 
 
 def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
@@ -57,6 +57,11 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
         bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
         selectBjet=False,
         minimumAmount=2))
+
+    cfg.merge(bbbbtt_BJetTriggerDecoratorAlgCfg(
+        flags,
+        jetContainer="bbbbttAnalysisJets_%SYS%",
+        trigMatchOutputVar="passTrigMatch_DBT_%SYS%"))
 
     muon_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
     ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
@@ -215,6 +220,31 @@ def get_BaselineVarsbbbbttAlg_highlevelvariables(flags):
         ]
 
     return high_level_float_variables, high_level_int_variables
+
+
+def bbbbtt_BJetTriggerDecoratorAlgCfg(flags, jetContainer="bbbbttAnalysisJets_%SYS%",
+                                      trigMatchOutputVar="passTrigMatch_DBT_%SYS%"):
+    cfg = ComponentAccumulator()
+
+    # b-jet matching decoration
+    bjet_triggers = []
+    sf_config = flags.Analysis.Trigger.scale_factor
+    if sf_config.doSF and hasattr(sf_config, 'bjet'):
+        triggerChainsPerYear = get_trigger_chains_scale_factor(
+            flags, 'bjet')
+        for triggerChains in triggerChainsPerYear.values():
+            for chain in triggerChains:
+                bjet_triggers.append(chain)
+
+    cfg.addEventAlgo(
+        CompFactory.HHBBTT.BJetTriggerDecoratorAlg(
+            "BJetTriggerDecoratorAlg",
+            triggerLists=bjet_triggers,
+            jets=jetContainer,
+            trigMatch_DBT=trigMatchOutputVar
+        )
+    )
+    return cfg
 
 
 def bbbbtt_branches(flags):
