@@ -339,7 +339,10 @@ namespace HHBBTT
       int year, 
 			std::vector<std::string>& boosted_paths
   ){
-    if(year==2016){
+    if (year==2015){
+      boosted_paths = {"HLT_j360_a10_lcw_sub_L1J100"};
+    }
+    else if(year==2016){
       boosted_paths = {"HLT_j360_a10_lcw_L1J100", "HLT_j400_a10r_L1J100"};
     } else if(year==2017){
       boosted_paths = {"HLT_j390_a10t_lcw_jes_30smcINF_L1J100"};

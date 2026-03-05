@@ -12,6 +12,7 @@ chains:
   - 'HLT_tau25_medium1_tracktwo_L1TAU12'
   - 'HLT_tau35_medium1_tracktwo_L1TAU20'
   - 'HLT_xe70_mht'
+  - 'HLT_j360_a10_lcw_sub_L1J100'
   '2016':
   - 'HLT_e26_lhtight_nod0_ivarloose'
   - 'HLT_e60_lhmedium_nod0'

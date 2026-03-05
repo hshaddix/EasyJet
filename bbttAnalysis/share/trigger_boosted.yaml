@@ -1,5 +1,7 @@
 chains: 
   '2015':
+  #LRT
+  - 'HLT_j360_a10_lcw_sub_L1J100'
   #STT
   - 'HLT_tau80_medium1_tracktwo_L1TAU60'
   - 'HLT_tau25_medium1_tracktwo_L1TAU12'
