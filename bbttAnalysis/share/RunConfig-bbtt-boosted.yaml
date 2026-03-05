@@ -38,6 +38,7 @@ ttree_output:
       truth_parent_info: true
       run_selection: true
       tautag_details: true
+      bjet_regression: true
     small_R_jets:
       btag_info: true
       ruth_parent_info: true
@@ -61,10 +62,17 @@ ttree_output:
 # Enable cutflow 
 CutList:
   - pass_trigger_LARGE_R_JETS
+  - pass_trigger_MET
+  - pass_trigger_STT
+  - pass_trigger_DBT
+  - AT_LEAST_ONE_LRJET
+  - AT_LEAST_ONE_DITAU
   - AT_LEAST_TWO_LRJETS
   - AT_LEAST_ONE_BTAG_LRJET
   - AT_LEAST_ONE_TAUTAG_LRJET
   - pass_Boosted
+  - pass_Boosted_ditau
+  - pass_Boosted_taujet 
   - pass_HadHad_1B
   - pass_HadHad_2B
   - pass_HadHad

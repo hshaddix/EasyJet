@@ -36,6 +36,7 @@ namespace HHBBTT
     L1,
     HLT,
     LARGE_R_JETS,
+    MET,
     RNNTauTrig18
   };
 
@@ -85,11 +86,17 @@ namespace HHBBTT
     pass_trigger_DTT_L1Topo_delayed,
     pass_trigger_DBT,
     pass_trigger_LARGE_R_JETS,
+    pass_trigger_MET,
     pass_trigger_uniqueRNNTauTrig18,
     
     AT_LEAST_TWO_LRJETS,
+    AT_LEAST_ONE_LRJET,
     AT_LEAST_ONE_BTAG_LRJET,
     AT_LEAST_ONE_TAUTAG_LRJET,
+    AT_LEAST_ONE_DITAUTAG,
+    AT_LEAST_ONE_DITAU,
+    pass_Boosted_ditau,
+    pass_Boosted_taujet,
     AT_LEAST_ONE_TIGHTID_LEP,
     AT_LEAST_ONE_LOOSEID_LEP,
     TWO_JETS,

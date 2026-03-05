@@ -23,6 +23,7 @@
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
 #include <xAODTau/TauJetContainer.h>
+#include <xAODTau/DiTauJetContainer.h>
 
 #include <EasyjetHub/CutManager.h>
 
@@ -83,7 +84,11 @@ private:
     
     CP::SysReadHandle<xAOD::JetContainer>
       m_lRjetHandle{ this, "largeRjets", "bbttAnalysisLargeRJets_%SYS%", "Large-R jet container to read" };
+    
+    CP::SysReadHandle<xAOD::DiTauJetContainer>
+      m_ditauHandle{ this, "ditaus", "bbttAnalysisDitau_%SYS%", "Di-tau jet container to read" };
 
+      
     CP::SysReadHandle<xAOD::ElectronContainer>
     m_electronHandle{ this, "electrons", "bbttAnalysisElectrons_%SYS%", "Electron container to read" };
 
@@ -104,6 +109,8 @@ private:
     CP::SysReadDecorHandle<char> 
     m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
 
+    CP::SysReadDecorHandle<char> 
+    m_Pass_Ditau{this, "ditau_WP", "", "Ditau-tagging working point"}; 
     CP::SysReadDecorHandle<int> 
     m_Pass_GN3XPV01_hbb{this, "GN3XPV01_hbb_WP", "", "GN3XPV01 b-tagging working point"}; 
     CP::SysReadDecorHandle<int> 
@@ -146,16 +153,17 @@ private:
 
     std::unordered_map<HHBBTT::TriggerChannel, std::string> m_triggerChannels =
       {
-	{HHBBTT::SLT, "SLT"},
-	{HHBBTT::STT, "STT"},
-	{HHBBTT::DTT, "DTT"},
-	{HHBBTT::DTT_2016, "DTT_2016"},
-	{HHBBTT::DTT_4J12, "DTT_4J12"},
-	{HHBBTT::DTT_L1Topo, "DTT_L1Topo"},
-	{HHBBTT::DTT_4J12_delayed, "DTT_4J12_delayed"},
-	{HHBBTT::DTT_L1Topo_delayed, "DTT_L1Topo_delayed"},
-	{HHBBTT::DBT, "DBT"},
+        {HHBBTT::SLT, "SLT"},
+        {HHBBTT::STT, "STT"},
+        {HHBBTT::DTT, "DTT"},
+        {HHBBTT::DTT_2016, "DTT_2016"},
+        {HHBBTT::DTT_4J12, "DTT_4J12"},
+        {HHBBTT::DTT_L1Topo, "DTT_L1Topo"},
+        {HHBBTT::DTT_4J12_delayed, "DTT_4J12_delayed"},
+        {HHBBTT::DTT_L1Topo_delayed, "DTT_L1Topo_delayed"},
+        {HHBBTT::DBT, "DBT"},
         {HHBBTT::LARGE_R_JETS, "LARGE_R_JETS"},
+        {HHBBTT::MET, "MET"},
         {HHBBTT::RNNTauTrig18, "uniqueRNNTauTrig18"},
       };
 
@@ -198,11 +206,17 @@ private:
     {HHBBTT::pass_trigger_DTT_L1Topo_delayed, "pass_trigger_DTT_L1Topo_delayed"},
     {HHBBTT::pass_trigger_DBT, "pass_trigger_DBT"},
     {HHBBTT::pass_trigger_LARGE_R_JETS, "pass_trigger_LARGE_R_JETS"},
+    {HHBBTT::pass_trigger_MET, "pass_trigger_MET"},
     {HHBBTT::pass_trigger_uniqueRNNTauTrig18, "pass_trigger_uniqueRNNTauTrig18"},
     {HHBBTT::TWO_JETS, "TWO_JETS"},
     {HHBBTT::AT_LEAST_TWO_LRJETS, "AT_LEAST_TWO_LRJETS"},
+    {HHBBTT::AT_LEAST_ONE_LRJET, "AT_LEAST_ONE_LRJET"},
     {HHBBTT::AT_LEAST_ONE_BTAG_LRJET, "AT_LEAST_ONE_BTAG_LRJET"},
     {HHBBTT::AT_LEAST_ONE_TAUTAG_LRJET, "AT_LEAST_ONE_TAUTAG_LRJET"},
+    {HHBBTT::AT_LEAST_ONE_DITAUTAG, "AT_LEAST_ONE_DITAUTAG"},
+    {HHBBTT::AT_LEAST_ONE_DITAU, "AT_LEAST_ONE_DITAU"},
+    {HHBBTT::pass_Boosted_ditau, "pass_Boosted_ditau"},
+    {HHBBTT::pass_Boosted_taujet, "pass_Boosted_taujet"},
     {HHBBTT::AT_LEAST_ONE_TIGHTID_LEP, "AT_LEAST_ONE_TIGHTID_LEP"},
     {HHBBTT::AT_LEAST_ONE_LOOSEID_LEP, "AT_LEAST_ONE_LOOSEID_LEP"},
     {HHBBTT::TWO_BJETS, "TWO_BJETS"},
@@ -306,6 +320,8 @@ private:
        const xAOD::TauJet* tau0, const xAOD::TauJet* tau1,
        const xAOD::Jet* eta_lt2p5_bjet0, const xAOD::Jet* eta_lt2p5_bjet1);
     void applyLargeRJetsTriggerSelection
+      (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos);
+    void applyMETTriggerSelection
       (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos);
 
     void setThresholds(const xAOD::EventInfo* event,

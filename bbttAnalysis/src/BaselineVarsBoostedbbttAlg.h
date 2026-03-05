@@ -40,7 +40,7 @@ private:
 
     CP::SysReadHandle<xAOD::JetContainer>
       m_lRjetHandle{ this, "largeRjets", "bbttAnalysisLargeRJets_%SYS%", "Large-R jet container to read" };
-      
+
     CP::SysReadHandle<xAOD::EventInfo>
       m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
 

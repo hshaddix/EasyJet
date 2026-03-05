@@ -51,6 +51,21 @@ def boosted_branches_variables(flags):
             + "%SYS%"
         )
 
+    tag_branch = "AT_LEAST_ONE_DITAU"
+    branches.append(
+        f"EventInfo.{tag_branch}_%SYS% -> bbtt_boosted_{tag_branch}"
+        + flags.Analysis.systematics_suffix_separator
+        + "%SYS%"
+    )
+
+    for obj in ["taujet", "ditau"]:
+        tag_branch = f"pass_Boosted_{obj}"
+        branches.append(
+            f"EventInfo.{tag_branch}_%SYS% -> bbtt_{tag_branch}"
+            + flags.Analysis.systematics_suffix_separator
+            + "%SYS%"
+        )
+
     for tag in ["LOOSE", "TIGHT"]:
         tag_branch = f"AT_LEAST_ONE_{tag}ID_LEP"
         branches.append(
@@ -58,4 +73,12 @@ def boosted_branches_variables(flags):
             + flags.Analysis.systematics_suffix_separator
             + "%SYS%"
         )
+
+    for pass_selection in ['trigger_DTT', 'trigger_STT', 'trigger_DBT',
+                           'trigger_LARGE_R_JETS', 'trigger_MET']:
+        branches += [
+            f"EventInfo.pass_{pass_selection}_%SYS% -> bbtt_pass_{pass_selection}"
+            + flags.Analysis.systematics_suffix_separator + "%SYS%"
+        ]
+
     return branches, float_variables

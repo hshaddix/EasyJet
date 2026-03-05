@@ -37,6 +37,7 @@ namespace HHBBTT
 
     if(m_doLargeRJets) {
       ATH_CHECK (m_lRjetHandle.initialize(m_systematicsList));
+      ATH_CHECK (m_ditauHandle.initialize(m_systematicsList));
     }
 
     if (!m_Pass_GN3XPV01_hbb.empty()) {
@@ -45,6 +46,10 @@ namespace HHBBTT
 
     if (!m_Pass_GN3XPV01_htt.empty()) {
       ATH_CHECK (m_Pass_GN3XPV01_htt.initialize(m_systematicsList, m_lRjetHandle));  
+    }
+
+    if (!m_Pass_Ditau.empty()) {
+      ATH_CHECK (m_Pass_Ditau.initialize(m_systematicsList, m_ditauHandle));  
     }
 
     if (!m_isBtag.empty()) {
@@ -276,22 +281,47 @@ namespace HHBBTT
         int n_boosted_b_jets = 0;
         int n_boosted_tau_jets = 0;
         for (const xAOD::Jet *lRjet : *lRjets) {
-          
+
           // b tagging
           if (m_Pass_GN3XPV01_hbb.get(*lRjet, sys)) n_boosted_b_jets++;
-
           // tau tagging
           if (m_Pass_GN3XPV01_htt.get(*lRjet, sys)) n_boosted_tau_jets++;
-
         }
+
+        int n_ditaus = 0;
+        const xAOD::DiTauJetContainer *ditaus = nullptr;
+        ANA_CHECK (m_ditauHandle.retrieve (ditaus, sys));
+        n_ditaus = ditaus->size();
+
+        int n_tagged_ditaus = 0;
+        if (!m_Pass_Ditau.empty()){
+          for (const xAOD::DiTauJet *ditau : *ditaus) {
+            if (m_Pass_Ditau.get(*ditau, sys)) n_tagged_ditaus++;
+          }
+        }
+
       
         // check if there are at least 2 boosted jets
-        m_bools.at(HHBBTT::AT_LEAST_TWO_LRJETS) = (n_boosted_jets >= 2);
-        m_bools.at(HHBBTT::AT_LEAST_ONE_BTAG_LRJET) = (n_boosted_b_jets >= 1);
-        m_bools.at(HHBBTT::AT_LEAST_ONE_TAUTAG_LRJET) = (n_boosted_tau_jets >= 1);
+        m_bools.at(HHBBTT::AT_LEAST_ONE_LRJET) = (n_boosted_jets >= 1 );
+        m_bools.at(HHBBTT::AT_LEAST_TWO_LRJETS) = (n_boosted_jets >= 2 );
+        m_bools.at(HHBBTT::AT_LEAST_ONE_DITAU) = (n_ditaus >= 1 );
 
-        // Events must have: 2 large Jets and at least one tagged jet
-        bool pass_boosted = n_boosted_jets >= 2;
+        m_bools.at(HHBBTT::AT_LEAST_ONE_BTAG_LRJET) = (n_boosted_b_jets >= 1);
+        m_bools.at(HHBBTT::AT_LEAST_ONE_TAUTAG_LRJET) = (n_boosted_tau_jets>= 1);
+
+        if (!m_Pass_Ditau.empty()){
+          m_bools.at(HHBBTT::AT_LEAST_ONE_DITAUTAG) = -1;
+        } else {
+          m_bools.at(HHBBTT::AT_LEAST_ONE_DITAUTAG) = (n_tagged_ditaus >= 1);
+        }
+
+        // Events must have: 2 large Jets/ 1 large Jet and 1 ditau jet
+        bool pass_boosted_taujet = n_boosted_jets >= 2;
+        bool pass_boosted_ditau = (n_boosted_jets >= 1 && n_ditaus >= 1);
+        bool pass_boosted = pass_boosted_taujet || pass_boosted_ditau;
+        
+        m_bools.at(HHBBTT::pass_Boosted_ditau) = pass_boosted_ditau;
+        m_bools.at(HHBBTT::pass_Boosted_taujet) = pass_boosted_taujet;
         m_bools.at(HHBBTT::pass_Boosted) = pass_boosted;
 
       }
@@ -563,6 +593,7 @@ namespace HHBBTT
         m_bools.at(HHBBTT::pass_trigger_DTT_L1Topo_delayed) = true;
         m_bools.at(HHBBTT::pass_trigger_DBT) = true;
         m_bools.at(HHBBTT::pass_trigger_LARGE_R_JETS) = true;
+        m_bools.at(HHBBTT::pass_trigger_MET) = true;
         m_bools.at(HHBBTT::pass_trigger_uniqueRNNTauTrig18) = true;
 
       }
@@ -708,11 +739,6 @@ namespace HHBBTT
       m_bools.at(HHBBTT::AT_LEAST_ONE_TIGHTID_LEP) = n_leptons_tightId_iso >= 1;
       m_bools.at(HHBBTT::AT_LEAST_ONE_LOOSEID_LEP) = n_leptons_looseId_iso >= 1;
 
-      // Boosted selection
-      m_bools.at(HHBBTT::pass_Boosted) = (
-        m_bools.at(HHBBTT::pass_trigger_LARGE_R_JETS) && 
-        m_bools.at(HHBBTT::pass_Boosted)
-      );
 
       m_bools.at(HHBBTT::pass_baseline_DTT) =
 	      (m_bools.at(HHBBTT::pass_baseline_DTT_2016)  ||
@@ -921,6 +947,7 @@ namespace HHBBTT
     bool use_DTT = false;
     bool use_DBT = false;
     bool use_LARGE_R_JETS = false;
+    bool use_MET = false;
     for (const auto &channel : m_channels){
       if (channel == HHBBTT::LepHad || channel == HHBBTT::AntiIsoLepHad){
         use_SLT = true;
@@ -936,6 +963,10 @@ namespace HHBBTT
       }
       else if (channel == HHBBTT::Boosted){
         use_LARGE_R_JETS = true;
+        use_DTT = true;
+        use_STT = true;
+        use_DBT = true;
+        use_MET = true;
       }
     }
 
@@ -966,6 +997,9 @@ namespace HHBBTT
     }
     if(use_LARGE_R_JETS){
       applyLargeRJetsTriggerSelection(event, triggerdecos);
+    }
+    if(use_MET){
+      applyMETTriggerSelection(event, triggerdecos);
     }
 
   }
@@ -1191,6 +1225,14 @@ namespace HHBBTT
 
     bool trigPassed_largeRjets = triggerdecos.at(HHBBTT::LARGE_R_JETS)(*event);
     m_bools.at(HHBBTT::pass_trigger_LARGE_R_JETS) = trigPassed_largeRjets;
+  
+  };
+
+  void HHbbttSelectorAlg::applyMETTriggerSelection
+  (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos){
+
+    bool trigPassed_MET = triggerdecos.at(HHBBTT::MET)(*event);
+    m_bools.at(HHBBTT::pass_trigger_MET) = trigPassed_MET;
   
   };
 

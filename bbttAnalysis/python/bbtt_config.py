@@ -130,6 +130,7 @@ def bbtt_SelectorAlgCfg(flags):
             RootStreamName=('CBK' if flags.Analysis.splitCBK else
                             flags.Analysis.ttree_output.stream_name),
             doLargeRJets=flags.Analysis.do_large_R_UFO_jets,
+            ditaus=flags.Analysis.container_names.output.ditaus,
             GN3XPV01_hbb_WP=GN3XPV01_hbb_WP,
             GN3XPV01_htt_WP=GN3XPV01_htt_WP
         )
@@ -432,9 +433,13 @@ def bbtt_branches(flags):
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
     if "Boosted" in flags.Analysis.channels:
-        branches += [
-            "EventInfo.pass_Boosted_%SYS% -> bbtt_pass_Boosted"
-            + flags.Analysis.systematics_suffix_separator + "%SYS%"
-        ]
+        for pass_selection in ['Boosted', 'Boosted_ditau', 'Boosted_taujet',
+                               'trigger_LARGE_R_JETS', 'trigger_DTT',
+                               'trigger_STT', 'trigger_DBT',
+                               'trigger_MET']:
+            branches += [
+                f"EventInfo.pass_{pass_selection}_%SYS% -> bbtt_pass_{pass_selection}"
+                + flags.Analysis.systematics_suffix_separator + "%SYS%"
+            ]
 
     return branches, float_baseline_var_names, int_baseline_var_names

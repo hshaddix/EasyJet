@@ -245,6 +245,9 @@ namespace HHBBTT
     checkLargeRJetsTriggers(year(*eventInfo), eventInfo.cptr(),
 			    triggerdecos, pass_decos);
 
+    checkMETTriggers(year(*eventInfo), eventInfo.cptr(),
+			    triggerdecos, pass_decos);
+
     return StatusCode::SUCCESS;
   }
 
@@ -611,20 +614,50 @@ namespace HHBBTT
   ) const {
     
     // get triggers name
-    std::vector<std::string> largeRjets_paths;
-    getLargeRJetsTriggers(year, largeRjets_paths);
+    std::vector<std::string> singlelargeRjets_paths;
+    getSingleLargeRJetsTriggers(year, singlelargeRjets_paths);
+
+    std::vector<std::string> diLargeRjets_paths;
+    getDiLargeRJetsTriggers(year, diLargeRjets_paths);
 
     // Loop on triggers
     bool trigPassed_largeRjets = false;
-    for(const auto& trig : largeRjets_paths){
+    for(const auto& trig : singlelargeRjets_paths){
       bool pass = triggerdecos.at(trig)(*eventInfo);
       trigPassed_largeRjets |= pass;
       // TODO: __BOOSTED__ map also each jet ?
     }
+
+    for(const auto& trig : diLargeRjets_paths){
+      bool pass = triggerdecos.at(trig)(*eventInfo);
+      trigPassed_largeRjets |= pass;
+      // TODO: __BOOSTED__ map also each jet ?
+    } 
     char& evtDeco = pass_decos.at(HHBBTT::LARGE_R_JETS)(*eventInfo);
     evtDeco = evtDeco || trigPassed_largeRjets;
   }
 
-}
+  void TriggerDecoratorAlg::checkMETTriggers(
+   int year, 
+   const xAOD::EventInfo* eventInfo,
+   const trigReadDecoMap& triggerdecos,
+   passWriteDecoMap& pass_decos
+  ) const {
+    
+    // get triggers name
+    std::vector<std::string> met_paths;
+    getMETTriggers(year, met_paths);
 
+
+    // Loop on triggers
+    bool trigPassed_MET = false;
+    for(const auto& trig : met_paths){
+      bool pass = triggerdecos.at(trig)(*eventInfo);
+      trigPassed_MET |= pass;
+    }  
+
+    char& evtDeco = pass_decos.at(HHBBTT::MET)(*eventInfo);
+    evtDeco = evtDeco || trigPassed_MET;
+  }
+}
 

@@ -20,7 +20,10 @@ def get_ditau_branches(flags, tree_flags, input_container, output_prefix):
 
     ditau_branches.add_four_mom_branches(do_mass=True)
 
-    id_wps = [flags.Analysis.DiTau.ID]
+    if "ID" in flags.Analysis.DiTau:
+        id_wps = [flags.Analysis.DiTau.ID]
+    else:
+        id_wps = []
     if 'extra_wps' in flags.Analysis.DiTau:
         id_wps += flags.Analysis.DiTau.extra_wps
 

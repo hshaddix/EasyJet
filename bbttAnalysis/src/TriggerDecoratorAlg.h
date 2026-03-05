@@ -44,26 +44,27 @@ namespace HHBBTT
 
     const std::unordered_map<HHBBTT::TriggerChannel, std::string> m_triggerChannels =
       {
-	{HHBBTT::SLT, "SLT"},
-	{HHBBTT::LTT, "LTT"},
-	{HHBBTT::ETT, "ETT"},
-	{HHBBTT::ETT_4J12, "ETT_4J12"},
-	{HHBBTT::MTT_2016, "MTT_2016"},
-	{HHBBTT::MTT_high, "MTT_high"},
-	{HHBBTT::MTT_low, "MTT_low"},
-	{HHBBTT::STT, "STT"},
-	{HHBBTT::DTT, "DTT"},
-	{HHBBTT::DTT_2016, "DTT_2016"},
-	{HHBBTT::DTT_4J12, "DTT_4J12"},
-	{HHBBTT::DTT_L1Topo, "DTT_L1Topo"},
-	{HHBBTT::DTT_4J12_delayed, "DTT_4J12_delayed"},
-	{HHBBTT::DTT_L1Topo_delayed, "DTT_L1Topo_delayed"},
-	{HHBBTT::DBT, "DBT"},
-	{HHBBTT::trigMatch_Tau35, "Tau35"},
-	{HHBBTT::trigMatch_Tau25, "Tau25"},
-	{HHBBTT::L1, "L1"},
-	{HHBBTT::HLT, "HLT"},
+        {HHBBTT::SLT, "SLT"},
+        {HHBBTT::LTT, "LTT"},
+        {HHBBTT::ETT, "ETT"},
+        {HHBBTT::ETT_4J12, "ETT_4J12"},
+        {HHBBTT::MTT_2016, "MTT_2016"},
+        {HHBBTT::MTT_high, "MTT_high"},
+        {HHBBTT::MTT_low, "MTT_low"},
+        {HHBBTT::STT, "STT"},
+        {HHBBTT::DTT, "DTT"},
+        {HHBBTT::DTT_2016, "DTT_2016"},
+        {HHBBTT::DTT_4J12, "DTT_4J12"},
+        {HHBBTT::DTT_L1Topo, "DTT_L1Topo"},
+        {HHBBTT::DTT_4J12_delayed, "DTT_4J12_delayed"},
+        {HHBBTT::DTT_L1Topo_delayed, "DTT_L1Topo_delayed"},
+        {HHBBTT::DBT, "DBT"},
+        {HHBBTT::trigMatch_Tau35, "Tau35"},
+        {HHBBTT::trigMatch_Tau25, "Tau25"},
+        {HHBBTT::L1, "L1"},
+        {HHBBTT::HLT, "HLT"},
         {HHBBTT::LARGE_R_JETS, "LARGE_R_JETS"},
+        {HHBBTT::MET, "MET"},
         {HHBBTT::RNNTauTrig18, "uniqueRNNTauTrig18"}
       };
 
@@ -217,7 +218,12 @@ namespace HHBBTT
       const xAOD::EventInfo* eventInfo,
       const trigReadDecoMap& triggerdecos,
       passWriteDecoMap& pass_decos) const;
-
+    void checkMETTriggers
+      (int year, 
+      const xAOD::EventInfo* eventInfo,
+      const trigReadDecoMap& triggerdecos,
+      passWriteDecoMap& pass_decos) const;
+    
     void checkRNNTauTriggers
       (int year, const xAOD::EventInfo* eventInfo, const trigReadDecoMap& triggerdecos,
        passWriteDecoMap& pass_decos) const; 
