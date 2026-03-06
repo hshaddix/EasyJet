@@ -11,7 +11,8 @@ from EasyjetHub.output.ttree.selected_objects import (
 
 from .vars_to_copy import lrj_floats_to_copy, lrj_gn3x_working_points
 
-copiedVariablePrefix = "Zcand_"
+copiedVariablePrefix0 = "Zcand_0_"
+copiedVariablePrefix1 = "Zcand_1_"
 
 
 def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonkey,
@@ -84,7 +85,8 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             photons=selected_photons,
             floatsToCopy=lrj_floats_to_copy(flags),
             intsToCopy=lrj_gn3x_working_points(flags),
-            copiedVariablePrefix=copiedVariablePrefix,
+            copiedVariablePrefix0="Zcand_0_",
+            copiedVariablePrefix1="Zcand_1_",
         )
     )
 
@@ -95,16 +97,20 @@ def get_BaselineVarsZbbyCalibAlg_variables(flags):
     float_variable_names = []
     int_variable_names = ["photons_n", "lrjets_n"]
 
-    for object in ["Zcand", "photon"]:
+    for object in ["Zcand_0", "Zcand_1", "photon"]:
         for var in ["pt", "eta", "phi", "m"]:
             float_variable_names.append(f"{object}_{var}")
 
     float_variable_names += [
-        f'{copiedVariablePrefix}{x}' for x in lrj_floats_to_copy(flags)
+        f'{p}{x}'
+        for x in lrj_floats_to_copy(flags)
+        for p in (copiedVariablePrefix0, copiedVariablePrefix1)
     ]
 
     int_variable_names += [
-        f'{copiedVariablePrefix}{x}' for x in lrj_gn3x_working_points(flags)
+        f'{p}{x}'
+        for x in lrj_gn3x_working_points(flags)
+        for p in (copiedVariablePrefix0, copiedVariablePrefix1)
     ]
 
     return float_variable_names, int_variable_names

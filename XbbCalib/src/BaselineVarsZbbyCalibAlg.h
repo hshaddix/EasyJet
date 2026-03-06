@@ -8,14 +8,14 @@
 
 #include <AthenaBaseComps/AthHistogramAlgorithm.h>
 
-#include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysListHandle.h>
-#include <SystematicsHandles/SysWriteDecorHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
+#include <SystematicsHandles/SysReadHandle.h>
+#include <SystematicsHandles/SysWriteDecorHandle.h>
 
+#include <xAODEgamma/PhotonContainer.h>
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
-#include <xAODEgamma/PhotonContainer.h>
 
 namespace XBBCALIB
 {
@@ -29,7 +29,8 @@ namespace XBBCALIB
   {
     /// \brief The standard constructor
 public:
-    BaselineVarsZbbyCalibAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    BaselineVarsZbbyCalibAlg(const std::string &name,
+                             ISvcLocator *pSvcLocator);
     ~BaselineVarsZbbyCalibAlg();
 
     /// \brief Initialisation method, for setting up tools and other persistent
@@ -44,41 +45,41 @@ private:
     // "someInfo"};
 
     /// \brief Setup syst-aware input container handles
-    CP::SysListHandle m_systematicsList {this};
+    CP::SysListHandle m_systematicsList{this};
 
-    CP::SysReadHandle<xAOD::JetContainer>
-    m_lrjetHandle{ this, "lrjets", "",   "Large-R jet container to read" };
+    CP::SysReadHandle<xAOD::JetContainer> m_lrjetHandle{
+        this, "lrjets", "", "Large-R jet container to read"};
 
-    CP::SysReadHandle<xAOD::PhotonContainer>
-    m_photonHandle{ this, "photons", "", "Photon container to read" };
+    CP::SysReadHandle<xAOD::PhotonContainer> m_photonHandle{
+        this, "photons", "", "Photon container to read"};
 
-    CP::SysReadHandle<xAOD::EventInfo>
-    m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };
+    CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
+        this, "event", "EventInfo", "EventInfo container to read"};
 
-    CP::SysWriteDecorHandle<int> m_nLRJetsHandle {
-      "lrjets_n_%SYS%", this
-    };
-    CP::SysWriteDecorHandle<int> m_nPhotonsHandle {
-      "photons_n_%SYS%", this
-    };
+    CP::SysWriteDecorHandle<int> m_nLRJetsHandle{"lrjets_n_%SYS%", this};
+    CP::SysWriteDecorHandle<int> m_nPhotonsHandle{"photons_n_%SYS%", this};
 
-    Gaudi::Property<std::string> m_copied_variable_prefix{
-      this, "copiedVariablePrefix", "", "prefix for copied variables"
-    };
+    Gaudi::Property<std::string> m_copied_variable_prefix0{
+        this, "copiedVariablePrefix0", "", "prefix for copied variables"};
+    Gaudi::Property<std::string> m_copied_variable_prefix1{
+        this, "copiedVariablePrefix1", "", "prefix for copied variables"};
 
     // floats
     Gaudi::Property<std::vector<std::string>> m_floats_to_copy{
-      this, "floatsToCopy", {}, "floats to copy to eventinfo"};
-    std::unique_ptr<SystVariableCopier<float>> m_float_copier;
+        this, "floatsToCopy", {}, "floats to copy to eventinfo"};
+    std::unique_ptr<SystVariableCopier<float>> m_Zcand0_float_copier;
+    std::unique_ptr<SystVariableCopier<float>> m_Zcand1_float_copier;
     // ints
     Gaudi::Property<std::vector<std::string>> m_ints_to_copy{
-      this, "intsToCopy", {}, "intss to copy to eventinfo"};
-    std::unique_ptr<SystVariableCopier<int>> m_int_copier;
+        this, "intsToCopy", {}, "intss to copy to eventinfo"};
+    std::unique_ptr<SystVariableCopier<int>> m_Zcand0_int_copier;
+    std::unique_ptr<SystVariableCopier<int>> m_Zcand1_int_copier;
 
     /// \brief Setup sys-aware output decorations
     std::unique_ptr<FourVectorOutBlock> m_photon_4vec;
-    std::unique_ptr<FourVectorOutBlock> m_z_candidate_4vec;
+    std::unique_ptr<FourVectorOutBlock> m_Zcand0_candidate_4vec;
+    std::unique_ptr<FourVectorOutBlock> m_Zcand1_candidate_4vec;
   };
-}
+} // namespace XBBCALIB
 
 #endif
