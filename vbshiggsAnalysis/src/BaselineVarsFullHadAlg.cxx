@@ -20,15 +20,15 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
   ATH_MSG_INFO("       FullHadBaselineVarsAlg    ");
   ATH_MSG_INFO("*********************************");
 
-  if (m_doResolved){
-        ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
-        ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
-      }
+  // if (m_doResolved){
+  //       ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
+  //       ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
+  //     }
 
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
   ATH_CHECK(m_metHandle.initialize(m_systematicsList));
   ATH_CHECK(m_vbsLRJetHandle.initialize(m_systematicsList));
-  ATH_CHECK(m_vbsJetHandle.initialize(m_systematicsList));
+  // ATH_CHECK(m_vbsjetHandle.initialize(m_systematicsList));
   ATH_CHECK (m_vbsElectronHandle.initialize(m_systematicsList));
   ATH_CHECK (m_vbsMuonHandle.initialize(m_systematicsList));
 
@@ -40,19 +40,17 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
       ATH_CHECK(m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
     }
   }
-  if (m_doResolved){
-    if (!m_isBtag.empty()) {
-      ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
-    }
+
         
-   if( !m_UseVBFRNN ){
-     ATH_CHECK (m_vbsJetHandle.initialize(m_systematicsList));
-   }
-   else {
-     ATH_CHECK (m_RNNjetBoostedHandle.initialize(m_systematicsList));
-     if (m_doResolved) 
-       ATH_CHECK (m_RNNjetResolvedHandle.initialize(m_systematicsList));
-   }
+  if( !m_UseVBFRNN ){
+    ATH_CHECK (m_vbsJetHandle.initialize(m_systematicsList));
+  }
+  else {
+    ATH_CHECK (m_RNNjetBoostedHandle.initialize(m_systematicsList));
+    if (m_doResolved) 
+      ATH_CHECK (m_RNNjetResolvedHandle.initialize(m_systematicsList));
+  }
+
 
 
 
@@ -66,7 +64,6 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
     CP::SysWriteDecorHandle<int> h(var + "_%SYS%", this);
     m_Ibranches.emplace(var, h);
     ATH_CHECK(m_Ibranches.at(var).initialize(m_systematicsList, m_eventHandle));
-  }
   }
   ATH_CHECK(m_systematicsList.initialize());
   return StatusCode::SUCCESS;

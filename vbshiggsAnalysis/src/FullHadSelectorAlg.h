@@ -37,17 +37,27 @@ public:
 private:
     CP::SysListHandle m_systematicsList {this};
     CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{this, "event", "EventInfo", "Event info container to read"};
-    CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{this, "smallJets", "SmallJets", "Signal small jets"};
+    // CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{this, "smallJets", "SmallJets", "Signal small jets"};
+    CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{this, "smallJets", "vbshiggsAnalysisJets_%SYS%", "Signal small jets"}; 
     CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{ this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", "Signal Jet container to read" };
     CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{ this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", "Higgs Candidates container to read"};
     CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
     CP::SysReadHandle<xAOD::JetContainer> m_vbsjetHandle{ this, "vbsjets", "vbshiggsAnalysisVBSJets_%SYS%", "VBS Jet container to read" };
 
-    CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "LargeJets", "Large boosted jets"};
-    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "Electrons", "Electron container"};
-    CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "Muons", "Muon container"};
-    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "MET", "Missing ET container" };
+    // CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "LargeJets", "Large boosted jets"}; 
+    CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large boosted jets"}; 
+    // CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "Electrons", "Electron container"}; 
+    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "vbshiggsAnalysisElectrons_%SYS%", "Electron container"}; 
+    // CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "Muons", "Muon container"}; 
+    CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Muon container"}; 
+    // CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "MET", "Missing ET container" }; 
+    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "AnalysisMET_%SYS%", "Missing ET container" }; 
     CP::SysFilterReporterParams m_filterParams {this, "vbshiggs selection"};
+
+    Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
+    Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
+
+
     std::map<Booleans, bool> m_bools;
     std::map<Booleans, std::string> m_boolnames{
         {PASS_EXACTLY_TWO_SMALL_JETS, "PASS_EXACTLY_TWO_SMALL_JETS"},
@@ -55,13 +65,19 @@ private:
         {PASS_ALL_CUTS, "PASS_ALL_CUTS"}
     };
 
-    Gaudi::Property<bool> m_UseVBFRNN { this, "UseVBFRNN", false, "Not use VBS tagging jets or yes (i.e. use VBF-RNN jets or not)" };
+   Gaudi::Property<bool> m_UseVBFRNN { this, "UseVBFRNN", false, "Not use VBS tagging jets or yes (i.e. use VBF-RNN jets or not)" };
    CP::SysReadDecorHandle<unsigned int> m_year {this, "year", "dataTakingYear", ""};
+   Gaudi::Property<bool> m_bypass{ this, "bypass", false, "Run selector algorithm in pass-through mode" };
+
 
     CutManager m_vbshiggsCuts;
     unsigned int m_totalEvents{0};
     bool m_doBoosted{true};
     bool m_doResolved{true};
+
+
+    // Gaudi::Property<bool> m_doResolved { this, "do_resolved", false, "Run Resolved category" };
+
 
     StatusCode initialiseCutflow();
 };

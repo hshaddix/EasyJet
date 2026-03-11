@@ -32,14 +32,24 @@ private:
 
   CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
     this, "event", "EventInfo", ""};
+
+  Gaudi::Property<bool> m_isMC { this, "isMC", false, "Is this simulation?" };
+  CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
+  //   CP::SysReadDecorHandle<char> m_isBtag{
+  //     this, "isBtag", "DFCommonJets_btagged_%SYS%", ""};
+
+  CP::SysReadDecorHandle<int> m_PCBT {this, "PCBTDecorName", "", "Name of pseudo-continuous b-tagging decorator"};
+
+  CP::SysReadDecorHandle<int> m_truthFlav { this, "truthFlav", "HadronConeExclTruthLabelID", "Jet truth flavor" };
+
  
-  CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{
-    this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", ""};
+  CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{ this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", ""};
 
   CP::SysReadHandle<xAOD::JetContainer> m_vbsJetHandle{ this, "vbsJets", "",   "VBS Jet container to read" };
 
-  CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{
-    this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", ""};
+
+
+  CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{ this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", ""};
 
     
   CP::SysReadHandle<xAOD::JetContainer> m_RNNjetBoostedHandle{ this, "RNNJets_boosted", "RNNJets_boostedCategory_%SYS%", "input RNN jets container for boosted 20 GeV" };
@@ -58,8 +68,7 @@ private:
   CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{
     this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", ""};
 
-  CP::SysReadDecorHandle<char> m_isBtag{
-    this, "isBtag", "DFCommonJets_btagged_%SYS%", ""};
+
 
   Gaudi::Property<bool> m_doResolved{this, "do_resolved", false};
 

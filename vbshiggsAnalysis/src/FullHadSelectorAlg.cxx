@@ -14,15 +14,13 @@
 
 namespace VBSHIGGS {
 
-FullHadSelectorAlg::FullHadSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator)
-: EL::AnaAlgorithm(name, pSvcLocator) {}
-
+FullHadSelectorAlg::FullHadSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator) : EL::AnaAlgorithm(name, pSvcLocator){}
 StatusCode FullHadSelectorAlg::initialize() {
     ATH_MSG_INFO("*********************************");
     ATH_MSG_INFO("     FullHadSelectorAlg         ");
     ATH_MSG_INFO("*********************************");
 
-     ATH_CHECK(m_systematicsList.initialize());
+    //  ATH_CHECK(m_systematicsList.initialize());
     ATH_CHECK (m_filterParams.initialize(m_systematicsList));
     if (m_doResolved){
       ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
@@ -34,12 +32,16 @@ StatusCode FullHadSelectorAlg::initialize() {
     ATH_CHECK(m_smallJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_largeJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_vbsjetHandle.initialize(m_systematicsList));
+    // ATH_CHECK (m_vbsjetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_metHandle.initialize(m_systematicsList));
     if (!m_isBtag.empty() && m_doResolved) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
     }
+
+    if (!m_UseVBFRNN) {
+      ATH_CHECK(m_vbsjetHandle.initialize(m_systematicsList));
+  }
 
     ATH_CHECK (m_systematicsList.initialize());
     ATH_CHECK(initialiseCutflow());
@@ -71,7 +73,7 @@ StatusCode FullHadSelectorAlg::execute() {
 
 
 	ANA_CHECK(m_smallJetHandle.retrieve(smallJets, sys));
-        ANA_CHECK(m_largeJetHandle.retrieve(largeJets, sys));
+  ANA_CHECK(m_largeJetHandle.retrieve(largeJets, sys));
 	ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
 	ANA_CHECK(m_muonHandle.retrieve(muons, sys));
 	ANA_CHECK(m_metHandle.retrieve(metCont, sys));
