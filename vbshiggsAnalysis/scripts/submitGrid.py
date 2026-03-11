@@ -14,6 +14,7 @@ def get_args():
                             formatter_class=ArgumentDefaultsHelpFormatter)
     parser.add_argument("-s", "--samples", required=True,
                         help="Space-delimited list of samples, \"EWVVjj VH\"")
+    parser.add_argument("--flag", required=True)
     parser.add_argument("--tag", required=True)
     parser.add_argument("-c", "--config", required=True)
     parser.add_argument("--HMBS", default=None, const=True, action='store',
@@ -27,22 +28,35 @@ def get_args():
 
 def get_list_files(processes):
     mc_list = []
-
     for process in processes:
-        file_name = ""
-        if process == "data":
-            file_name = "data_Run2_p6697.txt"
-        else:
-            file_name = f"mc20_{process}_DAOD_PHYS_p6697.txt"
-        f_base_path = os.path.abspath(
-            "../easyjet/vbshiggsAnalysis/datasets/PHYS/p6697/"
-        )
-        path_to_file = os.path.join(f_base_path, file_name)
-        if os.path.exists(path_to_file):
-            mc_list.append(path_to_file)
-        else:
-            print(f"\tfile {path_to_file} does not exist")
-
+        if args.flag == "7018":
+            file_name = ""
+            if process == "data":
+                file_name = "data_Run2_p7018.txt"
+            else:
+                file_name = f"mc20_{process}_DAOD_PHYS_p7018.txt"
+            f_base_path = os.path.abspath(
+                "../easyjet/vbshiggsAnalysis/datasets/PHYS/p7018/"
+            )
+            path_to_file = os.path.join(f_base_path, file_name)
+            if os.path.exists(path_to_file):
+                mc_list.append(path_to_file)
+            else:
+                print(f"\tfile {path_to_file} does not exist")
+        if args.flag == "6697":
+            file_name = ""
+            if process == "data":
+                file_name = "data_Run2_p6697.txt"
+            else:
+                file_name = f"mc20_{process}_DAOD_PHYS_p6697.txt"
+            f_base_path = os.path.abspath(
+                "../easyjet/vbshiggsAnalysis/datasets/PHYS/p6697/"
+            )
+            path_to_file = os.path.join(f_base_path, file_name)
+            if os.path.exists(path_to_file):
+                mc_list.append(path_to_file)
+            else:
+                print(f"\tfile {path_to_file} does not exist")
     return mc_list
 
 

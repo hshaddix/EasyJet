@@ -107,8 +107,10 @@ namespace VBSHIGGS{
         m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
       } 
       int nLeptons = electrons->size() + muons->size();
+      int nLargejets = largeJets->size();
       bool pass_OneLepton = (nLeptons == 1);
-      bool pass_preselection =  m_bools.at(VBSHIGGS::PASS_TRIGGER) && pass_OneLepton ;
+      bool pass_boost = (nLargejets > 0);
+      bool pass_preselection =  m_bools.at(VBSHIGGS::PASS_TRIGGER) && pass_OneLepton && pass_boost ;
 
       m_passallcuts.set(*event, pass_preselection, sys);
 

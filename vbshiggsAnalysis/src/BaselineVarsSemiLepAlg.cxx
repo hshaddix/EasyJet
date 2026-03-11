@@ -72,10 +72,6 @@ namespace VBSHIGGS{
 
       ATH_CHECK (m_eleECIDS.initialize(m_systematicsList, m_vbsElectronHandle));
       
-      ATH_CHECK (m_GN2Xv01_phbb.initialize(m_systematicsList, m_vbsLRJetHandle));
-      ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_vbsLRJetHandle));
-      ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_vbsLRJetHandle));
-      ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_vbsLRJetHandle));
 
       m_WTag_score = CP::SysReadDecorHandle<float> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Score", this);
       m_Pass_WTag = CP::SysReadDecorHandle<char> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
@@ -339,24 +335,12 @@ namespace VBSHIGGS{
         for(unsigned int i=0; i<std::min(size_t(2),largeJets->size()); i++){
           const xAOD::Jet* largeJet = largeJets->at(i);
           std::string prefix = "LargeJet"+std::to_string(i+1);
-          float phbb = m_GN2Xv01_phbb.get(*largeJet, sys);
-          float phcc = m_GN2Xv01_phcc.get(*largeJet, sys);
-          float pqcd = m_GN2Xv01_pqcd.get(*largeJet, sys);
-          float ptop = m_GN2Xv01_ptop.get(*largeJet, sys);
-          float fcc = 0.02;
-          float ftop = 0.25;
-          float XbbScore= log (phbb / (fcc*phcc + ftop*ptop + pqcd*(1-fcc-ftop)));
           // Get score of W-tagger
           float wtagger_score = m_WTag_score.get(*largeJet, sys);
           m_Fbranches.at(prefix+"_m").set(*event, largeJet->m(), sys);
           m_Fbranches.at(prefix+"_pt").set(*event, largeJet->pt(), sys);
           m_Fbranches.at(prefix+"_eta").set(*event, largeJet->eta(), sys);
           m_Fbranches.at(prefix+"_phi").set(*event, largeJet->phi(), sys);
-          m_Fbranches.at(prefix+"_GN2X").set(*event, XbbScore, sys);
-          m_Fbranches.at(prefix+"_GN2X_phbb").set(*event, phbb, sys);
-          m_Fbranches.at(prefix+"_GN2X_phcc").set(*event, phcc, sys);
-          m_Fbranches.at(prefix+"_GN2X_pqcd").set(*event, pqcd, sys);
-          m_Fbranches.at(prefix+"_GN2X_ptop").set(*event, ptop, sys);
           m_Fbranches.at(prefix + "_" + m_WTag_Type + m_WTag_WP + "Tagger_Score").set(*event, wtagger_score, sys);
           int pass_wtag = static_cast<int>(m_Pass_WTag.get(*largeJet, sys));
           m_Ibranches.at(prefix+"_Pass_"+m_WTag_Type+m_WTag_WP).set(*event, pass_wtag, sys);
