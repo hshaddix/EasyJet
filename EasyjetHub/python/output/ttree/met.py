@@ -19,4 +19,7 @@ def get_met_branches(flags, input_container, output_prefix):
         ("sumet", None)
     ]
 
+    if flags.Analysis.Met.saveSignificance:
+        met_branches.variables += [("significance_%SYS%", None)]
+
     return met_branches.get_output_list()

@@ -96,9 +96,6 @@ private:
     Gaudi::Property<std::vector<std::string>> m_intVariables
           {this, "intVariableList", {}, "Name list of integer variables"};
 
-    CP::SysReadDecorHandle<float>
-    m_METSig {this, "METSignificance", "significance_%SYS%", "Met Significance"};
-
     /// \brief Setup sys-aware output decorations
     std::unordered_map<std::string, CP::SysWriteDecorHandle<float>>
         m_Fbranches;

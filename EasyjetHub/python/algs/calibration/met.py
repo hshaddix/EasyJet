@@ -11,10 +11,12 @@ def met_sequence(flags, configAcc):
     assert flags.Analysis.do_small_R_jets, (
         "Small-R jets are strictly necessary for MET"
     )
+    jet_flags = flags.Analysis.Small_R_jet
 
     configSeq = ConfigSequence()
     config = ConfigFactory()
     makeConfig = config.makeConfig
+    met_flags = flags.Analysis.Met
 
     container_names = flags.Analysis.container_names
 
@@ -53,6 +55,37 @@ def met_sequence(flags, configAcc):
         '.jets',
         drop_sys(container_names.output[flags.Analysis.Small_R_jet.jet_type])
     )
+
+    configSeq.setOptionValue(".metWP", met_flags.metWP)
+    configSeq.setOptionValue(".saveSignificance", met_flags.saveSignificance)
+
+    configSeq.setOptionValue(
+        ".addExtraSignificanceVars",
+        met_flags.addExtraSignificanceVars
+    )
+
+    # If building METSignificance should provide
+    #   obj. calibrations to retrive their resolutions.
+    if met_flags.saveSignificance:
+        if jet_flags.calibToolConfigFile and jet_flags.calibToolCalibArea:
+            configSeq.setOptionValue(
+                ".JetCalibConfig",
+                jet_flags.calibToolConfigFile
+            )
+            configSeq.setOptionValue(
+                ".JetCalibArea",
+                jet_flags.calibToolCalibArea
+            )
+        if jet_flags.calibToolCalibSeq:
+            configSeq.setOptionValue(
+                ".JetCalibSequence",
+                jet_flags.calibToolCalibSeq
+            )
+
+    # Should turn this off if muons are not used in the analysis.
+    if 'muons' not in preMET_collections.keys():
+        configSeq.setOptionValue('.setMuonJetEMScale', False)
+
     # Add whatever collections are active in the job
     for objtype, coll in preMET_collections.items():
         configSeq.setOptionValue(f'.{objtype}', coll)

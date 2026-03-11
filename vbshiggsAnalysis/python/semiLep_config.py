@@ -86,7 +86,7 @@ def get_BaselineVarsSemiLepAlg_variables(flags):
     for var in ["dR", "dEta", "dPhi"]:
         float_variable_names.append(f"{var}{obj}")
 
-    float_variable_names += ["dRHjj", "dPhiHjj", "dEtaHjj", "METSig", "W_mT"]
+    float_variable_names += ["dRHjj", "dPhiHjj", "dEtaHjj", "W_mT"]
 
     int_variable_names += ["nLeptons", "nSigJets", "nBJets", "nCentralJets",
                            "nForwardJets", "nJets", "nLargeJets"]

@@ -114,7 +114,7 @@ def Monojet_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
 def get_BaselineVarsMonojetAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
-    float_variable_names += ["METSig", "sum_pT_CentralJets", "sum_pT_ForwardJets",
+    float_variable_names += ["sum_pT_CentralJets", "sum_pT_ForwardJets",
                              "sum_pT_LargeRJets", "DeltaPhi_MET_jets",
                              "DeltaPhi_MET_largeJets"]
     int_variable_names += ["nCentralJets", "nForwardJets", "nLargeRJets",

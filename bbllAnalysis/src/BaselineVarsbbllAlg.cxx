@@ -37,8 +37,6 @@ namespace HHBBLL
       ATH_CHECK(m_Ibranches.at(var).initialize(m_systematicsList, m_eventHandle));
     };
 
-    ATH_CHECK (m_met_sig.initialize(m_systematicsList, m_metHandle));
-
     ATH_CHECK (m_Lepton1_pt.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK (m_Lepton1_eta.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK (m_Lepton1_phi.initialize(m_systematicsList, m_eventHandle));
@@ -114,8 +112,7 @@ namespace HHBBLL
       int n_bjets=m_bjets.get(*event, sys);
       // met
       met_vector.SetPtEtaPhiE(met->met(), 0, met->phi(), met->met());
-      float met_sig = m_met_sig.get(*met, sys);
-      m_Fbranches.at("MET_sig").set(*event, met_sig, sys);
+
       Leading_lep.SetPtEtaPhiE(m_Lepton1_pt.get(*event, sys), 
 			       m_Lepton1_eta.get(*event, sys), 
 			       m_Lepton1_phi.get(*event, sys), 

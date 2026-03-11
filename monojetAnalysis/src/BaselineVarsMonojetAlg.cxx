@@ -38,8 +38,6 @@ namespace MONOJET
       ATH_CHECK (m_PCBT.initialize(m_systematicsList, m_jetHandle));
     }
 
-    ATH_CHECK(m_METSig.initialize(m_systematicsList, m_metHandle));
-
     if (m_isMC) {
       ATH_CHECK(m_truthFlav.initialize(m_systematicsList, m_jetHandle));
     }
@@ -211,10 +209,6 @@ namespace MONOJET
 	
       m_Ibranches.at("TightJetCleaningPass_event").set(*event,tight_pass_event,sys);
      
-      //MET Significance
-      float METSig = m_METSig.get(*met, sys);
-      m_Fbranches.at("METSig").set(*event, METSig, sys);
-
 
       //jet sector
       for (int i = 0; i < std::min(n_jets, (int)m_Small_R_jet_amount); i++) {

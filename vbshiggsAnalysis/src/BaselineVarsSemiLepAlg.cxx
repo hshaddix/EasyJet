@@ -72,8 +72,6 @@ namespace VBSHIGGS{
 
       ATH_CHECK (m_eleECIDS.initialize(m_systematicsList, m_vbsElectronHandle));
       
-      ATH_CHECK (m_METSig.initialize(m_systematicsList, m_metHandle));
-
       ATH_CHECK (m_GN2Xv01_phbb.initialize(m_systematicsList, m_vbsLRJetHandle));
       ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_vbsLRJetHandle));
       ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_vbsLRJetHandle));
@@ -225,9 +223,6 @@ namespace VBSHIGGS{
           m_Fbranches.at("W_mT").set(*event, mT_W, sys);
           }
 
-        //MET Significance 
-        float METSig = m_METSig.get(*met, sys);
-        m_Fbranches.at("METSig").set(*event, METSig, sys);
 
         // Resolved H->bb candidates
         TLorentzVector HDijet;

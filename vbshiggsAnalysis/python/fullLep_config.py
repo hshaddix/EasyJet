@@ -104,7 +104,7 @@ def get_BaselineVarsFullLepAlg_variables(flags):
 
         float_variable_names += ["Hdijetll_m", "Hdijetllmet_m"]
 
-    float_variable_names += ["dPhillMET", "dPhil1MET", "dPhil2MET", "METSig",
+    float_variable_names += ["dPhillMET", "dPhil1MET", "dPhil2MET",
                              "Lepton1_MET_mT", "Lepton2_MET_mT", "LargeJet1_DXbb"]
 
     int_variable_names += ["nLargeJets", "nLeptons",

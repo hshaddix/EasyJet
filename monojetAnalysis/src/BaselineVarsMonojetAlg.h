@@ -108,9 +108,6 @@ private:
     Gaudi::Property<std::vector<std::string>> m_intVariables
           {this, "intVariableList", {}, "Name list of integer variables"};
 
-    CP::SysReadDecorHandle<float> m_METSig 
-      {this, "METSignificance", "significance_%SYS%", "Met Significance"};
-
     Gaudi::Property<float> m_max_eta_central_jet
       {this, "max_eta_central_jet", 2.5, "Max pseudorapidity central jets / Min pseudorapidity forward jets"};
 

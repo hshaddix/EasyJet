@@ -55,9 +55,6 @@ private:
     Gaudi::Property<std::vector<std::string>> m_intVariables
           {this, "intVariableList", {}, "Name list of integer variables"};
 
-    CP::SysReadDecorHandle<float>
-    m_met_sig {this, "METSignificance", "significance_%SYS%", "Met Significance"};
-
     Gaudi::Property<bool> m_save_extra_vars
       { this, "save_extra_vars", false, "Compute quantities which may be useful." };
 

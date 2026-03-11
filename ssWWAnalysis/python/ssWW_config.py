@@ -130,7 +130,7 @@ def get_BaselineVarsssWWAlg_variables(flags):
     int_variable_names = []
 
     float_variable_names += ["dPhillMET", "dPhil1MET", "dPhil2MET"]
-    float_variable_names += ["mlljjmet", "METSig", "mT_Lepton1_Met", "mT_Lepton2_Met"]
+    float_variable_names += ["mlljjmet", "mT_Lepton1_Met", "mT_Lepton2_Met"]
     float_variable_names += ["mlljj", "mT_L_min", "HT2", "HT2r", "mT2_jj"]
     float_variable_names += ["MET_Track_met", "MET_Track_phi"]
     float_variable_names += ["mT", "epsilon_j3"]

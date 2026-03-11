@@ -197,6 +197,13 @@ Lepton:
   variables: ["pt", "eta", "phi", "E", "effSF"]
   variables_int: ["charge", "pdgid"]
 
+Met:
+  metWP: "Tight"
+  treatPUJets: false
+  setMuonJetEMScale: true
+  saveSignificance: false
+  addExtraSignificanceVars: false
+
 Track:
   min_pT: 0.5e+3  # 500 MeV
   max_eta: 2.5

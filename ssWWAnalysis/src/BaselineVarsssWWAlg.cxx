@@ -79,8 +79,6 @@ namespace ssWWVBS
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_ssWWJetHandle));
     }
 
-    ATH_CHECK (m_METSig.initialize(m_systematicsList, m_metHandle));
-
     if (m_isMC) {
       ATH_CHECK (m_truthFlav.initialize(m_systematicsList, m_ssWWJetHandle));
     }
@@ -256,10 +254,6 @@ namespace ssWWVBS
       TLorentzVector met_tlv;
       // Assumes m=0, wrong for final states with several neutrinos
       met_tlv.SetVectM(metVec3, 0);
-
-      //MET Significance 
-      float METSig = m_METSig.get(*met, sys);
-      m_Fbranches.at("METSig").set(*event, METSig, sys);
 
       // dilepton kinematics
       TLorentzVector ll;

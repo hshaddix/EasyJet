@@ -67,6 +67,9 @@ Photon:
     - ["Tight", "NonIso"]
     - ["Loose", "FixedCutLoose"]
 
+Met:
+  saveSignificance: true
+
 OverlapRemoval:
   favourPhotonOverLepton: false # if set to true, HgamOR is applied
 

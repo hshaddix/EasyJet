@@ -190,7 +190,7 @@ def get_BaselineVarsbbllAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
 
-    float_variable_names += ["mbbll", "mbbllmet", "mbl", "MET_sig"]
+    float_variable_names += ["mbbll", "mbbllmet", "mbl"]
     if (flags.Analysis.save_extra_vars):
         float_variable_names += ["mT_L_min", "mT_Lepton1_Met",
                                  "mT_Lepton2_Met", "HT2", "HT2r"]
