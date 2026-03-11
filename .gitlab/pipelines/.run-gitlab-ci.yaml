@@ -4,6 +4,16 @@ variables:
   # default test directory for easyjet-test, can be overridden by -d
   EASYJET_TESTDIR: ci_testdir
 
+.if_to_central: &if_to_central
+  "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+
+.rule_core_pkgs: &rule_core_pkgs
+  if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+  changes:
+    - "EasyjetHub/**/*"
+    - "EasyjetPlus/**/*"
+    - "EasyjetTests/**/*"
+
 .ntupler:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'
@@ -20,6 +30,120 @@ variables:
       - $EASYJET_TESTDIR/userJobMetadata.json
     expire_in: 1 week
 
+.changes_bbbb: &changes_bbbb
+  rules:
+    - if: *if_to_central
+      changes: ["bbbbAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbbbtt: &changes_bbbbtt
+  rules:
+    - if: *if_to_central
+      changes: ["bbbbttAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbll: &changes_bbll
+  rules:
+    - if: *if_to_central
+      changes: ["bbllAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbtt: &changes_bbtt
+  rules:
+    - if: *if_to_central
+      changes: ["bbttAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbVV: &changes_bbVV
+  rules:
+    - if: *if_to_central
+      changes: ["bbVVAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbyy: &changes_bbyy
+  rules:
+    - if: *if_to_central
+      changes: ["bbyyAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_HZallyy: &changes_HZallyy
+  rules:
+    - if: *if_to_central
+      changes: ["HZallyyAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_jjjj: &changes_jjjj
+  rules:
+    - if: *if_to_central
+      changes: ["jjjjAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_lltt: &changes_lltt
+  rules:
+    - if: *if_to_central
+      changes: ["llttAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_monojet: &changes_monojet
+  rules:
+    - if: *if_to_central
+      changes: ["monojetAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_multilepton: &changes_multilepton
+  rules:
+    - if: *if_to_central
+      changes: ["multileptonAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ssWW: &changes_ssWW
+  rules:
+    - if: *if_to_central
+      changes: ["ssWWAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ttHH: &changes_ttHH
+  rules:
+    - if: *if_to_central
+      changes: ["ttHHAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_vbshiggs: &changes_vbshiggs
+  rules:
+    - if: *if_to_central
+      changes: ["vbshiggsAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_VBSVV4q: &changes_VBSVV4q
+  rules:
+    - if: *if_to_central
+      changes: ["VBSVV4qAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_XbbCalib: &changes_XbbCalib
+  rules:
+    - if: *if_to_central
+      changes: ["XbbCalib/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_yyML: &changes_yyML
+  rules:
+    - if: *if_to_central
+      changes: ["yyMLAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ZCharm: &changes_ZCharm
+  rules:
+    - if: *if_to_central
+      changes: ["ZCharmAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ZQG: &changes_ZQG
+  rules:
+    - if: *if_to_central
+      changes: ["ZQGAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 # Data
 
 ntupler_fast_data18:
@@ -34,26 +158,31 @@ ntupler_fast_data22:
 
 ntupler_bbtt_data22:
   extends: .ntupler
+  <<: *changes_bbtt
   script:
     - easyjet-test bbtt-data22
 
 ntupler_bbtt_data22_boosted:
   extends: .ntupler
+  <<: *changes_bbtt
   script:
     - easyjet-test bbtt-data22-boosted
 
 ntupler_bbyy_data22_lite:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test bbyy-data22-lite
 
 ntupler_HHandHyy_data22:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test HHandHyy-data22
 
 ntupler_SHbbyy_data22_lite:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test SHbbyy-data22-lite
 
@@ -61,36 +190,43 @@ ntupler_SHbbyy_data22_lite:
 
 ntupler_bbbb_mc20:
   extends: .ntupler
+  <<: *changes_bbbb
   script:
     - easyjet-test bbbb-mc20
 
 ntupler_bbyy_mc20_syst:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test bbyy-mc20-syst
 
 ntupler_SHbbyy_mc20:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test SHbbyy-mc20
 
 ntupler_bbyy_mc20_lite:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test bbyy-mc20-lite
 
 ntupler_HHandHyy_mc20:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test HHandHyy-mc20
 
 ntupler_bbtt_mc20:
   extends: .ntupler
+  <<: *changes_bbtt
   script:
     - easyjet-test bbtt-mc20
 
 ntupler_bbVV_mc20:
   extends: .ntupler
+  <<: *changes_bbVV
   script:
     - easyjet-test bbVV-mc20
 
@@ -101,96 +237,115 @@ ntupler_bbVVVBF_mc20:
 
 ntupler_ttHH_mc20:
   extends: .ntupler
+  <<: *changes_ttHH
   script:
     - easyjet-test ttHH-mc20
 
 ntupler_bbll_mc20:
   extends: .ntupler
+  <<: *changes_bbll
   script:
     - easyjet-test bbll-mc20
 
 ntupler_bbll_mc20_syst:
   extends: .ntupler
+  <<: *changes_bbll
   script:
     - easyjet-test bbll-mc20-syst
 
 ntupler_lltt_mc20:
   extends: .ntupler
+  <<: *changes_lltt
   script:
     - easyjet-test lltt-mc20
 
 ntupler_vbshiggs_fulllep_mc20:
   extends: .ntupler
+  <<: *changes_vbshiggs
   script:
     - easyjet-test vbshiggs-fulllep-mc20
 
 ntupler_vbshiggs_semilep_mc20:
   extends: .ntupler
+  <<: *changes_vbshiggs
   script:
     - easyjet-test vbshiggs-semilep-mc20
 
 ntupler_VBSVV4q_mc20:
   extends: .ntupler
+  <<: *changes_VBSVV4q
   script:
     - easyjet-test VBSVV4q-mc20
 
 ntupler_VBSVV4q_mc20_llj1:
   extends: .ntupler
+  <<: *changes_VBSVV4q
   script:
     - easyjet-test VBSVV4q-mc20-llj1
     
 ntupler_jjjj_mc20:
   extends: .ntupler
+  <<: *changes_jjjj
   script:
     - easyjet-test jjjj-mc20
 
 ntupler_ssWW_mc20:
   extends: .ntupler
+  <<: *changes_ssWW
   script:
     - easyjet-test ssWW-mc20
 
 ntupler_ZQG_mc20:
   extends: .ntupler
+  <<: *changes_ZQG
   script:
     - easyjet-test ZQG-mc20
 
 ntupler_ZCharm_mc20:
   extends: .ntupler
+  <<: *changes_ZCharm
   script:
     - easyjet-test ZCharm-mc20
 
 ntupler_llyy_mc20:
   extends: .ntupler
+  <<: *changes_HZallyy
   script:
     - easyjet-test llyy-mc20
 
 ntupler_ttcalib_mc20:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test ttcalib-mc20
 
 ntupler_zllycalib_mc20:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zllycalib-mc20
     
 ntupler_zlljcalib_mc20:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zlljcalib-mc20
 
 ntupler_zbbycalib_mc20:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zbbycalib-mc20
 
 ntupler_zbbjcalib_mc20:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zbbjcalib-mc20
 
 ntupler_bbbbtt_mc20:
   extends: .ntupler
+  <<: *changes_bbbbtt
   script:
     - easyjet-test bbbbtt-mc20
 
@@ -198,11 +353,13 @@ ntupler_bbbbtt_mc20:
 
 ntupler_sh4b_mc20af3:
   extends: .ntupler
+  <<: *changes_bbbb
   script:
     - easyjet-test sh4b-mc20af3
 
 ntupler_SHbbyy_mc20af3_lite:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test SHbbyy-mc20af3-lite
 
@@ -210,92 +367,110 @@ ntupler_SHbbyy_mc20af3_lite:
 
 ntupler_bbbb_mc23:
   extends: .ntupler
+  <<: *changes_bbbb
   script:
     - easyjet-test bbbb-mc23
 
 ntupler_bbtt_mc23:
   extends: .ntupler
+  <<: *changes_bbtt
   script:
     - easyjet-test bbtt-mc23
 
 ntupler_bbtt_mc23_boosted:
   extends: .ntupler
+  <<: *changes_bbtt
   script:
     - easyjet-test bbtt-mc23-boosted
 
 ntupler_bbVV_mc23:
   extends: .ntupler
+  <<: *changes_bbVV
   script:
     - easyjet-test bbVV-mc23
 
 ntupler_bbVVVBF_mc23:
   extends: .ntupler
+  <<: *changes_bbVV
   script:
     - easyjet-test bbVVVBF-mc23
 
 ntupler_SHbbyy_mc23af3:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test SHbbyy-mc23af3
 
 ntupler_bbyy_mc23_lite:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test bbyy-mc23-lite
 
 ntupler_HHandHyy_mc23:
   extends: .ntupler
+  <<: *changes_bbyy
   script:
     - easyjet-test HHandHyy-mc23
 
 ntupler_llyy_mc23:
   extends: .ntupler
+  <<: *changes_HZallyy
   script:
     - easyjet-test llyy-mc23
 
 ntupler_ttcalib_mc23:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test ttcalib-mc23
 
 ntupler_zllycalib_mc23:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zllycalib-mc23
     
 ntupler_zlljcalib_mc23:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zlljcalib-mc23
 
 ntupler_zbbycalib_mc23:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zbbycalib-mc23
 
 ntupler_zbbjcalib_mc23:
   extends: .ntupler
+  <<: *changes_XbbCalib
   script:
     - easyjet-test zbbjcalib-mc23
 
 ntupler_monojet_mc23:
   extends: .ntupler
+  <<: *changes_monojet
   script:
     - easyjet-test monojet-mc23
 
 # Commented until ATLASG-2734 is solved
 #ntupler_bbtt_mc23_lite_syst:
 #  extends: .ntupler
+#  <<: *changes_bbbb
 #  script:
 #    - easyjet-test bbtt-mc23-lite-syst
 
 ntupler_bbtt_mc23_syst:
   extends: .ntupler
+  <<: *changes_bbtt
   script:
     - easyjet-test bbtt-mc23-syst
 
 ntupler_bbll_mc23_lite:
   extends: .ntupler
+  <<: *changes_bbll
   script:
     - easyjet-test bbll-mc23-lite
 
@@ -306,26 +481,31 @@ ntupler_EMTopo_mc23:
 
 ntupler_hhml_mc23:
   extends: .ntupler
+  <<: *changes_multilepton
   script:
     - easyjet-test hhml-mc23
 
 ntupler_yyml_mc23_lite:
   extends: .ntupler
+  <<: *changes_yyML
   script:
     - easyjet-test yyml-mc23-lite
 
 ntupler_bbbbtt_mc23:
   extends: .ntupler
+  <<: *changes_bbbbtt
   script:
     - easyjet-test bbbbtt-mc23
 
 ntupler_ssWW_mc23:
   extends: .ntupler
+  <<: *changes_ssWW
   script:
     - easyjet-test ssWW-mc23
 
 ntupler_ZQG_mc23:
   extends: .ntupler
+  <<: *changes_ZQG
   script:
     - easyjet-test ZQG-mc23
 
@@ -339,6 +519,7 @@ syst_mc23:
 # non-ntupler workflows
 
 aod_fast_bbbb_mc23:
+  <<: *changes_bbbb
   tags:
     - cvmfs
   stage: run
@@ -355,6 +536,7 @@ h5_fast_mc23:
     - easyjet-test h5-fast-mc23
 
 hist_syst_bbbb_mc23:
+  <<: *changes_bbbb
   tags:
     - cvmfs
   stage: run
