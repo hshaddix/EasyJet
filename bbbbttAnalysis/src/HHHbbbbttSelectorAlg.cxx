@@ -41,6 +41,8 @@ namespace HHHBBBBTT
 
     ATH_CHECK(m_is2016_periodA.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is2016_periodB_D3.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is2017_periodB1_B4.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_l1topo_disabled.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is2022_75bunches.initialize(m_systematicsList, m_eventHandle));
     
     // Intialise booleans with value false. Also initialise syst-aware output decorators
@@ -197,46 +199,24 @@ namespace HHHBBBBTT
       //************
       // lepton
       //************
-      int n_leptons_looseId_iso = 0;
-      int n_leptons_tightId_iso = 0;
-      int n_leptons_tightId_antiiso = 0;
-      int n_veto_leptons = 0;
+      int n_leptons_looseId_looseIso = 0;
+      int n_leptons_looseId_looseIso_for_veto = 0;
 
       const xAOD::Electron* ele0 = nullptr;
       const xAOD::Electron* ele1 = nullptr;
-      for (const xAOD::Electron *electron : *electrons)
-      {
+      for (const xAOD::Electron *electron : *electrons) {
         // determine pass/fail ID and isolation:
-        bool pass_tightId_looseIso = m_eleWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::tight_iso).get(*electron, sys); 
-        bool pass_looseId_looseIso = m_useNonIsoLeptons
-                                     ? m_eleWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::loose_iso).get(*electron, sys) 
-                                     : true;
-        bool pass_tightId_noIso = m_useNonIsoLeptons
-                                  ? m_eleWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::tight_noniso).get(*electron, sys) 
-                                  : pass_tightId_looseIso;
-        bool pass_tightId_antiIso = m_useNonIsoLeptons
-                                    ? pass_tightId_noIso && !pass_tightId_looseIso 
-                                    : false;
-
-        if (pass_looseId_looseIso) n_leptons_looseId_iso++;
-
+        bool pass_looseId_looseIso = m_eleWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::looseID_looseIso).get(*electron, sys);
         m_selected_el.set(*electron, false, sys);
-        m_selected_el_isIso.set(*electron, false, sys); // slightly misleading default
-        if (electron->pt() > m_pt_threshold[HHHBBBBTT::LTT][HHHBBBBTT::ele] &&
-            (pass_tightId_looseIso || pass_tightId_antiIso))
-        {
+        if (pass_looseId_looseIso) n_leptons_looseId_looseIso_for_veto++;
+
+        if (electron->pt() > 10. * Athena::Units::GeV && pass_looseId_looseIso) {
+          n_leptons_looseId_looseIso++;
           m_selected_el.set(*electron, true, sys);
-
-          // check isolation:
-          m_selected_el_isIso.set(*electron, pass_tightId_looseIso, sys);
-          if (pass_tightId_looseIso) n_leptons_tightId_iso++;
-          else if (pass_tightId_antiIso) n_leptons_tightId_antiiso++;
-
           if(!ele0) ele0 = electron;
           else if(!ele1) ele1 = electron;
         }
-        else
-        {
+        else {
           continue;
         }
       }
@@ -247,47 +227,26 @@ namespace HHHBBBBTT
 
       const xAOD::Muon* mu0 = nullptr;
       const xAOD::Muon* mu1 = nullptr;
-      for (const xAOD::Muon *muon : *muons)
-      {
+      for (const xAOD::Muon *muon : *muons) {
         // determine pass/fail ID and isolation:
-        bool pass_tightId_looseIso = m_muonWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::tight_iso).get(*muon, sys); 
-        bool pass_looseId_looseIso = m_useNonIsoLeptons 
-                                     ? m_muonWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::loose_iso).get(*muon, sys) 
-                                     : true;
-        bool pass_tightId_noIso = m_useNonIsoLeptons
-                                  ? m_muonWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::tight_noniso).get(*muon, sys) 
-                                  : pass_tightId_looseIso;
-        bool pass_tightId_antiIso = m_useNonIsoLeptons
-                                    ? pass_tightId_noIso && !pass_tightId_looseIso 
-                                    : false;
-        
-        if (pass_looseId_looseIso) n_leptons_looseId_iso++;
-
+        bool pass_looseId_looseIso = m_muonWPDecorHandleMap.at(HHHBBBBTT::LepSelWpDeco::looseID_looseIso).get(*muon, sys);
         m_selected_mu.set(*muon, false, sys);
-        m_selected_mu_isIso.set(*muon, false, sys); // slightly misleading default
-        if (std::abs(muon->eta()) < 2.5 &&
-	    muon->pt() > m_pt_threshold[HHHBBBBTT::LTT][HHHBBBBTT::mu]
-            && (pass_tightId_looseIso || pass_tightId_antiIso) )
-        { 
-          m_selected_mu.set(*muon, true, sys);
-          
-          // check isolation:
-          m_selected_mu_isIso.set(*muon, pass_tightId_looseIso, sys);
-          if (pass_tightId_looseIso) n_leptons_tightId_iso++;
-          else if (pass_tightId_antiIso) n_leptons_tightId_antiiso++;
+        if (pass_looseId_looseIso) n_leptons_looseId_looseIso_for_veto++;
 
+        if (std::abs(muon->eta()) < 2.5 && muon->pt() > 10. * Athena::Units::GeV && pass_looseId_looseIso) {
+          n_leptons_looseId_looseIso++;
+          m_selected_mu.set(*muon, true, sys);
           if(!mu0) mu0 = muon;
           else if(!mu1) mu1 = muon;
         }
-        else
-        {
+        else {
           continue;
         }
       }
       if (mu1) {
         if (mu0->charge() != mu1->charge())
           m_bools.at(HHHBBBBTT::OS_CHARGE_LEPTONS) = true;
-      } else if (n_leptons_tightId_iso == 2 && mu0) {
+      } else if (n_leptons_looseId_looseIso == 2 && mu0) {
         if (ele0->charge() != mu0->charge())
           m_bools.at(HHHBBBBTT::OS_CHARGE_LEPTONS) = true;
       }
@@ -310,14 +269,9 @@ namespace HHHBBBBTT
 	  lep_ptcut_LTT = true;
       }
 
-      n_veto_leptons = n_leptons_looseId_iso - n_leptons_tightId_iso;
-
-      if (n_leptons_tightId_iso == 1 && n_veto_leptons == 0 && n_leptons_tightId_antiiso == 0)
+      if (n_leptons_looseId_looseIso == 1 && n_leptons_looseId_looseIso_for_veto == 1)
         m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_LEPHAD) = true;
-      else if(n_leptons_tightId_iso == 0 && n_veto_leptons == 0 && n_leptons_tightId_antiiso == 1)
-        m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_ANTIISOLEPHAD) = true;
-
-      if (n_leptons_tightId_iso == 0 && n_veto_leptons == 0)
+      if (n_leptons_looseId_looseIso_for_veto == 0)
         m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_HADHAD) = true;
 
       //************
@@ -369,7 +323,7 @@ namespace HHHBBBBTT
       }
 
       TLorentzVector tautau_vis;
-      if (n_leptons_tightId_iso+n_leptons_tightId_antiiso == 1 && n_taus == 1) {
+      if (n_leptons_looseId_looseIso == 1 && n_leptons_looseId_looseIso_for_veto == 1 && n_taus == 1) {
         tautau_vis = tau0->p4();
         if(ele0) tautau_vis += ele0->p4();
         else if(mu0) tautau_vis += mu0->p4();
@@ -382,26 +336,26 @@ namespace HHHBBBBTT
       const xAOD::Jet* jet0 = jets->size()>0 ? jets->at(0) : nullptr;
       const xAOD::Jet* jet1 = jets->size()>1 ? jets->at(1) : nullptr;
 
-      auto eta_lt2p8_jets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
+      auto eta_lt3p2_jets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
           SG::VIEW_ELEMENTS);
       auto eta_lt2p5_jets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
           SG::VIEW_ELEMENTS);
 
       for (const xAOD::Jet *jet : *jets)
       {
-        if(std::abs(jet->eta()) < 2.8)
-          eta_lt2p8_jets->push_back(jet);
+        if(std::abs(jet->eta()) < 3.2)
+          eta_lt3p2_jets->push_back(jet);
 
         if(std::abs(jet->eta()) < 2.5)
           eta_lt2p5_jets->push_back(jet);
       }
 
-      const xAOD::Jet* eta_lt2p8_jet0 = nullptr;
+      const xAOD::Jet* eta_lt3p2_jet0 = nullptr;
       const xAOD::Jet* eta_lt2p5_jet0 = nullptr;
       const xAOD::Jet* eta_lt2p5_jet1 = nullptr;
 
-      if(eta_lt2p8_jets->size() > 0)
-        eta_lt2p8_jet0=eta_lt2p8_jets->at(0);
+      if(eta_lt3p2_jets->size() > 0)
+        eta_lt3p2_jet0=eta_lt3p2_jets->at(0);
 
       if(eta_lt2p5_jets->size() > 0)
         eta_lt2p5_jet0 = eta_lt2p5_jets->at(0);
@@ -415,7 +369,7 @@ namespace HHHBBBBTT
                               mu0, mu_trigMatchDecos,
                               tau0, tau1, tau_trigMatchDecos,
                               jet0, jet1, eta_lt2p5_jet0,
-                              eta_lt2p5_jet1,  eta_lt2p8_jet0);
+                              eta_lt2p5_jet1,  eta_lt3p2_jet0);
       }
       else{
         m_bools.at(HHHBBBBTT::pass_trigger_SLT) = true;
@@ -465,13 +419,13 @@ namespace HHHBBBBTT
       bool jet_ptcut_DTT_4J12 = false;
       bool jet_ptcut_DTT_L1Topo = false;
 
-      if (eta_lt2p8_jet0 && eta_lt2p8_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_L1Topo][HHHBBBBTT::leadingjet])
+      if (eta_lt3p2_jet0 && eta_lt3p2_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_L1Topo][HHHBBBBTT::leadingjet])
         jet_ptcut_DTT_L1Topo = true;
 
       if (n_jets >= 2)
       {
         m_bools.at(HHHBBBBTT::TWO_JETS) = true;
-        if (jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_2016][HHHBBBBTT::leadingjet])
+        if (eta_lt3p2_jet0 && eta_lt3p2_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_2016][HHHBBBBTT::leadingjet])
           jet_ptcut_DTT_2016 = true;
         if (eta_lt2p5_jet0 && eta_lt2p5_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_4J12][HHHBBBBTT::leadingjet] &&
             eta_lt2p5_jet1 && eta_lt2p5_jet1->pt() > m_pt_threshold[HHHBBBBTT::DTT_4J12][HHHBBBBTT::subleadingjet])
@@ -495,13 +449,12 @@ namespace HHHBBBBTT
       //****************
       // event level info
       //****************
-      if (n_taus==1 && n_leptons_tightId_iso+n_leptons_tightId_antiiso==1 && tau0->charge() != charge_lepton)
+      if (n_taus==1 && n_leptons_looseId_looseIso==1 && n_leptons_looseId_looseIso_for_veto == 1 && tau0->charge() != charge_lepton)
         m_bools.at(HHHBBBBTT::OS_CHARGE_LEPHAD) = true;
       if (n_taus==2 && tau0->charge() == -tau1->charge())
         m_bools.at(HHHBBBBTT::OS_CHARGE_HADHAD) = true;
 
-      if ((m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_LEPHAD) || 
-           m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_ANTIISOLEPHAD)) &&
+      if (m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_LEPHAD) &&
 	  m_bools.at(HHHBBBBTT::ONE_TAU) &&
 	  m_bools.at(HHHBBBBTT::TWO_JETS)){
         // SLT
@@ -573,7 +526,7 @@ namespace HHHBBBBTT
         // DTT
         if(!m_bools.at(HHHBBBBTT::pass_baseline_STT) && tau_ptcut_DTT){
           int year = m_year.get(*event, sys);
-          if(2015<=year && year<=2016){
+          if((2015<=year && year<=2016) || m_is2017_periodB1_B4.get(*event, sys) || m_l1topo_disabled.get(*event, sys)){
             if(jet_ptcut_DTT_2016){
               m_bools.at(HHHBBBBTT::pass_baseline_DTT_2016) = true;
               if (m_bools.at(HHHBBBBTT::pass_trigger_DTT_2016)) {
@@ -799,7 +752,7 @@ namespace HHHBBBBTT
 
       // Z+HF and top (e+mu) control regions
       if (m_bools.at(HHHBBBBTT::pass_trigger_SLT)){
-        if(n_leptons_tightId_iso == 2 && n_veto_leptons == 0 && m_bools.at(HHHBBBBTT::TWO_JETS)) {
+        if(n_leptons_looseId_looseIso == 2 && n_leptons_looseId_looseIso_for_veto == 2 && m_bools.at(HHHBBBBTT::TWO_JETS)) {
           float lep1_pt = -999.;
           if (ele1) {
             lep1_pt = ele1->pt();
@@ -923,7 +876,7 @@ namespace HHHBBBBTT
    const tauTrigMatchReadDecoMap& tau_trigMatchDecos,
    const xAOD::Jet* jet0, const xAOD::Jet* jet1, 
    const xAOD::Jet* eta_lt2p5_jet0, const xAOD::Jet* eta_lt2p5_jet1,
-   const xAOD::Jet* eta_lt2p8_jet0){
+   const xAOD::Jet* eta_lt3p2_jet0){
 
     // only run trigger selection if in channel
     bool use_SLT = false;
@@ -967,7 +920,7 @@ namespace HHHBBBBTT
     if(use_DTT){
       applyDiTauTriggerSelection(event, triggerdecos,
 				 tau0, tau1, tau_trigMatchDecos, jet0,
-         eta_lt2p5_jet0, eta_lt2p5_jet1, eta_lt2p8_jet0);
+         eta_lt2p5_jet0, eta_lt2p5_jet1, eta_lt3p2_jet0);
     }
     if(use_DBT){
       applyDiBJetTriggerSelection(event, triggerdecos,
@@ -1093,7 +1046,7 @@ namespace HHHBBBBTT
    const xAOD::TauJet* tau0, const xAOD::TauJet* tau1,
    const tauTrigMatchReadDecoMap& tau_trigMatchDecos, const xAOD::Jet* jet0,
    const xAOD::Jet* eta_lt2p5_jet0, const xAOD::Jet* eta_lt2p5_jet1,
-   const xAOD::Jet* eta_lt2p8_jet0){
+   const xAOD::Jet* eta_lt3p2_jet0){
 
     bool trigPassed_DTT_2016 = triggerdecos.at(HHHBBBBTT::DTT_2016)(*event);
     if(tau0 && tau1 && jet0){
@@ -1121,14 +1074,14 @@ namespace HHHBBBBTT
     m_bools.at(HHHBBBBTT::pass_trigger_DTT_4J12) = trigPassed_DTT_4J12;
 
     bool trigPassed_DTT_L1Topo = triggerdecos.at(HHHBBBBTT::DTT_L1Topo)(*event);
-    if(tau0 && tau1 && eta_lt2p8_jet0){
+    if(tau0 && tau1 && eta_lt3p2_jet0){
       trigPassed_DTT_L1Topo &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::DTT_L1Topo)(*tau0));
       trigPassed_DTT_L1Topo &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::DTT_L1Topo)(*tau1));
       trigPassed_DTT_L1Topo &=
         (tau0->pt() > m_pt_threshold[HHHBBBBTT::DTT][HHHBBBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHHBBBBTT::DTT][HHHBBBBTT::subleadingtau] &&
          tau0->p4().DeltaR(tau1->p4())<2.5 &&
-         eta_lt2p8_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_L1Topo][HHHBBBBTT::leadingjet]);
+         eta_lt3p2_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_L1Topo][HHHBBBBTT::leadingjet]);
     }
     else trigPassed_DTT_L1Topo = false;
     m_bools.at(HHHBBBBTT::pass_trigger_DTT_L1Topo) = trigPassed_DTT_L1Topo;
@@ -1147,14 +1100,14 @@ namespace HHHBBBBTT
     m_bools.at(HHHBBBBTT::pass_trigger_DTT_4J12_delayed) = trigPassed_DTT_4J12_delayed;
 
     bool trigPassed_DTT_L1Topo_delayed = triggerdecos.at(HHHBBBBTT::DTT_L1Topo_delayed)(*event);
-    if(tau0 && tau1 && eta_lt2p8_jet0){
+    if(tau0 && tau1 && eta_lt3p2_jet0){
       trigPassed_DTT_L1Topo_delayed &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::DTT_L1Topo_delayed)(*tau0));
       trigPassed_DTT_L1Topo_delayed &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::DTT_L1Topo_delayed)(*tau1));
       trigPassed_DTT_L1Topo_delayed &=
         (tau0->pt() > m_pt_threshold[HHHBBBBTT::DTT][HHHBBBBTT::leadingtau] &&
          tau1->pt() > m_pt_threshold[HHHBBBBTT::DTT][HHHBBBBTT::subleadingtau] &&
          tau0->p4().DeltaR(tau1->p4())<2.5 && 
-         eta_lt2p8_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_L1Topo][HHHBBBBTT::leadingjet]);
+         eta_lt3p2_jet0->pt() > m_pt_threshold[HHHBBBBTT::DTT_L1Topo][HHHBBBBTT::leadingjet]);
     }
     else trigPassed_DTT_L1Topo_delayed = false;
     m_bools.at(HHHBBBBTT::pass_trigger_DTT_L1Topo_delayed) = trigPassed_DTT_L1Topo_delayed;
@@ -1353,20 +1306,24 @@ namespace HHHBBBBTT
       if(wp.find("nottva") == std::string::npos) continue;
 
       // TODO: handle more complicated WP lists
-      bool isTight = !wp.starts_with("Loose");
-      bool isIso = wp.find("NonIso") == std::string::npos;
+      bool isTightID = !wp.starts_with("Loose");
+      bool isTightIso = wp.find("Loose_VarRad") == std::string::npos;
       
-      if (!isTight && isIso){ 
-        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::loose_iso, handle);
-        ATH_MSG_INFO("found loose iso wp = "<< wp);
+      if (!isTightID && !isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::looseID_looseIso, handle);
+        ATH_MSG_INFO("found loose id loose iso wp = "<< wp);
       }
-      if (isTight && !isIso){ 
-        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tight_noniso, handle);
-        ATH_MSG_INFO("found tight noniso wp = "<< wp);
+      if (!isTightID && isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::looseID_tightIso, handle);
+        ATH_MSG_INFO("found loose id tight iso wp = "<< wp);
       }
-      if (isTight  && isIso){ 
-        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tight_iso, handle);
-        ATH_MSG_INFO("found tight iso wp = "<< wp); 
+      if (isTightID && !isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tightID_looseIso, handle);
+        ATH_MSG_INFO("found tight id loose iso wp = "<< wp);
+      }
+      if (isTightID  && isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tightID_tightIso, handle);
+        ATH_MSG_INFO("found tight id tight iso wp = "<< wp); 
       }
     }
   }

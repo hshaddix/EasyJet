@@ -198,9 +198,10 @@ namespace HHHBBBBTT
   // working points used for selecting leptons:
   enum LepSelWpDeco
   {
-    loose_iso,
-    tight_noniso,
-    tight_iso,
+    looseID_looseIso,
+    looseID_tightIso,
+    tightID_looseIso,
+    tightID_tightIso,
   };
 }
 

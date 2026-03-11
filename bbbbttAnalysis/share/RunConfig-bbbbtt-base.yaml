@@ -80,7 +80,7 @@ Tau:
   amount: 2
   variables: ["RNN"]
   variables_int: ["isTauID", "isAntiTau", "truthType", "EleRNN_WP", "tauTruthJetLabel"]
-  antiTauScoreThreshold: 0.01
+  antiTauScoreThreshold: 0.00
 
 Lepton:
   amount: 2

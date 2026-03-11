@@ -63,8 +63,10 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
         jetContainer="bbbbttAnalysisJets_%SYS%",
         trigMatchOutputVar="passTrigMatch_DBT_%SYS%"))
 
-    muon_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
-    ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
+    muon_WPs = [f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}']
+    muon_WPs += [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
+    ele_WPs = [f'{flags.Analysis.Electron.ID}_{flags.Analysis.Electron.Iso}']
+    ele_WPs += [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
     cfg.addEventAlgo(
         CompFactory.HHHBBBBTT.HHHbbbbttSelectorAlg(
             "HHHbbbbttSelectorAlg",

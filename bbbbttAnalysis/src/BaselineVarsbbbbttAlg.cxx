@@ -188,9 +188,7 @@ namespace HHHBBBBTT
                                : m_selected_el_isIso.get(*leptons[i].first, sys);
         m_Ibranches.at(prefix+"_isIso").set(*event, (int)lep_is_isolated, sys);
         if(m_isMC){
-          auto idx = m_useNonIsoLeptons 
-                    ? HHHBBBBTT::LepSelWpDeco::tight_noniso 
-                    : HHHBBBBTT::LepSelWpDeco::tight_iso;
+          auto idx = HHHBBBBTT::LepSelWpDeco::looseID_looseIso;
           float SF = 1.;
           if(std::abs(leptons[i].second)==13)
             SF = m_muon_SF_decoMap.at(idx).get(*leptons[i].first,sys);
@@ -378,20 +376,24 @@ namespace HHHBBBBTT
       if(wp.find("nottva") == std::string::npos) continue;
 
       // TODO: handle more complicated WP lists
-      bool isTight = !wp.starts_with("Loose");
-      bool isIso = wp.find("NonIso") == std::string::npos;
+      bool isTightID = !wp.starts_with("Loose");
+      bool isTightIso = wp.find("Loose_VarRad") == std::string::npos;
       
-      if (!isTight && isIso){
-        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::loose_iso, handle);
-        ATH_MSG_INFO("found loose iso wp = "<< wp);
+      if (!isTightID && !isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::looseID_looseIso, handle);
+        ATH_MSG_INFO("found loose id loose iso wp = "<< wp);
       }
-      if (isTight && !isIso){
-        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tight_noniso, handle);
-        ATH_MSG_INFO("found tight noniso wp = "<< wp);
+      if (!isTightID && isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::looseID_tightIso, handle);
+        ATH_MSG_INFO("found loose id tight iso wp = "<< wp);
       }
-      if (isTight && isIso){
-        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tight_iso, handle);
-        ATH_MSG_INFO("found tight iso wp = "<< wp);
+      if (isTightID && !isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tightID_looseIso, handle);
+        ATH_MSG_INFO("found tight id loose iso wp = "<< wp);
+      }
+      if (isTightID  && isTightIso){ 
+        decoMap.emplace(HHHBBBBTT::LepSelWpDeco::tightID_tightIso, handle);
+        ATH_MSG_INFO("found tight id tight iso wp = "<< wp); 
       }
     }
   }
