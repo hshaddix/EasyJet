@@ -185,6 +185,7 @@ StatusCode BaselineVarsFullHadAlg::execute() {
             HDijet = HJets->at(0)->p4()+ HJets->at(1)->p4();
             HJet1 = HJets->at(0)->p4();
             HJet2 = HJets->at(1)->p4();
+            // std::cout << "Higgs dijet mass: " << HDijet.M() << std::endl;
             m_Fbranches.at("Hdijet_m").set(*event, HDijet.M(), sys);
             m_Fbranches.at("Hdijet_pt").set(*event, HDijet.Pt(), sys);
             m_Fbranches.at("Hdijet_eta").set(*event, HDijet.Eta(), sys);
@@ -196,15 +197,15 @@ StatusCode BaselineVarsFullHadAlg::execute() {
 
 
 
-      if (HJets->size() >= 2) {
-        TLorentzVector h1 = HJets->at(0)->p4();
-        TLorentzVector h2 = HJets->at(1)->p4();
-        TLorentzVector hh = h1 + h2;
+      // if (HJets->size() >= 2) {
+      //   TLorentzVector h1 = HJets->at(0)->p4();
+      //   TLorentzVector h2 = HJets->at(1)->p4();
+      //   TLorentzVector hh = h1 + h2;
 
-        m_Fbranches.at("Hdijet_m").set(*event, hh.M(), sys);
-        m_Fbranches.at("Hdijet_pt").set(*event, hh.Pt(), sys);
-        m_Fbranches.at("dRHjj").set(*event, h1.DeltaR(h2), sys);
-      }
+      //   m_Fbranches.at("Hdijet_m").set(*event, hh.M(), sys);
+      //   m_Fbranches.at("Hdijet_pt").set(*event, hh.Pt(), sys);
+      //   m_Fbranches.at("dRHjj").set(*event, h1.DeltaR(h2), sys);
+      // }
       }
     if(!m_UseVBFRNN){
           if ( vbsjets->size() >= 2 ){

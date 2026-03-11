@@ -48,6 +48,7 @@ def fullHad_cfg(flags, float_variables=None, int_variables=None):
             UseVBFRNN=flags.Analysis.UseVBFRNN,
             vbsJets=VBSJetsLabel,
             isMC=flags.Input.isMC,
+            do_resolved=flags.Analysis.do_resolved,
             bTagWPDecorName="ftag_select_"
                             + flags.Analysis.Small_R_jet.btag_wp,
             floatVariableList=float_variables,
