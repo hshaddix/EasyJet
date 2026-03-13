@@ -592,7 +592,8 @@ namespace HHBBTT
         m_bools.at(HHBBTT::pass_trigger_DTT_4J12_delayed) = true;
         m_bools.at(HHBBTT::pass_trigger_DTT_L1Topo_delayed) = true;
         m_bools.at(HHBBTT::pass_trigger_DBT) = true;
-        m_bools.at(HHBBTT::pass_trigger_LARGE_R_JETS) = true;
+        m_bools.at(HHBBTT::pass_trigger_SINGLE_LARGE_R_JETS) = true;
+        m_bools.at(HHBBTT::pass_trigger_DI_LARGE_R_JETS) = true;
         m_bools.at(HHBBTT::pass_trigger_MET) = true;
         m_bools.at(HHBBTT::pass_trigger_uniqueRNNTauTrig18) = true;
 
@@ -1223,8 +1224,11 @@ namespace HHBBTT
   void HHbbttSelectorAlg::applyLargeRJetsTriggerSelection
   (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos){
 
-    bool trigPassed_largeRjets = triggerdecos.at(HHBBTT::LARGE_R_JETS)(*event);
-    m_bools.at(HHBBTT::pass_trigger_LARGE_R_JETS) = trigPassed_largeRjets;
+    bool trigPassed_single_largeRjets = triggerdecos.at(HHBBTT::SINGLE_LARGE_R_JETS)(*event);
+    m_bools.at(HHBBTT::pass_trigger_SINGLE_LARGE_R_JETS) = trigPassed_single_largeRjets;
+
+    bool trigPassed_di_largeRjets = triggerdecos.at(HHBBTT::DI_LARGE_R_JETS)(*event);
+    m_bools.at(HHBBTT::pass_trigger_DI_LARGE_R_JETS) = trigPassed_di_largeRjets;
   
   };
 

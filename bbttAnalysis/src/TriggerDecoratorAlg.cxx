@@ -621,20 +621,24 @@ namespace HHBBTT
     getDiLargeRJetsTriggers(year, diLargeRjets_paths);
 
     // Loop on triggers
-    bool trigPassed_largeRjets = false;
+    bool trigPassed_singlelargeRjets = false;
     for(const auto& trig : singlelargeRjets_paths){
       bool pass = triggerdecos.at(trig)(*eventInfo);
-      trigPassed_largeRjets |= pass;
+      trigPassed_singlelargeRjets |= pass;
       // TODO: __BOOSTED__ map also each jet ?
     }
 
+    bool trigPassed_dilargeRjets = false;
     for(const auto& trig : diLargeRjets_paths){
       bool pass = triggerdecos.at(trig)(*eventInfo);
-      trigPassed_largeRjets |= pass;
+      trigPassed_dilargeRjets |= pass;
       // TODO: __BOOSTED__ map also each jet ?
     } 
-    char& evtDeco = pass_decos.at(HHBBTT::LARGE_R_JETS)(*eventInfo);
-    evtDeco = evtDeco || trigPassed_largeRjets;
+    char& evtDecoSingle = pass_decos.at(HHBBTT::SINGLE_LARGE_R_JETS)(*eventInfo);
+    evtDecoSingle = evtDecoSingle || trigPassed_singlelargeRjets;
+
+    char& evtDecoDi = pass_decos.at(HHBBTT::DI_LARGE_R_JETS)(*eventInfo);
+    evtDecoDi = evtDecoDi || trigPassed_dilargeRjets;
   }
 
   void TriggerDecoratorAlg::checkMETTriggers(

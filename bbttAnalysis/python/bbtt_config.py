@@ -434,7 +434,8 @@ def bbtt_branches(flags):
 
     if "Boosted" in flags.Analysis.channels:
         for pass_selection in ['Boosted', 'Boosted_ditau', 'Boosted_taujet',
-                               'trigger_LARGE_R_JETS', 'trigger_DTT',
+                               'trigger_SINGLE_LARGE_R_JETS', 'trigger_DTT',
+                               'trigger_DI_LARGE_R_JETS',
                                'trigger_STT', 'trigger_DBT',
                                'trigger_MET']:
             branches += [

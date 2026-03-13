@@ -35,7 +35,8 @@ namespace HHBBTT
     trigMatch_Tau25,
     L1,
     HLT,
-    LARGE_R_JETS,
+    SINGLE_LARGE_R_JETS,
+    DI_LARGE_R_JETS,
     MET,
     RNNTauTrig18
   };
@@ -85,7 +86,8 @@ namespace HHBBTT
     pass_trigger_DTT_4J12_delayed,
     pass_trigger_DTT_L1Topo_delayed,
     pass_trigger_DBT,
-    pass_trigger_LARGE_R_JETS,
+    pass_trigger_SINGLE_LARGE_R_JETS,
+    pass_trigger_DI_LARGE_R_JETS,
     pass_trigger_MET,
     pass_trigger_uniqueRNNTauTrig18,
     

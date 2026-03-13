@@ -61,7 +61,8 @@ ttree_output:
 
 # Enable cutflow 
 CutList:
-  - pass_trigger_LARGE_R_JETS
+  - pass_trigger_SINGLE_LARGE_R_JETS
+  - pass_trigger_DI_LARGE_R_JETS
   - pass_trigger_MET
   - pass_trigger_STT
   - pass_trigger_DBT

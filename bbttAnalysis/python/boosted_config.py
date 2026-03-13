@@ -75,7 +75,8 @@ def boosted_branches_variables(flags):
         )
 
     for pass_selection in ['trigger_DTT', 'trigger_STT', 'trigger_DBT',
-                           'trigger_LARGE_R_JETS', 'trigger_MET']:
+                           'trigger_SINGLE_LARGE_R_JETS',
+                           'trigger_DI_LARGE_R_JETS', 'trigger_MET']:
         branches += [
             f"EventInfo.pass_{pass_selection}_%SYS% -> bbtt_pass_{pass_selection}"
             + flags.Analysis.systematics_suffix_separator + "%SYS%"

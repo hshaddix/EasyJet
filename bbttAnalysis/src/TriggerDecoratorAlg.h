@@ -63,7 +63,8 @@ namespace HHBBTT
         {HHBBTT::trigMatch_Tau25, "Tau25"},
         {HHBBTT::L1, "L1"},
         {HHBBTT::HLT, "HLT"},
-        {HHBBTT::LARGE_R_JETS, "LARGE_R_JETS"},
+        {HHBBTT::SINGLE_LARGE_R_JETS, "SINGLE_LARGE_R_JETS"},
+        {HHBBTT::DI_LARGE_R_JETS, "DI_LARGE_R_JETS"},
         {HHBBTT::MET, "MET"},
         {HHBBTT::RNNTauTrig18, "uniqueRNNTauTrig18"}
       };
