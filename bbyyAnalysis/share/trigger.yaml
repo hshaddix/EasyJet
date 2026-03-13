@@ -22,6 +22,10 @@ selection:
     - 'HLT_g35_medium_g25_medium_L12eEM24L'
     - 'HLT_g45_medium_g20_medium_L1eEM40L_2eEM18L'
     - 'HLT_g140_loose_L1eEM26M'
+    '2025':
+    - 'HLT_g35_medium_g25_medium_L12eEM24L'
+    - 'HLT_g45_medium_g20_medium_L1eEM40L_2eEM18L'
+    - 'HLT_g140_loose_L1eEM26M'
 
 scale_factor:
   doSF: True
@@ -40,6 +44,8 @@ scale_factor:
     '2022': []
     '2023': []
     '2024': []
+    '2025': []
+
 
     #'2022':
     #- 'HLT_g35_medium_g25_medium_L12EM20VH'
