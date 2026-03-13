@@ -74,7 +74,8 @@ def ttCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             minMet=flags.Analysis.MET.min_met,
             muonWP=MuonWPLabel,
             eleWP=ElectronWPLabel,
-            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.GN2Xv01.wps,
+            GN3X_WPs=flags.Analysis.
+            Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps,
         )
     )
 
@@ -90,12 +91,15 @@ def get_BaselineVarsttCalibAlg_variables(flags):
             'probe_jet_eta',
             'probe_jet_phi',
             'probe_jet_m',
-            'probe_jet_phbb',
-            'probe_jet_phcc',
-            'probe_jet_pqcd',
-            'probe_jet_ptop',
-            'probe_jet_dhcc',
-            'probe_jet_dhbb',
+            'probe_jet_GN3XPV01_pWqq',
+            'probe_jet_GN3XPV01_phbb',
+            'probe_jet_GN3XPV01_phcc',
+            'probe_jet_GN3XPV01_ptop',
+            'probe_jet_GN3XPV01_pqcdbb',
+            'probe_jet_GN3XPV01_pqcdbx',
+            'probe_jet_GN3XPV01_pqcdcx',
+            'probe_jet_GN3XPV01_pqcdll',
+            'probe_jet_GN3XPV01_phtautauhad',
             'tag_jet_pt',
             'tag_jet_eta',
             'tag_jet_phi',
@@ -108,8 +112,8 @@ def get_BaselineVarsttCalibAlg_variables(flags):
             'Lepton1_effSF']:
         float_variable_names.append(object)
 
-    for var in flags.Analysis.Large_R_jet.flat_mass_selections.GN2Xv01.wps:
-        int_variable_names += ["probe_jet_Pass_GN2X_" + var]
+    for var in flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps:
+        int_variable_names += ["probe_jet_Pass_GN3XPV01_hbb_" + var]
     int_variable_names.append("probe_jet_truthid")
 
     return float_variable_names, int_variable_names

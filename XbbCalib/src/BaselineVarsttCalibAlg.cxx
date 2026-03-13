@@ -41,12 +41,12 @@ namespace XBBCALIB
         }
 
 
-        for(const auto& WP: m_GN2X_WPs){
-            m_GN2X_WP_Handles.emplace_back("xbb_select_GN2Xv01_" + WP, this);
+        for(const auto& WP: m_GN3X_WPs){
+            m_GN3X_WP_Handles.emplace_back("xbb_select_GN3XPV01_hbb_" + WP, this);
         }
 
-        for(auto& GN2XHandle : m_GN2X_WP_Handles){
-            ATH_CHECK(GN2XHandle.initialize(m_systematicsList,  m_ttcalib_lrjetHandle));
+        for(auto& GN3XHandle : m_GN3X_WP_Handles){
+            ATH_CHECK(GN3XHandle.initialize(m_systematicsList,  m_ttcalib_lrjetHandle));
         }
 
 
@@ -66,10 +66,15 @@ namespace XBBCALIB
 
         };
 
-        ATH_CHECK (m_GN2Xv01_phbb.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_pWqq.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_phbb.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_phcc.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_ptop.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_pqcdbb.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_pqcdbx.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_pqcdcx.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_pqcdll.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        ATH_CHECK (m_GN3XPV01_phtautauhad.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
 
         // Intialise syst list (must come after all syst-aware inputs and outputs)
         ATH_CHECK (m_systematicsList.initialize());
@@ -169,28 +174,31 @@ namespace XBBCALIB
        		    int truthLabel = m_probeJetTruthLabel.get(*probejet, systematic);
                     m_intBranches.at("probe_jet_truthid").set(*event, truthLabel, systematic);
                 }
-                float phbb = m_GN2Xv01_phbb.get(*probejet, systematic);
-                float phcc = m_GN2Xv01_phcc.get(*probejet, systematic);
-                float pqcd = m_GN2Xv01_pqcd.get(*probejet, systematic);
-                float ptop = m_GN2Xv01_ptop.get(*probejet, systematic);
-                float fhbb = 0.03;
-                float fhcc = 0.02;
-                //float ftop = 0.25;
-                float ftop = 0.;
-                float dhcc = log(phcc / (fhbb * phbb + ftop * ptop + pqcd * (1 - fhbb - ftop)));
-                float dhbb = log(phbb / (fhcc * phcc + ftop * ptop + pqcd * (1 - fhcc - ftop)));
+                float pWqq = m_GN3XPV01_pWqq.get(*probejet, systematic);
+                float phbb = m_GN3XPV01_phbb.get(*probejet, systematic);
+                float phcc = m_GN3XPV01_phcc.get(*probejet, systematic);
+                float ptop = m_GN3XPV01_ptop.get(*probejet, systematic);
+                float pqcdbb = m_GN3XPV01_pqcdbb.get(*probejet, systematic);
+                float pqcdbx = m_GN3XPV01_pqcdbx.get(*probejet, systematic);
+                float pqcdcx = m_GN3XPV01_pqcdcx.get(*probejet, systematic);
+                float pqcdll = m_GN3XPV01_pqcdll.get(*probejet, systematic);
+                float phtautauhad = m_GN3XPV01_phtautauhad.get(*probejet, systematic);
+                
                 float tag_lep_m = (tagjet->p4() + lepton).M();
                 m_floatBranches.at("tag_lep_m").set(*event, tag_lep_m, systematic);
                 m_floatBranches.at("probe_jet_eta").set(*event, probejet->eta(), systematic);
                 m_floatBranches.at("probe_jet_phi").set(*event, probejet->phi(), systematic);
                 m_floatBranches.at("probe_jet_pt").set(*event, probejet->pt(), systematic);
                 m_floatBranches.at("probe_jet_m").set(*event, probejet->m(), systematic);
-                m_floatBranches.at("probe_jet_phbb").set(*event, phbb, systematic);
-                m_floatBranches.at("probe_jet_phcc").set(*event, phcc, systematic);
-                m_floatBranches.at("probe_jet_pqcd").set(*event, pqcd, systematic);
-                m_floatBranches.at("probe_jet_ptop").set(*event, ptop, systematic);
-                m_floatBranches.at("probe_jet_dhcc").set(*event, dhcc, systematic);
-                m_floatBranches.at("probe_jet_dhbb").set(*event, dhbb, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_pWqq").set(*event, pWqq, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_phbb").set(*event, phbb, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_phcc").set(*event, phcc, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_ptop").set(*event, ptop, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_pqcdbb").set(*event, pqcdbb, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_pqcdbx").set(*event, pqcdbx, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_pqcdcx").set(*event, pqcdcx, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_pqcdll").set(*event, pqcdll, systematic);
+                m_floatBranches.at("probe_jet_GN3XPV01_phtautauhad").set(*event, phtautauhad, systematic);
                 m_floatBranches.at("tag_jet_pt").set(*event, tagjet->pt(), systematic);
                 m_floatBranches.at("tag_jet_eta").set(*event, tagjet->eta(), systematic);
                 m_floatBranches.at("tag_jet_phi").set(*event, tagjet->phi(), systematic);
@@ -200,9 +208,9 @@ namespace XBBCALIB
                 m_floatBranches.at("lepton_eta").set(*event, lepton.Eta(), systematic);
                 m_floatBranches.at("lepton_phi").set(*event, lepton.Phi(), systematic);
 
-                for(unsigned int wp=0; wp<m_GN2X_WPs.size(); wp++) {
-                    int pass_GN2X = static_cast<int>(m_GN2X_WP_Handles.at(wp).get(*probejet, systematic));
-                    m_intBranches.at("probe_jet_Pass_GN2X_"+m_GN2X_WPs[wp]).set(*event, pass_GN2X, systematic);
+                for(unsigned int wp=0; wp<m_GN3X_WPs.size(); wp++) {
+                    int pass_GN3X = static_cast<int>(m_GN3X_WP_Handles.at(wp).get(*probejet, systematic));
+                    m_intBranches.at("probe_jet_Pass_GN3XPV01_hbb_"+m_GN3X_WPs[wp]).set(*event, pass_GN3X, systematic);
                 }
             }
         }

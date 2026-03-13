@@ -105,15 +105,20 @@ private:
 
 
 
-    GaudiVectorofString_t m_GN2X_WPs{ this, "GN2X_WPs", {}, "GN2X_hbb_WPs from the ttCalib config" };
-    std::vector<IntHandle_t> m_GN2X_WP_Handles;
+    GaudiVectorofString_t m_GN3X_WPs{ this, "GN3X_WPs", {}, "GN3X_hbb_WPs from the ttCalib config" };
+    std::vector<IntHandle_t> m_GN3X_WP_Handles;
 
     GaudiFloat_t m_minMet {this, "minMet", 20000, "Minimum MET cut"};
 
-    FloatHandle_t m_GN2Xv01_phbb = {this, "phbb", "GN2Xv01_phbb", "GN2Xv01_phbb"};
-    FloatHandle_t m_GN2Xv01_phcc = {this, "phcc", "GN2Xv01_phcc", "GN2Xv01_phcc"};
-    FloatHandle_t m_GN2Xv01_pqcd = {this, "pqcd", "GN2Xv01_pqcd", "GN2Xv01_pqcd"};
-    FloatHandle_t m_GN2Xv01_ptop = {this, "ptop", "GN2Xv01_ptop", "GN2Xv01_ptop"};
+    FloatHandle_t m_GN3XPV01_pWqq = {this, "pWqq", "GN3XPV01_pWqq", "GN3XPV01_pWqq"};
+    FloatHandle_t m_GN3XPV01_phbb = {this, "phbb", "GN3XPV01_phbb", "GN3XPV01_phbb"};
+    FloatHandle_t m_GN3XPV01_phcc = {this, "phcc", "GN3XPV01_phcc", "GN3XPV01_phcc"};
+    FloatHandle_t m_GN3XPV01_ptop = {this, "ptop", "GN3XPV01_ptop", "GN3XPV01_ptop"};
+    FloatHandle_t m_GN3XPV01_pqcdbb = {this, "pqcdbb", "GN3XPV01_pqcdbb", "GN3XPV01_pqcdbb"};
+    FloatHandle_t m_GN3XPV01_pqcdbx = {this, "pqcdbx", "GN3XPV01_pqcdbx", "GN3XPV01_pqcdbx"};
+    FloatHandle_t m_GN3XPV01_pqcdcx = {this, "pqcdcx", "GN3XPV01_pqcdcx", "GN3XPV01_pqcdcx"};
+    FloatHandle_t m_GN3XPV01_pqcdll = {this, "pqcdll", "GN3XPV01_pqcdll", "GN3XPV01_pqcdll"};
+    FloatHandle_t m_GN3XPV01_phtautauhad = {this, "phtautauhad", "GN3XPV01_phtautauhad", "GN3XPV01_phtautauhad"};
 
     GaudiVectorofString_t m_floatVariables {this, "floatVariableList", {}, "Name list of floating variables"};
     GaudiVectorofString_t m_intVariables   {this, "intVariableList"  , {}, "Name list of integer variables"};
