@@ -75,6 +75,7 @@ ttree_output:
       btag_details: true
       truth_labels: true
       bjet_regression: true
+      substructure_info: true
     small_R_jets:
       run_selection: true
     electrons:
