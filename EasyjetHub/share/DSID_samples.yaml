@@ -55,6 +55,8 @@ DSID_nWLep_samples:
   - 602236 #PS variation
   - 602689 #pThard variation
   - 602690 #pThard variation
+  - 602973 #pThard variation
+  - 602974 #pThard variation
 
 DSID_HSTP_samples:
   - 801165 #Py8EG_A14 JZ0
