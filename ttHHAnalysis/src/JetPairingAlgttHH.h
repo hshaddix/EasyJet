@@ -55,12 +55,11 @@ private:
     m_isBtag {this, "bTagWPDecorName", "", "Name of input decorator for b-tagging"};
 
     /// \brief Setup syst-aware output container handles
-    CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>>
-    m_outHandle{ this, "pairedOutBJets", "pairedttHHAnalysisJets_%SYS%", "Jet container to write" };
+    CP::SysWriteHandle<xAOD::JetContainer> m_outHandle;
 
-    std::vector<const xAOD::Jet*> bJetChiSquarePairing(const ConstDataVector<xAOD::JetContainer>& Jets, float targetMass1, float targetMass2);
+    std::vector<const xAOD::Jet*> bJetChiSquarePairing(const xAOD::JetContainer& Jets, float targetMass1, float targetMass2);
 
-    std::tuple<const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, float> minChiSquared(const ConstDataVector<xAOD::JetContainer>& Jets, const std::vector<size_t>& indexes, float targetMass1, float targetMass2);
+    std::tuple<const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, float> minChiSquared(const xAOD::JetContainer& Jets, const std::vector<size_t>& indexes, float targetMass1, float targetMass2);
 
     std::string m_pairingStrategyName;
 

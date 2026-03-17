@@ -34,7 +34,7 @@ def dihiggs_cfg(
         couting_rnnjet_container = "bbbbAnalysisSmallRRNNJets_%SYS%"
         couting_bjet_container = "bbbbAnalysisSmallRBJets_%SYS%"
         if flags.Analysis.Small_R_jet.btag_wp != "":
-            btag_name = f"ftag_select_{flags.Analysis.Small_R_jet.btag_wp}"
+            btag_name = f"baselineSelection_{flags.Analysis.Small_R_jet.btag_wp}_%SYS%"
         # Used only for counting
         cfg.merge(
             JetSelectorAlgCfg(

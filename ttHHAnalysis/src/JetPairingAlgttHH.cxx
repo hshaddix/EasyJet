@@ -7,14 +7,14 @@
 #include "JetPairingAlgttHH.h"
 
 #include "AthContainers/AuxElement.h"
-#include <AthContainers/ConstDataVector.h>
 #include "FourMomUtils/xAODP4Helpers.h"
 
 namespace ttHH
 {
   JetPairingAlgttHH ::JetPairingAlgttHH(const std::string &name,
       ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator)
+    : AthHistogramAlgorithm(name, pSvcLocator),
+    m_outHandle(this, "pairedOutBJets", "pairedttHHAnalysisJets_%SYS%", "Jet container to write")
   {
     declareProperty("pairingStrategyName", m_pairingStrategyName);
   }
@@ -61,8 +61,11 @@ namespace ttHH
 
       // fill workContainer with "views" of the jetContainer
       // see TJ's tutorial for this
-      auto workContainer = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
-          bjetContainer->begin(), bjetContainer->end(), SG::VIEW_ELEMENTS);
+      auto workContainer = std::make_unique<xAOD::JetContainer>(SG::VIEW_ELEMENTS);
+      for (const xAOD::Jet* jet : *bjetContainer) {
+	  // stop clang check here. const_cast is safe, jet data itself is not modifed 
+          workContainer->push_back(const_cast<xAOD::Jet*>(jet)); // NOLINT
+      }
 
       // if we do not have 4 bjets we add non b-tagged jets to the pairing
       // which are sorted based on pcbt score
@@ -70,7 +73,8 @@ namespace ttHH
         for(const xAOD::Jet* jet : *jetContainer){
           // fill with first non b-tagged jet
           if (!m_isBtag.get(*jet, sys)) {
-            workContainer->push_back(jet);
+	    // stop clang check here. const_cast is safe, jet data itself is not modifed 
+	    workContainer->push_back(const_cast<xAOD::Jet*>(jet)); // NOLINT
             break;
           }
         }
@@ -120,8 +124,8 @@ namespace ttHH
             // h2_subleading_pt_jet
             if ((*workContainer)[2]->pt() < (*workContainer)[3]->pt())
             {
-              // no swap method on ConstDataVector, so by hand
-              const xAOD::Jet *temp = (*workContainer)[2];
+	      // swap
+	      xAOD::Jet *temp = (*workContainer)[2];
               (*workContainer)[2] = (*workContainer)[3];
               (*workContainer)[3] = temp;
             }
@@ -158,7 +162,7 @@ namespace ttHH
     return StatusCode::SUCCESS;
   }
 
-  std::vector<const xAOD::Jet*> JetPairingAlgttHH ::bJetChiSquarePairing(const ConstDataVector<xAOD::JetContainer>& Jets, float targetMass1, float targetMass2)
+  std::vector<const xAOD::Jet*> JetPairingAlgttHH ::bJetChiSquarePairing(const xAOD::JetContainer& Jets, float targetMass1, float targetMass2)
   {
     // this method checks for each bJet combination, and save that combinations that
     // are closer to the target mass based on the CHI^2
@@ -211,7 +215,7 @@ namespace ttHH
   }
 
 
-  std::tuple<const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, float> JetPairingAlgttHH ::minChiSquared(const ConstDataVector<xAOD::JetContainer>& Jets, const std::vector<size_t>& indexes, float targetMass1, float targetMass2)
+  std::tuple<const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, float> JetPairingAlgttHH ::minChiSquared(const xAOD::JetContainer& Jets, const std::vector<size_t>& indexes, float targetMass1, float targetMass2)
   {
     auto jet1 = Jets.at(indexes.at(0));
     auto jet2 = Jets.at(indexes.at(1));

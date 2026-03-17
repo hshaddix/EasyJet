@@ -48,7 +48,11 @@ def yyml_cfg(
         flags,
         containerInKey=smalljetkey,
         containerOutKey="yymlAnalysisJets_%SYS%",
-        bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
+        bTagWPDecorName=(
+            "baselineSelection_"
+            + flags.Analysis.Small_R_jet.btag_wp
+            + "_%SYS%"
+        ),
         selectBjet=False,
         minPt=flags.Analysis.Small_R_jet.min_pT * Units.MeV
     ))

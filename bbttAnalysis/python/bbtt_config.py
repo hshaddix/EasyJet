@@ -42,7 +42,11 @@ def bbtt_ObjectSelectorAlgCfg(flags, smalljetkey, muonkey, electronkey, taukey):
         containerInKey=smalljetkey,
         containerOutKey="bbttAnalysisJets_%SYS%",
         minPt=20 * Units.GeV,
-        bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
+        bTagWPDecorName=(
+            "baselineSelection_"
+            + flags.Analysis.Small_R_jet.btag_wp
+            + "_%SYS%"
+        ),
         selectBjet=False,
         minimumAmount=2))
 

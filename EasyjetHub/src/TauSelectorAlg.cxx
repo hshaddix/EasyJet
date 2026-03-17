@@ -19,8 +19,8 @@ namespace Easyjet
     ATH_CHECK (m_outHandle.initialize(m_systematicsList));
 
     if(m_keepAntiTaus){
-      m_antiTau = CP::SysReadDecorHandle<char>("isAntiTau", this);
-      m_IDTau = CP::SysReadDecorHandle<char>("isIDTau", this);
+      m_antiTau = CP::SysReadDecorHandle<char>("baselineSelection_isAntiTau_%SYS%", this);
+      m_IDTau = CP::SysReadDecorHandle<char>("baselineSelection_isIDTau_%SYS%", this);
     }
     ATH_CHECK (m_antiTau.initialize(m_systematicsList, m_inHandle, SG::AllowEmpty));
     ATH_CHECK (m_IDTau.initialize(m_systematicsList, m_inHandle, SG::AllowEmpty));
