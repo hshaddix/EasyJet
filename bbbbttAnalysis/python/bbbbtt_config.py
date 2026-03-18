@@ -178,6 +178,14 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
             )
         )
 
+    # include variables for ttbar-reweighting
+    if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HF_class_samples:
+        cfg.addEventAlgo(
+            CompFactory.HHHBBBBTT.ttbarRewVarsAlg(
+                "ttbarRewVarsAlg",
+            )
+        )
+
     return cfg
 
 
@@ -349,5 +357,9 @@ def bbbbtt_branches(flags):
         reweight_vars = get_ReweightingVars()
         for var in reweight_vars:
             branches += [f"EventInfo.{var} -> KappaReweighting__{var} type=float"]
+
+    if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HF_class_samples:
+        for var in ["Pt_top", "Pt_antitop", "Pt_ttbar", "M_ttbar"]:
+            branches += [f"EventInfo.{var} -> ttbarRew_{var} type=float"]
 
     return branches, float_variable_names, int_variable_names

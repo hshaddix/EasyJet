@@ -8,7 +8,7 @@ systematics_suffix_separator: "___"
 # Which analysis and channels to consider
 do_bbbbtt_analysis: true
 do_antiID_regions: true
-do_0B_regions: true
+do_0B_regions: false
 do_1B_regions: true
 do_2B_regions: true
 do_3B_regions: true
@@ -33,6 +33,10 @@ do_mmc : true
 
 GRL:
   store_decoration: true
+  years:
+    include: [bbbbttAnalysis/bbbbtt_grl_years.yaml]
+  files:
+    include: [bbbbttAnalysis/bbbbtt_grl.yaml]
 
 # Toggles for reconstructed objects decorations
 Small_R_jet:
@@ -70,7 +74,7 @@ Muon:
 
 
 Tau:
-  min_pT: 13.e+3
+  min_pT: 15.e+3
   ID: "CustomBaseline"
   extra_wps: ["GNTauLoose_nopt", "GNTauLoose", "GNTauMedium", "GNTauTight", "RNNLoose", "RNNMedium", "RNNTight"]
   do_parent_decoration: true
