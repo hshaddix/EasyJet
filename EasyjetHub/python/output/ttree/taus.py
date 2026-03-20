@@ -47,8 +47,8 @@ def get_tau_branches(flags, tree_flags, input_container, output_prefix):
 
     if tau_output_flags.score_branches:
         tau_branches.variables += [
-            ("RNNJetScoreSigTrans", None),
-            ("RNNEleScoreSigTrans_v1", None)
+            ("RNNJetScoreSigTrans", "float"),
+            ("RNNEleScoreSigTrans_v1", "float")
         ]
 
         gntau_valid_ptag = (
