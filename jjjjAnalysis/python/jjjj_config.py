@@ -70,6 +70,7 @@ def get_BaselineVarsjjjjAlg_variables(flags):
     # event shape variables fo QG search
     QG_vars = ["Q1", "Q2", "Q3"]
     QG_vars += ["transverseSphericity", "transverseThrust", "thrustMinor"]
+    QG_vars += ["m_tot", "ht_tot", "boost_z"]
     for var in QG_vars:
         float_variable_names.append(f"{var}")
     return float_variable_names, int_variable_names

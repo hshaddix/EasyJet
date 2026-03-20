@@ -86,6 +86,21 @@ namespace jjjj
         }
       }
 
+      // compute vector to boost to COM frame, total invariant mass, and HT
+      TLorentzVector pTotal(0, 0, 0, 0);
+      double htTot = 0.0;
+      for (auto jet : *SmallRJets) {
+        TLorentzVector p4(jet->jetP4().px(), jet->jetP4().py(), jet->jetP4().pz(),
+                          jet->jetP4().e());
+        pTotal += p4;
+        htTot += jet->pt();
+      }
+      auto boostVec = pTotal.BoostVector();
+      double mTot = pTotal.M();
+      m_Fbranches.at("boost_z").set(*event, boostVec.Z(), sys);
+      m_Fbranches.at("m_tot").set(*event, mTot, sys);
+      m_Fbranches.at("ht_tot").set(*event, htTot, sys);
+
       // Compute eigenvalues of normalized jet momentum tensor
       // construct normalized momentum tensor
       auto M = get3DMomentumTensor(jetP4s);
