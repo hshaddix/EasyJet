@@ -3,3 +3,5 @@ GN3XPV01_htt:
   wps:
     - "FlatHttEff_0p93"
     - "FlatHttEff_0p98"
+    - "FlatMassQCDEff_0p002"
+    - "FlatMassQCDEff_0p01"
