@@ -79,6 +79,7 @@ declare -A DATAFILES=(
     # MC23
     [SHbbyy-mc23af3]=${PHYS_JETS_MC23_AF3}
     [bbbb-mc23]=${PHYS_TTBAR_MC23}
+    [bbbb-mc23-syst]=${PHYS_TTBAR_MC23}
     [bbtt-mc23]=${PHYS_TTBAR_MC23_p6697}
     [bbtt-mc23-boosted]=${PHYS_TTBAR_MC23}
     [bbVV-mc23]=${PHYS_TTBAR_MC23}
@@ -168,6 +169,7 @@ declare -A TESTS=(
     # MC23
     [SHbbyy-mc23af3]="simple bbyy-ntupler"
     [bbbb-mc23]="simple bbbb-ntupler"
+    [bbbb-mc23-syst]="simple bbbb-ntupler"
     [bbtt-mc23]="simple bbtt-ntupler"
     [bbtt-mc23-boosted]="simple bbtt-ntupler"
     [bbVV-mc23]="simple bbVV-ntupler"
@@ -240,6 +242,7 @@ declare -A CONFIGS=(
     [SHbbyy-mc20af3-lite]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
     # MC23
     [bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-bypass.yaml
+    [bbbb-mc23-syst]=bbbbAnalysis/RunConfig-HH4b-All-bypass-syst.yaml
     [bbtt-mc23]=bbttAnalysis/RunConfig-bbtt-all-channels-bypass.yaml
     [bbtt-mc23-boosted]=bbttAnalysis/RunConfig-bbtt-all-channels-boosted-bypass.yaml
     [bbVV-mc23]=bbVVAnalysis/RunConfig-bbVV-bypass.yaml

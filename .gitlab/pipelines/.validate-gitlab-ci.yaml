@@ -398,6 +398,16 @@ validator_bbbb_mc23:
   script:
     - easyjet-validate bbbb-mc23
 
+validator_bbbb_mc23_syst:
+  extends: .ntuple_validation
+  needs:
+    - job: compile
+      artifacts: true
+    - job: ntupler_bbbb_mc23_syst
+      artifacts: false
+  script:
+    - easyjet-validate bbbb-mc23-syst
+
 validator_bbtt_mc23:
   extends: .ntuple_validation
   needs:

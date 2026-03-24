@@ -28,6 +28,7 @@ def dihiggs_cfg(
     couting_rnnjet_container = ""
     couting_bjet_container = ""
     btag_name = ""
+    btag_name_sel = ""
     if flags.Analysis.do_small_R_jets:
         smalljetkey = flags.Analysis.container_names.output.reco4PFlowJet
         couting_jet_container = "resolvedAnalysisSmallRJets_%SYS%"
@@ -35,6 +36,7 @@ def dihiggs_cfg(
         couting_bjet_container = "bbbbAnalysisSmallRBJets_%SYS%"
         if flags.Analysis.Small_R_jet.btag_wp != "":
             btag_name = f"baselineSelection_{flags.Analysis.Small_R_jet.btag_wp}_%SYS%"
+            btag_name_sel = f"ftag_select_{flags.Analysis.Small_R_jet.btag_wp}"
         # Used only for counting
         cfg.merge(
             JetSelectorAlgCfg(
@@ -136,7 +138,7 @@ def dihiggs_cfg(
                 bypass=flags.Analysis.bypass,
                 smallRJetToCount=couting_jet_container,
                 largeRJetToCount=couting_lRjet_container,
-                btagSelDecor=btag_name,
+                btagSelDecor=btag_name_sel,
             )
         )
 
