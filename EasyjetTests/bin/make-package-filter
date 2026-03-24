@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [-h] [-e PKG:PKG:...] [-o PATH] [-E PATH] [PKG ...]
+
+  No args    read \$EASYJET_PACKAGES (colon-separated).
+  -e STR     parse STR as a colon-separated package list.
+  -o PATH    output file path (default: <repo>/build/package_filters.txt).
+  -E PATH    env-var output file (default: <repo>/build/build_packages.env).
+  PKG ...    package names as positional arguments.
+
+EasyjetHub and EasyjetTests are always included.
+To apply with cmake (run from the build directory):
+  cmake .. -DATLAS_PACKAGE_FILTER_FILE=\$(pwd)/package_filters.txt
+EOF
+}
+
+OUT="${REPO_ROOT}/build/package_filters.txt"
+ENV_OUT="${REPO_ROOT}/build/build_packages.env"
+EXTRA_PKGS=()
+ENV_MODE=0
+
+while getopts ':he:o:E:' opt; do
+    case "$opt" in
+        h)
+            usage
+            exit 0
+            ;;
+        e)
+            ENV_MODE=1
+            IFS=':' read -ra EXTRA_PKGS <<< "$OPTARG"
+            ;;
+        o)
+            OUT="$OPTARG"
+            ;;
+        E)
+            ENV_OUT="$OPTARG"
+            ;;
+        :)
+            echo "Option -$OPTARG requires an argument" >&2
+            exit 1
+            ;;
+        ?)
+            echo "Unknown option: -$OPTARG" >&2
+            usage >&2
+            exit 1
+            ;;
+    esac
+done
+shift $((OPTIND - 1))
+
+if [[ $ENV_MODE -eq 0 ]]; then
+    if [[ $# -gt 0 ]]; then
+        EXTRA_PKGS=("$@")
+    elif [[ -z "${EASYJET_PACKAGES:-}" ]]; then
+        ALL_PKGS=()
+        for d in "$REPO_ROOT"/*/; do
+            d="$(basename "${d%/}")"
+            [[ -f "$REPO_ROOT/$d/CMakeLists.txt" ]] && ALL_PKGS+=("$d")
+        done
+        {
+            for pkg in "${ALL_PKGS[@]}"; do
+                echo "EASYJET_PKG_${pkg}=1"
+            done
+        } > "$ENV_OUT"
+        echo "Wrote $ENV_OUT: ${ALL_PKGS[*]}"
+        exit 0
+    else
+        IFS=':' read -ra EXTRA_PKGS <<< "$EASYJET_PACKAGES"
+    fi
+fi
+
+ALL_PKGS=(EasyjetHub EasyjetTests)
+declare -A SEEN
+for pkg in "${ALL_PKGS[@]}"; do SEEN["$pkg"]=1; done
+for pkg in "${EXTRA_PKGS[@]}"; do
+    [[ -v SEEN["$pkg"] ]] && continue
+    ALL_PKGS+=("$pkg")
+    SEEN["$pkg"]=1
+done
+
+for pkg in "${ALL_PKGS[@]}"; do
+    if [[ ! -d "$REPO_ROOT/$pkg" ]]; then
+        echo "ERROR: package '$pkg' not found in $REPO_ROOT" >&2
+        exit 1
+    fi
+done
+
+{
+    for pkg in "${ALL_PKGS[@]}"; do
+        echo "+ $pkg"
+    done
+    echo "- .*"
+} > "$OUT"
+
+{
+    for pkg in "${ALL_PKGS[@]}"; do
+        echo "EASYJET_PKG_${pkg}=1"
+    done
+} > "$ENV_OUT"
+
+echo "Wrote $OUT: ${ALL_PKGS[*]}"
+echo "Wrote $ENV_OUT: ${ALL_PKGS[*]}"

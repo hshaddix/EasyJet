@@ -73,3 +73,9 @@ ttree_output:
   include: [EasyjetHub/AnalysisMiniTree-config.yaml]
   slim_variables_with_syst: true
 
+output:
+  aod:
+    containers:
+      jets:
+        - EasyJets
+

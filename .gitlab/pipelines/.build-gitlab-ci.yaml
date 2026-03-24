@@ -4,9 +4,11 @@ variables:
 cmake:
   stage: build
   script:
-    - mkdir -p build # -p checks if it already exists
+    - mkdir -p build
+    - EasyjetTests/bin/make-package-filter
     - cd build
-    - cmake .. | tee cmake.log
+    - cmake .. -DATLAS_PACKAGE_FILTER_FILE=$(pwd)/package_filters.txt
+        | tee cmake.log
   artifacts:
     paths:
       - build
@@ -26,6 +28,8 @@ compile:
   artifacts:
     paths:
       - build
+    reports:
+      dotenv: build/build_packages.env
     expire_in: 1 week
   needs: [cmake]
 
@@ -42,3 +46,5 @@ clang_tidy:
     - ls ..
     - ../EasyjetTests/bin/easyjet-clang-tidy ../
   needs: [cmake]
+  rules:
+    - if: $ENABLE_FORMATTERS

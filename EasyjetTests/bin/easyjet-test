@@ -123,6 +123,12 @@ declare -A SMALL_DATAFILES=(
     [zlljcalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zllycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [h5-fast-mc23]=${SMALL_TTBAR_MC23}
+    [hist-syst-Zbbj-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [hist-syst-Zbby-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [aod-fast-Zbbj-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [aod-fast-Zbby-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [aod-fast-bbbb-mc23]=${SMALL_TTBAR_MC23}
+    [hist-syst-bbbb-mc23]=${SMALL_TTBAR_MC23}
 )
 
 declare -A TESTS=(
@@ -193,9 +199,15 @@ declare -A TESTS=(
     [ssWW-mc23]="simple ssWW-ntupler"
     [ZQG-mc23]="simple ZQG-ntupler"
     # non-ntupler
-    [aod-fast-bbbb-mc23]="aod-fast bbbb-ntupler"
+    [aod-fast-bbbb-mc23]="aod-fast bbbb-ntupler bbbb-hists \
+    bbbbAnalysis/RunConfig-HH4b-Resolved.yaml"
     [h5-fast-mc23]="h5-fast easyjet-ntupler"
     [hist-syst-bbbb-mc23]="hist-syst bbbb-ntupler"
+    [hist-syst-Zbbj-mc23]="hist-syst xbbcalib-ntupler"
+    [hist-syst-Zbby-mc23]="hist-syst xbbcalib-ntupler"
+    [aod-fast-Zbbj-mc23]="aod-fast xbbcalib-ntupler xbbcalib-hists \
+    XbbCalib/hists-config-Zbbj.yaml"
+    [aod-fast-Zbby-mc23]="aod-fast xbbcalib-ntupler xbbcalib-hists XbbCalib/hists-config-Zbby.yaml"
     # test mode
     [fail]=false
 )
@@ -269,6 +281,10 @@ declare -A CONFIGS=(
     # non-ntupler
     [aod-fast-bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-Resolved.yaml
     [hist-syst-bbbb-mc23]=bbbbAnalysis/histonly-config.yaml
+    [hist-syst-Zbbj-mc23]=XbbCalib/histonly-config-Zbbj.yaml
+    [hist-syst-Zbby-mc23]=XbbCalib/histonly-config-Zbby.yaml
+    [aod-fast-Zbbj-mc23]=XbbCalib/RunConfig_ZbbjCalib.yaml
+    [aod-fast-Zbby-mc23]=XbbCalib/RunConfig-ZbbyCalib.yaml
 )
 
 # some common variables in the tests
@@ -322,26 +338,27 @@ h5-fast() {
     metadata-check -v
 }
 aod-fast() {
+    # cmd_ntupler cmd_hists hists_cfg file ntupler_cfg
     local AOD=test.pool.root
     local OPTS="$COMMON --fast-test --cache-metadata"
     OPTS+=" --output-xaod ${AOD}"
-    local CMD="$1 $2 -c $3 $OPTS"
+    local CMD="$1 $4 -c $5 $OPTS"
     echo "running $CMD --stop-after-config"
     $CMD --stop-after-config
-    CMD+=" --timeout 50 "
+    CMD+=" --timeout 50"
     echo "running $CMD"
     $CMD
     metadata-check -v
     local HISTS=aod-hists.h5
-    CMD="bbbb-hists ${AOD} -o $HISTS"
+    CMD="$2 ${AOD} -o $HISTS -c $3"
     echo "running $CMD"
     $CMD
     echo "made hists:"
-    h5ls ${HISTS}/nominal
+    h5ls ${HISTS}
 }
 hist-syst() {
     local OPTS="$COMMON --fast-test --cache-metadata"
-    OPTS+=" --output-hists hists.h5"
+    OPTS+=" --h5-output hists.h5"
     local CMD="$1 $2 -c $3 $OPTS"
     echo "running $CMD --stop-after-config"
     $CMD --stop-after-config
@@ -349,6 +366,8 @@ hist-syst() {
     echo "running $CMD"
     $CMD
     metadata-check -v
+    echo "top-level groups in hists.h5:"
+    h5ls hists.h5
 }
 
 ################################################
@@ -422,7 +441,10 @@ has-grid-proxy() {
     if ! type voms-proxy-info >& /dev/null; then
         return 1
     fi
-    return `voms-proxy-info -acexists atlas`
+    if voms-proxy-info -acexists atlas >& /dev/null; then
+        return 0
+    fi
+    return 1
 }
 
 # Terminal magic: if stdout is set to go to a terminal we'll add

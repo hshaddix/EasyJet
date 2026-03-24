@@ -1,0 +1,12 @@
+include:
+  - XbbCalib/RunConfig_ZbbjCalib.yaml
+
+output:
+  h5:
+    hists:
+      enable: true
+      include:
+        - XbbCalib/hists-config-Zbbj.yaml
+
+do_CP_systematics: true
+systematics_regex: [".*"]

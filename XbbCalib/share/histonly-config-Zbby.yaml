@@ -1,0 +1,16 @@
+include:
+  - XbbCalib/RunConfig-ZbbyCalib.yaml
+
+output:
+  h5:
+    hists:
+      enable: true
+      include:
+        - XbbCalib/hists-config-Zbby.yaml
+      blinding:
+        variable: "Zcand_0_bJR10v01_mass"
+        min: 74.e+3   # lower bound (exclusive)
+        max: 106.e+3  # upper bound (exclusive)
+
+do_CP_systematics: true
+systematics_regex: [".*"]

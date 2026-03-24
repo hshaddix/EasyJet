@@ -45,6 +45,7 @@ Large_R_jet:
 Photon:
   ID: "Tight" # Loose, Tight
   Iso: "FixedCutTight"
+  # ntuple path applies a stricter 175 GeV cut downstream
   min_pT: 150.e+3
 
 
@@ -88,3 +89,11 @@ ttree_output:
 #   - PASS_ONE_LARGE_JET
 #   - PASS_ONE_PHOTON
 #   - PASS_BASELINE
+
+output:
+  aod:
+    event_info:
+      variables:
+        - Zcand_0_m_NOSYS
+        - lrjets_n_NOSYS
+        - XbbCalib_pass_final_selection_NOSYS

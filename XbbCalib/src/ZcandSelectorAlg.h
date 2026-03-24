@@ -42,6 +42,9 @@ namespace XBBCALIB{
     //Z cand jets to write
     CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_ZcandjetOutHandle{ this, "zCandidateJets", "", "Z Jets candidates container to write"};
 
+    Gaudi::Property<float> m_minDeltaR{
+        this, "minDeltaR", 1.0f,
+        "Minimum dR between large-R jet and photon"};
 
   };
 }

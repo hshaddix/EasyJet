@@ -10,6 +10,7 @@ from EasyjetHub.output.ttree.selected_objects import (
 )
 
 from .vars_to_copy import lrj_floats_to_copy, lrj_gn3x_working_points
+from XbbCalib.hists_output_config import hists_output_cfg
 
 copiedVariablePrefix0 = "Zcand_0_"
 copiedVariablePrefix1 = "Zcand_1_"
@@ -43,19 +44,20 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
                                      minPt=7 * Units.GeV,
                                      ))
 
-    selected_muons = "XbbCalibMuons_%SYS%"
-    cfg.merge(MuonSelectorAlgCfg(flags,
-                                 containerInKey=muonkey,
-                                 containerOutKey=selected_muons,
-                                 minPt=7 * Units.GeV,
-                                 maxEta=2.5,
-                                 ))
+    if flags.Analysis.do_muons:
+        selected_muons = "XbbCalibMuons_%SYS%"
+        cfg.merge(MuonSelectorAlgCfg(flags,
+                                     containerInKey=muonkey,
+                                     containerOutKey=selected_muons,
+                                     minPt=7 * Units.GeV,
+                                     maxEta=2.5,
+                                     ))
 
     selected_photons = "XbbCalibPhotons_%SYS%"
     cfg.merge(PhotonSelectorAlgCfg(flags,
                                    containerInKey=photonkey,
                                    containerOutKey=selected_photons,
-                                   minPt=150. * Units.GeV
+                                   minPt=flags.Analysis.Photon.min_pT,
                                    ))
 
     cfg.addEventAlgo(
@@ -68,6 +70,7 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
         )
     )
     # signal jets selection
+    # ZcandSelectorAlg: photon pT enforced upstream; only dR cut remains
     z_candidate_jets = "ZcandLRJets_%SYS%"
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.ZcandSelectorAlg(
@@ -89,6 +92,14 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             copiedVariablePrefix1="Zcand_1_",
         )
     )
+
+    out_path = (
+        flags.Analysis.h5_output
+        if flags.Analysis.output.h5.hists.enable else None
+    )
+    cfg.merge(hists_output_cfg(
+        flags, flags.Analysis.output.h5.hists, out_path,
+        tag_wps=lrj_gn3x_working_points(flags)))
 
     return cfg
 

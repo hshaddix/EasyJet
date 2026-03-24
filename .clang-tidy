@@ -134,6 +134,7 @@ Checks: >
   -readability-suspicious-call-argument,
   -readability-uppercase-literal-suffix,
   -readability-use-anyofallof,
+  -readability-inconsistent-declaration-parameter-name,
   cert-*-cpp,
   -cert-con54-cpp,
   -cert-dcl51-cpp,

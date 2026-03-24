@@ -7,7 +7,8 @@
     # Ignore some more annoying flake8 problems:
     #  W503: line break before binary operator
     #  E741: ambiguous variable name
-    - flake8 --ignore=W503,E741 . --per-file-ignores="hub.py:F401"
+    #  E241: multiple spaces after ':'
+    - flake8 --ignore=W503,E741,E241 . --per-file-ignores="hub.py:F401"
   needs: []
 
 .black_check_template: &black_check_template
@@ -45,12 +46,16 @@
 
 flake8:
   <<: *flake8_check_template
+  rules:
+    - if: $ENABLE_FORMATTERS
 
 # black:
 #   <<: *black_check_template
 
 cppcheck:
   <<: *cpp_check_template
+  rules:
+    - if: $ENABLE_FORMATTERS
 
 mypy:
   <<: *mypy_check_template

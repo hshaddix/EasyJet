@@ -53,7 +53,7 @@ namespace XBBCALIB{
         const xAOD::Photon* photon = photons->at(0); // leading photon
         for(unsigned int i=0; i<ljets->size(); i++){
           const xAOD::Jet* ljet = ljets->at(i);
-          if ( photon->pt()<150.e+3 || ljet->p4().DeltaR(photon->p4())<1.) continue;
+          if (ljet->p4().DeltaR(photon->p4()) < m_minDeltaR) continue;
           ZcandsJetCandidates->push_back(ljet);
         }
       }

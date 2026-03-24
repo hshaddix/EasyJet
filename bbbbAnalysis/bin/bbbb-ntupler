@@ -12,6 +12,8 @@ import sys
 import time
 import pathlib
 
+from AthenaConfiguration.ComponentFactory import CompFactory
+
 from EasyjetHub.hub import (
     AnalysisArgumentParser,     # lives in ArgumentParser
     analysis_configuration,     # lives in flags
@@ -21,7 +23,6 @@ from EasyjetHub.hub import (
 )
 from EasyjetHub.output.ttree.minituple_config import check_ntuple_output_file
 from EasyjetHub.output.h5.h5_config import get_h5_cfg
-from EasyjetHub.output.xaod import get_xaod_cfg
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
 
 from bbbbAnalysis.utils.option_validation import validate_hh4b_analysis_prerequisites
@@ -35,13 +36,6 @@ from EasyjetHub.algs.orthogonality.orth_config import orth_cfg
 def hh4b_parser():
     # Get and customise the parser
     parser = AnalysisArgumentParser()
-    parser.add_analysis_arg(
-        "--output-hists",
-        metavar="HISTS",
-        type=pathlib.Path,
-        default=False,
-        help="save histograms"
-    )
     return parser
 
 
@@ -107,17 +101,21 @@ def hh4b_job_cfg():
     if len(flags.Analysis.CutList) > 0:
         bbbb_branches += pass_branches(flags)
 
+    if flags.Output.AODFileName:
+        jetcol = flags.Analysis.container_names.input[
+            flags.Analysis.Small_R_jet.jet_type]
+        cfg.addEventAlgo(CompFactory.Easyjet.JetDeepCopyAlg(
+            name="jetdeepcopy",
+            jetsIn=jetcol.replace("%SYS%", "NOSYS"),
+            jetsOut="EasyJets",
+        ), seqname)
+    # extra_items come from output.aod.containers in RunConfig YAML
+
     # Explicitly call the minituple config because we want to provide
     # additional branches, the list of which is generated dynamically
     # rather than statically in the yaml
-    outcfg, ntuple_output_file_list = output_cfg(
-        flags,
-        seqname,
-        bbbb_branches)
+    outcfg, ntuple_output_file_list = output_cfg(flags, seqname, bbbb_branches)
     cfg.merge(outcfg)
-    
-    # Record the number of events for logging and tests
-    cfg.merge(event_counter_cfg("n_events"), seqname)
 
     return cfg, flags, args, ntuple_output_file_list
 

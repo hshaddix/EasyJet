@@ -9,6 +9,8 @@ import subprocess
 from shutil import which
 from EasyjetHub.steering.utils.config_files import run_config_arg
 
+_DEFAULT_CAMPAIGN = "EJ_%Y_%m_%d_T%H%M%S"
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -34,12 +36,35 @@ def main():
         default="easyjet-ntupler",
         help="The name of the executable",
     )
-    parser.add_argument(
+    tag_group = parser.add_mutually_exclusive_group()
+    tag_group.add_argument(
         "--campaign",
-        default="EJ_%Y_%m_%d_T%H%M%S",
+        nargs="?",
+        const=_DEFAULT_CAMPAIGN,
+        default=None,
+        metavar="TEMPLATE",
         help=(
-            "The name of the campaign. Will be prepended to the output dataset"
-            " name. Can include datetime.strftime replacement fields"
+            "strftime template for the campaign name; a datestamp suffix is"
+            " appended to ensure uniqueness. With no argument uses"
+            f" '{_DEFAULT_CAMPAIGN}'."
+        ),
+    )
+    tag_group.add_argument(
+        "--git-tag",
+        default=None,
+        metavar="TEMPLATE",
+        help=(
+            "strftime template for an exact git tag (no suffix appended)."
+            " Mutually exclusive with --campaign."
+        ),
+    )
+    tag_group.add_argument(
+        "-t", "--take-git-tag",
+        action="store_true",
+        default=False,
+        help=(
+            "Reuse the single existing tag on HEAD (error if 0 or >1)."
+            " Mutually exclusive with --campaign and --git-tag."
         ),
     )
     parser.add_argument(
@@ -132,47 +157,124 @@ def main():
         required=False,
         help="Specific site on which the jobs should be run"
     )
+    parser.add_argument(
+        "-p",
+        "--output-xaod",
+        nargs="?",
+        default=None,
+        const="output.pool.root",
+        metavar="FILE",
+        help=(
+            "write xAOD/POOL output instead of ROOT TTree;"
+            " replaces the default TREE:output-tree.root in"
+            " prun --outputs (default filename: output.pool.root)"
+        ),
+    )
+    parser.add_argument(
+        "-H",
+        "--h5-output",
+        nargs="?",
+        default=None,
+        const="hists.h5",
+        metavar="FILE",
+        help=(
+            "also write HDF5 output;"
+            " added to prun --outputs alongside the primary"
+            " output. HDF5 files must be merged manually after"
+            " job completion using hdf5-merge-nolock"
+            " (default filename: hists.h5)"
+        ),
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help=(
+            "print the prun command that would be submitted"
+            " without running prun or checking grid credentials"
+        ),
+    )
     args = parser.parse_args()
 
     # check ntupler command is available before submitting
     if not which(args.exec):
-        raise RuntimeError(f"Failed to find `{args.exec}`. Check that it is installed")
+        raise RuntimeError(
+            f"Failed to find `{args.exec}`."
+            " Check that it is installed"
+        )
 
     # check prun is available before submitting
-    if not which("prun"):
-        raise RuntimeError("You have not set up panda, run `lsetup panda`")
-    
-    grid_nickname = check_grid_credentials(return_nickname=True)
+    if not args.dry_run and not which("prun"):
+        raise RuntimeError(
+            "You have not set up panda, run `lsetup panda`"
+        )
+
+    grid_nickname = (
+        "testuser" if args.dry_run
+        else check_grid_credentials(return_nickname=True)
+    )
 
     now = datetime.datetime.now()
 
-    # will just return the args.campaign if it doesn't contain any strftime fields (%Y, %m, etc.)
-    campaign = now.strftime(args.campaign)
+    if args.git_tag is not None:
+        git_tag = now.strftime(args.git_tag)
+    elif args.take_git_tag:
+        git_tag = None  # bash finds the single HEAD tag
+    elif args.campaign is not None:
+        # explicit template: append suffix so re-runs don't collide
+        base = now.strftime(args.campaign)
+        git_tag = f"{base}.{now.strftime('%Y_%m_%d_T%H%M%S')}"
+    else:
+        # default: _DEFAULT_CAMPAIGN already encodes a unique timestamp
+        git_tag = now.strftime(_DEFAULT_CAMPAIGN)
 
-    if not args.noSubmit and not args.noTag:
-        create_git_tag(campaign)
-        campaign_is_default = args.campaign == parser.get_default("campaign")
-        # Avoid creating same dataset names which will cause failing grid jobs
-        campaign = campaign if campaign_is_default else f"{campaign}.{now.strftime('%Y_%m_%d_T%H%M%S')}"
+    no_push = args.noTag or args.noSubmit or args.dry_run
+    campaign = resolve_git_tag(git_tag, no_push=no_push)
 
     # Prepare some of the prun options here
     submit_opts = {
         "mergeOutput": False,
         "mergeWithHadd": False,
-        "outputs": "TREE:output-tree.root",
         "writeInputToTxt": "IN:in.txt",
         "useAthenaPackages": True,
     }
 
-    if len(args.channels)>0:
-        outputs = ""
-        for channel in args.channels:
-            outputs += "output-tree_"+channel+".root,"
-        outputs += "output-tree_cbk.root"
-        submit_opts["outputs"] = outputs
+    # Primary output: TTree (default) is suppressed whenever
+    # --output-xaod or --h5-output is given.
+    # --output-xaod and --h5-output can be combined (xAOD + HDF5).
+    if args.output_xaod:
+        primary_outputs = [args.output_xaod]
+        root_outfile = None
+    elif args.h5_output:
+        # HDF5-only: no TTree
+        primary_outputs = []
+        root_outfile = None
+    elif len(args.channels) > 0:
+        primary_outputs = (
+            [f"output-tree_{ch}.root" for ch in args.channels]
+            + ["output-tree_cbk.root"]
+        )
+        root_outfile = "output-tree.root"
     elif args.splitCBK:
-        outputs = ["output-tree.root", "output-tree_cbk.root"]
-        submit_opts["outputs"] = outputs
+        primary_outputs = ["output-tree.root", "output-tree_cbk.root"]
+        root_outfile = "output-tree.root"
+    else:
+        primary_outputs = ["TREE:output-tree.root"]
+        root_outfile = "output-tree.root"
+
+    if args.h5_output:
+        primary_outputs.append(args.h5_output)
+    submit_opts["outputs"] = (
+        primary_outputs[0] if len(primary_outputs) == 1
+        else primary_outputs
+    )
+
+    # HDF5-only jobs have a single output type so hdf5-merge-nolock
+    # can be used as the prun merge script.
+    if args.h5_output and not args.output_xaod and args.mergeOutput:
+        submit_opts["mergeScript"] = (
+            "hdf5-merge-nolock -o %OUT -i %IN"
+        )
+
     if args.noSubmit:
         submit_opts["noSubmit"] = True
     if args.dest_se is not None:
@@ -221,29 +323,28 @@ def main():
 
     # copy the runconfig to the submit dir to be available for the exec cmd
     try:
-        with open('config.yaml','w') as cfg:
+        with open('config.yaml', 'w') as cfg:
             cfg.write(yaml.dump(run_config_arg(args.run_config)))
     except subprocess.CalledProcessError as e:
         raise OSError(e.returncode, "Failed to copy run config files.")
 
-    proc = subprocess.Popen(
-        [
-            "prun",
-            "--outDS",
-            "user.{0}.NONE".format(grid_nickname),
-            "--exec",
-            "NONE",
-            "--noSubmit",
-            "--useAthenaPackages",
-            "--outTarBall",
-            "code.tar.gz",
-        ]
-    )
-
-    if proc.wait() != 0:
-        raise OSError(proc.returncode, "Failed to create tarball")
-
-    submit_opts["inTarBall"] = "code.tar.gz"
+    if not args.dry_run:
+        proc = subprocess.Popen(
+            [
+                "prun",
+                "--outDS",
+                "user.{0}.NONE".format(grid_nickname),
+                "--exec",
+                "NONE",
+                "--noSubmit",
+                "--useAthenaPackages",
+                "--outTarBall",
+                "code.tar.gz",
+            ]
+        )
+        if proc.wait() != 0:
+            raise OSError(proc.returncode, "Failed to create tarball")
+        submit_opts["inTarBall"] = "code.tar.gz"
 
     io_list = []
     with open(args.mc_list or args.data_list) as fp:
@@ -283,12 +384,13 @@ def main():
         raise ValueError("No inputs defined")
 
     for io in io_list:
-        exec_cmd = "{0} %IN -l --run-config {1} --out-file {2}".format(
-            args.exec,
-            "config.yaml",
-            "output-tree.root" if (len(args.channels)>0 or args.splitCBK) else
-            submit_opts["outputs"].removeprefix("TREE:"),
-        )
+        exec_cmd = f"{args.exec} %IN -l --run-config config.yaml"
+        if root_outfile:
+            exec_cmd += f" --out-file {root_outfile}"
+        if args.output_xaod:
+            exec_cmd += f" --output-xaod {args.output_xaod}"
+        if args.h5_output:
+            exec_cmd += f" --h5-output {args.h5_output}"
 
         cmd = [
             "prun",
@@ -320,11 +422,14 @@ def main():
                 cmd += [f"--{k}", v]
 
         print(" ".join(cmd))
-        proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        out, err = proc.communicate()
-        print(out.decode("utf-8"), err.decode("utf-8"))
-        if proc.returncode != 0:
-            raise OSError(proc.returncode, err)
+        if not args.dry_run:
+            proc = subprocess.Popen(
+                cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
+            out, err = proc.communicate()
+            print(out.decode("utf-8"), err.decode("utf-8"))
+            if proc.returncode != 0:
+                raise OSError(proc.returncode, err)
 
 
 def check_grid_credentials(return_nickname=False):
@@ -338,15 +443,20 @@ def check_grid_credentials(return_nickname=False):
         return nickname_re.group(1) if nickname_re else None
 
 
-def create_git_tag(tag_name: str, return_tag_exists: bool = False):
-    result = subprocess.run(["easyjet-create-git-tag", tag_name], capture_output=True)
-    result_message = (result.stderr or result.stdout).decode("utf-8").strip()
+def resolve_git_tag(git_tag: str | None, no_push: bool = False) -> str:
+    cmd = ["easyjet-create-git-tag"]
+    if no_push:
+        cmd.append("--no-push")
+    if git_tag is not None:
+        cmd.extend(["--git-tag", git_tag])
+    result = subprocess.run(cmd, capture_output=True)
+    stderr = result.stderr.decode("utf-8").strip()
+    stdout = result.stdout.decode("utf-8").strip()
+    if stderr:
+        print(stderr)
     if result.returncode != 0:
-        raise RuntimeError(result_message)
-    else:
-        print(result_message)
-        if return_tag_exists:
-            return "reusing tag" in result_message.lower()
+        raise RuntimeError(stderr or stdout)
+    return stdout
 
 
 if __name__ == "__main__":

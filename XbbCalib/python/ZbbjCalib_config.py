@@ -6,6 +6,7 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
+from XbbCalib.hists_output_config import hists_output_cfg
 
 
 def ZbbjCalib_cfg(flags, largejetkey,
@@ -46,6 +47,14 @@ def ZbbjCalib_cfg(flags, largejetkey,
             largeRJets=selected_large_r
         )
     )
+
+    out_path = (
+        flags.Analysis.h5_output
+        if flags.Analysis.output.h5.hists.enable else None
+    )
+    cfg.merge(hists_output_cfg(
+        flags, flags.Analysis.output.h5.hists, out_path,
+        tag_wps=[]))
 
     return cfg
 

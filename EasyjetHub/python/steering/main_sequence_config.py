@@ -207,7 +207,8 @@ def output_cfg(flags, seqname, extra_output_branches=None):
             seqname
         )
 
-    if flags.Analysis.h5_output:
+    if (flags.Analysis.h5_output
+            and flags.Analysis.output.h5.ntuple.enable):
         cfg.merge(
             get_h5_cfg(flags),
             seqname,

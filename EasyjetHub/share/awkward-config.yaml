@@ -1,4 +1,6 @@
 include: [RunConfig.yaml]
-h5:
-  # 0 jets in array means save as an awkward array
-  n_jets: 0
+output:
+  h5:
+    ntuple:
+      # 0 jets in array means save as an awkward array
+      n_jets: 0

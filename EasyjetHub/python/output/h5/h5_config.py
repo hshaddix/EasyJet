@@ -27,7 +27,7 @@ def get_h5_cfg(flags):
         )
     )
     jetcol = flags.Analysis.container_names.input[flags.Analysis.Small_R_jet.jet_type]
-    n_jets = flags.Analysis.h5.n_jets
+    n_jets = flags.Analysis.output.h5.ntuple.n_jets
     types = {}
     primitives = []
     array_format = "AWKWARD"

@@ -4,6 +4,10 @@ atlas_subdir(XbbCalib)
 # Find an external package (i.e. ROOT)
 find_package(ROOT COMPONENTS Core Tree Hist REQUIRED)
 
+find_package( Boost COMPONENTS json )
+
+find_package(HDF5 1.10.1 COMPONENTS C CXX)
+
 # We don't want any warnings in compilation
 add_compile_options(-Werror)
 
@@ -24,6 +28,8 @@ atlas_add_component(XbbCalib
   src/ZbbyCalibSelectorAlg.cxx
   src/BaselineVarsZbbyCalibAlg.cxx
   src/ZcandSelectorAlg.cxx
+  src/EventInfoHistsAlg.cxx
+  src/FinalSelectionAlg.cxx
 
   LINK_LIBRARIES
   AthenaBaseComps
@@ -38,11 +44,16 @@ atlas_add_component(XbbCalib
   TruthUtils
   EasyjetHubLib
   TriggerMatchingToolLib
+  IH5GroupSvc
+  HDF5Utils
+  ${HDF5_LIBRARIES}
+  Boost::json
 )
 
 # Install python modules, joboptions, and share content
 atlas_install_scripts(
   bin/xbbcalib-ntupler
+  bin/xbbcalib-hists
   scripts/XbbCalib-submitGrid.py
 )
 atlas_install_python_modules(
@@ -53,6 +64,8 @@ atlas_install_python_modules(
   python/ZllyCalib_config.py
   python/ZtautauCalib_config.py
   python/vars_to_copy.py
+  python/hists_output_config.py
+  python/tag_meta_cfg.py
 )
 atlas_install_runtime( scripts/*.py POST_BUILD_CMD ${ATLAS_FLAKE8} )
 atlas_install_data(

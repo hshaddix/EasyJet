@@ -1,0 +1,26 @@
+disable_metadata: true
+selection:
+  n_lrjets_min: 1
+  sample_label: "Zbby"
+variables:
+  Zcand_0_m:
+    lower: 50000
+    upper: 250000
+    n_bins: 100
+hists2d:
+  Zcand_0_m_vs_pt:
+    x:
+      variable: Zcand_0_m
+      lower: 50000
+      upper: 150000
+      n_bins: 50
+    y:
+      variable: Zcand_0_pt
+      lower: 250000
+      upper: 1500000
+      n_bins: 5
+weights:
+  all_runs:
+    - PileupWeight_NOSYS
+  run2:
+    - beamSpotWeight

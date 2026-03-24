@@ -6,7 +6,7 @@ find_package(ROOT COMPONENTS Core Tree Hist REQUIRED)
 
 find_package( Boost )
 
-find_package(HDF5 1.10.1 COMPONENTS HL C CXX)
+find_package(HDF5 1.10.1 REQUIRED COMPONENTS C CXX)
 
 # We don't want any warnings in compilation
 add_compile_options(-Werror)
@@ -40,7 +40,7 @@ atlas_add_component(bbbbAnalysis
   MVAUtils
   IH5GroupSvc
   HDF5Utils
-  ${HDF5_LIBRARIES} ${HDF5_HL_LIBRARIES}
+  ${HDF5_LIBRARIES}
   TrigCompositeUtilsLib
   PathResolver
   EasyjetHubLib

@@ -25,6 +25,8 @@
 #include "../TruthJetSelectorAlg.h"
 #include "../SecVtxFilterAlg.h"
 #include "../GNXLargeJetDecoratorAlg.h"
+#include "../EventInfoDecorLockAlg.h"
+#include "../FileMetaDataStrTool.h"
 
 using namespace Easyjet;
 
@@ -55,3 +57,5 @@ DECLARE_COMPONENT(TruthMuonSelectorAlg)
 DECLARE_COMPONENT(TruthJetSelectorAlg)
 DECLARE_COMPONENT(SecVtxFilterAlg)
 DECLARE_COMPONENT(GNXLargeJetDecoratorAlg)
+DECLARE_COMPONENT(EventInfoDecorLockAlg)
+DECLARE_COMPONENT(FileMetaDataStrTool)

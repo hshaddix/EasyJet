@@ -1,0 +1,81 @@
+#!/usr/bin/env python3
+import json
+from pathlib import Path
+
+from AthenaConfiguration.MainServicesConfig import MainServicesCfg
+from AthenaConfiguration.AllConfigFlags import initConfigFlags
+from AthenaConfiguration.ComponentFactory import CompFactory
+from AthenaPoolCnvSvc.PoolReadConfig import PoolReadCfg
+from AthenaCommon import Constants
+from argparse import ArgumentParser
+import sys
+
+from PyUtils.MetaReader import read_metadata as _read_metadata
+
+from EasyjetHub.steering.utils.config_flags import to_immutable
+from EasyjetHub.steering.utils.config_files import run_config_arg
+from XbbCalib.hists_output_config import hists_output_cfg
+
+
+def parse_args():
+    def_config = 'XbbCalib/hists-config-Zbbj.yaml'
+    parser = ArgumentParser()
+    parser.add_argument('input_files', nargs='+')
+    parser.add_argument('-o', '--h5-output', type=Path, default=Path('hists.h5'))
+    parser.add_argument(
+        '-c', '--config', type=run_config_arg,
+        default=run_config_arg(def_config),
+        help=f'histogram config YAML (default: {def_config})'
+    )
+    parser.add_argument(
+        '-m', '--cache-metadata',
+        nargs='?', const=Path('metadata-cache.json'), default=None,
+        type=Path,
+        metavar='FILE',
+        help='cache xAOD metadata to FILE '
+             '(default: metadata-cache.json); '
+             'read cache if present, write it otherwise',
+    )
+    return parser.parse_args()
+
+
+def _get_tag_wps(input_files, cache_path):
+    if cache_path is not None and cache_path.exists():
+        return json.loads(cache_path.read_text())
+    meta = _read_metadata(input_files, mode='peeker')
+    wps_json = meta[input_files[0]]['FileMetaData']['xbbTagWpsJson']
+    wps = json.loads(wps_json)
+    if cache_path is not None:
+        cache_path.write_text(json.dumps(wps))
+    return wps
+
+
+def core_services_cfg(flags):
+    cfg = MainServicesCfg(flags)
+    cfg.addService(CompFactory.ExceptionSvc(Catch="NONE"))
+    cfg.merge(PoolReadCfg(flags))
+    cfg.addService(CompFactory.CP.SystematicsSvc("SystematicsSvc"))
+    return cfg
+
+
+def run():
+    args = parse_args()
+    tag_wps = _get_tag_wps(args.input_files, args.cache_metadata)
+    flags = initConfigFlags()
+    flags.Input.Files = args.input_files
+    flags.Exec.OutputLevel = Constants.WARNING
+    flags.lock()
+    cfg = core_services_cfg(flags)
+    cfg.merge(
+        hists_output_cfg(
+            flags, to_immutable(args.config),
+            args.h5_output,
+            tag_wps=tag_wps,
+        )
+    )
+    ret = cfg.run()
+    sys.exit(0 if ret.isSuccess() else 1)
+
+
+if __name__ == '__main__':
+    run()

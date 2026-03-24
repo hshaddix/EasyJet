@@ -348,6 +348,8 @@ aod_fast_bbbb_mc23:
     - cvmfs
   stage: run
   needs: [compile]
+  rules:
+    - if: $EASYJET_PKG_bbbbAnalysis
   script:
     - easyjet-test aod-fast-bbbb-mc23
 
@@ -356,6 +358,8 @@ h5_fast_mc23:
     - cvmfs
   stage: run
   needs: [compile]
+  rules:
+    - if: $EASYJET_PKG_XbbCalib
   script:
     - easyjet-test h5-fast-mc23
 
@@ -364,8 +368,42 @@ hist_syst_bbbb_mc23:
     - cvmfs
   stage: run
   needs: [compile]
+  rules:
+    - if: $EASYJET_PKG_XbbCalib
   script:
     - easyjet-test hist-syst-bbbb-mc23
+
+aod_fast_Zbby_mc23:
+  tags:
+    - cvmfs
+  stage: run
+  needs: [compile]
+  script:
+    - easyjet-test aod-fast-Zbby-mc23
+
+aod_fast_Zbbj_mc23:
+  tags:
+    - cvmfs
+  stage: run
+  needs: [compile]
+  script:
+    - easyjet-test aod-fast-Zbbj-mc23
+
+hist_syst_Zbby_mc23:
+  tags:
+    - cvmfs
+  stage: run
+  needs: [compile]
+  script:
+    - easyjet-test hist-syst-Zbby-mc23
+
+hist_syst_Zbbj_mc23:
+  tags:
+    - cvmfs
+  stage: run
+  needs: [compile]
+  script:
+    - easyjet-test hist-syst-Zbbj-mc23
 
 # test without eos or cvmfs run, intentionally doesn't include cvmfs
 # and pretends not to have EOS credentials
@@ -373,6 +411,8 @@ hist_syst_bbbb_mc23:
 test_eos_free:
  stage: run
  needs: [compile]
+ rules:
+   - if: $EASYJET_PKG_XbbCalib
  script:
    - EASYJET_FAKE_MISSING_EOS=1 easyjet-test zbbycalib-mc23
 
@@ -387,6 +427,8 @@ test_fail:
     - (! easyjet-test fail)
 
 test_all:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'
   tags:
     - cvmfs
   stage: run

@@ -19,6 +19,10 @@
 #include <xAODMuon/MuonContainer.h>
 #include <xAODMissingET/MissingETContainer.h>
 
+#include "FourVectorOutBlock.h"
+
+#include <memory>
+
 namespace XBBCALIB
 {
 
@@ -28,6 +32,7 @@ namespace XBBCALIB
     /// \brief The standard constructor
 public:
     BaselineVarsZbbjCalibAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    ~BaselineVarsZbbjCalibAlg();
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -46,6 +51,12 @@ private:
 
     CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };
+
+    CP::SysWriteDecorHandle<int>
+      m_lrjets_n{this, "lrjetsNDecoration", "lrjets_n_%SYS%",
+                 "number of selected large-R jets"};
+
+    std::unique_ptr<FourVectorOutBlock> m_z_candidate_4vec;
   };
 }
 

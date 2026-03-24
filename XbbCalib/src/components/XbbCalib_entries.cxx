@@ -1,3 +1,5 @@
+#include "../EventInfoHistsAlg.h"
+#include "../FinalSelectionAlg.h"
 #include "../BaselineVarsttCalibAlg.h"
 #include "../BaselineVarsZbbyCalibAlg.h"
 #include "../ZbbyCalibSelectorAlg.h"
@@ -14,6 +16,8 @@
 
 using namespace XBBCALIB;
 
+DECLARE_COMPONENT(HH4B::EventInfoHistsAlg)
+DECLARE_COMPONENT(XBBCALIB::FinalSelectionAlg)
 DECLARE_COMPONENT(BaselineVarsttCalibAlg)
 DECLARE_COMPONENT(BaselineVarsZbbyCalibAlg)
 DECLARE_COMPONENT(ZbbyCalibSelectorAlg)

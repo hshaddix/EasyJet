@@ -322,7 +322,18 @@ splitCBK: false
 save_cutflow: false
 
 histograms: false
-h5:
-  n_jets: 10
+output:
+  aod:
+    containers:
+      jets: []
+    event_info:
+      variables: []     # empty = write all EventInfo aux (current behaviour)
+  h5:
+    ntuple:
+      n_jets: 10
+      enable: false
+    hists:
+      disable_metadata: false
+      enable: false
 
 ttree_output: {}

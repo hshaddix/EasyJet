@@ -49,7 +49,7 @@ atlas_add_library( EasyjetHubLib
 atlas_add_component(EasyjetHub
   src/*.cxx
   src/components/*.cxx
-  LINK_LIBRARIES EasyjetHubLib
+  LINK_LIBRARIES EasyjetHubLib xAODMetaData
 )
 
 # Install python modules, joboptions, and share content

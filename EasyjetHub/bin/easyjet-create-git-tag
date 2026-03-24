@@ -11,58 +11,78 @@ else
     set -eu
 fi
 
-PUSH_TAG=true
-TAG=""
+GIT_TAG=""
+NO_PUSH=false
 
 help() {
-    echo "This script is used to create the given tag and push it to the remote repository."
-    echo "Usage: $(basename $0) <tag> [-p|--push]"
+    echo "This script creates the given tag and pushes it to the upstream remote."
+    echo "Usage: $(basename $0) [--git-tag NAME] [--no-push]"
+    echo "  --git-tag NAME  exact tag name to create or reuse"
+    echo "  (no --git-tag)  find the single tag pointing at HEAD"
+    echo "  --no-push       create locally, skip push"
 }
 
 while (( "$#" )); do
   case "$1" in
-    *) # preserve positional arguments
-      if [ -z "$TAG" ]; then
-        TAG="$1"
-      else
-        echo "Error: Multiple tags provided"
-        help
-        exit 1
-      fi
+    --no-push)
+      NO_PUSH=true
       shift
+      ;;
+    --git-tag)
+      GIT_TAG="$2"; shift 2
+      ;;
+    -h|--help)
+      help
+      exit 0
+      ;;
+    *)
+      echo "Error: Unknown argument: $1" >&2
+      help >&2
+      exit 1
       ;;
   esac
 done
 
-# if no tag is given, print the help message
-if [ -z "$TAG" ]; then
-    help
-    exit 1
-fi
-
 REPO_BASE=$(realpath --relative-to=$PWD $(dirname $(readlink -e ${BASH_SOURCE[0]}))/../..)
-USER_GRID_NAME=${RUCIO_ACCOUNT-${USER}}
 
 cd ${REPO_BASE}
 
+if [ -z "$GIT_TAG" ]; then
+    mapfile -t TAGS < <(git tag --points-at HEAD)
+    if   [ ${#TAGS[@]} -eq 1 ]; then TAG="${TAGS[0]}"
+    elif [ ${#TAGS[@]} -eq 0 ]; then
+        echo "No tag on HEAD; use --tag or --campaign" >&2; exit 1
+    else
+        echo "Multiple tags on HEAD: ${TAGS[*]}" >&2; exit 1
+    fi
+else
+    TAG="$GIT_TAG"
+fi
+
+# stdout: resolved name (before dirty-check so caller always gets it)
+echo "$TAG"
+
 # Check if the repository is dirty
 if ! git diff --quiet; then
-    echo "There are uncommitted changes. Please commit your changes before proceeding."
+    echo "There are uncommitted changes. Please commit your changes before proceeding." >&2
     exit 1
 fi
 
 # Check if the tag already exists
 if git rev-parse "$TAG" >/dev/null 2>&1; then
-    echo "Reusing tag: $TAG"
+    echo "Reusing tag: $TAG" >&2
 else
-    if [[ "$(git remote get-url origin)" != *"$USER_GRID_NAME"* ]]; then
-        echo "WARNING: Remote URL for \"origin\" is not a fork and you're not working from an existing tag. Please set up a fork first for instance with "
-        echo "git remote add origin ssh://git@gitlab.cern.ch:7999/$(git config user.name)/easyjet.git"
-        exit 1
-    fi
-    git tag $TAG
-    # push the tag to the remote repository if the PUSH_TAG flag is set
-    if "$PUSH_TAG" = true; then
-        git push origin $TAG
+    git tag "$TAG"
+fi
+
+if [ "$NO_PUSH" = false ]; then
+    UPSTREAM_REF=$(git rev-parse --abbrev-ref --symbolic-full-name @{u} \
+        2>/dev/null || true)
+    if [ -n "$UPSTREAM_REF" ]; then
+        PUSH_REMOTE=$(echo "$UPSTREAM_REF" | cut -d/ -f1)
+        PUSH_URL=$(git remote get-url "$PUSH_REMOTE")
+        if [[ "$PUSH_URL" != *"easyjet/easyjet"* ]]; then
+            git push "$PUSH_REMOTE" "$TAG"
+        fi
     fi
 fi
