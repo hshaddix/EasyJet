@@ -6,215 +6,201 @@
 #include "BaselineVarsttCalibAlg.h"
 #include "AthenaBaseComps/AthMsgStreamMacros.h"
 
+#include "DefaultOutputs.h"
+#include "FourVectorOutBlock.h"
+#include "SystVariableCopier.h"
+
+#include <format>
 namespace XBBCALIB
 {
-    BaselineVarsttCalibAlg::BaselineVarsttCalibAlg(const std::string &name,
-                                            ISvcLocator *pSvcLocator)
-        : AthHistogramAlgorithm(name, pSvcLocator)
-    { }
+  BaselineVarsttCalibAlg::BaselineVarsttCalibAlg(const std::string &name,
+                                                 ISvcLocator *pSvcLocator)
+      : AthHistogramAlgorithm(name, pSvcLocator)
+  {
+  }
+  BaselineVarsttCalibAlg::~BaselineVarsttCalibAlg() = default;
 
-    StatusCode BaselineVarsttCalibAlg::initialize(){
-        ATH_CHECK (m_ttcalib_jetHandle.initialize(m_systematicsList));
-        ATH_CHECK (m_ttcalib_lrjetHandle.initialize(m_systematicsList));
-        ATH_CHECK (m_ttcalib_muonHandle.initialize(m_systematicsList));
-        ATH_CHECK (m_ttcalib_electronHandle.initialize(m_systematicsList));
-        ATH_CHECK (m_metHandle.initialize(m_systematicsList));
-        ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
+  StatusCode BaselineVarsttCalibAlg::initialize()
+  {
+    ATH_CHECK(m_ttcalib_jetHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_ttcalib_lrjetHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_ttcalib_muonHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_ttcalib_electronHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_metHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
 
-        if(m_isMC){
+    m_ProbeJet_candidate_4vec = std::make_unique<FourVectorOutBlock>(
+        this, "ProbeJet_", m_systematicsList, m_eventHandle);
+    m_TagJet_candidate_4vec = std::make_unique<FourVectorOutBlock>(
+        this, "TagJet_", m_systematicsList, m_eventHandle);
+    m_Lepton_candidate_4vec = std::make_unique<FourVectorOutBlock>(
+        this, "Lepton_", m_systematicsList, m_eventHandle);
 
-            // retreive the AnalysisElectrons and AnalysisMuon Containers for scale factor extraction
-            ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
-            ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
+    // set up the generic float copying
+    m_ProbeJet_float_copier = std::make_unique<SystVariableCopier<float>>(
+        this, m_floats_to_copy, m_systematicsList, m_ttcalib_lrjetHandle,
+        m_eventHandle, m_copied_variable_prefix0);
 
-            // scale factor Read handles
-            m_ele_SF = FloatHandle_t("effSF_"+m_electronWPName+"_%SYS%", this);
-            m_mu_SF = FloatHandle_t("effSF_"+m_muonWPName+"_%SYS%", this);
+    m_ProbeJet_int_copier = std::make_unique<SystVariableCopier<int>>(
+        this, m_ints_to_copy, m_systematicsList, m_ttcalib_lrjetHandle,
+        m_eventHandle, m_copied_variable_prefix0);
 
-            // initialize the scale factos from AnalysisElectrons and AnalysisMuons
-            ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
-            ATH_CHECK (m_mu_SF.initialize(m_systematicsList, m_muonHandle));
+    if (m_isMC)
+    {
 
-	    // initialize large jet truth decorator
-	    ATH_CHECK(m_probeJetTruthLabel.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+      // retreive the AnalysisElectrons and AnalysisMuon Containers for scale
+      // factor extraction
+      ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
+      ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
 
+      // scale factor Read handles m_ele_SF =
+      m_ele_SF = CP::SysReadDecorHandle<float>(
+          "effSF_" + m_electronWPName + "_%SYS%", this);
+      m_mu_SF = CP::SysReadDecorHandle<float>(
+          "effSF_" + m_muonWPName + "_%SYS%", this);
+
+      // initialize the scale factos from AnalysisElectrons and AnalysisMuons
+      // initialize the scale factos from AnalysisElectrons and AnalysisMuons
+      // NOTE: use the `electronHandle` and `muonHandle` here because scale factor
+      // systematics are not registered on the `ttcalib_*` handles. We have to read
+      // from the original `Analysis*` lepton containers to pick up the systematics.
+      ATH_CHECK(m_ele_SF.initialize(m_systematicsList, m_electronHandle));
+      ATH_CHECK(m_mu_SF.initialize(m_systematicsList, m_muonHandle));
+      ATH_CHECK(m_Lepton1_effSF.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_tagjet_lep_m.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_dRJetLep.initialize(m_systematicsList, m_eventHandle));
+      // ATH_CHECK(
+      //     m_ProbeJet_TruthLabel.initialize(m_systematicsList,
+      //     m_eventHandle));
+      // // initialize large jet truth decorator
+      // ATH_CHECK(m_probeJetTruthLabel.initialize(m_systematicsList,
+      // m_ttcalib_lrjetHandle));
+    }
+    // Intialise syst list (must come after all syst-aware inputs and outputs)
+    ATH_CHECK(m_systematicsList.initialize());
+
+    return StatusCode::SUCCESS;
+  }
+
+  StatusCode BaselineVarsttCalibAlg::execute()
+  {
+    // Loop over all systs
+    for (const auto &sys : m_systematicsList.systematicsVector())
+    {
+
+      const xAOD::EventInfo *event = nullptr;
+      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+
+      const xAOD::JetContainer *jets = nullptr;
+      ANA_CHECK(m_ttcalib_jetHandle.retrieve(jets, sys));
+
+      const xAOD::JetContainer *lrjets = nullptr;
+      ANA_CHECK(m_ttcalib_lrjetHandle.retrieve(lrjets, sys));
+
+      const xAOD::MuonContainer *muons = nullptr;
+      ANA_CHECK(m_ttcalib_muonHandle.retrieve(muons, sys));
+
+      const xAOD::ElectronContainer *electrons = nullptr;
+      ANA_CHECK(m_ttcalib_electronHandle.retrieve(electrons, sys));
+
+      const xAOD::MissingETContainer *metCont = nullptr;
+      ANA_CHECK(m_metHandle.retrieve(metCont, sys));
+
+      // Is this needed?
+      const xAOD::MissingET *met = (*metCont)["Final"];
+
+      if (!met)
+      {
+        ATH_MSG_ERROR("Could not retrieve MET");
+        return StatusCode::FAILURE;
+      }
+      // A bunch of ints I need to save at one point
+      int nLeptons = muons->size() + electrons->size();
+      int nMuons = muons->size();
+      int nElectrons = electrons->size();
+      bool isSingleLeptonEvent = (nLeptons == 1);
+      bool isSingleMuonEvent = (nMuons == 1 && nElectrons == 0);
+      bool isSingleElectronEvent = (nElectrons == 1 && nMuons == 0);
+      int nLargeRJets = lrjets->size();
+      int hasProbeJetCandidate = (nLargeRJets >= 1) ? 1 : 0;
+      float m_minMet = 20000;
+      bool pass_minMet_selection = met->met() > m_minMet;
+
+      TLorentzVector lepton;
+      const xAOD::Jet *tagjet = nullptr;
+      const xAOD::Jet *probejet = nullptr;
+      float minDeltaR = std::numeric_limits<float>::max(); // Why max?
+
+      if (isSingleMuonEvent)
+      {
+        lepton = muons->at(0)->p4();
+        if (m_isMC)
+        {
+          float SF = m_mu_SF.get(*muons->at(0), sys);
+
+          m_Lepton1_effSF.set(*event, SF, sys);
         }
-
-
-        for(const auto& WP: m_GN3X_WPs){
-            m_GN3X_WP_Handles.emplace_back("xbb_select_GN3XPV01_hbb_" + WP, this);
+      }
+      else if (isSingleElectronEvent)
+      {
+        lepton = electrons->at(0)->p4();
+        if (m_isMC)
+        {
+          float SF = m_ele_SF.get(*electrons->at(0), sys);
+          m_Lepton1_effSF.set(*event, SF, sys);
         }
+      }
 
-        for(auto& GN3XHandle : m_GN3X_WP_Handles){
-            ATH_CHECK(GN3XHandle.initialize(m_systematicsList,  m_ttcalib_lrjetHandle));
+      if (isSingleLeptonEvent && pass_minMet_selection)
+      {
+        for (const xAOD::Jet *jet : *jets)
+        {
+          float deltaR = lepton.DeltaR(jet->p4());
+          if (deltaR < minDeltaR)
+          {
+            minDeltaR = deltaR;
+            tagjet = jet;
+          }
         }
+      }
 
+      if (tagjet && hasProbeJetCandidate)
+      {
+        probejet = lrjets->at(0);
 
-        // Intialise syst-aware output decorators
-        for (const std::string &variable : m_floatVariables) {
-            FloatWriteHandle_t writeHandle{variable+"_%SYS%", this};
-            m_floatBranches.emplace(variable, writeHandle);
-            ATH_CHECK (m_floatBranches.at(variable).initialize(m_systematicsList, m_eventHandle));
+        m_ProbeJet_candidate_4vec->set(*event, *probejet, sys);
 
-        }
+        m_ProbeJet_float_copier->set(*event, *probejet, sys);
+        m_ProbeJet_int_copier->set(*event, *probejet, sys);
 
-        for (const std::string &variable : m_intVariables){
-            ATH_MSG_DEBUG("initializing integer variable: " << variable);
-            IntWriteHandle_t writeHandle{variable+"_%SYS%", this};
-            m_intBranches.emplace(variable, writeHandle);
-            ATH_CHECK(m_intBranches.at(variable).initialize(m_systematicsList, m_eventHandle));
+        m_TagJet_candidate_4vec->set(*event, *tagjet, sys);
 
-        };
+        m_Lepton_candidate_4vec->set(*event, lepton, sys);
+        // if (m_isMC)
+        // {
+        //   int truthLabel = m_probeJetTruthLabel.get(*probejet, sys);
+        //   m_ProbeJet_TruthLabel.set(*event, truthLabel, sys);
+        // }
 
-        ATH_CHECK (m_GN3XPV01_pWqq.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_phbb.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_phcc.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_ptop.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_pqcdbb.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_pqcdbx.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_pqcdcx.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_pqcdll.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
-        ATH_CHECK (m_GN3XPV01_phtautauhad.initialize(m_systematicsList, m_ttcalib_lrjetHandle));
+        float tag_lep_m = (tagjet->p4() + lepton).M();
+        m_tagjet_lep_m.set(*event, tag_lep_m, sys);
+        m_dRJetLep.set(*event, minDeltaR, sys); // why min but above max?
+      }
+      else
+      {
+        m_ProbeJet_candidate_4vec->setDefault(*event, sys);
 
-        // Intialise syst list (must come after all syst-aware inputs and outputs)
-        ATH_CHECK (m_systematicsList.initialize());
+        m_ProbeJet_float_copier->setDefault(*event, sys);
+        m_ProbeJet_int_copier->setDefault(*event, sys);
 
-        return StatusCode::SUCCESS;
+        m_TagJet_candidate_4vec->setDefault(*event, sys);
+
+        m_Lepton_candidate_4vec->setDefault(*event, sys);
+
+        // if (m_isMC)
+      }
     }
 
-    StatusCode BaselineVarsttCalibAlg::execute(){
-        //Loop over all systs
-        for (const auto& systematic : m_systematicsList.systematicsVector()){
-
-
-            const xAOD::EventInfo *event = nullptr;
-            const xAOD::JetContainer *jets = nullptr;
-            const xAOD::JetContainer *lrjets = nullptr;
-            const xAOD::MuonContainer *muons = nullptr;
-            const xAOD::ElectronContainer *electrons = nullptr;
-            const xAOD::MissingETContainer *metCont = nullptr;
-
-
-            ANA_CHECK (m_eventHandle.retrieve (event, systematic));
-            ANA_CHECK (m_ttcalib_jetHandle.retrieve (jets, systematic));
-            ANA_CHECK (m_ttcalib_lrjetHandle.retrieve (lrjets, systematic));
-            ANA_CHECK (m_ttcalib_muonHandle.retrieve (muons, systematic));
-            ANA_CHECK (m_ttcalib_electronHandle.retrieve (electrons, systematic));
-            ANA_CHECK (m_metHandle.retrieve (metCont, systematic));
-
-            const xAOD::MissingET* met = (*metCont)["Final"];
-
-            if (!met) {
-                ATH_MSG_ERROR("Could not retrieve MET");
-                return StatusCode::FAILURE;
-
-            }
-
-
-
-            for (const std::string &string_var: m_floatVariables) {
-                m_floatBranches.at(string_var).set(*event, -99., systematic);
-
-            }
-
-            for (const auto& var: m_intVariables) {
-                m_intBranches.at(var).set(*event, -99, systematic);
-
-            }
-
-            int nLeptons = muons->size() + electrons->size();
-            int nMuons = muons->size();
-            int nElectrons = electrons->size();
-            bool isSingleLeptonEvent = (nLeptons == 1);
-            bool isSingleMuonEvent = (nMuons == 1 && nElectrons == 0);
-            bool isSingleElectronEvent = (nElectrons == 1 && nMuons == 0);
-
-            int nLargeRJets = lrjets->size();
-            int hasProbeJetCandidate = (nLargeRJets >= 1) ? 1 : 0;
-
-            bool pass_minMet_selection = met->met() > m_minMet;
-
-
-            TLorentzVector lepton;
-            const xAOD::Jet *tagjet   = nullptr;
-            const xAOD::Jet *probejet = nullptr;
-            float minDeltaR = std::numeric_limits<float>::max();
-
-            if ( isSingleMuonEvent ) {
-                lepton = muons->at(0)->p4();
-                if(m_isMC){
-                    float SF = m_mu_SF.get(*muons->at(0), systematic);
-                    m_floatBranches.at("Lepton1_effSF").set(*event, SF, systematic);
-                }
-
-            } else if ( isSingleElectronEvent ) {
-                lepton = electrons->at(0)->p4();
-                if(m_isMC){
-                    float SF = m_ele_SF.get(*electrons->at(0),systematic);
-                    m_floatBranches.at("Lepton1_effSF").set(*event, SF, systematic);
-                }
-
-            }
-
-
-            if ( isSingleLeptonEvent && pass_minMet_selection) {
-                for ( const xAOD::Jet *jet: *jets ) {
-                    float deltaR = lepton.DeltaR(jet->p4());
-                    if ( deltaR < minDeltaR ) {
-                        minDeltaR = deltaR;
-                        tagjet = jet;
-                    }
-                }
-            }
-
-
-            if (tagjet && hasProbeJetCandidate) {
-                probejet = lrjets->at(0);
-                if(m_isMC){
-       		    int truthLabel = m_probeJetTruthLabel.get(*probejet, systematic);
-                    m_intBranches.at("probe_jet_truthid").set(*event, truthLabel, systematic);
-                }
-                float pWqq = m_GN3XPV01_pWqq.get(*probejet, systematic);
-                float phbb = m_GN3XPV01_phbb.get(*probejet, systematic);
-                float phcc = m_GN3XPV01_phcc.get(*probejet, systematic);
-                float ptop = m_GN3XPV01_ptop.get(*probejet, systematic);
-                float pqcdbb = m_GN3XPV01_pqcdbb.get(*probejet, systematic);
-                float pqcdbx = m_GN3XPV01_pqcdbx.get(*probejet, systematic);
-                float pqcdcx = m_GN3XPV01_pqcdcx.get(*probejet, systematic);
-                float pqcdll = m_GN3XPV01_pqcdll.get(*probejet, systematic);
-                float phtautauhad = m_GN3XPV01_phtautauhad.get(*probejet, systematic);
-                
-                float tag_lep_m = (tagjet->p4() + lepton).M();
-                m_floatBranches.at("tag_lep_m").set(*event, tag_lep_m, systematic);
-                m_floatBranches.at("probe_jet_eta").set(*event, probejet->eta(), systematic);
-                m_floatBranches.at("probe_jet_phi").set(*event, probejet->phi(), systematic);
-                m_floatBranches.at("probe_jet_pt").set(*event, probejet->pt(), systematic);
-                m_floatBranches.at("probe_jet_m").set(*event, probejet->m(), systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_pWqq").set(*event, pWqq, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_phbb").set(*event, phbb, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_phcc").set(*event, phcc, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_ptop").set(*event, ptop, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_pqcdbb").set(*event, pqcdbb, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_pqcdbx").set(*event, pqcdbx, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_pqcdcx").set(*event, pqcdcx, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_pqcdll").set(*event, pqcdll, systematic);
-                m_floatBranches.at("probe_jet_GN3XPV01_phtautauhad").set(*event, phtautauhad, systematic);
-                m_floatBranches.at("tag_jet_pt").set(*event, tagjet->pt(), systematic);
-                m_floatBranches.at("tag_jet_eta").set(*event, tagjet->eta(), systematic);
-                m_floatBranches.at("tag_jet_phi").set(*event, tagjet->phi(), systematic);
-                m_floatBranches.at("tag_jet_m").set(*event, tagjet->m(), systematic);
-                m_floatBranches.at("dRJetLep").set(*event, minDeltaR, systematic);
-                m_floatBranches.at("lepton_pt").set(*event, lepton.Pt(), systematic);
-                m_floatBranches.at("lepton_eta").set(*event, lepton.Eta(), systematic);
-                m_floatBranches.at("lepton_phi").set(*event, lepton.Phi(), systematic);
-
-                for(unsigned int wp=0; wp<m_GN3X_WPs.size(); wp++) {
-                    int pass_GN3X = static_cast<int>(m_GN3X_WP_Handles.at(wp).get(*probejet, systematic));
-                    m_intBranches.at("probe_jet_Pass_GN3XPV01_hbb_"+m_GN3X_WPs[wp]).set(*event, pass_GN3X, systematic);
-                }
-            }
-        }
-
-        return StatusCode::SUCCESS;
-    }
-}
+    return StatusCode::SUCCESS;
+  }
+} // namespace XBBCALIB

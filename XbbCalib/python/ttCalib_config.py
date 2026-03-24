@@ -6,6 +6,10 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
+from .vars_to_copy import lrj_floats_to_copy, lrj_ints_to_copy
+
+copiedVariablePrefix0 = "ProbeJet_"
+copiedVariablePrefix1 = "TagJet_"
 
 
 def ttCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
@@ -68,14 +72,18 @@ def ttCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.BaselineVarsttCalibAlg(
             "BaselineVarsttCalibAlg",
-            floatVariableList=float_variables,
-            intVariableList=int_variables,
             isMC=flags.Input.isMC,
-            minMet=flags.Analysis.MET.min_met,
+            ttcalib_jets="ttCalibJets_%SYS%",
+            ttcalib_lrjets="ttCalibLRJets_%SYS%",
+            ttcalib_electrons="ttCalibElectrons_%SYS%",
+            ttcalib_muons="ttCalibMuons_%SYS%",
+            electrons="AnalysisElectrons_%SYS%",
+            muons="AnalysisMuons_%SYS%",
             muonWP=MuonWPLabel,
             eleWP=ElectronWPLabel,
-            GN3X_WPs=flags.Analysis.
-            Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps,
+            floatsToCopy=lrj_floats_to_copy(flags),
+            intsToCopy=lrj_ints_to_copy(flags),
+            copiedVariablePrefix0=copiedVariablePrefix0,
         )
     )
 
@@ -83,39 +91,29 @@ def ttCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
 
 
 def get_BaselineVarsttCalibAlg_variables(flags):
-    float_variable_names = []
+
+    # float_variable_names = ["dRJetLep"]
+    float_variable_names = ["TagJet_Lepton1_m", "dR_TagJet_Lepton1"]
+    # I feel like more is missing, like mu or el, lep n, idk what esle
+    # int_variable_names = ["ProbeJet_truthid", "lrjets_n"]
     int_variable_names = []
 
-    for object in [
-            'probe_jet_pt',
-            'probe_jet_eta',
-            'probe_jet_phi',
-            'probe_jet_m',
-            'probe_jet_GN3XPV01_pWqq',
-            'probe_jet_GN3XPV01_phbb',
-            'probe_jet_GN3XPV01_phcc',
-            'probe_jet_GN3XPV01_ptop',
-            'probe_jet_GN3XPV01_pqcdbb',
-            'probe_jet_GN3XPV01_pqcdbx',
-            'probe_jet_GN3XPV01_pqcdcx',
-            'probe_jet_GN3XPV01_pqcdll',
-            'probe_jet_GN3XPV01_phtautauhad',
-            'tag_jet_pt',
-            'tag_jet_eta',
-            'tag_jet_phi',
-            'tag_jet_m',
-            'lepton_pt',
-            'lepton_eta',
-            'lepton_phi',
-            'dRJetLep',
-            'tag_lep_m',
-            'Lepton1_effSF']:
-        float_variable_names.append(object)
+    for object in ["ProbeJet", "TagJet", "Lepton"]:
+        for var in ["pt", "eta", "phi", "m"]:
+            float_variable_names.append(f"{object}_{var}")
 
-    for var in flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps:
-        int_variable_names += ["probe_jet_Pass_GN3XPV01_hbb_" + var]
-    int_variable_names.append("probe_jet_truthid")
+    float_variable_names += [
+        f'{copiedVariablePrefix0}{x}'
+        for x in lrj_floats_to_copy(flags)
+    ]
 
+    int_variable_names += [
+        f'{copiedVariablePrefix0}{x}'
+        for x in lrj_ints_to_copy(flags)
+    ]
+    if flags.Input.isMC:
+        float_variable_names += ["Lepton1_effSF"]
+    # What is the differnce between tag_lep_m& just lep?
     return float_variable_names, int_variable_names
 
 
@@ -145,11 +143,11 @@ def ttCalib_branches(flags):
     int_variable_names += object_level_int_variables
 
     branches += object_level_branches
-    branches += ["EventInfo.ttCalib_pass_sr_%SYS% -> ttCalib_pass_SR"
-                 + flags.Analysis.systematics_suffix_separator + "%SYS%"]
+    # branches += ["EventInfo.ttCalib_pass_sr_%SYS% -> ttCalib_pass_SR"
+    #              + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
-    branches += [flags.Analysis.container_names.output.reco10UFOJet
-                 + ".isAnalysisJet_%SYS% -> recojet_antikt10UFO_isAnalysisLRJet"
-                 + flags.Analysis.systematics_suffix_separator + "%SYS%"]
+    # branches += [flags.Analysis.container_names.output.reco10UFOJet
+    #              + ".isAnalysisJet_%SYS% -> recojet_antikt10UFO_isAnalysisLRJet"
+    #              + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
     return branches, float_variable_names, int_variable_names

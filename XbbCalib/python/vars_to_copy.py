@@ -29,3 +29,10 @@ def lrj_floats_to_copy(flags):
             "Split12", "Split23",
         ]
     return floats_to_copy
+
+
+def lrj_ints_to_copy(flags):
+    ints_to_copy = lrj_gn3x_working_points(flags)
+    if flags.Input.isMC:
+        ints_to_copy += ["R10TruthLabel_R22v1"]
+    return ints_to_copy
