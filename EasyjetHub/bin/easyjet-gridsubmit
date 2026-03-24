@@ -9,7 +9,7 @@ import subprocess
 from shutil import which
 from EasyjetHub.steering.utils.config_files import run_config_arg
 
-_DEFAULT_CAMPAIGN = "EJ_%Y_%m_%d_T%H%M%S"
+_DEFAULT_CAMPAIGN = r"EJ_%Y_%m_%d_T%H%M%S"
 
 
 def main():
@@ -46,7 +46,7 @@ def main():
         help=(
             "strftime template for the campaign name; a datestamp suffix is"
             " appended to ensure uniqueness. With no argument uses"
-            f" '{_DEFAULT_CAMPAIGN}'."
+            f" '{_DEFAULT_CAMPAIGN}'.".replace('%','%%')
         ),
     )
     tag_group.add_argument(
