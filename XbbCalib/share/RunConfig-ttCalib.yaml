@@ -46,9 +46,10 @@ MET:
 
 # # list of triggers per year to consider
 Trigger:
-  include: [trigger.yaml]
+  include: [XbbCalib/trigger_lepton.yaml]
 # apply trigger lists to filter events
 do_trigger_filtering: true
+
 do_overlap_removal: true
 OverlapRemoval:
   do_large_R_jets: false

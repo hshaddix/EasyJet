@@ -51,7 +51,9 @@ Muon:
 
 # list of triggers per year to consider
 Trigger:
-  include: [XbbCalib/trigger_Zllj.yaml]
+  include: [XbbCalib/trigger_ljr.yaml]
+# only include lrj triggers, the same as in zbbj
+# to use lepton triggers use: trigger_lepton.yaml
 # apply trigger lists to filter events
 do_trigger_filtering: true
 

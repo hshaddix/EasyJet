@@ -63,10 +63,11 @@ Muon:
 
 # list of triggers per year to consider
 Trigger:
-  include: [XbbCalib/trigger_Zlly.yaml]
+  include: [XbbCalib/trigger_photon.yaml]
 # apply trigger lists to filter events
+# only include photon triggers, the same as in zbby
+# to use lepton triggers use: trigger_lepton.yaml
 do_trigger_filtering: true
-
 # write objects with overlap removal applied
 # turning this on you have to decide on one large R jet collection
 do_overlap_removal: true

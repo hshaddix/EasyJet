@@ -2,4 +2,4 @@ include: [XbbCalib/RunConfig_Zlly.yaml]
 
 # Toggles to bypass event selection
 bypass: true
-
+do_trigger_filtering: false
