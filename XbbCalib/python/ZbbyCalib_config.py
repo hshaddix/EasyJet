@@ -37,22 +37,7 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             minimumAmount=1,
         )
     )
-    selected_electrons = "XbbCalibElectrons_%SYS%"
-    cfg.merge(ElectronSelectorAlgCfg(flags,
-                                     containerInKey=electronkey,
-                                     containerOutKey=selected_electrons,
-                                     minPt=7 * Units.GeV,
-                                     ))
-
-    if flags.Analysis.do_muons:
-        selected_muons = "XbbCalibMuons_%SYS%"
-        cfg.merge(MuonSelectorAlgCfg(flags,
-                                     containerInKey=muonkey,
-                                     containerOutKey=selected_muons,
-                                     minPt=7 * Units.GeV,
-                                     maxEta=2.5,
-                                     ))
-
+    
     selected_photons = "XbbCalibPhotons_%SYS%"
     cfg.merge(PhotonSelectorAlgCfg(flags,
                                    containerInKey=photonkey,

@@ -8,6 +8,10 @@ from EasyjetHub.output.ttree.selected_objects import (
 )
 from XbbCalib.hists_output_config import hists_output_cfg
 
+from .vars_to_copy import lrj_floats_to_copy, lrj_gn3x_working_points
+
+copiedVariablePrefix0 = "Zcand0_"
+copiedVariablePrefix1 = "Zcand1_"
 
 def ZbbjCalib_cfg(flags, largejetkey,
                   float_variables=None, int_variables=None):
@@ -41,10 +45,16 @@ def ZbbjCalib_cfg(flags, largejetkey,
         )
     )
 
+   
+
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.BaselineVarsZbbjCalibAlg(
             "BaselineVarsZbbjCalibAlg",
-            largeRJets=selected_large_r
+            largeRJets=selected_large_r,
+            floatsToCopy=lrj_floats_to_copy(flags),
+            intsToCopy=lrj_gn3x_working_points(flags),
+            copiedVariablePrefix0=copiedVariablePrefix0,
+            copiedVariablePrefix1 =copiedVariablePrefix1
         )
     )
 
@@ -59,11 +69,37 @@ def ZbbjCalib_cfg(flags, largejetkey,
     return cfg
 
 
+def get_baselineVarsZbbjCalibAlg_variables(flags):
+    float_variable_names = []
+    int_variable_names = ["lrjets_n"]
+
+    for object in [copiedVariablePrefix0 , copiedVariablePrefix1]:
+        for var in ["pt","eta","phi","m"]:
+            float_variable_names.append(f"{object}{var}")
+
+    
+    float_variable_names += [
+        f'{p}{x}'
+        for x in lrj_floats_to_copy(flags)
+        for p in (copiedVariablePrefix0, copiedVariablePrefix1)
+    ]
+
+    int_variable_names += [
+        f'{p}{x}'
+        for x in lrj_gn3x_working_points(flags)
+        for p in (copiedVariablePrefix0, copiedVariablePrefix1)
+    ]
+    return float_variable_names , int_variable_names
+
+
+
+
 def ZbbjCalib_branches(flags):
     branches = []
 
     # this will be all the variables that are calculated by the
     # BaselineVarsZbbjCalibAlg algorithm
+    all_baseline_variable_names = []
     float_variable_names = []
     int_variable_names = []
 
@@ -76,18 +112,29 @@ def ZbbjCalib_branches(flags):
     # by the analysis
     # This is tunable with the flags amount and variables
     # in the object configs.
-    object_level_branches, object_level_float_variables, \
-        object_level_int_variables = \
-        get_selected_objects_branches_variables(flags, "XbbCalib")
+    baseline_float_variables, baseline_int_variables =(
+         get_baselineVarsZbbjCalibAlg_variables(flags)
+    )
+    float_variable_names += baseline_float_variables
+    int_variable_names += baseline_int_variables
+
+    all_baseline_variable_names += [*float_variable_names, *int_variable_names]
+    
+    for var in all_baseline_variable_names:
+        branches += [f"EventInfo.{var}_%SYS% -> ZbbjCalib_{var}"
+                     + flags.Analysis.systematics_suffix_separator + "%SYS%"]
+
+
+    object_level_branches, object_level_float_variables, object_level_int_variables = (
+        get_selected_objects_branches_variables(flags, "ZbbCalib")
+    )
+
     float_variable_names += object_level_float_variables
     int_variable_names += object_level_int_variables
 
     branches += object_level_branches
 
-    branches += [
-        "EventInfo.XbbCalib_pass_sr_%SYS% -> XbbCalib_pass_SR"
-        + flags.Analysis.systematics_suffix_separator
-        + "%SYS%"
-    ]
+
+
 
     return branches, float_variable_names, int_variable_names

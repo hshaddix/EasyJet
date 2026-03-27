@@ -1,5 +1,8 @@
-include: XbbCalib/RunConfig_ZbbjCalib.yaml
+include: [XbbCalib/RunConfig_ZbbjCalib.yaml]
 
 # Systematics to be included
 do_CP_systematics: true
 systematics_regex: [".*(MET|JER).*"] # systematics to be included
+
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
