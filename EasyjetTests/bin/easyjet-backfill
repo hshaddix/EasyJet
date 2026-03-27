@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+
+set -Eeu
+
+if [[ -z ${EOS_ACCOUNT_PASSWORD+x} || -z ${EOS_ACCOUNT_USERNAME+x} || -z ${EOS_ACCOUNT_PATH+x} || -z ${EOS_ACCOUNT_PROJECT+x} ]]; then
+    echo "eos env not defined, cannot backfill folder"
+    exit 1
+fi
+ 
+if [[ -z "${CI_MERGE_REQUEST_IID:-}" ]]; then
+    echo "merge request ID not defined, cannot backfill folder"
+    exit 1
+fi
+
+if [[ -z "${VALIDATION_REFERENCE_MR:-}" ]]; then
+    echo "reference merge request not defined, cannot backfill folder"
+    exit 1
+fi
+
+refeosdir=$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$VALIDATION_REFERENCE_MR
+
+echo $EOS_ACCOUNT_PASSWORD | kinit -l 1h $EOS_ACCOUNT_USERNAME 
+klist
+
+# copy files that don't exist in this dir from the previous VALIDATION_REFERENCE_MR directory
+for reffile in $(xrdfs root://${EOS_ACCOUNT_PROJECT}.cern.ch ls $refeosdir); do
+    filename=$(basename $reffile)
+    destfile=$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$CI_MERGE_REQUEST_IID/$filename
+    if ! xrdfs root://${EOS_ACCOUNT_PROJECT}.cern.ch ls $destfile > /dev/null 2>&1; then
+        echo "copying missing previous file ${filename} from reference"
+        xrdcp root://${EOS_ACCOUNT_PROJECT}.cern.ch//$reffile root://${EOS_ACCOUNT_PROJECT}.cern.ch//$destfile
+    fi
+done

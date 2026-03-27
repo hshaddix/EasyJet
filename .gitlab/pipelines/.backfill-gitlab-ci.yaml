@@ -1,0 +1,16 @@
+###########################################################
+# Special job created because the CI now depends on which
+# analysis package was touched. We need to copy over the
+# reference files for packages that were not touched.
+###########################################################
+backfill:
+  variables:
+    GIT_STRATEGY: none
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+  stage: backfill
+  tags:
+    - k8s-eos
+  dependencies: [compile]
+  script:
+    - easyjet-backfill

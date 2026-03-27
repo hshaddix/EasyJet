@@ -2,6 +2,130 @@ variables:
   # needed to propagate the exit code from the script to the CI
   FF_USE_NEW_BASH_EVAL_STRATEGY: true
 
+.if_to_central: &if_to_central
+  "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+
+.rule_core_pkgs: &rule_core_pkgs
+  if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+  changes:
+    - "EasyjetHub/**/*"
+    - "EasyjetPlus/**/*"
+    - "EasyjetTests/**/*"
+
+.changes_bbbb: &changes_bbbb
+  rules:
+    - if: *if_to_central
+      changes: ["bbbbAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbbbtt: &changes_bbbbtt
+  rules:
+    - if: *if_to_central
+      changes: ["bbbbttAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbll: &changes_bbll
+  rules:
+    - if: *if_to_central
+      changes: ["bbllAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbtt: &changes_bbtt
+  rules:
+    - if: *if_to_central
+      changes: ["bbttAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbVV: &changes_bbVV
+  rules:
+    - if: *if_to_central
+      changes: ["bbVVAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_bbyy: &changes_bbyy
+  rules:
+    - if: *if_to_central
+      changes: ["bbyyAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_HZallyy: &changes_HZallyy
+  rules:
+    - if: *if_to_central
+      changes: ["HZallyyAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_jjjj: &changes_jjjj
+  rules:
+    - if: *if_to_central
+      changes: ["jjjjAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_lltt: &changes_lltt
+  rules:
+    - if: *if_to_central
+      changes: ["llttAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_monojet: &changes_monojet
+  rules:
+    - if: *if_to_central
+      changes: ["monojetAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_multilepton: &changes_multilepton
+  rules:
+    - if: *if_to_central
+      changes: ["multileptonAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ssWW: &changes_ssWW
+  rules:
+    - if: *if_to_central
+      changes: ["ssWWAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ttHH: &changes_ttHH
+  rules:
+    - if: *if_to_central
+      changes: ["ttHHAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_vbshiggs: &changes_vbshiggs
+  rules:
+    - if: *if_to_central
+      changes: ["vbshiggsAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_VBSVV4q: &changes_VBSVV4q
+  rules:
+    - if: *if_to_central
+      changes: ["VBSVV4qAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_XbbCalib: &changes_XbbCalib
+  rules:
+    - if: *if_to_central
+      changes: ["XbbCalib/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_yyML: &changes_yyML
+  rules:
+    - if: *if_to_central
+      changes: ["yyMLAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ZCharm: &changes_ZCharm
+  rules:
+    - if: *if_to_central
+      changes: ["ZCharmAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
+.changes_ZQG: &changes_ZQG
+  rules:
+    - if: *if_to_central
+      changes: ["ZQGAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 .ntuple_validation:
   variables:
     GIT_STRATEGY: none
@@ -44,6 +168,7 @@ validator_fast_data22:
 
 validator_bbtt_data22:
   extends: .ntuple_validation
+  <<: *changes_bbtt
   needs:
     - job: compile
       artifacts: true
@@ -54,6 +179,7 @@ validator_bbtt_data22:
 
 validator_bbtt_data22_boosted:
   extends: .ntuple_validation
+  <<: *changes_bbtt
   needs:
     - job: compile
       artifacts: true
@@ -64,6 +190,7 @@ validator_bbtt_data22_boosted:
 
 validator_bbyy_data22_lite:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -74,6 +201,7 @@ validator_bbyy_data22_lite:
 
 validator_HHandHyy_data22:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -84,6 +212,7 @@ validator_HHandHyy_data22:
 
 validator_SHbbyy_data22_lite:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -96,6 +225,7 @@ validator_SHbbyy_data22_lite:
 
 validator_bbbb_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbbb
   needs:
     - job: compile
       artifacts: true
@@ -106,6 +236,7 @@ validator_bbbb_mc20:
 
 validator_bbyy_mc20_syst:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -116,6 +247,7 @@ validator_bbyy_mc20_syst:
 
 validator_SHbbyy_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -126,6 +258,7 @@ validator_SHbbyy_mc20:
 
 validator_bbyy_mc20_lite:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -136,6 +269,7 @@ validator_bbyy_mc20_lite:
 
 validator_HHandHyy_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -146,6 +280,7 @@ validator_HHandHyy_mc20:
 
 validator_bbtt_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbtt
   needs:
     - job: compile
       artifacts: true
@@ -156,6 +291,7 @@ validator_bbtt_mc20:
 
 validator_bbVV_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbVV
   needs:
     - job: compile
       artifacts: true
@@ -166,6 +302,7 @@ validator_bbVV_mc20:
 
 validator_bbVVVBF_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbVV
   needs:
     - job: compile
       artifacts: true
@@ -176,6 +313,7 @@ validator_bbVVVBF_mc20:
 
 validator_ttHH_mc20:
   extends: .ntuple_validation
+  <<: *changes_ttHH
   needs:
     - job: compile
       artifacts: true
@@ -186,6 +324,7 @@ validator_ttHH_mc20:
 
 validator_bbll_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbll
   needs:
     - job: compile
       artifacts: true
@@ -196,6 +335,7 @@ validator_bbll_mc20:
 
 validator_bbll_mc20_syst:
   extends: .ntuple_validation
+  <<: *changes_bbll
   needs:
     - job: compile
       artifacts: true
@@ -206,6 +346,7 @@ validator_bbll_mc20_syst:
 
 validator_lltt_mc20:
   extends: .ntuple_validation
+  <<: *changes_lltt
   needs:
     - job: compile
       artifacts: true
@@ -216,6 +357,7 @@ validator_lltt_mc20:
 
 validator_vbshiggs_fulllep_mc20:
   extends: .ntuple_validation
+  <<: *changes_vbshiggs
   needs:
     - job: compile
       artifacts: true
@@ -226,6 +368,7 @@ validator_vbshiggs_fulllep_mc20:
 
 validator_vbshiggs_semilep_mc20:
   extends: .ntuple_validation
+  <<: *changes_vbshiggs
   needs:
     - job: compile
       artifacts: true
@@ -236,6 +379,7 @@ validator_vbshiggs_semilep_mc20:
 
 validator_VBSVV4q_mc20:
   extends: .ntuple_validation
+  <<: *changes_VBSVV4q
   needs:
     - job: compile
       artifacts: true
@@ -246,6 +390,7 @@ validator_VBSVV4q_mc20:
 
 validator_VBSVV4q_mc20_llj1:
   extends: .ntuple_validation
+  <<: *changes_VBSVV4q
   needs:
     - job: compile
       artifacts: true
@@ -256,6 +401,7 @@ validator_VBSVV4q_mc20_llj1:
 
 validator_jjjj_mc20:
   extends: .ntuple_validation
+  <<: *changes_jjjj
   needs:
     - job: compile
       artifacts: true
@@ -266,6 +412,7 @@ validator_jjjj_mc20:
 
 validator_ssWW_mc20:
   extends: .ntuple_validation
+  <<: *changes_ssWW
   needs:
     - job: compile
       artifacts: true
@@ -276,6 +423,7 @@ validator_ssWW_mc20:
 
 validator_ZQG_mc20:
   extends: .ntuple_validation
+  <<: *changes_ZQG
   needs:
     - job: compile
       artifacts: true
@@ -286,6 +434,7 @@ validator_ZQG_mc20:
 
 validator_ZCharm_mc20:
   extends: .ntuple_validation
+  <<: *changes_ZCharm
   needs:
     - job: compile
       artifacts: true
@@ -296,6 +445,7 @@ validator_ZCharm_mc20:
 
 validator_llyy_mc20:
   extends: .ntuple_validation
+  <<: *changes_HZallyy
   needs:
     - job: compile
       artifacts: true
@@ -306,6 +456,7 @@ validator_llyy_mc20:
 
 validator_ttcalib_mc20:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -316,6 +467,7 @@ validator_ttcalib_mc20:
 
 validator_zllycalib_mc20:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -326,6 +478,7 @@ validator_zllycalib_mc20:
     
 validator_zlljcalib_mc20:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -336,6 +489,7 @@ validator_zlljcalib_mc20:
 
 validator_zbbycalib_mc20:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -346,6 +500,7 @@ validator_zbbycalib_mc20:
 
 validator_zbbjcalib_mc20:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -356,6 +511,7 @@ validator_zbbjcalib_mc20:
 
 validator_bbbbtt_mc20:
   extends: .ntuple_validation
+  <<: *changes_bbbbtt
   needs:
     - job: compile
       artifacts: true 
@@ -368,6 +524,7 @@ validator_bbbbtt_mc20:
 
 validator_sh4b_mc20af3:
   extends: .ntuple_validation
+  <<: *changes_bbbb
   needs:
     - job: compile
       artifacts: true
@@ -378,6 +535,7 @@ validator_sh4b_mc20af3:
 
 validator_SHbbyy_mc20af3_lite:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -390,6 +548,7 @@ validator_SHbbyy_mc20af3_lite:
 
 validator_bbbb_mc23:
   extends: .ntuple_validation
+  <<: *changes_bbbb
   needs:
     - job: compile
       artifacts: true
@@ -400,6 +559,7 @@ validator_bbbb_mc23:
 
 validator_bbbb_mc23_syst:
   extends: .ntuple_validation
+  <<: *changes_bbbb
   needs:
     - job: compile
       artifacts: true
@@ -410,6 +570,7 @@ validator_bbbb_mc23_syst:
 
 validator_bbtt_mc23:
   extends: .ntuple_validation
+  <<: *changes_bbtt
   needs:
     - job: compile
       artifacts: true
@@ -420,6 +581,7 @@ validator_bbtt_mc23:
 
 validator_bbtt_mc23_boosted:
   extends: .ntuple_validation
+  <<: *changes_bbtt
   needs:
     - job: compile
       artifacts: true
@@ -430,6 +592,7 @@ validator_bbtt_mc23_boosted:
 
 validator_bbVV_mc23:
   extends: .ntuple_validation
+  <<: *changes_bbVV
   needs:
     - job: compile
       artifacts: true
@@ -440,6 +603,7 @@ validator_bbVV_mc23:
 
 validator_bbVVVBF_mc23:
   extends: .ntuple_validation
+  <<: *changes_bbVV
   needs:
     - job: compile
       artifacts: true
@@ -450,6 +614,7 @@ validator_bbVVVBF_mc23:
 
 validator_SHbbyy_mc23af3:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -460,6 +625,7 @@ validator_SHbbyy_mc23af3:
 
 validator_bbtt_mc23_syst:
   extends: .ntuple_validation
+  <<: *changes_bbtt
   needs:
     - job: compile
       artifacts: true
@@ -470,6 +636,7 @@ validator_bbtt_mc23_syst:
 
 validator_bbll_mc23_lite:
   extends: .ntuple_validation
+  <<: *changes_bbll
   needs:
     - job: compile
       artifacts: true
@@ -490,6 +657,7 @@ validator_EMTopo_mc23:
 
 validator_hhml_mc23:
   extends: .ntuple_validation
+  <<: *changes_multilepton
   needs:
     - job: compile
       artifacts: true
@@ -500,6 +668,7 @@ validator_hhml_mc23:
 
 validator_ttcalib_mc23:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -510,6 +679,7 @@ validator_ttcalib_mc23:
 
 validator_zllycalib_mc23:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -520,6 +690,7 @@ validator_zllycalib_mc23:
     
 validator_zlljcalib_mc23:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -530,6 +701,7 @@ validator_zlljcalib_mc23:
 
 validator_zbbycalib_mc23:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -540,6 +712,7 @@ validator_zbbycalib_mc23:
 
 validator_zbbjcalib_mc23:
   extends: .ntuple_validation
+  <<: *changes_XbbCalib
   needs:
     - job: compile
       artifacts: true
@@ -551,6 +724,7 @@ validator_zbbjcalib_mc23:
 
 validator_yyml_mc23_lite:
   extends: .ntuple_validation
+  <<: *changes_yyML
   needs:
     - job: compile
       artifacts: true
@@ -561,6 +735,7 @@ validator_yyml_mc23_lite:
 
 validator_bbyy_mc23_lite:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -571,6 +746,7 @@ validator_bbyy_mc23_lite:
 
 validator_HHandHyy_mc23:
   extends: .ntuple_validation
+  <<: *changes_bbyy
   needs:
     - job: compile
       artifacts: true
@@ -581,6 +757,7 @@ validator_HHandHyy_mc23:
 
 validator_llyy_mc23:
   extends: .ntuple_validation
+  <<: *changes_HZallyy
   needs:
     - job: compile
       artifacts: true
@@ -591,6 +768,7 @@ validator_llyy_mc23:
 
 validator_bbbbtt_mc23:
   extends: .ntuple_validation
+  <<: *changes_bbbbtt
   needs:
     - job: compile
       artifacts: true 
@@ -601,6 +779,7 @@ validator_bbbbtt_mc23:
 
 validator_monojet_mc23:
   extends: .ntuple_validation
+  <<: *changes_monojet
   needs:
     - job: compile
       artifacts: true 
@@ -611,6 +790,7 @@ validator_monojet_mc23:
 
 validator_ssWW_mc23:
   extends: .ntuple_validation
+  <<: *changes_ssWW
   needs:
     - job: compile
       artifacts: true
@@ -621,6 +801,7 @@ validator_ssWW_mc23:
 
 validator_ZQG_mc23:
   extends: .ntuple_validation
+  <<: *changes_ZQG
   needs:
     - job: compile
       artifacts: true
