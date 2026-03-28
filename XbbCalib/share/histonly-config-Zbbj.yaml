@@ -7,6 +7,12 @@ output:
       enable: true
       include:
         - XbbCalib/hists-config-Zbbj.yaml
+      blinding:
+        include:
+          - XbbCalib/blinding.yaml
 
 do_CP_systematics: true
 systematics_regex: [".*"]
+
+grid:
+  n_files_per_job: 2

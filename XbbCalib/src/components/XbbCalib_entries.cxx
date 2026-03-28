@@ -1,3 +1,4 @@
+#include "../DataEnrichmentAlg.h"
 #include "../EventInfoHistsAlg.h"
 #include "../FinalSelectionAlg.h"
 #include "../BaselineVarsttCalibAlg.h"
@@ -13,6 +14,8 @@
 #include "../ZlljCalibSelectorAlg.h"
 #include "../ZllyCalibSelectorAlg.h"
 #include "../ZtautauCalibSelectorAlg.h"
+
+DECLARE_COMPONENT(DataEnrichmentAlg)
 
 using namespace XBBCALIB;
 

@@ -63,8 +63,8 @@ namespace XBBCALIB
       //************
       // Large-R Jet & Photons
       //************
-      // Require at least one large-R jet & exactly one photon
-      bool pass_baseline = (lrjets->size() != 0) && (photons->size() == 1);
+      // Require at least one large-R jet & exactly one photon (or at least one)
+      bool pass_baseline = (lrjets->size() != 0) || m_bypass;
 
 
       //****************

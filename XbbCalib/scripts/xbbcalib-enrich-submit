@@ -1,0 +1,150 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Defaults
+jet_gev=250
+photon_gev=150
+nfiles=10
+dry_run=false
+suffix=''
+
+usage() {
+    cat <<EOF
+usage: xbbcalib-enrich-submit DATASET [OPTIONS]
+
+  DATASET                  RUCIO dataset (scope:name or bare name)
+  --min-jet-pt   GeV       minimum large-R jet pt (default: $jet_gev)
+  --min-photon-pt GeV      minimum photon pt      (default: $photon_gev)
+  --nFiles       N         total input files to process (default: $nfiles)
+  --dry-run                print prun command, skip credential checks
+  --suffix                 output suffix (defualt to none)
+  -h / --help
+EOF
+}
+
+
+if [[ $# -eq 0 ]]; then
+    usage
+    exit 1
+fi
+
+ds_name=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --min-jet-pt)
+            jet_gev="$2"
+            shift 2
+            ;;
+        --min-photon-pt)
+            photon_gev="$2"
+            shift 2
+            ;;
+        --nFiles)
+            nfiles="$2"
+            shift 2
+            ;;
+        --dry-run)
+            dry_run=true
+            shift
+            ;;
+        --suffix)
+            suffix="$2"
+            shift 2
+            ;;
+        -h|--help)
+            usage
+            exit 0
+            ;;
+        *)
+            if [[ -z ${ds_name} ]]; then
+                ds_name="$1"
+                shift
+            else
+                echo "got two positional arguments: $1 and $ds_name" >&2
+                usage >&2
+                exit 1
+            fi
+            ;;
+    esac
+done
+
+# Check xbbcalib-enrich-data is available (always, even in dry-run)
+if ! command -v xbbcalib-enrich-data > /dev/null 2>&1; then
+    echo "Error: xbbcalib-enrich-data not found in PATH" >&2
+    exit 1
+fi
+
+# Check prun and credentials (skipped in dry-run)
+if [[ "$dry_run" == false ]]; then
+    if ! command -v prun > /dev/null 2>&1; then
+        echo "Error: prun not found. Run 'lsetup panda'" >&2
+        exit 1
+    fi
+    voms_output=$(voms-proxy-info --all)
+    nick=$(echo "$voms_output" | sed -rn 's/.*nickname *= *([^ ]*).*/\1/p')
+else
+    nick="testuser"
+fi
+
+# Parse dataset name: strip scope prefix (scope:name -> name)
+bare_ds="${ds_name##*:}"
+
+# Split on dots to get indexed fields
+IFS='.' read -ra fields <<< "$bare_ds"
+run_number="${fields[1]}"
+data_type="${fields[4]}"
+version_tag="${bare_ds##*.}"
+
+# Build reduction name from cut thresholds
+reduction_name="j${jet_gev}y${photon_gev}"
+
+# Output naming
+output_file="${data_type}.${run_number}.${version_tag}"
+output_file+=".${reduction_name}.pool.root"
+out_ds="user.${nick}.${data_type}.${run_number}"
+out_ds+=".${version_tag}.${reduction_name}"
+if [[ -n ${suffix} ]]; then
+    out_ds+=".${suffix}"
+fi
+
+# Athena tag from environment (set -u catches missing env)
+atlas_version_var="${AtlasProject}_VERSION"
+athena_tag="${AtlasProject},${!atlas_version_var}"
+
+# Step 1: build tarball (skipped in dry-run)
+if [[ "$dry_run" == false ]]; then
+    prun --outDS "user.${nick}.NONE" --exec NONE \
+         --noSubmit --useAthenaPackages \
+         --outTarBall code.tar.gz \
+         --athenaTag "$athena_tag"
+fi
+
+# Build exec command
+exec_cmd="xbbcalib-enrich-data %IN"
+exec_cmd+=" -o ${output_file}"
+exec_cmd+=" --min-jet-pt ${jet_gev}"
+exec_cmd+=" --min-photon-pt ${photon_gev}"
+
+# Step 2: submit
+cmd=(
+    prun
+    --inDS         "$ds_name"
+    --outDS        "$out_ds"
+    --notExpandInDS
+    --exec         "$exec_cmd"
+    --outputs      "$output_file"
+    --nFiles       "$nfiles"
+    --useAthenaPackages
+    --athenaTag    "$athena_tag"
+)
+
+if [[ "$dry_run" == false ]]; then
+    cmd+=(--inTarBall code.tar.gz)
+fi
+
+echo "${cmd[*]}"
+
+if [[ "$dry_run" == false ]]; then
+    "${cmd[@]}"
+fi

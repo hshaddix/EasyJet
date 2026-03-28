@@ -86,7 +86,7 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
     blinding_min = 0.
     blinding_max = 0.
     if not flags.Input.isMC:
-        blinding_variable = str(hists_cfg.blinding.variable)
+        blinding_variable = str(hists_cfg.blinding.variable) + "_%SYS%"
         blinding_min = float(hists_cfg.blinding.min)
         blinding_max = float(hists_cfg.blinding.max)
 

@@ -19,8 +19,14 @@
 
 import os
 import tempfile
-from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+from argparse import (
+    ArgumentParser,
+    ArgumentDefaultsHelpFormatter,
+    ArgumentTypeError,
+)
 from pathlib import Path
+
+from EasyjetHub.steering.utils.config_files import run_config_arg
 
 DEFAULT_PTAG_BY_ANALYSIS = {
     "Zbbj":       "p701X",
@@ -86,6 +92,26 @@ MC_PROCESSES_BY_ANALYSIS = {
     ],
 }
 
+GRID_PARAM_FLAGS = {
+    'n_files_per_job': lambda x: ['--nFilesPerJob', str(x)],
+}
+
+
+def _load_grid_defaults(config_path_str: str) -> list:
+    """Return CLI args derived from the 'grid' section of a config file."""
+    try:
+        config = run_config_arg(config_path_str)
+    except ArgumentTypeError:
+        return []
+    grid_section = config['grid']
+    result = []
+    for key, value in grid_section.items():
+        if key not in GRID_PARAM_FLAGS:
+            raise ValueError(f"Unknown grid config key: {key!r}")
+        result += GRID_PARAM_FLAGS[key](value)
+    return result
+
+
 # Define the default config to use for a given analysis
 CONFIG_BY_ANALYSIS = {
     "Zbbj":       "XbbCalib/RunConfig_ZbbjCalib.yaml",
@@ -119,12 +145,6 @@ def get_args():
 
     parser = ArgumentParser(description="",
                             formatter_class=ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
-        "--tag",
-        default=None,
-        help="Submission identifier included in output dataset names. "
-             "Defaults to easyjet-gridsubmit timestamp when omitted.",
-    )
     parser.add_argument(
         "--ptag",
         type=str,
@@ -271,9 +291,8 @@ def main(args, ej_grid_submit_args):
         "--exec", "xbbcalib-ntupler",
         "--mergeOutput",
     ]
-    if args.tag:
-        ej_command += ["--campaign", args.tag]
     ej_command += OUTPUT_FLAGS_BY_ANALYSIS.get(analysis, [])
+    ej_command += _load_grid_defaults(runConfig)
     ej_command += ej_grid_submit_args
 
     for campaign in args.mc or []:

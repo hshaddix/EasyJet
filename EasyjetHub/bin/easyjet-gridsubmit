@@ -295,7 +295,7 @@ def main():
         submit_opts["nSkipFiles"] = args.nSkipFiles
     if args.memory is not None:
         submit_opts["memory"] = args.memory
-    if args.mergeOutput:
+    if args.mergeOutput and not args.output_xaod:
         submit_opts["mergeOutput"] = True
         if args.mergeWithHadd:
             submit_opts["mergeScript"] = "merge-with-hadd %OUT %IN"

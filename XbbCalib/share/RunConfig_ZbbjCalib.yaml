@@ -91,3 +91,6 @@ output:
         - Zcand1_m_NOSYS
         - lrjets_n_NOSYS
         - XbbCalib_pass_final_selection_NOSYS
+
+grid:
+  n_files_per_job: 8

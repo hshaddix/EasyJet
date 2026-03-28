@@ -13,6 +13,7 @@ add_compile_options(-Werror)
 
 # Build the Athena component library
 atlas_add_component(XbbCalib
+  src/DataEnrichmentAlg.cxx
   src/FourVectorOutBlock.cxx
   src/BaselineVarsttCalibAlg.cxx
   src/BaselineVarsZbbjCalibAlg.cxx
@@ -52,8 +53,10 @@ atlas_add_component(XbbCalib
 
 # Install python modules, joboptions, and share content
 atlas_install_scripts(
+  bin/xbbcalib-enrich-data
   bin/xbbcalib-ntupler
   bin/xbbcalib-hists
+  scripts/xbbcalib-enrich-submit
   scripts/XbbCalib-submitGrid.py
 )
 atlas_install_python_modules(

@@ -1,0 +1,116 @@
+#!/bin/env python
+
+#
+# Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
+#
+
+#
+# Skim a DAOD, keeping only events with a large-R jet and photon above
+# pt thresholds. Used to create enriched test files for the Zbby analysis.
+#
+
+import argparse
+import sys
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Copy a DAOD, retaining only events that have at least one "
+            "large-R jet above --min-jet-pt and at least one photon above "
+            "--min-photon-pt."
+        )
+    )
+    parser.add_argument("input", help="input DAOD pool file")
+    parser.add_argument("-o", "--output", required=True,
+                        help="output pool file")
+    parser.add_argument(
+        "--min-jet-pt", type=float, default=250,
+        metavar="GeV",
+        help="minimum large-R jet pt in GeV (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--min-photon-pt", type=float, default=150,
+        metavar="GeV",
+        help="minimum photon pt in GeV (default: %(default)s)"
+    )
+    parser.add_argument(
+        "--jet-key", default="AntiKt10UFOCSSKSoftDropBeta100Zcut10Jets",
+        help="large-R jet container name"
+    )
+    parser.add_argument(
+        "--photon-key", default="Photons",
+        help="photon container name"
+    )
+    parser.add_argument(
+        "--max-written", type=int, default=-1,
+        metavar="N",
+        help="maximum number of events to write; -1 = unlimited"
+    )
+    parser.add_argument(
+        "-n", "--nevents", type=int, default=-1,
+        metavar="NEVENTS",
+        help="maximum number of input events to process; -1 = all"
+    )
+    parser.add_argument(
+        '--require-photon-tight',
+        action=argparse.BooleanOptionalAction, default=True,
+        help='require photon passes DFCommonPhotonsIsEMTight (default: on)'
+    )
+    parser.add_argument(
+        '--require-photon-cleaning',
+        action=argparse.BooleanOptionalAction, default=True,
+        help='require photon passes DFCommonPhotonsCleaning (default: on)'
+    )
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    from AthenaConfiguration.AllConfigFlags import initConfigFlags
+    from AthenaConfiguration.MainServicesConfig import MainServicesCfg
+    from AthenaPoolCnvSvc.PoolReadConfig import PoolReadCfg
+    from AthenaConfiguration.ComponentFactory import CompFactory
+    from AthenaConfiguration.Enums import MetadataCategory
+    from OutputStreamAthenaPool.OutputStreamConfig import OutputStreamCfg
+    from xAODMetaDataCnv.InfileMetaDataConfig import SetupMetaDataForStreamCfg
+
+    flags = initConfigFlags()
+    flags.Input.Files = args.input.split(',')
+    flags.Output.AODFileName = args.output
+    if args.nevents >= 0:
+        flags.Exec.MaxEvents = args.nevents
+    flags.lock()
+
+    cfg = MainServicesCfg(flags)
+    cfg.merge(PoolReadCfg(flags))
+
+    cfg.addEventAlgo(CompFactory.DataEnrichmentAlg(
+        "DataEnrichmentAlg",
+        JetKey=args.jet_key,
+        PhotonKey=args.photon_key,
+        MinJetPt=args.min_jet_pt * 1e3,
+        MinPhotonPt=args.min_photon_pt * 1e3,
+        MaxWrittenEvents=args.max_written,
+        RequirePhotonTight=args.require_photon_tight,
+        RequirePhotonCleaning=args.require_photon_cleaning,
+    ))
+
+    cfg.merge(OutputStreamCfg(
+        flags, "AOD",
+        AcceptAlgs=["DataEnrichmentAlg"],
+        takeItemsFromInput=True,
+    ))
+    cfg.merge(SetupMetaDataForStreamCfg(
+        flags, streamName="AOD",
+        AcceptAlgs=["DataEnrichmentAlg"],
+        createMetadata=[MetadataCategory.IOVMetaData],
+    ))
+
+    sc = cfg.run()
+    sys.exit(0 if sc.isSuccess() else 1)
+
+
+if __name__ == "__main__":
+    main()

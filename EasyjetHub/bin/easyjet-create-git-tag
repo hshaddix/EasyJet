@@ -63,7 +63,7 @@ fi
 echo "$TAG"
 
 # Check if the repository is dirty
-if ! git diff --quiet; then
+if ! git diff --quiet || ! git diff --cached --quiet; then
     echo "There are uncommitted changes. Please commit your changes before proceeding." >&2
     exit 1
 fi
