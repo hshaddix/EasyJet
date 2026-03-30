@@ -1,0 +1,34 @@
+include: [RunConfig-PHYS-bbVV-0lep-common.yaml]
+
+# This yaml is to be used for the Four-Prong-Tagger study
+# Mainly interested on the LRJet container w/ constituents(LLJ1)
+
+# Turn-Off all b-tagging, no GN2 decoration in LLJ1
+Small_R_jet:
+  btag_wp: ""
+  runBJetPtCalib: false
+
+Large_R_jet:
+  lundnet_type: ["BinaryHWW", "BinaryHWW_FlatMass", "NProng_S300_FlatPt_Ver2", "NProng_NoHWW_FlatMass_Ver1"]
+
+# For LLJ1
+Truth:
+  truthParticleContainersToFix:
+    - "TruthBoson"
+    - "TruthBosonsWithDecayParticles"
+    - "TruthElectrons"
+    - "TruthMuons"
+    - "TruthPhotons"
+    - "TruthNeutrinos"
+    - "TruthTaus"
+    - "TruthTop"
+    - "TruthBottom"
+    - "TruthCharm"
+    - "TruthHFWithDecayParticles"
+    - "TruthForwardProtons"
+    - "TruthBSM"
+    - "TruthBSMWithDecayParticles"
+    - "BornLeptons"
+  truthVertexContainersToFix:
+    - "TruthBosonsWithDecayVertices"
+    - "TruthBSMWithDecayVertices"

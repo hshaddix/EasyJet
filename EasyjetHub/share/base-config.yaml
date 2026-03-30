@@ -122,6 +122,7 @@ Large_R_jet:
   wtag_extra_wps: []
   variables_in_ptag:
     include: [xbb-vars-in-ptag.yaml]
+  lundnet_type: ""
 
 Photon:
   min_pT: 10.e+3

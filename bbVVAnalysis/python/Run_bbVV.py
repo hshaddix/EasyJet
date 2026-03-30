@@ -85,6 +85,7 @@ def run_grid(
 
     executable = "bbVV-ntupler"
     ListDir = easyjet_build_dir + "/data/bbVVAnalysis/PHYS/nominal/" + campaign + "/"
+    LLJ1Dir = easyjet_build_dir + "/data/bbVVAnalysis/LLJ1/nominal/" + campaign + "/"
     if process == "data":
         List = ListDir + "data_*.txt"
     else:
@@ -99,6 +100,16 @@ def run_grid(
     nfile = f" --maxNFilesPerJob {nFile}" if systematics else ""
     configFile = "bbVVAnalysis/RunConfig-PHYS-bbVV-" + lep_channel + \
                  "-" + boosted_channel + sys + ".yaml"
+
+    if process == "FourProng":
+        if "mc23a" in campaign:
+            List = LLJ1Dir + campaign + "_" + process + "_p7020.txt"
+            configFile = "bbVVAnalysis/RunConfig-LLJ1-bbVV-" + lep_channel + \
+                         "-" + boosted_channel + sys + "_LundNet.yaml"
+        else:
+            raise Exception("No matching subcampaign for FourProng LLJ1 datasets!")
+        if boosted_channel != "common":
+            raise Exception("You can only use 'common' mode for LLJ1 derivation!")
 
     if tag != "NONE":
         ej_gittag = tag
@@ -125,7 +136,7 @@ if __name__ == "__main__":
         "--Process",
         help="Define which process: bbWW0lep / "
         "dijet, singletop, ttbar, diboson, Wjets, Zjets / "
-        "data",
+        "data, FourProng",
         default="bbWW0lep")
     parser.add_argument(
         "--Boost", help="Option: boosted, splitboosted, common (0Lep only).",

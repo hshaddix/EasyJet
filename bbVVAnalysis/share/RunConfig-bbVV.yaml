@@ -21,11 +21,6 @@ Small_R_jet:
   # btagging nominal working point
   btag_wp: "GN2v01_FixedCutBEff_77"
 
-  btag_extra_wps:
-    - GN2v01_FixedCutBEff_70
-    - GN2v01_FixedCutBEff_85
-    - GN2v01_Continuous
-
 Large_R_jet:
   amount: 2
   flat_mass_selections:

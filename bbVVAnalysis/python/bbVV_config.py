@@ -25,10 +25,15 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
                                    containerInEleKey=electronkey,
                                    containerInMuKey=muonkey))
 
+    # empty string: "" ignores btagging
+    btag_selector_name = "" \
+        if not flags.Analysis.Small_R_jet.btag_wp \
+        else f"baselineSelection_{flags.Analysis.Small_R_jet.btag_wp}_%SYS%"
+
     cfg.merge(JetSelectorAlgCfg(flags, name="SmallJetSelectorAlg",
                                 containerInKey=smalljetkey,
                                 containerOutKey="bbVVAnalysisJets_%SYS%",
-                                bTagWPDecorName="",  # empty string: "" ignores btagging
+                                bTagWPDecorName=btag_selector_name,
                                 selectBjet=False,
                                 maxEta=2.5,
                                 truncateAtAmount=2,  # -1 means keep all
@@ -50,11 +55,15 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
     TightEleWP = flags.Analysis.Electron.extra_wps[0]
     TightEleWPLabel = f'{TightEleWP[0]}_{TightEleWP[1]}'
 
+    btag_name = "" \
+        if not flags.Analysis.Small_R_jet.btag_wp \
+        else "ftag_select_" + flags.Analysis.Small_R_jet.btag_wp
+
     cfg.addEventAlgo(
         CompFactory.HHBBVV.HHbbVVSelectorAlg(
             "HHbbVVSelectorAlg",
             eventDecisionOutputDecoration="bbVV_pass_sr_%SYS%",
-            bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
+            bTagWPDecorName=btag_name,
             muonWP=TightMuonWPLabel,
             eleWP=TightEleWPLabel,
             channel=flags.Analysis.channel,

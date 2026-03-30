@@ -90,6 +90,9 @@ def get_large_R_jet_branches(
     ):
         large_R_jet_branches.variables += get_wtag_branches(flags)
 
+    if flags.Analysis.Large_R_jet.lundnet_type:
+        large_R_jet_branches.variables += get_lundnet_branches(flags)
+
     is_valid_ptag = is_at_least(flags, "p5834")
     is_valid_for_v02 = is_at_least(flags, "p6490")
     is_valid_for_bjr_v01 = is_at_least(flags, "p6697")
@@ -237,3 +240,25 @@ def get_wtag_branches(flags):
         ]
 
     return wtag_branches
+
+
+def get_lundnet_branches(flags):
+    lundnet_branches = []
+
+    lundnet_type_list = flags.Analysis.Large_R_jet.lundnet_type
+    for lundnet_type in lundnet_type_list:
+
+        lundnet_branches += [(f"{lundnet_type}LundNetValid", "char")]
+
+        if "Binary" not in lundnet_type:
+            for i in range(1, 5):
+                lundnet_branches += [
+                    (f"{lundnet_type}LundNetScoreP{i}", "float")
+                ]
+
+        else:
+            lundnet_branches += [
+                (f"{lundnet_type}LundNetScoreP1", "float")
+            ]
+
+    return lundnet_branches

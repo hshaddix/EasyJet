@@ -41,6 +41,7 @@ atlas_install_python_modules(
 atlas_install_data(
   share/*.yaml
   datasets/*
+  data/*onnx
 )
 
 # atlas_install_data( data/* )
