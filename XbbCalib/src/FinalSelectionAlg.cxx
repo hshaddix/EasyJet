@@ -7,8 +7,17 @@
 
 namespace XBBCALIB {
 
+struct cutvals_t {
+  // all the cuts are stored in this structure so you don't have to
+  // edit a header file to add one
+  std::optional<int64_t> n_lrjets_min;
+};
+
 FinalSelectionAlg::FinalSelectionAlg(const std::string& name, ISvcLocator* sl)
-  : AthHistogramAlgorithm(name, sl) {}
+  : AthAlgorithm(name, sl), m_cuts(std::make_unique<cutvals_t>())
+{}
+
+FinalSelectionAlg::~FinalSelectionAlg() = default;
 
 StatusCode FinalSelectionAlg::initialize() {
   if (m_passHandle.empty()) {
@@ -16,35 +25,40 @@ StatusCode FinalSelectionAlg::initialize() {
     return StatusCode::FAILURE;
   }
   // Parse JSON config
-  const auto obj = boost::json::parse(m_selectionConfigJson.value()).as_object();
-  if (const auto* v = obj.if_contains("n_lrjets_min"))
-    m_n_lrjets_min = static_cast<int>(v->as_int64());
-  if (const auto* v = obj.if_contains("Zcand_m_min"))
-    m_Zcand_m_min = static_cast<float>(v->as_double());
-  if (const auto* v = obj.if_contains("Zcand_m_max"))
-    m_Zcand_m_max = static_cast<float>(v->as_double());
-  if (const auto* v = obj.if_contains("sample_label"))
-    m_sample_label = std::string(v->as_string());
+  auto obj = boost::json::parse(m_selectionConfigJson.value()).as_object();
+
+  // remove keys as they are read, to make sure there aren't any
+  // unused ones
+  auto pop_if_contains = [&obj](const std::string& key) {
+    if (const auto* v = obj.if_contains(key)) {
+      auto ret = std::optional(*v);
+      obj.erase(key);
+    }
+    return std::optional<boost::json::value>(std::nullopt);
+  };
+
+  // cuts are filled here
+  auto& c = *m_cuts;
+  if (auto v = pop_if_contains("n_lrjets_min")) {
+    c.n_lrjets_min = v->as_int64();
+  }
+
+  // make sure keys aren't unconsumed
+  if (!obj.empty()) {
+    for (const auto& [key, val]: obj) {
+      ATH_MSG_ERROR("unused key: '" << key << "', value: '" << val << "'");
+    }
+    return StatusCode::FAILURE;
+  }
 
   // event handle must be initialised before decoration handles that reference it
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
   ATH_CHECK(m_passHandle.initialize(m_systematicsList, m_eventHandle));
 
-  if (m_n_lrjets_min.has_value()) {
-    m_lrjetsNHandle = std::make_shared<CP::SysReadDecorHandle<int>>(
-      "lrjets_n_%SYS%", this);
-    ATH_CHECK(m_lrjetsNHandle->initialize(m_systematicsList, m_eventHandle));
-  }
-  if (m_Zcand_m_min.has_value() || m_Zcand_m_max.has_value()) {
-    m_zcandMHandle = std::make_shared<CP::SysReadDecorHandle<float>>(
-      "Zcand_m_%SYS%", this);
-    ATH_CHECK(m_zcandMHandle->initialize(m_systematicsList, m_eventHandle));
-  }
-
-  if (!m_tagDecoName.value().empty()) {
-    m_tagDecoHandle = std::make_unique<CP::SysReadDecorHandle<int>>(
-      m_tagDecoName.value(), this);
-    ATH_CHECK(m_tagDecoHandle->initialize(m_systematicsList, m_eventHandle));
+  if (!m_blindingVariable.value().empty()) {
+    m_blindingHandle = std::make_unique<CP::SysReadDecorHandle<float>>(
+        m_blindingVariable.value() + "_%SYS%", this);
+    ATH_CHECK(m_blindingHandle->initialize(m_systematicsList, m_eventHandle));
   }
 
   ATH_CHECK(m_systematicsList.initialize());
@@ -58,18 +72,17 @@ StatusCode FinalSelectionAlg::execute() {
 
     bool pass = true;
 
-    if (m_n_lrjets_min.has_value())
-      pass = pass && (m_lrjetsNHandle->get(*event, sys) >= *m_n_lrjets_min);
+    // cuts are applied here
+    const auto& c = *m_cuts;
+    if (auto v = c.n_lrjets_min) {
+      pass = pass && (m_lrjetsNHandle->get(*event, sys) >= *v);
+    }
 
-    if (m_Zcand_m_min.has_value())
-      pass = pass && (m_zcandMHandle->get(*event, sys) >= *m_Zcand_m_min);
-
-    if (m_Zcand_m_max.has_value())
-      pass = pass && (m_zcandMHandle->get(*event, sys) <= *m_Zcand_m_max);
-
-    if (m_tagDecoHandle)
-      pass = pass && (m_tagDecoHandle->get(*event, sys) != 0);
-
+    if (m_blindingHandle) {
+      float bval = m_blindingHandle->get(*event, sys);
+      if (bval > m_blindingMin && bval < m_blindingMax)
+        pass = false;
+    }
     m_passHandle.set(*event, static_cast<char>(pass), sys);
   }
   return StatusCode::SUCCESS;

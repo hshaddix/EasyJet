@@ -31,6 +31,8 @@ atlas_add_component(XbbCalib
   src/ZcandSelectorAlg.cxx
   src/EventInfoHistsAlg.cxx
   src/FinalSelectionAlg.cxx
+  src/FinalWeightAlg.cxx
+  src/ZbbHistogramAlg.cxx
 
   LINK_LIBRARIES
   AthenaBaseComps

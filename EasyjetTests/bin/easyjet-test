@@ -114,7 +114,7 @@ SMALL_TTBAR_MC23=p7017/daod/DAOD_PHYS.601229.e8514_e8528_s4159_s4114_r15530_r155
 SMALL_ZBBY_MC23=p7017/daod/DAOD_PHYS.701286.e8582_e8586_s4369_s4370_r16083_r15970_p6697.small.pool.root
 SMALL_ZBBY_MC23_P7017=p7017/daod/DAOD_PHYS.701286.e8582_e8586_s4369_s4370_r16083_r15970_p7017.small.pool.root
 SMALL_ZBB_MC20_P7018=p7018/daod/DAOD_PHYS.700855.e8536_s3681_r13144_p7018.small.pool.root
-SMALL_ZBBY_DATA_P7019=p7019/daod/DAOD_PHYS.periodAllYear.grp22_v01_p7019.j250y200.pool.root
+SMALL_ZBBY_DATA_P7019=p7019v2/daod/DAOD_PHYS.periodAllYear.grp22_v01_p7019.j250y200.pool.root
 declare -A SMALL_DATAFILES=(
     # this zbby sample also works fine to pass the jet selection
     [zbbjcalib-mc20]=${SMALL_ZBB_MC20_P7018}
@@ -126,6 +126,7 @@ declare -A SMALL_DATAFILES=(
     [h5-fast-mc23]=${SMALL_TTBAR_MC23}
     [hist-syst-Zbbj-mc23]=${SMALL_ZBBY_MC23_P7017}
     [hist-syst-Zbby-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [hist-Zbbj-data]=${SMALL_ZBBY_DATA_P7019}
     [hist-Zbby-data]=${SMALL_ZBBY_DATA_P7019}
     [aod-fast-Zbbj-mc23]=${SMALL_ZBBY_MC23_P7017}
     [aod-fast-Zbby-mc23]=${SMALL_ZBBY_MC23_P7017}
@@ -207,6 +208,7 @@ declare -A TESTS=(
     [hist-syst-bbbb-mc23]="hist-syst bbbb-ntupler"
     [hist-syst-Zbbj-mc23]="hist-syst xbbcalib-ntupler"
     [hist-syst-Zbby-mc23]="hist-syst xbbcalib-ntupler"
+    [hist-Zbbj-data]="hist-syst xbbcalib-ntupler"
     [hist-Zbby-data]="hist-syst xbbcalib-ntupler"
     [aod-fast-Zbbj-mc23]="aod-fast xbbcalib-ntupler xbbcalib-hists \
     XbbCalib/hists-config-Zbbj.yaml"
@@ -249,7 +251,7 @@ declare -A CONFIGS=(
     [ttcalib-mc20]=XbbCalib/RunConfig-ttCalib-bypass.yaml
     [zllycalib-mc20]=XbbCalib/RunConfig_Zlly-bypass.yaml
     [zlljcalib-mc20]=XbbCalib/RunConfig_Zllj-bypass.yaml
-    [zbbycalib-mc20]=XbbCalib/RunConfig-ZbbyCalib-bypass.yaml
+    [zbbycalib-mc20]=XbbCalib/RunConfig-ZbbyCalib.yaml
     [zbbjcalib-mc20]=XbbCalib/RunConfig_ZbbjCalib-bypass.yaml
     [bbbbtt-mc20]=bbbbttAnalysis/RunConfig-bbbbtt-bypass.yaml
     # MC20 AF3
@@ -286,6 +288,7 @@ declare -A CONFIGS=(
     [hist-syst-bbbb-mc23]=bbbbAnalysis/histonly-config.yaml
     [hist-syst-Zbbj-mc23]=XbbCalib/histonly-config-Zbbj.yaml
     [hist-syst-Zbby-mc23]=XbbCalib/histonly-config-Zbby.yaml
+    [hist-Zbbj-data]=XbbCalib/histonly-config-Zbbj-nogrl.yaml
     [hist-Zbby-data]=XbbCalib/histonly-config-Zbby-nogrl.yaml
     [aod-fast-Zbbj-mc23]=XbbCalib/RunConfig_ZbbjCalib.yaml
     [aod-fast-Zbby-mc23]=XbbCalib/RunConfig-ZbbyCalib.yaml
@@ -360,6 +363,24 @@ aod-fast() {
     echo "made hists:"
     h5ls ${HISTS}
 }
+has-nonzero-hists() {
+    local file=$1 all_ok=1
+    local groups
+    groups=$(h5ls "$file" | awk '/Group/{print $1}')
+    if [[ -z "$groups" ]]; then
+        echo "ERROR: no groups in $file" >&2
+        return 1
+    fi
+    for group in $groups; do
+        if check-hist-count "$file" "/$group" > /dev/null; then
+            echo "OK: $group"
+        else
+            echo "ERROR: no non-zero histograms under /$group" >&2
+            all_ok=0
+        fi
+    done
+    return $((1 - all_ok))
+}
 hist-syst() {
     local OPTS="$COMMON --fast-test --cache-metadata"
     OPTS+=" --h5-output hists.h5"
@@ -372,6 +393,7 @@ hist-syst() {
     metadata-check -v
     echo "top-level groups in hists.h5:"
     h5ls hists.h5
+    has-nonzero-hists hists.h5
 }
 
 ################################################

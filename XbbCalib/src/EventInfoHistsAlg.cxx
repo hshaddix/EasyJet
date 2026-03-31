@@ -14,9 +14,12 @@
 namespace {  // anonymous — file-private
 
 namespace bh = boost::histogram;
-using Hist = decltype(bh::make_weighted_histogram(
+using WS = bh::accumulators::weighted_sum<float>;
+using Hist = decltype(bh::make_histogram_with(
+    bh::dense_storage<WS>(),
     bh::axis::regular<float>(1, 0.f, 1.f, "")));
-using Hist2D = decltype(bh::make_weighted_histogram(
+using Hist2D = decltype(bh::make_histogram_with(
+    bh::dense_storage<WS>(),
     bh::axis::regular<float>(1, 0.f, 1.f, ""),
     bh::axis::regular<float>(1, 0.f, 1.f, "")));
 using HandleMap = std::map<std::string,
@@ -90,14 +93,15 @@ public:
   EventInfoHists(
     const CP::SystematicSet& sys,
     const HandleMap& handles,
-    const HH4B::HistsConfig& cfg)
+    const XBBCALIB::HistsConfig& cfg)
     : m_sys(&sys)
   {
     for (const auto& [varname, b] : cfg.vars1d) {
       m_vars.push_back({
         handles.at(varname),
         varname,
-        bh::make_weighted_histogram(
+        bh::make_histogram_with(
+          bh::dense_storage<WS>(),
           bh::axis::regular<float>(
             static_cast<int>(b.at("n_bins")),
             b.at("lower"), b.at("upper"), varname))
@@ -108,7 +112,8 @@ public:
         handles.at(cfg.var2dXNames.at(outname)),
         handles.at(cfg.var2dYNames.at(outname)),
         outname,
-        bh::make_weighted_histogram(
+        bh::make_histogram_with(
+          bh::dense_storage<WS>(),
           bh::axis::regular<float>(
             static_cast<int>(b.at("x_n_bins")),
             b.at("x_lower"), b.at("x_upper"),
@@ -147,7 +152,7 @@ private:
 } // anonymous namespace
 
 
-namespace HH4B {
+namespace XBBCALIB {
 
 EventInfoHistsAlg::EventInfoHistsAlg(const std::string& name,
                                      ISvcLocator* pSvcLocator)
@@ -167,15 +172,13 @@ StatusCode EventInfoHistsAlg::initialize() {
                      m_histsConfig.var2dXNames,
                      m_histsConfig.var2dYNames);
 
-  if (m_eventWeightName.value().empty()) {
-    ATH_MSG_ERROR("eventWeight must be configured");
-    return StatusCode::FAILURE;
-  }
-  m_eventWeightHandle = std::make_unique<CP::SysReadDecorHandle<float>>(
-    m_eventWeightName.value(), this);
   // m_eventHandle must be initialized before the per-variable decor handles
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
-  ATH_CHECK(m_eventWeightHandle->initialize(m_systematicsList, m_eventHandle));
+  if (!m_weightDecoName.value().empty()) {
+    m_weightHandle = std::make_unique<CP::SysReadDecorHandle<float>>(
+        m_weightDecoName.value(), this);
+    ATH_CHECK(m_weightHandle->initialize(m_systematicsList, m_eventHandle));
+  }
 
   // Build shared handles (one per variable).  Use the non-property constructor
   // so we can create them dynamically here in initialize().
@@ -206,14 +209,6 @@ StatusCode EventInfoHistsAlg::initialize() {
     ATH_CHECK(m_selectionDecoHandle->initialize(m_systematicsList,
                                                 m_eventHandle));
   }
-  if (!m_blindingVariable.value().empty()) {
-    m_blindingHandle = std::make_unique<CP::SysReadDecorHandle<float>>(
-      m_blindingVariable.value(), this);
-    ATH_CHECK(m_blindingHandle->initialize(m_systematicsList,
-                                           m_eventHandle));
-  }
-  for (const auto& dname : m_extraWeightNames.value())
-    m_extraWeightAccs.emplace_back(dname);
 
   ATH_CHECK(m_output_svc.retrieve());
   ATH_CHECK(m_systematicsList.initialize());
@@ -230,18 +225,14 @@ StatusCode EventInfoHistsAlg::initialize() {
 StatusCode EventInfoHistsAlg::execute(const EventContext& ctx) const {
   (void)ctx;
   for (auto& [sys, hists] : m_hists) {
+    if (m_nominalOnly && !sys.empty()) continue;
     ATH_MSG_VERBOSE("filling " << sys.name());
     const xAOD::EventInfo* evtInfo = nullptr;
     ATH_CHECK(m_eventHandle.retrieve(evtInfo, sys));
     if (m_selectionDecoHandle
         && !m_selectionDecoHandle->get(*evtInfo, sys)) continue;
-    if (m_blindingHandle) {
-      float bval = m_blindingHandle->get(*evtInfo, sys);
-      if (bval > m_blindingMin && bval < m_blindingMax) continue;
-    }
-    float weight = m_eventWeightHandle->get(*evtInfo, sys);
-    for (const auto& acc : m_extraWeightAccs)
-      weight *= acc(*evtInfo);
+    float weight = m_weightHandle
+        ? m_weightHandle->get(*evtInfo, sys) : 1.f;
     hists->fill(*evtInfo, weight);
   }
   return StatusCode::SUCCESS;
@@ -263,6 +254,7 @@ StatusCode EventInfoHistsAlg::finalize() {
     parent = &wp_group;
   }
   for (const auto& [sys, hists] : m_hists) {
+    if (m_nominalOnly && !sys.empty()) continue;
     std::string name = sys.name().empty() ? "nominal" : sys.name();
     ATH_MSG_DEBUG("saving " << name);
     if (!H5Lexists(parent->getId(), name.c_str(), H5P_DEFAULT))
@@ -273,4 +265,4 @@ StatusCode EventInfoHistsAlg::finalize() {
   return StatusCode::SUCCESS;
 }
 
-} // namespace HH4B
+} // namespace XBBCALIB

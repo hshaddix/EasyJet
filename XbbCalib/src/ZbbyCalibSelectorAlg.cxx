@@ -55,23 +55,7 @@ namespace XBBCALIB
 
       const xAOD::PhotonContainer *photons = nullptr;
       ANA_CHECK (m_photonHandle.retrieve(photons, sys));
-      //************
-      // Apply Selection
-      //************
-
-      // flags
-      //************
-      // Large-R Jet & Photons
-      //************
-      // Require at least one large-R jet & exactly one photon (or at least one)
-      bool pass_baseline = (lrjets->size() != 0) || m_bypass;
-
-
-      //****************
-      // event level info
-      //****************
-
-      if (!m_bypass && !pass_baseline) continue;
+      if (lrjets->empty()) continue;
 
       // Global event filter true if any syst passes and controls
       // if event is passed to output writing or not

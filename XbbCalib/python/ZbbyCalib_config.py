@@ -39,22 +39,11 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
     )
 
     selected_photons = "XbbCalibPhotons_%SYS%"
-    if flags.Analysis.bypass:
-        # CP calibration rejects photons in the test file; read raw
-        # photons with just a pT cut so downstream algs see real objects.
-        cfg.addEventAlgo(CompFactory.Easyjet.PhotonSelectorAlg(
-            "PhotonSelectorAlg",
-            containerInKey="Photons",
-            containerOutKey=selected_photons,
-            minPt=flags.Analysis.Photon.min_pT,
-            baselineSelectionName="",
-        ))
-    else:
-        cfg.merge(PhotonSelectorAlgCfg(flags,
-                                       containerInKey=photonkey,
-                                       containerOutKey=selected_photons,
-                                       minPt=flags.Analysis.Photon.min_pT,
-                                       ))
+    cfg.merge(PhotonSelectorAlgCfg(flags,
+                                   containerInKey=photonkey,
+                                   containerOutKey=selected_photons,
+                                   minPt=flags.Analysis.Photon.min_pT,
+                                   ))
 
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.ZbbyCalibSelectorAlg(
@@ -62,7 +51,6 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             lrjets=selected_large_r_jets,
             photons=selected_photons,
             eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
-            bypass=flags.Analysis.bypass,
         )
     )
     # signal jets selection

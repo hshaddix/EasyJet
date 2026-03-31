@@ -4,13 +4,8 @@ include:
 GRL:
   runGRL: false
 
-bypass: true
-
-Large_R_jet:
-  min_pT: 50.e+3
-  max_eta: 4.5
-
-Photon:
-  ID: "Loose"
-  Iso: "FixedCutLoose"
-  min_pT: 25.e+3
+output:
+  h5:
+    hists:
+      blinding:
+        enable: false

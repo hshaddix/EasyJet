@@ -1,3 +1,4 @@
+enable: true
 variable: "Zcand_0_m"
 min: 74.e+3   # lower bound (exclusive)
 max: 106.e+3  # upper bound (exclusive)

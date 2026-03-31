@@ -5,7 +5,7 @@
 #ifndef XBBCALIB_FINALSELECTIONALGC_H
 #define XBBCALIB_FINALSELECTIONALGC_H
 
-#include <AthenaBaseComps/AthHistogramAlgorithm.h>
+#include <AthenaBaseComps/AthAlgorithm.h>
 #include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
@@ -17,9 +17,12 @@
 
 namespace XBBCALIB {
 
-class FinalSelectionAlg final : public AthHistogramAlgorithm {
+struct cutvals_t;
+
+class FinalSelectionAlg final : public AthAlgorithm {
 public:
   FinalSelectionAlg(const std::string& name, ISvcLocator* sl);
+  ~FinalSelectionAlg();
   StatusCode initialize() override;
   StatusCode execute() override;
 
@@ -36,7 +39,6 @@ private:
 
   // Input decorations — created dynamically in initialize() if cut is configured
   std::shared_ptr<CP::SysReadDecorHandle<int>>   m_lrjetsNHandle;
-  std::shared_ptr<CP::SysReadDecorHandle<float>>  m_zcandMHandle;
 
   // Optional Xbb-WP cut (empty = no cut).
   Gaudi::Property<std::string> m_tagDecoName
@@ -48,11 +50,18 @@ private:
   Gaudi::Property<std::string> m_selectionConfigJson
     {this, "selectionConfig", "{}", "JSON object: selection thresholds"};
 
+  // Blinding: sets pass=false when variable value is in (min, max)
+  Gaudi::Property<std::string> m_blindingVariable
+    {this, "blindingVariable", "",
+     "EventInfo float deco for blinding check (_%SYS% appended internally)"};
+  Gaudi::Property<float> m_blindingMin{this, "blindingMin", 0.f};
+  Gaudi::Property<float> m_blindingMax{this, "blindingMax", 0.f};
+
   // Parsed thresholds (populated in initialize())
-  std::optional<int>   m_n_lrjets_min;
-  std::optional<float> m_Zcand_m_min;
-  std::optional<float> m_Zcand_m_max;
-  std::string          m_sample_label;   // string example — metadata, no cut
+  std::unique_ptr<cutvals_t> m_cuts;
+
+  // Handles created in initialize()
+  std::unique_ptr<CP::SysReadDecorHandle<float>> m_blindingHandle;
 };
 
 } // namespace XBBCALIB

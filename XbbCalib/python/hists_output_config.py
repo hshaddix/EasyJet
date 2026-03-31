@@ -30,16 +30,22 @@ def _validate_variables2d(variables2d):
                         f"missing key '{key}'")
 
 
-def _final_selection_cfg(selection_config, deco_name, algo_name,
-                          tag_decoration=""):
-    thresholds = {k: v for k, v in selection_config.items()}
+def _final_selection_cfg(flags, hists_cfg, deco_name):
+    selection_config = hists_cfg.selection.as_mutable()
+    algo_name = f"FinalSelectionAlg_{deco_name}"
+    sel_kwargs = {}
+    if not flags.Input.isMC and hists_cfg.blinding.enable:
+        sel_kwargs['blindingVariable'] = str(hists_cfg.blinding.variable)
+        sel_kwargs['blindingMin'] = float(hists_cfg.blinding.min)
+        sel_kwargs['blindingMax'] = float(hists_cfg.blinding.max)
     cfg = ComponentAccumulator()
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.FinalSelectionAlg(
             algo_name,
-            selectionConfig=json.dumps(thresholds),
+            selectionConfig=json.dumps(
+                {k: v for k, v in selection_config.items()}),
             selectionDecoration=deco_name,
-            tagDecoration=tag_decoration,
+            **sel_kwargs,
         )
     )
     return cfg
@@ -78,51 +84,66 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
                 'y_n_bins': float(spec['y']['n_bins']),
             }
 
-    extra_weights = list(hists_cfg.weights.all_runs)
-    if flags.GeoModel.Run is LHCPeriod.Run2:
-        extra_weights += list(hists_cfg.weights.run2)
-
-    blinding_variable = ""
-    blinding_min = 0.
-    blinding_max = 0.
-    if not flags.Input.isMC:
-        blinding_variable = str(hists_cfg.blinding.variable) + "_%SYS%"
-        blinding_min = float(hists_cfg.blinding.min)
-        blinding_max = float(hists_cfg.blinding.max)
-
     h5_svc = CompFactory.H5FileSvc(path=str(out_path))
     cfg.addService(h5_svc)
 
-    sel = hists_cfg.selection.as_mutable()
+    weight_deco = "XbbCalib_event_weight_%SYS%"
+    weight_kwargs = {}
+    if flags.Input.isMC:
+        weight_kwargs['sysWeight'] = "generatorWeight_%SYS%"
+        extra = list(hists_cfg.weights.all_runs)
+        if flags.GeoModel.Run is LHCPeriod.Run2:
+            extra += list(hists_cfg.weights.run2)
+        weight_kwargs['extraWeights'] = extra
+    cfg.addEventAlgo(
+        CompFactory.XBBCALIB.FinalWeightAlg(
+            "FinalWeightAlg",
+            weightDecoration=weight_deco,
+            **weight_kwargs,
+        )
+    )
 
-    # WP loop: None = "notag" (base cuts only), rest apply tag cut too.
-    all_wps = [None] + list(tag_wps)
+    # Single notag selection (also needed by ZbbHistogramAlg).
+    selection_flag = "XbbCalib_pass_%SYS%"
+    cfg.merge(_final_selection_cfg(
+        flags, hists_cfg,
+        deco_name=selection_flag
+    ))
 
-    for wp in all_wps:
-        wp_label = "notag" if wp is None else wp
-        deco_name = f"XbbCalib_pass_{wp_label}_%SYS%"
-        tag_deco = "" if wp is None else f"Zcand_0_{wp}_%SYS%"
+    cfg.addEventAlgo(
+        CompFactory.XBBCALIB.EventInfoHistsAlg(
+            "EventInfoHistsAlg",
+            variables=variables,
+            variables2d=variables2d,
+            variables2dXvar=variables2dXvar,
+            variables2dYvar=variables2dYvar,
+            weightDecoration=weight_deco,
+            output=h5_svc,
+            selectionDecoration=selection_flag,
+            nominalOnly=True,
+            groupName="notag",
+        )
+    )
 
-        cfg.merge(_final_selection_cfg(
-            sel, deco_name,
-            algo_name=f"FinalSelectionAlg_{wp_label}",
-            tag_decoration=tag_deco))
-
+    if hists_cfg.multidim.enable:
+        md = hists_cfg.multidim
+        wp_decos = [""] + [f"Zcand_0_{wp}" for wp in tag_wps]
         cfg.addEventAlgo(
-            CompFactory.HH4B.EventInfoHistsAlg(
-                name=f"EventInfoHistsAlg_{wp_label}",
-                variables=variables,
-                variables2d=variables2d,
-                variables2dXvar=variables2dXvar,
-                variables2dYvar=variables2dYvar,
-                eventWeight="generatorWeight_%SYS%",
-                extraWeights=extra_weights,
+            CompFactory.XBBCALIB.ZbbHistogramAlg(
+                "ZbbHistogramAlg",
+                event="EventInfo",
+                weightDecoration=weight_deco,
+                selectionDecoration=selection_flag,
+                massVar=str(md.mass_var),
+                ptVar=str(md.pt_var),
+                massBins=int(md.mass_n_bins),
+                massLower=float(md.mass_lower),
+                massUpper=float(md.mass_upper),
+                ptEdges=list(md.pt_edges),
+                wpDecorations=wp_decos,
+                groupName="multidim",
+                histName="mass_pt_wp_sys",
                 output=h5_svc,
-                selectionDecoration=deco_name,
-                groupName=wp_label,
-                blindingVariable=blinding_variable,
-                blindingMin=blinding_min,
-                blindingMax=blinding_max,
             )
         )
 

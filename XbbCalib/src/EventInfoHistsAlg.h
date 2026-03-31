@@ -14,7 +14,6 @@
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
-#include "AthContainers/AuxElement.h"
 #include <map>
 #include <memory>
 #include <string>
@@ -31,7 +30,7 @@ struct IEventInfoHists {
   virtual ~IEventInfoHists() = default;
 };
 
-namespace HH4B {
+namespace XBBCALIB {
 
 struct HistsConfig {
   std::map<std::string, std::map<std::string, float>> vars1d;
@@ -54,11 +53,11 @@ private:
 
   CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{this, "event", "EventInfo", "EventInfo container"};
-  Gaudi::Property<std::string> m_eventWeightName
-    {this, "eventWeight", "",
-     "EventInfo decoration for event weight (must include %SYS%)"};
-  // created in initialize()
-  std::unique_ptr<CP::SysReadDecorHandle<float>> m_eventWeightHandle;
+  Gaudi::Property<std::string> m_weightDecoName
+    {this, "weightDecoration", "",
+     "EventInfo float deco for pre-computed event weight (must contain %SYS%)"};
+  // created in initialize() when weightDecoration is non-empty
+  std::unique_ptr<CP::SysReadDecorHandle<float>> m_weightHandle;
   ServiceHandle<IH5GroupSvc> m_output_svc{this, "output", "", "output file service"};
 
   HistsConfig m_histsConfig;
@@ -67,31 +66,20 @@ private:
     {this, "selectionDecoration", "",
      "if non-empty, only fill when this EventInfo char decoration is non-zero"};
 
-  // Additional per-event weight decoration names (attr names on EventInfo,
-  // no "EventInfo." prefix) multiplied with the base eventWeight
-  Gaudi::Property<std::vector<std::string>>
-    m_extraWeightNames{this, "extraWeights", {}};
-
   Gaudi::Property<std::string> m_groupName
     {this, "groupName", "",
      "HDF5 subgroup written under the file root (empty = write at root)"};
 
-  Gaudi::Property<std::string> m_blindingVariable
-    {this, "blindingVariable", "",
-     "decoration base name for blinding variable (empty = no blinding)"};
-  Gaudi::Property<float> m_blindingMin{this, "blindingMin", 0.f};
-  Gaudi::Property<float> m_blindingMax{this, "blindingMax", 0.f};
+  Gaudi::Property<bool> m_nominalOnly
+    {this, "nominalOnly", false,
+     "if true, skip all non-nominal (non-NOSYS) systematics"};
 
   // created in initialize() when selectionDecoration is non-empty
   std::shared_ptr<CP::SysReadDecorHandle<char>> m_selectionDecoHandle;
-  // created in initialize() when blindingVariable is non-empty
-  std::unique_ptr<CP::SysReadDecorHandle<float>> m_blindingHandle;
-  // Created in initialize() from m_extraWeightNames
-  std::vector<SG::AuxElement::ConstAccessor<float>> m_extraWeightAccs;
 
   using JHist = std::pair<CP::SystematicSet, std::unique_ptr<IEventInfoHists>>;
   std::vector<JHist> m_hists;
 };
 
-} // namespace HH4B
+} // namespace XBBCALIB
 #endif

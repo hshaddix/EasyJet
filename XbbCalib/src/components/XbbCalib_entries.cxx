@@ -1,6 +1,7 @@
 #include "../DataEnrichmentAlg.h"
 #include "../EventInfoHistsAlg.h"
 #include "../FinalSelectionAlg.h"
+#include "../FinalWeightAlg.h"
 #include "../BaselineVarsttCalibAlg.h"
 #include "../BaselineVarsZbbyCalibAlg.h"
 #include "../ZbbyCalibSelectorAlg.h"
@@ -14,13 +15,15 @@
 #include "../ZlljCalibSelectorAlg.h"
 #include "../ZllyCalibSelectorAlg.h"
 #include "../ZtautauCalibSelectorAlg.h"
+#include "../ZbbHistogramAlg.h"
 
 DECLARE_COMPONENT(DataEnrichmentAlg)
 
 using namespace XBBCALIB;
 
-DECLARE_COMPONENT(HH4B::EventInfoHistsAlg)
+DECLARE_COMPONENT(XBBCALIB::EventInfoHistsAlg)
 DECLARE_COMPONENT(XBBCALIB::FinalSelectionAlg)
+DECLARE_COMPONENT(XBBCALIB::FinalWeightAlg)
 DECLARE_COMPONENT(BaselineVarsttCalibAlg)
 DECLARE_COMPONENT(BaselineVarsZbbyCalibAlg)
 DECLARE_COMPONENT(ZbbyCalibSelectorAlg)
@@ -34,3 +37,4 @@ DECLARE_COMPONENT(ZbbjCalibSelectorAlg)
 DECLARE_COMPONENT(ZlljCalibSelectorAlg)
 DECLARE_COMPONENT(ZllyCalibSelectorAlg)
 DECLARE_COMPONENT(ZtautauCalibSelectorAlg)
+DECLARE_COMPONENT(XBBCALIB::ZbbHistogramAlg)

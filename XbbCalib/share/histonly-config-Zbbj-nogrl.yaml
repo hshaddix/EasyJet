@@ -1,0 +1,11 @@
+include:
+  - XbbCalib/histonly-config-Zbbj.yaml
+
+GRL:
+  runGRL: false
+
+output:
+  h5:
+    hists:
+      blinding:
+        enable: false

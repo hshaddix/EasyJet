@@ -1,9 +1,6 @@
 disable_metadata: true
 selection:
   n_lrjets_min: 1
-  Zcand0_m_min: 50000.0
-  Zcand0_m_max: 250000.0
-  sample_label: "Zbbj"
 variables:
   Zcand0_m:
     lower: 50000
@@ -12,3 +9,5 @@ variables:
 weights:
   all_runs: []
   run2: []
+multidim:
+  enable: false

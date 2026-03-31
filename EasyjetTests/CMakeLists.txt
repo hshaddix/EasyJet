@@ -13,6 +13,13 @@ atlas_add_executable( compareOutputNtuples
   LINK_LIBRARIES ${ROOT_LIBRARIES}
 )
 
+find_package(HDF5 REQUIRED COMPONENTS CXX)
+atlas_add_executable( check-hist-count
+  util/checkHistCount.cxx
+  INCLUDE_DIRS ${HDF5_INCLUDE_DIRS}
+  LINK_LIBRARIES ${HDF5_CXX_LIBRARIES}
+)
+
 atlas_install_scripts(
   bin/*
 )

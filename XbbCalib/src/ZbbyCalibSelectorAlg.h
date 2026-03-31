@@ -39,11 +39,6 @@ namespace XBBCALIB
       StatusCode finalize() override; ///I added this to write the cutflow histogram.
 
     private :
-      // ToolHandle<whatever> handle {this, "pythonName", "defaultValue",
-      // "someInfo"};
-      Gaudi::Property<bool> m_bypass
-        { this, "bypass", false, "Run selector algorithm in pass-through mode" };
-
       /// \brief Setup syst-aware input container handles
       CP::SysListHandle m_systematicsList {this};
 
