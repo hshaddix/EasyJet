@@ -138,7 +138,13 @@ namespace HH4B
 
         if (!J75TrigPaths.empty()) evaluateTriggerCuts(eventInfo.cptr(), J75TrigPaths, triggerdecos, pass_decos, HH4B::J75);
         if (!J80TrigPaths.empty()) evaluateTriggerCuts(eventInfo.cptr(), J80TrigPaths, triggerdecos, pass_decos, HH4B::J80);
-    }    
+    } else if (year(*eventInfo) == 2024) {
+
+        const auto& J75TrigPaths = getTriggerPaths(m_triggerMap, year(*eventInfo), HH4B::J75);
+
+        if (!J75TrigPaths.empty()) evaluateTriggerCuts(eventInfo.cptr(), J75TrigPaths, triggerdecos, pass_decos, HH4B::J75);
+
+    }
     
 
     if (jets->size() < 2) return StatusCode::SUCCESS;  
@@ -193,6 +199,8 @@ namespace HH4B
       if( year(*eventInfo) == 2022 && pass_decos.at(HH4B::J80)(*eventInfo))
         bucketDecorator(*eventInfo) = 1;
       else if( year(*eventInfo) == 2023 && pass_decos.at(HH4B::J75)(*eventInfo))
+        bucketDecorator(*eventInfo) = 1;
+      else if( year(*eventInfo) == 2024 && pass_decos.at(HH4B::J75)(*eventInfo))
         bucketDecorator(*eventInfo) = 1;
       else
         bucketDecorator(*eventInfo) = 0;
@@ -269,6 +277,7 @@ namespace HH4B
       if( y < 2022) return HH4B::DIB_SINGJ;
       else if( y == 2022 ) return HH4B::J80;
       else if( y == 2023 ) return HH4B::J75;
+      else if( y == 2024 ) return HH4B::J75;
       return HH4B::SINGB;
     };
 
