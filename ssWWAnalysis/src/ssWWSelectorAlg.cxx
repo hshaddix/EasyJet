@@ -281,7 +281,7 @@ namespace ssWWVBS
           }
         }      
       }
-      else if (pass_baseline && m_bools.at(ssWWVBS::EXACTLY_THREE_LEPTONS)) 
+      else if (m_bools.at(ssWWVBS::PASS_TRIGGER) && m_bools.at(ssWWVBS::EXACTLY_THREE_LEPTONS)) 
       {
         // WZ control region (WZCR)
         std::vector<std::pair<const xAOD::IParticle*, int>> leptons; // Store leptons
@@ -292,13 +292,11 @@ namespace ssWWVBS
         {
             leptons.emplace_back(ele, -11*ele->charge());
         }
-
         // Collect muons 4-momenta and charges
         for (const auto& mu : *muons) 
         {
             leptons.emplace_back(mu, -13*mu->charge());
         }
-
         if (leptons.size() >= 3) 
         {
             // Sort leptons by pT in descending order
@@ -306,37 +304,63 @@ namespace ssWWVBS
               [](const std::pair<const xAOD::IParticle*, int>& a,
               const std::pair<const xAOD::IParticle*, int>& b) {
               return a.first->pt() > b.first->pt(); });
-
-          selected_leptons.emplace_back(leptons[0].first->p4(), leptons[0].second);
-          selected_leptons.emplace_back(leptons[1].first->p4(), leptons[1].second);
             
             //Checking that 3rd lepton passes ID cuts
-          for (size_t i = 2; i < leptons.size() && selected_leptons.size()<3; ++i) 
+          for (size_t i = 0; i < leptons.size(); ++i) 
           {
             const xAOD::IParticle* lep = leptons[i].first;
             int id = leptons[i].second;
-            if (std::abs(id) == 11) 
+            if (i < 2)
             {
-              const xAOD::Electron* lep3 = dynamic_cast<const xAOD::Electron*>(lep);
-              if (lep3 && m_eleWPDecorHandle.get(*lep3, sys) == 1 &&
-                lep3->pt() > 15. * Athena::Units::GeV &&
-                (((std::abs(lep3->eta()) < 1.37) || (std::abs(lep3->eta()) > 1.52)) &&
-                (lep3->author() == 1))) 
-              {  
-                m_ele_selected.set(*lep3, true, sys);
-                selected_leptons.emplace_back(lep3->p4(), id);
-              } 
+                if (std::abs(id) == 11) 
+                {
+                    const xAOD::Electron* ele = dynamic_cast<const xAOD::Electron*>(lep);
+                    if (ele && m_eleWPDecorHandle.get(*ele, sys) == 1 &&
+                    ele->pt() > 27. * Athena::Units::GeV)
+                    {  
+                      if ((std::abs(ele->eta()) < 1.37) || (std::abs(ele->eta()) > 1.52))
+                      {
+                        m_ele_selected.set(*ele, true, sys);
+                        selected_leptons.emplace_back(ele->p4(), id);
+                      }
+                    }
+                }
+                if(std::abs(id) == 13)
+                {
+                    const xAOD::Muon* muon = dynamic_cast<const xAOD::Muon*>(lep);
+                    if (muon && m_muonWPDecorHandle.get(*muon, sys) == 1 &&
+                    muon->pt() > 27. * Athena::Units::GeV) 
+                    {
+                        m_mu_selected.set(*muon, true, sys);
+                        selected_leptons.emplace_back(muon->p4(), id);
+                    }
+                }
             }
-            if(std::abs(id) == 13)
+            else if (i == 2)
             {
-              const xAOD::Muon* lep3 = dynamic_cast<const xAOD::Muon*>(lep);
-              if (lep3 && m_muonWPDecorHandle.get(*lep3, sys) == 1 &&
-              lep3->pt() > 15. * Athena::Units::GeV) 
-              {
-                m_mu_selected.set(*lep3, true, sys);
-                selected_leptons.emplace_back(lep3->p4(), id);
-              }
+                if (std::abs(id) == 11) 
+                {
+                const xAOD::Electron* lep3 = dynamic_cast<const xAOD::Electron*>(lep);
+                if (lep3 && m_eleWPDecorHandle.get(*lep3, sys) == 1 &&
+                    lep3->pt() > 15. * Athena::Units::GeV)
+                    if ((std::abs(lep3->eta()) < 1.37) || (std::abs(lep3->eta()) > 1.52))
+                    {
+                      m_ele_selected.set(*lep3, true, sys);
+                      selected_leptons.emplace_back(lep3->p4(), id);
+                    }
+                }
+                if(std::abs(id) == 13)
+                {
+                const xAOD::Muon* lep3 = dynamic_cast<const xAOD::Muon*>(lep);
+                if (lep3 && m_muonWPDecorHandle.get(*lep3, sys) == 1 &&
+                    lep3->pt() > 15. * Athena::Units::GeV) 
+                {
+                    m_mu_selected.set(*lep3, true, sys);
+                    selected_leptons.emplace_back(lep3->p4(), id);
+                }
+                }
             }
+            else break; // Only consider the three leading leptons
           }
         }
 
