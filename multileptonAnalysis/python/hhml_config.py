@@ -70,6 +70,9 @@ def hhml_cfg(
                 "MbbKinFitDecoratorAlg",
                 KinFitTool=kinematic_fit_tool,
                 doSystematics=flags.Analysis.do_CP_systematics,
+                jetContainerOutKey_KF1="bb4lAnalysisKF1Jets_%SYS%",
+                jetContainerOutKey_KF2="bb4lAnalysisKF2Jets_%SYS%",
+                bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             )
         )
 
@@ -100,6 +103,7 @@ def hhml_cfg(
         CompFactory.MULTILEPTON.BaselineVarsMultileptonAlg(
             "FinalVarshhmlAlg",
             doKF=flags.Analysis.do_KinematicFit,
+            KFJets="bb4lAnalysisKF2Jets_%SYS%",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             floatVariableList=float_variables,
             intVariableList=int_variables,
@@ -179,18 +183,30 @@ def hhml_branches(flags):
     if flags.Analysis.do_KinematicFit:
         # do not append KF_mbb variables to float_variable_names['baseline']
         # as they are stored by the KF algorithm not BaselineVarsbb4lAlg
-        all_baseline_variable_names += ["KF_mbb"]
-        kf_iter_branches = [
-            "iter1_jet_pt",
-            "iter1_jet_eta",
-            "iter1_jet_phi",
-            "iter1_jet_m",
-            "iter2_jet_pt",
-            "iter2_jet_eta",
-            "iter2_jet_phi",
-            "iter2_jet_m"
-        ]
-        all_baseline_variable_names += kf_iter_branches
+        all_baseline_variable_names += ["KF_mbb", "LH_KF1", "LH_KF2"]
+        if flags.Analysis.extra_KinematicFit_variables:
+            all_baseline_variable_names += ["Conv_KF1", "Conv_KF2"]
+
+            for var in ["pt", "eta", "phi", "m"]:
+                branches += [
+                    f"bb4lAnalysisKF1Jets_%SYS%.{var} -> hhml_KF1Jets_{var}"
+                    + flags.Analysis.systematics_suffix_separator + "%SYS%"
+                ]
+                branches += [
+                    f"bb4lAnalysisKF2Jets_%SYS%.{var} -> hhml_KF2Jets_{var}"
+                    + flags.Analysis.systematics_suffix_separator + "%SYS%"
+                ]
+#        kf_iter_branches = [
+#            "iter1_jet_pt",
+#            "iter1_jet_eta",
+#            "iter1_jet_phi",
+#            "iter1_jet_m",
+#            "iter2_jet_pt",
+#            "iter2_jet_eta",
+#            "iter2_jet_phi",
+#            "iter2_jet_m"
+#        ]
+#        all_baseline_variable_names += kf_iter_branches
 
     for var in all_baseline_variable_names:
         branches += [

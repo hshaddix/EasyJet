@@ -19,6 +19,7 @@ do_electrons: true
 do_photons: true
 do_met: true
 do_KinematicFit: true
+extra_KinematicFit_variables: false
 do_Boosted: false
 do_GNN2bjetSelection: true
 

@@ -164,7 +164,7 @@ namespace HHBBYY
     /// We use default finalize() -- this is for cleanup, and we don't do any
 
   private:
-    float compute_Topness(const xAOD::JetContainer *jets);
+    float compute_Topness(const xAOD::JetContainer *jets, const auto &sys);
     std::vector<float> compute_EventShapes(const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2, const std::vector<TLorentzVector>& photons, const int& n_photons);
     float compute_pTBalance(const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2, const std::vector<TLorentzVector>& photons, const int& n_photons);
 
@@ -183,10 +183,10 @@ namespace HHBBYY
 
     StatusCode vbf_calculations(const TLorentzVector& ph1, const TLorentzVector& ph2,
                 const int& n_photons,
-				const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2, const xAOD::JetContainer *jets,
-				double HT,const TLorentzVector& HH,
-				const std::string& prefix_j, const std::string& prefix_jj,
-				std::map<HHBBYY::Var, float> &eventFloats, const xAOD::EventInfo *event, const auto &sys);
+        const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2, const xAOD::JetContainer *jets,
+        double HT,const TLorentzVector& HH,
+        const std::string& prefix_j, const std::string& prefix_jj,
+        std::map<HHBBYY::Var, float> &eventFloats, const xAOD::EventInfo *event, const auto &sys);
 
     void performCategorisationBDT(const TLorentzVector& ph1, const TLorentzVector& ph2,
                                   const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2,
@@ -249,6 +249,10 @@ namespace HHBBYY
 
     Gaudi::Property<bool> m_doKF
       { this, "doKF", false, "Do Kinematic Fit?" };
+
+//Possible flag to add optional calculations for extra KF variables
+//    Gaudi::Property<bool> m_extraKF_variables
+//      { this, "extraKF_variables", false, "Additional KF variables?" };
 
     Gaudi::Property<std::vector<std::string>> m_floatVariables
       {this, "floatVariableList", {}, "Name list of float variables"};

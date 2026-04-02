@@ -9,119 +9,143 @@
 
 namespace MULTILEPTON
 {
-    MbbKinFitDecoratorAlg ::MbbKinFitDecoratorAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-        : EL::AnaAlgorithm(name, pSvcLocator)
-    {
-    }
-    StatusCode MbbKinFitDecoratorAlg ::initialize()
-    {
+  MbbKinFitDecoratorAlg ::MbbKinFitDecoratorAlg(const std::string &name,
+      ISvcLocator *pSvcLocator)
+    : EL::AnaAlgorithm(name, pSvcLocator)
+  {
+  }
+  StatusCode MbbKinFitDecoratorAlg ::initialize()
+  {
 
-        ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
-        ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
-        ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
 
-        ATH_CHECK(m_jetHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_jetHandle.initialize(m_systematicsList));
 
-        ATH_CHECK(m_jetOutHandle.initialize(m_systematicsList));
-        ATH_CHECK(m_KF_MBB.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_jetOutHandle_KF1.initialize(m_systematicsList));
+    ATH_CHECK (m_jetOutHandle_KF2.initialize(m_systematicsList));
+    ATH_CHECK (m_KF_MBB.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_LH_KF1.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_LH_KF2.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_Conv_KF1.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_Conv_KF2.initialize(m_systematicsList, m_eventHandle));
 
-        ATH_CHECK(m_iter1_pt.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter1_eta.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter1_phi.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter1_m.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter2_pt.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter2_eta.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter2_phi.initialize(m_systematicsList, m_eventHandle));
-        ATH_CHECK(m_iter2_m.initialize(m_systematicsList, m_eventHandle));
-
-        ANA_CHECK(m_systematicsList.initialize());
-
-        ATH_CHECK(m_KFTool.retrieve());
-
-        return StatusCode::SUCCESS;
+    if (!m_isBtag.empty()) {
+      ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_eventHandle));
     }
 
-    StatusCode MbbKinFitDecoratorAlg::execute()
+    ANA_CHECK(m_systematicsList.initialize());
+
+    ATH_CHECK(m_KFTool.retrieve());
+
+    return StatusCode::SUCCESS;
+  }
+
+  StatusCode MbbKinFitDecoratorAlg::execute()
+  {
+
+    for (const auto &sys : m_systematicsList.systematicsVector())
     {
+      if (!m_doSystematics && sys.name() != "")
+        continue;
 
-        for (const auto &sys : m_systematicsList.systematicsVector())
-        {
-            if (!m_doSystematics && sys.name() != "")
-                continue;
+      const xAOD::EventInfo *event = nullptr;
+      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      const xAOD::ElectronContainer *electrons = nullptr;
+      ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
+      const xAOD::MuonContainer *muons = nullptr;
+      ANA_CHECK(m_muonHandle.retrieve(muons, sys));
+      const xAOD::JetContainer *jets = nullptr;
+      ANA_CHECK(m_jetHandle.retrieve(jets, sys));
 
-            const xAOD::EventInfo *event = nullptr;
-            ANA_CHECK(m_eventHandle.retrieve(event, sys));
-            const xAOD::ElectronContainer *electrons = nullptr;
-            ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
-            const xAOD::MuonContainer *muons = nullptr;
-            ANA_CHECK(m_muonHandle.retrieve(muons, sys));
-            const xAOD::JetContainer *jets = nullptr;
-            ANA_CHECK(m_jetHandle.retrieve(jets, sys));
+      // setup KF tool inputs
+      double KF1_Mbb = -99.;
+      if (jets->size() >= 2)
+      {
+        TLorentzVector j1 = jets->at(0)->p4();
+        TLorentzVector j2 = jets->at(1)->p4();
+        TLorentzVector jj = j1 + j2;
+        KF1_Mbb = jj.M();
+      }
 
-            // setup KF tool inputs
-            double KF1_Mbb = -99.;
-            if (jets->size() >= 2)
-            {
-                TLorentzVector j1 = jets->at(0)->p4();
-                TLorentzVector j2 = jets->at(1)->p4();
-                TLorentzVector jj = j1 + j2;
-                KF1_Mbb = jj.M();
-            }
+      double LH_KF1=999;
+      double LH_KF2=999;
 
-            auto workJetContainer = std::make_unique<xAOD::JetContainer>();
-            auto workJetAuxContainer = std::make_unique<xAOD::JetAuxContainer>();
-            workJetContainer->setStore(workJetAuxContainer.get());
+      int Conv_KF1=-1;
+      int Conv_KF2=-1;
 
-            for (const auto jet : *jets)
-            {
-                xAOD::Jet *thisJet = new xAOD::Jet();
-                workJetContainer->push_back(thisJet);
-                *thisJet = *jet; 
-            }
+      // ========================================================
+      // ITERATION 1: Unconstrained Fit
+      // ========================================================
+      auto workJetCont_Iter1 = std::make_unique<xAOD::JetContainer>();
+      auto workJetAuxCont_Iter1 = std::make_unique<xAOD::JetAuxContainer>();
+      workJetCont_Iter1->setStore(workJetAuxCont_Iter1.get());
 
-            ATH_CHECK(m_KFTool->applyKF_bb4l(
-                    *electrons, *muons, *workJetContainer, KF1_Mbb));
-            auto constDataWorkJetContainer = std::make_unique<ConstDataVector<xAOD::JetContainer>>();
-            constDataWorkJetContainer->reserve(workJetContainer->size());
+      for (const auto* jet : *jets) {
+        xAOD::Jet* thisJet = new xAOD::Jet(*jet);  
+        workJetCont_Iter1->push_back(thisJet);     
+      }
 
-            const auto &iter1_jets = m_KFTool->getIter1Jets();
-            const auto &iter2_jets = m_KFTool->getIter2Jets();
-            std::vector<float> iter1_pt, iter1_eta, iter1_phi, iter1_m;
-            std::vector<float> iter2_pt, iter2_eta, iter2_phi, iter2_m;
-            for (const auto &jet : iter1_jets)
-            {
-                iter1_pt.push_back(jet.Pt());
-                iter1_eta.push_back(jet.Eta());
-                iter1_phi.push_back(jet.Phi());
-                iter1_m.push_back(jet.M());
-            }
-            for (const auto &jet : iter2_jets)
-            {
-                iter2_pt.push_back(jet.Pt());
-                iter2_eta.push_back(jet.Eta());
-                iter2_phi.push_back(jet.Phi());
-                iter2_m.push_back(jet.M());
-            }
-            m_iter1_pt.set(*event, iter1_pt, sys);
-            m_iter1_eta.set(*event, iter1_eta, sys);
-            m_iter1_phi.set(*event, iter1_phi, sys);
-            m_iter1_m.set(*event, iter1_m, sys);
-            m_iter2_pt.set(*event, iter2_pt, sys);
-            m_iter2_eta.set(*event, iter2_eta, sys);
-            m_iter2_phi.set(*event, iter2_phi, sys);
-            m_iter2_m.set(*event, iter2_m, sys);
+      // Run KF tool for Iteration 1
+      ATH_CHECK(m_KFTool->applyKF_bb4l(*electrons, *muons, *workJetCont_Iter1, LH_KF1, Conv_KF1, 1));
 
-            for (xAOD::Jet *jet : *workJetContainer)
-            {
-                auto thisJet = std::make_unique<xAOD::Jet>(*jet);
-                constDataWorkJetContainer->push_back(thisJet.release());
-            }
+      auto constDataWorkJetCont_Iter1 = std::make_unique<ConstDataVector<xAOD::JetContainer>>();
+      constDataWorkJetCont_Iter1->reserve(workJetCont_Iter1->size());
+      for (xAOD::Jet* jet : *workJetCont_Iter1) {
+        constDataWorkJetCont_Iter1->push_back(std::make_unique<xAOD::Jet>(*jet).release());
+      }
 
-            m_KF_MBB.set(*event, KF1_Mbb, sys);
+      //CALCULATE KF1 Mbb
+      xAOD::Jet* bjet1 = nullptr;
+      xAOD::Jet* bjet2 = nullptr;
 
-            ATH_CHECK(m_jetOutHandle.record(std::move(constDataWorkJetContainer), sys));
+      for(xAOD::Jet* jet : *workJetCont_Iter1){
+        if(jet->pt() < m_Jet_Min_Pt) continue;
+        if(m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5){
+          if(!bjet1) bjet1 = jet;
+          else if(!bjet2) bjet2 = jet;
         }
-        return StatusCode::SUCCESS;
+      }
+      if(bjet1 && bjet2){
+        KF1_Mbb=(bjet1->p4()+bjet2->p4()).M();
+      }
+
+      // Set the Mbb decorator
+      m_KF_MBB.set(*event, KF1_Mbb, sys);
+      m_LH_KF1.set(*event, LH_KF1, sys);
+      m_Conv_KF1.set(*event, Conv_KF1, sys);
+
+      // Write Iteration 1 jets to event store
+      ATH_CHECK(m_jetOutHandle_KF1.record(std::move(constDataWorkJetCont_Iter1), sys));
+
+      // ========================================================
+      // ITERATION 2: Mass-Constrained Fit
+      // ========================================================
+      auto workJetCont_Iter2 = std::make_unique<xAOD::JetContainer>();
+      auto workJetAuxCont_Iter2 = std::make_unique<xAOD::JetAuxContainer>();
+      workJetCont_Iter2->setStore(workJetAuxCont_Iter2.get());
+
+      // We must copy from the ORIGINAL *jets again to get a fresh start!
+      for (const auto* jet : *jets) {
+        xAOD::Jet* thisJet = new xAOD::Jet(*jet);  
+        workJetCont_Iter2->push_back(thisJet);     
+      }
+
+      ATH_CHECK(m_KFTool->applyKF_bb4l(*electrons, *muons, *workJetCont_Iter2, LH_KF2, Conv_KF2, 2));
+
+      auto constDataWorkJetCont_Iter2 = std::make_unique<ConstDataVector<xAOD::JetContainer>>();
+      constDataWorkJetCont_Iter2->reserve(workJetCont_Iter2->size());
+      for (xAOD::Jet* jet : *workJetCont_Iter2) {
+        constDataWorkJetCont_Iter2->push_back(std::make_unique<xAOD::Jet>(*jet).release());
+      }
+
+      m_LH_KF2.set(*event, LH_KF2, sys);
+      m_Conv_KF2.set(*event, Conv_KF2, sys);
+
+      // Write Iteration 2 jets to event store
+      ATH_CHECK(m_jetOutHandle_KF2.record(std::move(constDataWorkJetCont_Iter2), sys));
     }
+    return StatusCode::SUCCESS;
+  }
 }

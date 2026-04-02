@@ -33,6 +33,7 @@ Small_R_jet:
 
 do_GNN2bjetSelection: false
 do_KinematicFit: false
+extra_KinematicFit_variables: false
 do_trigger_filtering: true
 save_cutflow: false
 do_nonresonant_BDTs: false

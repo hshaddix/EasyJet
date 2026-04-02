@@ -27,6 +27,7 @@
 #include "../GNXLargeJetDecoratorAlg.h"
 #include "../EventInfoDecorLockAlg.h"
 #include "../FileMetaDataStrTool.h"
+#include "../JetNeutrinoDecoratorAlg.h"
 
 using namespace Easyjet;
 
@@ -55,6 +56,7 @@ DECLARE_COMPONENT(TruthLeptonOrderingAlg)
 DECLARE_COMPONENT(TruthElectronSelectorAlg)
 DECLARE_COMPONENT(TruthMuonSelectorAlg)
 DECLARE_COMPONENT(TruthJetSelectorAlg)
+DECLARE_COMPONENT(JetNeutrinoDecoratorAlg)
 DECLARE_COMPONENT(SecVtxFilterAlg)
 DECLARE_COMPONENT(GNXLargeJetDecoratorAlg)
 DECLARE_COMPONENT(EventInfoDecorLockAlg)

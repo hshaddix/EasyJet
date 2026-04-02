@@ -277,7 +277,7 @@ namespace HHBBYY
 
       // More global variables
       if(m_save_nonresonant_BDTInput_variables){
-        float topness = compute_Topness(jets);
+        float topness = compute_Topness(jets, sys);
         m_Fbranches.at("topness").set(*event, topness, sys);
 
         std::vector<float> eventShapes = compute_EventShapes(Hbb_Jet1, Hbb_Jet2, Hyy_photons, n_photons);
@@ -394,7 +394,7 @@ namespace HHBBYY
           }
 
           //mva variables
-          float KF_topness = compute_Topness(KFJets);
+          float KF_topness = compute_Topness(KFJets, sys);
           std::vector<float> KF_eventShapes = compute_EventShapes(Hbb_KFJet1, Hbb_KFJet2, Hyy_photons, n_photons);
           float KF_pTBalance = compute_pTBalance(Hbb_KFJet1, Hbb_KFJet2, Hyy_photons, n_photons);
           m_Fbranches.at("KF_topness").set(*event, KF_topness, sys);
@@ -520,7 +520,7 @@ namespace HHBBYY
 
         std::string prefix_bjet = prefix + "HbbCandidate_Jet"+std::to_string(i+1);
         m_Ibranches.at(prefix_bjet+"_n_muons").set
-	        (*event, m_nmuons.get(*jet, sys), sys);
+          (*event, m_nmuons.get(*jet, sys), sys);
 
         if(m_save_extra_vars){
           float uncorrPt = jet->jetP4("NoBJetCalibMomentum").Pt();
@@ -543,7 +543,7 @@ namespace HHBBYY
 
         if(m_isMC){
           m_Ibranches.at(prefix_bjet+"_truthLabel").set
-	        (*event, m_truthFlav.get(*jet, sys), sys);
+          (*event, m_truthFlav.get(*jet, sys), sys);
         }
       }
     }
@@ -866,32 +866,27 @@ namespace HHBBYY
     return GNN_jets;
   }
 
-
-  float BaselineVarsbbyyAlg::compute_Topness(const xAOD::JetContainer *jets){
+  float BaselineVarsbbyyAlg::compute_Topness(const xAOD::JetContainer *jets, const auto &sys){
     float minTopness=std::numeric_limits<float>::max();
     const float wmass=80 * Athena::Units::GeV;
     const float topmass=173 * Athena::Units::GeV;
-    std::vector< TLorentzVector > temp_jets;
+    bool WPgiven = !m_isBtag.empty();
+
+    std::vector< TLorentzVector > b_jets, light_jets;
+
     for (unsigned int i = 0; i < jets->size(); i++) {
-        temp_jets.push_back(jets->at(i)->p4());
-    }
-    // If there are < 3 jets (min. # required to define ChiWt) fill out the rest with 0, 0, 0, 0 dummy jets
-    if (jets->size() < 3) {
-        for (unsigned int i = 0; i < 3 - jets->size(); i++) {
-            temp_jets.emplace_back(0, 0, 0, 0);
-        }
+      (WPgiven && m_isBtag.get(*jets->at(i), sys) ? b_jets : light_jets).push_back(jets->at(i)->p4());
     }
 
-    for(unsigned int j1=0;j1<temp_jets.size();j1++){ // W->j1j2, bjet=j3
-      for(unsigned int j2=j1+1;j2<temp_jets.size();j2++){
-        for(unsigned int j3=0;j3<temp_jets.size();j3++){
-          // compute m_j1j2 and m_j1j2j3
-          if(j3==j1 || j3==j2)
-              continue;
-          float m_j1j2=(temp_jets.at(j1)+temp_jets.at(j2)).M();
-          float m_j1j2j3=(temp_jets.at(j1)+temp_jets.at(j2)+temp_jets.at(j3)).M();
-          // find minimum topness
-          float topness=std::hypot((m_j1j2-wmass)/wmass, (m_j1j2j3-topmass)/topmass);
+    while (light_jets.size() < 2) light_jets.emplace_back(0,0,0,0);
+    if(b_jets.empty()) b_jets.emplace_back(0,0,0,0);
+
+    for (unsigned int j1=0;j1<light_jets.size();j1++){
+      for (unsigned int j2=j1+1;j2<light_jets.size();j2++){
+        for (const auto& b : b_jets){
+          float m_j1j2 = (light_jets.at(j1) + light_jets.at(j2)).M();
+          float m_j1j2j3 = (light_jets.at(j1) + light_jets.at(j2) + b).M();
+          float topness = std::hypot((m_j1j2 - wmass)/wmass, (m_j1j2j3 - topmass)/topmass);
           minTopness = std::min(topness, minTopness);
         }
       }
@@ -1113,10 +1108,10 @@ namespace HHBBYY
 
   StatusCode BaselineVarsbbyyAlg::vbf_calculations(const TLorentzVector& ph1, const TLorentzVector& ph2,
                            const int& n_photons,
-						   const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2, const xAOD::JetContainer *jets,
-						   double HT, const TLorentzVector& HH,
-						   const std::string& prefix_j, const std::string& prefix_jj,
-						   std::map<HHBBYY::Var, float> &eventFloats, const xAOD::EventInfo *event, const auto &sys) {
+               const xAOD::Jet *Hbb_Jet1, const xAOD::Jet *Hbb_Jet2, const xAOD::JetContainer *jets,
+               double HT, const TLorentzVector& HH,
+               const std::string& prefix_j, const std::string& prefix_jj,
+               std::map<HHBBYY::Var, float> &eventFloats, const xAOD::EventInfo *event, const auto &sys) {
     std::array<TLorentzVector, 2> vbf_j;
     TLorentzVector vbf_jj(0., 0., 0., 0.);
     TLorentzVector yybbjj(0., 0., 0., 0.);
@@ -1124,21 +1119,21 @@ namespace HHBBYY
 
     if (m_do_nonresonant_BDTs || m_save_VBF_vars) {
       if (n_photons >= 2 && Hbb_Jet1 && Hbb_Jet2) {
-	if (m_vbfjets_method == HHBBYY::VBFjetsMethod::BDT) {
-	  vbf_jj_maxscore = getVBFjets_BDT(HT, ph1, ph2, Hbb_Jet1, Hbb_Jet2, jets, vbf_j);
-	} else if (m_vbfjets_method == HHBBYY::VBFjetsMethod::mjj) {
-	  getVBFjets_mjj(Hbb_Jet1, Hbb_Jet2, jets, vbf_j);
-	} else if (m_vbfjets_method == HHBBYY::VBFjetsMethod::pTsorting) {
-	  getVBFjets_pTsorting(Hbb_Jet1, Hbb_Jet2, jets, vbf_j);
-	} else if (m_vbfjets_method == HHBBYY::VBFjetsMethod::invalid) {
-	  ANA_MSG_ERROR("Invalid vbfjets method imported!!! The default BDT method is called!!!");
-	  return StatusCode::FAILURE;
-	}
+  if (m_vbfjets_method == HHBBYY::VBFjetsMethod::BDT) {
+    vbf_jj_maxscore = getVBFjets_BDT(HT, ph1, ph2, Hbb_Jet1, Hbb_Jet2, jets, vbf_j);
+  } else if (m_vbfjets_method == HHBBYY::VBFjetsMethod::mjj) {
+    getVBFjets_mjj(Hbb_Jet1, Hbb_Jet2, jets, vbf_j);
+  } else if (m_vbfjets_method == HHBBYY::VBFjetsMethod::pTsorting) {
+    getVBFjets_pTsorting(Hbb_Jet1, Hbb_Jet2, jets, vbf_j);
+  } else if (m_vbfjets_method == HHBBYY::VBFjetsMethod::invalid) {
+    ANA_MSG_ERROR("Invalid vbfjets method imported!!! The default BDT method is called!!!");
+    return StatusCode::FAILURE;
+  }
 
-	vbf_jj = vbf_j[0] + vbf_j[1];
-	yybbjj = vbf_jj + HH;
-	eventFloats.at((prefix_jj == "KF_Jet_vbf_jj") ? HHBBYY::Var::vbfjj_m_KF : HHBBYY::Var::vbfjj_m) = vbf_jj.M();
-	eventFloats.at((prefix_jj == "KF_Jet_vbf_jj") ? HHBBYY::Var::vbfjj_dEta_KF : HHBBYY::Var::vbfjj_dEta) = std::fabs(vbf_j[0].Eta() - vbf_j[1].Eta());
+  vbf_jj = vbf_j[0] + vbf_j[1];
+  yybbjj = vbf_jj + HH;
+  eventFloats.at((prefix_jj == "KF_Jet_vbf_jj") ? HHBBYY::Var::vbfjj_m_KF : HHBBYY::Var::vbfjj_m) = vbf_jj.M();
+  eventFloats.at((prefix_jj == "KF_Jet_vbf_jj") ? HHBBYY::Var::vbfjj_dEta_KF : HHBBYY::Var::vbfjj_dEta) = std::fabs(vbf_j[0].Eta() - vbf_j[1].Eta());
       }
     }
 
@@ -1679,10 +1674,10 @@ namespace HHBBYY
 
   //#######################################################################################################################################################################################################
   std::vector<double> BaselineVarsbbyyAlg::compute_angular_variables_CM(
-									const TLorentzVector& lz_photon1,
-									const TLorentzVector& lz_photon2,
-									const TLorentzVector& lz_b_jet1,
-									const TLorentzVector& lz_b_jet2)
+                  const TLorentzVector& lz_photon1,
+                  const TLorentzVector& lz_photon2,
+                  const TLorentzVector& lz_b_jet1,
+                  const TLorentzVector& lz_b_jet2)
   {
     //for principles considered, consider page 8 of
     //https://indico.cern.ch/event/1384215/contributions/5854190/attachments/2817099/4918457/escalier_11_March_2024.pdf

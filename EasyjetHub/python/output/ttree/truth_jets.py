@@ -26,7 +26,8 @@ def get_small_R_truthjet_branches(flags, input_container, output_prefix):
 
     small_R_truthjet_branches.variables += [
         ("PartonTruthLabelID", None),
-        ("HadronConeExclTruthLabelID", None)
+        ("HadronConeExclTruthLabelID", None),
+        ("neutrino_pt", "float")
     ]
     return small_R_truthjet_branches.get_output_list()
 

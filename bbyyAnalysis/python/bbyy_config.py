@@ -112,6 +112,9 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                 "MbbKinFitDecoratorAlg",
                 KinFitTool=kinematic_fit_tool,
                 doSystematics=flags.Analysis.do_CP_systematics,
+                jetContainerOutKey_KF1="bbyyAnalysisKF1Jets_%SYS%",
+                jetContainerOutKey_KF2="bbyyAnalysisKF2Jets_%SYS%",
+                bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             )
         )
     # central variable function calls
@@ -150,7 +153,7 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
     cfg.addEventAlgo(
         CompFactory.HHBBYY.BaselineVarsbbyyAlg(
             "BaselineVarsbbyyAlg",
-            KFJets="bbyyAnalysisKFJets_%SYS%" if flags.Analysis.do_KinematicFit else "",
+            KFJets="bbyyAnalysisKF2Jets_%SYS%" if flags.Analysis.do_KinematicFit else "",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
             do_nonresonant_BDTs=flags.Analysis.do_nonresonant_BDTs,
@@ -627,7 +630,10 @@ def bbyy_branches(flags):
     if flags.Analysis.do_KinematicFit:
         # do not append KF_mbb variables to float_variable_names['baseline']
         # as they are stored by the KF algorithm not BaselineVarsbbyyAlg
-        all_baseline_variable_names += ["KF_mbb"]
+        all_baseline_variable_names += ["KF_mbb", "LH_KF1", "LH_KF2"]
+
+        if flags.Analysis.extra_KinematicFit_variables:
+            all_baseline_variable_names += ["Conv_KF1", "Conv_KF2"]
 
     # Here are special variables to be stored for the SH resonant search
     # flags.Analysis.do_resonant_PNN
@@ -712,5 +718,16 @@ def bbyy_branches(flags):
         for trigger in photon_triggers:
             branches += [f"EventInfo.{trigger}_{sys_suffix} -> {trigger}"
                          + flags.Analysis.systematics_suffix_separator + sys_suffix]
+
+    if flags.Analysis.do_KinematicFit and flags.Analysis.extra_KinematicFit_variables:
+        for var in ["pt", "eta", "phi", "m"]:
+            branches += [
+                f"bbyyAnalysisKF1Jets_{sys_suffix}.{var} -> bbyy_KF1Jets_{var}"
+                + flags.Analysis.systematics_suffix_separator + sys_suffix
+            ]
+            branches += [
+                f"bbyyAnalysisKF2Jets_{sys_suffix}.{var} -> bbyy_KF2Jets_{var}"
+                + flags.Analysis.systematics_suffix_separator + sys_suffix
+            ]
 
     return branches, float_variable_names, int_variable_names
