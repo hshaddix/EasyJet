@@ -17,10 +17,10 @@ import AthenaCommon.SystemOfUnits as Units
 
 def dihiggs_cfg(
     flags,
-    float_variables=None
+    vbf_rnn_variables=None
 ):
-    if not float_variables:
-        float_variables = []
+    if not vbf_rnn_variables:
+        vbf_rnn_variables = []
 
     cfg = ComponentAccumulator()
 
@@ -97,31 +97,6 @@ def dihiggs_cfg(
             )
         )  # -1 means ignores this
 
-    if flags.Analysis.UseVBFRNN:
-        vbftagger = CompFactory.VBFTagger("VBFTaggerTool", modelTag="VBFRNNv0")
-
-        # VBF-RNN tagger: boosted
-        cfg.addEventAlgo(
-            CompFactory.VBFTaggerAlgSys(
-                "VBFTaggerAlg_boosted",
-                VBFTagger=vbftagger,
-                containerAllJetsKey=couting_rnnjet_container,
-                containerSigLargeRJetsKey=couting_lRjet_container,
-                OnlyFirstLargeRJet=False,
-                pTCut=20.e3,
-                nMaxJets=2,
-                DecTag="_boosted"
-            )
-        )
-
-        cfg.addEventAlgo(
-            CompFactory.HH4B.VBFRNNVarsAlg(
-                "VBFRNNVarsAlg",
-                UseVBFRNN=flags.Analysis.UseVBFRNN,
-                floatVariableList=float_variables,
-            )
-        )
-
     selection_name = flags.Analysis.selection_name
     triggers = flags.Analysis.TriggerChains
     triggers = [trigger.replace(".", "p").replace("-", "_") for trigger in triggers]
@@ -164,6 +139,66 @@ def dihiggs_cfg(
         )
         cfg.merge(event_counter_cfg("n_merged"))
 
+    if flags.Analysis.UseVBFRNN:
+        # Normalise VerVBFRNN to a list
+        ver_vbfrnn = flags.Analysis.VerVBFRNN
+        if isinstance(ver_vbfrnn, str):
+            ver_vbfrnn = [ver_vbfrnn]
+
+        for ver in ver_vbfrnn:
+            # Short tag for StoreGate keys to avoid 32-bit hash collisions
+            # e.g. VBFRNNv2p2p2 -> v2p2p2
+            short_ver = ver.replace("VBFRNN", "")
+
+            vbftagger = CompFactory.VBFTagger(
+                f"VBFTaggerTool_{ver}", modelTag=ver
+            )
+
+            # VBF-RNN tagger: boosted
+            if flags.Analysis.do_boosted_vbf_tagger:
+                cfg.addEventAlgo(
+                    CompFactory.VBFTaggerAlgSys(
+                        f"VBFTaggerAlg_boosted_{ver}",
+                        VBFTagger=vbftagger,
+                        containerAllJetsKey=couting_rnnjet_container,
+                        containerSigLargeRJetsKey=couting_lRjet_container,
+                        OnlyFirstLargeRJet=False,
+                        pTCut=20.e3,
+                        nMaxJets=2,
+                        DecTag=f"_bst_{short_ver}"
+                    )
+                )
+
+            # VBF-RNN tagger: resolved
+            if flags.Analysis.do_resolved_vbf_tagger:
+                cfg.addEventAlgo(
+                    CompFactory.VBFTaggerAlgSys(
+                        f"VBFTaggerAlg_resolved_{ver}",
+                        VBFTagger=vbftagger,
+                        containerAllJetsKey=couting_rnnjet_container,
+                        containerSigJetsKey=couting_bjet_container,
+                        pTCut=20.e3,
+                        nMaxJets=2,
+                        DecTag=f"_res_{short_ver}"
+                    )
+                )
+
+            cfg.addEventAlgo(
+                CompFactory.HH4B.VBFRNNVarsAlg(
+                    f"VBFRNNVarsAlg_{ver}",
+                    UseVBFRNN=flags.Analysis.UseVBFRNN,
+                    doBoosted=flags.Analysis.do_boosted_vbf_tagger,
+                    doResolved=flags.Analysis.do_resolved_vbf_tagger,
+                    RNNJets_boosted=f"RNNJets_bst_{short_ver}_%SYS%",
+                    RNNJets_resolved=f"RNNJets_res_{short_ver}_%SYS%",
+                    boostedPrefix=f"bst_{short_ver}_RNNJets",
+                    resolvedPrefix=f"res_{short_ver}_RNNJets",
+                    floatVariableList=[
+                        v for v in vbf_rnn_variables if short_ver in v
+                    ],
+                )
+            )
+
     if (flags.Analysis.do_resolved_trigger_SF
             or flags.Analysis.do_resolved_trigger_bucket):
         cfg.merge(
@@ -192,27 +227,40 @@ def dihiggs_cfg(
 def get_RNNJets_variables(flags):
     float_variable_names = []
 
-    objects = []
-    if flags.Analysis.UseVBFRNN:
-        objects += ["boosted_RNNJets_Jet1", "boosted_RNNJets_Jet2"]
+    ver_vbfrnn = flags.Analysis.VerVBFRNN
+    if isinstance(ver_vbfrnn, str):
+        ver_vbfrnn = [ver_vbfrnn]
 
-    for object in objects:
-        for var in ["m", "pt", "eta", "phi"]:
-            float_variable_names.append(f"{object}_{var}")
+    for ver in ver_vbfrnn:
+        short_ver = ver.replace("VBFRNN", "")
+        objects = []
+        if flags.Analysis.do_boosted_vbf_tagger:
+            objects += [
+                f"bst_{short_ver}_RNNJets_Jet1",
+                f"bst_{short_ver}_RNNJets_Jet2",
+            ]
+        if flags.Analysis.do_resolved_vbf_tagger:
+            objects += [
+                f"res_{short_ver}_RNNJets_Jet1",
+                f"res_{short_ver}_RNNJets_Jet2",
+            ]
+
+        for obj in objects:
+            for var in ["m", "pt", "eta", "phi"]:
+                float_variable_names.append(f"{obj}_{var}")
 
     return float_variable_names
 
 
 def dihiggs_branches(flags):
     branches = []
-    float_variable_names = []
+    vbf_rnn_variable_names = []
 
     branches += get_selected_objects_branches(flags, "bbbb")
 
-    baseline_float_variables = get_RNNJets_variables(flags)
-    float_variable_names += baseline_float_variables
+    vbf_rnn_variable_names += get_RNNJets_variables(flags)
 
-    for var in float_variable_names:
+    for var in vbf_rnn_variable_names:
         if flags.Input.isMC and "truthLabel" in var:
             continue
         branches += [
@@ -223,13 +271,31 @@ def dihiggs_branches(flags):
 
     # VBF tagger
     if flags.Analysis.UseVBFRNN:
-        vars = ['RNNScore', 'nRNNJets']
-        reg = 'boosted'
-        for var in vars:
-            branches += [f'EventInfo.{var}_{reg}_%SYS% -> bbbb_{reg}_{var}'
-                         + flags.Analysis.systematics_suffix_separator + '%SYS%']
+        ver_vbfrnn = flags.Analysis.VerVBFRNN
+        if isinstance(ver_vbfrnn, str):
+            ver_vbfrnn = [ver_vbfrnn]
 
-    return branches, float_variable_names
+        vbf_vars = ['RNNScore', 'nRNNJets']
+        for ver in ver_vbfrnn:
+            short_ver = ver.replace("VBFRNN", "")
+            if flags.Analysis.do_boosted_vbf_tagger:
+                for var in vbf_vars:
+                    branches += [
+                        f'EventInfo.{var}_bst_{short_ver}_%SYS%'
+                        f' -> bbbb_bst_{short_ver}_{var}'
+                        + flags.Analysis.systematics_suffix_separator
+                        + '%SYS%'
+                    ]
+            if flags.Analysis.do_resolved_vbf_tagger:
+                for var in vbf_vars:
+                    branches += [
+                        f'EventInfo.{var}_res_{short_ver}_%SYS%'
+                        f' -> bbbb_res_{short_ver}_{var}'
+                        + flags.Analysis.systematics_suffix_separator
+                        + '%SYS%'
+                    ]
+
+    return branches, vbf_rnn_variable_names
 
 
 def pass_branches(flags):

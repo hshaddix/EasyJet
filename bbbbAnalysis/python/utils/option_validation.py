@@ -15,3 +15,12 @@ def validate_hh4b_analysis_prerequisites(flags):
     # We need Emulation tool to make HLT matching work in Run 2
     if flags.Analysis.Small_R_jet.doHLTMatching:
         assert flags.Analysis.Small_R_jet.doRun2HLTEmulation
+
+    if flags.Analysis.UseVBFRNN:
+        assert (
+            flags.Analysis.do_boosted_vbf_tagger
+            or flags.Analysis.do_resolved_vbf_tagger
+        ), (
+            "UseVBFRNN is True but neither do_boosted_vbf_tagger nor "
+            "do_resolved_vbf_tagger is enabled. Enable at least one."
+        )

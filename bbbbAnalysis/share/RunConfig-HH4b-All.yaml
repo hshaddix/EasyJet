@@ -5,6 +5,11 @@ include: [bbbbAnalysis/RunConfig-bbbb-base.yaml]
 do_resolved_dihiggs: false
 do_boosted_dihiggs: false
 
+UseVBFRNN: true
+VerVBFRNN: [VBFRNNv2p0p0, VBFRNNv2p2p0, VBFRNNv2p2p1, VBFRNNv2p2p2]
+do_boosted_vbf_tagger: true
+do_resolved_vbf_tagger: true
+
 do_resolved_trigger_SF: true
 # Option to switch stored level of trigger SF: detail, simple, both
 triggerSFBranchSaveStrategy: "simple"

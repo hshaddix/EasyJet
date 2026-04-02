@@ -21,9 +21,10 @@ do_resolved_trigger_SF: false
 triggerSFBranchSaveStrategy: "detail"
 
 ### tagging jets vs RNN strategy
-### false: will not select vbf jets 
-### true : will select vbf jets (load VBF-RNN)
 UseVBFRNN : false
+VerVBFRNN : [VBFRNNv2p0p0]
+do_boosted_vbf_tagger : false
+do_resolved_vbf_tagger : false
 
 pairingStrategy: "minDeltaR"
 kinematicGroup: "compressed"

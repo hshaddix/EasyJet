@@ -57,12 +57,12 @@ def hh4b_job_cfg():
     cfg = default_sequence_cfg(flags, seqname)
 
     bbbb_branches = []
-    bbbb_extra_branches, float_variable_names = dihiggs_branches(flags)
+    bbbb_extra_branches, vbf_rnn_variable_names = dihiggs_branches(flags)
     bbbb_branches += bbbb_extra_branches
     cfg.merge(
         dihiggs_cfg(
             flags,
-            float_variables=float_variable_names,
+            vbf_rnn_variables=vbf_rnn_variable_names,
         ),
         seqname,
     )
