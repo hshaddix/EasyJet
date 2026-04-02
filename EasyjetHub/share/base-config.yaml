@@ -60,6 +60,8 @@ Small_R_jet:
   useFJvt: False
   doL1Matching: False
   doHLTMatching: False
+  # necessary when using b-jet trigger in Run2
+  doRun2HLTEmulation: False
   saveTriggerInfo: False
   # select jet type
   jet_type: 'reco4PFlowJet'

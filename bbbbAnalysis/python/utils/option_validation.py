@@ -11,3 +11,7 @@ def validate_hh4b_analysis_prerequisites(flags):
         assert flags.Analysis.do_small_R_jets
     if flags.Analysis.do_resolved_trigger_bucket:
         assert flags.Analysis.do_small_R_jets
+
+    # We need Emulation tool to make HLT matching work in Run 2
+    if flags.Analysis.Small_R_jet.doHLTMatching:
+        assert flags.Analysis.Small_R_jet.doRun2HLTEmulation

@@ -1,3 +1,4 @@
+from AthenaConfiguration.Enums import LHCPeriod
 from EasyjetHub.output.ttree.branch_manager import BranchManager, SystOption
 from EasyjetHub.output.ttree.truth_jets import get_TopHiggs_jet_truth_labels
 from EasyjetHub.steering.sample_metadata import is_at_least
@@ -10,6 +11,7 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
         _syst_option = SystOption.NONE
 
     jet_output_flags = tree_flags.collection_options.small_R_jets
+
 
     small_R_jet_branches = BranchManager(
         input_container,
@@ -36,7 +38,7 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
         ]
         for index in range(flags.Analysis.Small_R_jet.amount_bjet):
             small_R_jet_branches.variables += [
-                (f"isbjet{index+1}_%SYS%", None)
+                (f"isbjet{index + 1}_%SYS%", None)
             ]
     else:
         if flags.Analysis.do_overlap_removal:
@@ -159,14 +161,30 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
         for trig in flags.Analysis.TriggerChains:
             trig = trig.replace("-", "_").replace(".", "p")
             if flags.Analysis.Small_R_jet.doL1Matching:
+                # float variables
                 small_R_jet_branches.variables += [
-                    (f"match{trig}_L1{var}", None)
-                    for var in ["et", "eta", "phi", "dr", "thresholds"]
+                    (f"match{trig}_L1{var}", "float")
+                    for var in ["et", "eta", "phi", "dr"]
+                ]
+                # vector<int> decoration
+                small_R_jet_branches.variables += [
+                    (f"match{trig}_L1thresholds", "vector_int")
                 ]
             if flags.Analysis.Small_R_jet.doHLTMatching:
+                if (
+                    (flags.GeoModel.Run is LHCPeriod.Run2)
+                    and not flags.Analysis.Small_R_jet.doRun2HLTEmulation
+                ):
+                    # In Run 2, only do HLT matching with emulation
+                    continue
+                # float variables
                 small_R_jet_branches.variables += [
-                    (f"match{trig}_HLT{var}", None)
-                    for var in ["pt", "eta", "phi", "dr", "thresholds"]
+                    (f"match{trig}_HLT{var}", "float")
+                    for var in ["pt", "eta", "phi", "dr"]
+                ]
+                # vector<int> decoration
+                small_R_jet_branches.variables += [
+                    (f"match{trig}_HLTthresholds", "vector_int")
                 ]
 
     # ftag scores pb, pc, pl

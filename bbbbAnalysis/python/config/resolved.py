@@ -12,6 +12,7 @@ def resolved_trigger_SF_cfg(flags):
     cfg = ComponentAccumulator()
 
     # This is a jet trigger scale factor block
+    # Note that here we assume doRun2HLTEmulation is always ON for bbbb analysis
     if (flags.Input.isMC
             and (flags.Analysis.Small_R_jet.doHLTMatching
                  or flags.Analysis.Small_R_jet.doL1Matching)):
@@ -205,17 +206,29 @@ def resolved_trigger_SF_branches(flags):
                     jet_coll = f'trig{matchLevel}MatchedSmallRJets'
                     branches += [
                         f'{jet_coll}.NoBJetCalibMomentum_pt'
-                        f'->{jet_coll}_NoBJetCalibMomentum_pt',
+                        f'->{jet_coll}_NoBJetCalibMomentum_pt type=float',
+                        f'{jet_coll}.NoBJetCalibMomentum_eta'
+                        f'->{jet_coll}_NoBJetCalibMomentum_eta type=float',
+                        f'{jet_coll}.NoBJetCalibMomentum_phi'
+                        f'->{jet_coll}_NoBJetCalibMomentum_phi type=float',
+                        f'{jet_coll}.match{trig}_{matchLevel}pt'
+                        f'->{jet_coll}_{trig}_{matchLevel}pt type=float',
+                        f'{jet_coll}.match{trig}_{matchLevel}eta'
+                        f'->{jet_coll}_{trig}_{matchLevel}eta type=float',
+                        f'{jet_coll}.match{trig}_{matchLevel}phi'
+                        f'->{jet_coll}_{trig}_{matchLevel}phi type=float',
                         f'{jet_coll}.{trig}_{matchLevel}threshold_NOSYS'
-                        f'->{jet_coll}_{trig}_{matchLevel}threshold',
+                        f'->{jet_coll}_{trig}_{matchLevel}threshold type=int',
                         f'{jet_coll}.{trig}_{matchLevel}SF_NOSYS'
-                        f'->{jet_coll}_{trig}_{matchLevel}SF',
+                        f'->{jet_coll}_{trig}_{matchLevel}SF type=float',
                         f'{jet_coll}.{trig}_{matchLevel}SF_stats__1up'
                         f'->{jet_coll}_{trig}_{matchLevel}SF'
-                        + flags.Analysis.systematics_suffix_separator + 'stats__1up',
+                        + flags.Analysis.systematics_suffix_separator
+                        + 'stats__1up type=float',
                         f'{jet_coll}.{trig}_{matchLevel}SF_syst__1up'
                         f'->{jet_coll}_{trig}_{matchLevel}SF'
-                        + flags.Analysis.systematics_suffix_separator + 'syst__1up',
+                        + flags.Analysis.systematics_suffix_separator
+                        + 'syst__1up type=float',
                     ]
 
     return branches

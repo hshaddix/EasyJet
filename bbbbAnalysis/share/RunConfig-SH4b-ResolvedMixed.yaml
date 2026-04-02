@@ -17,8 +17,8 @@ Small_R_jet:
     - GN2v01_FixedCutBEff_70
     - GN2v01_FixedCutBEff_77
   doL1Matching: true
-  doHLTMatching: false
-  saveTriggerInfo: false
+  doHLTMatching: true
+  saveTriggerInfo: true
 
 Large_R_jet:
   min_pT: 200.e+3 # base config setting

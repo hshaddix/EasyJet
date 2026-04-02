@@ -47,6 +47,7 @@ Small_R_jet:
   btag_egReductionB: "Medium"
   btag_egReductionC: "Medium"
   btag_egReductionLight: "Medium"
+  doRun2HLTEmulation: True
 
 # orthogonality studies  
 orthogonality:

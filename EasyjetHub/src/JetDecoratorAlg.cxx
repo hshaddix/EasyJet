@@ -32,7 +32,7 @@ namespace Easyjet
 
     // trigger matching
     ATH_CHECK(m_L1JetsInKey.initialize(m_doL1Matching));
-    ATH_CHECK(m_HLTJetsInKey.initialize(m_doHLTMatching));
+    ATH_CHECK(m_HLTJetsInKey.initialize(m_doHLTMatching && !m_useEmulationTool));
 
     if (!m_triggers.empty())
     {
@@ -152,8 +152,10 @@ namespace Easyjet
     std::vector<SG::WriteDecorHandle<xAOD::JetContainer,float> > wdh_HLTpt, wdh_HLTeta, wdh_HLTphi, wdh_HLTdr;
     std::vector<SG::WriteDecorHandle<xAOD::JetContainer,std::vector<int>> > wdh_HLTthresholds;
     if (m_doHLTMatching) {
-      hltJetsFromCont = SG::makeHandle(m_HLTJetsInKey, ctx);
-      ATH_CHECK(hltJetsFromCont.isValid());
+      if(!m_useEmulationTool){
+	hltJetsFromCont = SG::makeHandle(m_HLTJetsInKey, ctx);
+	ATH_CHECK(hltJetsFromCont.isValid());
+      }
 
       wdh_HLTpt = m_jetHLTPtDecorKeys.makeHandles(ctx);
       wdh_HLTeta = m_jetHLTEtaDecorKeys.makeHandles(ctx);

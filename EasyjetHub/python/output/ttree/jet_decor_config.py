@@ -13,36 +13,30 @@ def jet_decor_cfg(flags, **kwargs):
 
     kwargs.setdefault("isMC", flags.Input.isMC)
 
-    if (flags.Analysis.Small_R_jet.doHLTMatching
-            or flags.Analysis.Small_R_jet.doL1Matching):
+    # to handle the special case of Run 2 HLT
 
-        if flags.Analysis.Small_R_jet.doHLTMatching:
-            if flags.GeoModel.Run is LHCPeriod.Run2:
-                print("WARNING! HLT jet matching is not yet supported for Run 2. ")
-                print("You should get in touch with the Trigger Core Software group ")
-                print("to contribute to the necessary developments")
-            else:
-                kwargs.setdefault("doHLTMatching", True)
+    do_hlt_matching = flags.Analysis.Small_R_jet.doHLTMatching
+    if flags.GeoModel.Run is LHCPeriod.Run2:
+        do_hlt_matching = do_hlt_matching and flags.Analysis.Small_R_jet.doRun2HLTEmulation
 
+    if do_hlt_matching or flags.Analysis.Small_R_jet.doL1Matching:
         kwargs.setdefault("doL1Matching", flags.Analysis.Small_R_jet.doL1Matching)
+        kwargs.setdefault("doHLTMatching", do_hlt_matching)
         kwargs.setdefault("triggerList", flags.Analysis.TriggerChainsDeco)
 
         from TrigDecisionTool.TrigDecisionToolConfig import TrigDecisionToolCfg
         kwargs.setdefault("TrigDecisionTool", cfg.getPrimaryAndMerge(
             TrigDecisionToolCfg(flags)))
 
-        if flags.Analysis.Small_R_jet.doHLTMatching:
-            # if flags.GeoModel.Run is LHCPeriod.Run2:
-            # Disabled for now
-            if False:
-                kwargs.setdefault("useEmulationTool", True)
+        if do_hlt_matching and (flags.GeoModel.Run is LHCPeriod.Run2):
+            kwargs.setdefault("useEmulationTool", True)
 
-                from TrigBtagEmulationTool.TrigBtagEmulationToolConfig import (
-                    TrigBtagEmulationToolCfg)
-                kwargs.setdefault("trigBtagEmulationTool", cfg.popToolsAndMerge(
-                    TrigBtagEmulationToolCfg(
-                        flags,
-                        toBeEmulatedTriggers=list(flags.Analysis.TriggerChainsDeco))))
+            from TrigBtagEmulationTool.TrigBtagEmulationToolConfig import (
+                TrigBtagEmulationToolCfg)
+            kwargs.setdefault("trigBtagEmulationTool", cfg.popToolsAndMerge(
+                TrigBtagEmulationToolCfg(
+                    flags,
+                    toBeEmulatedTriggers=list(flags.Analysis.TriggerChainsDeco))))
 
     cfg.addEventAlgo(
         CompFactory.Easyjet.JetDecoratorAlg(
