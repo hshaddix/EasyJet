@@ -78,7 +78,9 @@ Large_R_jet:
   maxEta: 2.0
   amount: 1
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml]
+    include:
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
   wtag_type: "ANN" # ANN, DNN
   wtag_wp: "50"
   wtag_extra_wps: ["50","60","80","90"]
@@ -97,6 +99,26 @@ OverlapRemoval:
 # list of triggers per year to consider
 Trigger:
   include: [vbshiggsAnalysis/trigger-lep.yaml]
+# Include the TTree configuration and update details
+
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  # Our overrides. All defaults are off
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+    met: 'container_names.output.met'
+  collection_options:
+    small_R_jets:
+      run_selection: true
+      truth_parent_info: true
+      btag_info: true
+    large_R_jets:
+      run_selection: true
+      btag_details: true
+      substructure_info: true
+      truth_labels: true
+      bjet_regression: true
 
 CutList :
       - PASS_TRIGGER 
