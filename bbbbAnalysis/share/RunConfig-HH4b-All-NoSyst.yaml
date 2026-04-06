@@ -3,6 +3,7 @@ include: [bbbbAnalysis/RunConfig-HH4b-All.yaml]
 triggerSFBranchSaveStrategy: "both"
 do_CP_systematics: false
 systematics_regex: []
+UseVBFRNN: true
 
 # Only dump btag scores for no-systematics runs
 ttree_output:

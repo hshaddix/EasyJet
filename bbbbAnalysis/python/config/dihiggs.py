@@ -258,7 +258,8 @@ def dihiggs_branches(flags):
 
     branches += get_selected_objects_branches(flags, "bbbb")
 
-    vbf_rnn_variable_names += get_RNNJets_variables(flags)
+    if flags.Analysis.UseVBFRNN:
+        vbf_rnn_variable_names += get_RNNJets_variables(flags)
 
     for var in vbf_rnn_variable_names:
         if flags.Input.isMC and "truthLabel" in var:

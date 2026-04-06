@@ -1,11 +1,13 @@
-runConfig="bbbbAnalysis/RunConfig-HH4b-All-noHLT.yaml"
+runConfig="bbbbAnalysis/RunConfig-HH4b-All.yaml"
 executable="bbbb-ntupler"
-campaignName="EJ_v0_47_HH4b_Syst"
+campaignName="EJ_v0_50_HH4b_Syst"
 
 dir_samples="../easyjet/bbbbAnalysis/datasets/HH4b/"
 mc_list=(
     "$dir_samples/mc20_DAOD_PHYS_HH4b_nonres.txt"
     "$dir_samples/mc20_DAOD_PHYS_HH4b_resonant.txt"
+    "$dir_samples/mc23_DAOD_PHYS_HH4b_nonres.txt"
+    "$dir_samples/mc23_DAOD_PHYS_HH4b_resonant.txt"
 )
 
 #mc
