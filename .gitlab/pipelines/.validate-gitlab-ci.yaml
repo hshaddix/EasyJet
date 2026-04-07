@@ -11,6 +11,7 @@ variables:
     - "EasyjetHub/**/*"
     - "EasyjetPlus/**/*"
     - "EasyjetTests/**/*"
+    - ".gitlab-ci.yml"
 
 .changes_bbbb: &changes_bbbb
   rules:

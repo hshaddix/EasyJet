@@ -13,6 +13,7 @@ variables:
     - "EasyjetHub/**/*"
     - "EasyjetPlus/**/*"
     - "EasyjetTests/**/*"
+    - ".gitlab-ci.yml"
 
 .ntupler:
   rules:
