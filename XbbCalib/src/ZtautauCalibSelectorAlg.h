@@ -16,7 +16,7 @@
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
-#include <xAODEgamma/PhotonContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
 
 namespace XBBCALIB
 {
@@ -46,8 +46,8 @@ namespace XBBCALIB
       CP::SysReadHandle<xAOD::JetContainer>
       m_lRjetHandle{ this, "lrjets", "XbbCalibLRJets_%SYS%",   "Large-R jet container to read" };
 
-      CP::SysReadHandle<xAOD::PhotonContainer>
-      m_photonHandle{ this, "photons", "XbbCalibPhotons_%SYS%", "Photon container to read" };
+      CP::SysReadHandle<xAOD::ElectronContainer>
+      m_electronHandle{ this, "electrons", "XbbCalibElectrons_%SYS%", "Electron container to read" };
 
       CP::SysReadHandle<xAOD::EventInfo>
       m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };

@@ -124,7 +124,7 @@ def ZtautauCalib_branches(flags):
 
     for var in object_level_branches:
         branches += [
-            f"EventInfo.{var} -> XbbCalib_{var}"
+            f"EventInfo.{var}_%SYS% -> XbbCalib_{var}"
             + flags.Analysis.systematics_suffix_separator
             + "%SYS%"
         ]

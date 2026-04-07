@@ -33,11 +33,15 @@ Tau:
   min_pT: 20.e+3
 
 Large_R_jet:
+  min_mass: 40.e+3
+  max_mass: 300.e+3
   min_pT: 200.e+3
+  max_pT: 3000.e+3
   maxEta: 2.0
   runMuonJetPtCorr: false
+  amount: 2
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml, EasyjetHub/xbb-taggers/GN2XTauV00_htt.yaml]
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml]
         
 Photon:
   ID: "Loose"
@@ -78,33 +82,20 @@ OverlapRemoval:
 # Include the TTree configuration and update details
 ttree_output:
   include: [EasyjetHub/AnalysisMiniTree-config.yaml]
-  # Our overrides. All defaults are off
+  slim_variables_with_syst: true
   reco_outputs:
-    taus: 'container_names.output.taus'
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
-    photons: 'container_names.output.photons'
-    muons: 'container_names.output.muons'
     electrons: 'container_names.output.electrons'
   collection_options:
-    taus:
-      truth_branches: True
-      truth_parent_info: true
-      run_selection: true
     large_R_jets:
       run_selection: true
       truth_parent_info: true
       substructure_info: true
       truth_labels: true
       tautag_details: true
-    photons:
-      run_selection: true
     electrons:
-      run_selection: true
-    muons:
       run_selection: true
   truth_outputs:
     large_R_jets: 'container_names.input.truth10SoftDropJet'
-    taus: 'container_names.input.truthtaus'
     met: 'container_names.input.truthmet'
-    photons: 'container_names.input.truthphotons'
