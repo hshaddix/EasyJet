@@ -42,7 +42,8 @@ namespace ssWWVBS
     tEWKVR,
     lllVR,
     ZeeVR,
-    DijetsCR,
+    prescale_DijetsCR,
+    unprescale_DijetsCR,
   };
 
   enum TriggerChannel
@@ -97,7 +98,8 @@ namespace ssWWVBS
     pass_tEWKVR,
     pass_lllVR,
     pass_ZeeVR,
-    pass_DijetsCR,
+    pass_prescale_DijetsCR,
+    pass_unprescale_DijetsCR,
 
     EXACTLY_ONE_LEPTON,
 
@@ -140,6 +142,9 @@ namespace ssWWVBS
 
       Gaudi::Property<std::vector<std::string>> m_channel_names
       { this, "channels", {}, "Which channel to run" };
+
+      Gaudi::Property<bool> m_collect_channels_only
+      { this, "collect_channels_only", {}, "select event filter" };
 
       std::vector<ssWWVBS::Channel> m_channels;
 
@@ -245,7 +250,8 @@ namespace ssWWVBS
         {ssWWVBS::pass_tEWKVR, "pass_tEWKVR"},
         {ssWWVBS::pass_lllVR, "pass_lllVR"},
         {ssWWVBS::pass_ZeeVR, "pass_ZeeVR"},
-        {ssWWVBS::pass_DijetsCR, "pass_DijetsCR"},
+        {ssWWVBS::pass_prescale_DijetsCR, "pass_prescale_DijetsCR"},
+        {ssWWVBS::pass_unprescale_DijetsCR, "pass_unprescale_DijetsCR"},
         {ssWWVBS::EXACTLY_ONE_LEPTON, "EXACTLY_ONE_LEPTON"},
       };
 
@@ -257,21 +263,33 @@ namespace ssWWVBS
 
       CP::SysWriteDecorHandle<char> m_ele_selected {"ele_is_selected_%SYS%", this};
       CP::SysWriteDecorHandle<char> m_mu_selected {"mu_is_selected_%SYS%", this};
+      CP::SysWriteDecorHandle<bool> m_ele_TrigMatching {"ele_TrigMatchingDecor_%SYS%", this};
+      CP::SysWriteDecorHandle<bool> m_mu_TrigMatching {"mu_TrigMatchingDecor_%SYS%", this};
       
 
       std::unordered_map<ssWWVBS::TriggerChannel, std::unordered_map<ssWWVBS::Var, float>> m_pt_threshold;
 
       void evaluateTriggerCuts
 	(const xAOD::EventInfo* event,
-	 const xAOD::Electron* ele0, const xAOD::Electron* ele1,
-	 const xAOD::Muon* mu0, const xAOD::Muon* mu1,
+	 const xAOD::ElectronContainer& electrons,
+	 const xAOD::MuonContainer& muons,
 	 CutManager& ssWWCuts, const CP::SystematicSet& sys);
       
-      void evaluateSingleLeptonTrigger
+      //void evaluateSingleLeptonTrigger
+	//(const xAOD::EventInfo* event, 
+	 //const xAOD::Electron* ele, const xAOD::Muon* mu,
+	 //const CP::SystematicSet& sys);
+      void evaluateSingleElectronTrigger
 	(const xAOD::EventInfo* event, 
-	 const xAOD::Electron* ele, const xAOD::Muon* mu,
-	 const CP::SystematicSet& sys);
-      void evaulateLeptonIDCuts
+	 const xAOD::Electron *ele, const CP::SystematicSet& sys);
+      void evaluateSingleMuonTrigger
+	(const xAOD::EventInfo* event, 
+	 const xAOD::Muon *mu, const CP::SystematicSet& sys);
+      void evaulateLeptonKinematicCuts
+  (const xAOD::Electron*& ele0, const xAOD::Electron*& ele1,
+   const xAOD::Muon*& mu0, const xAOD::Muon*& mu1,
+   const CP::SystematicSet& sys);
+      void evaulateLeptonIDLabels
   (const xAOD::Electron*& ele0, const xAOD::Electron*& ele1,
    const xAOD::Muon*& mu0, const xAOD::Muon*& mu1,
    CutManager& ssWWCuts, const CP::SystematicSet& sys);

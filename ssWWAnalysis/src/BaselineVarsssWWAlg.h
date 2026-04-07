@@ -84,6 +84,8 @@ private:
 
     CP::SysReadDecorHandle<char> m_ele_selected{"ele_is_selected_%SYS%", this};
     CP::SysReadDecorHandle<char> m_mu_selected{"mu_is_selected_%SYS%", this};
+    CP::SysReadDecorHandle<bool> m_ele_TrigMatching{"ele_TrigMatchingDecor_%SYS%", this};
+    CP::SysReadDecorHandle<bool> m_mu_TrigMatching{"mu_TrigMatchingDecor_%SYS%", this};
 
     CP::SysReadDecorHandle<char> 
     m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
@@ -96,12 +98,21 @@ private:
     Gaudi::Property<std::vector<std::string>> m_intVariables
           {this, "intVariableList", {}, "Name list of integer variables"};
 
+    Gaudi::Property<std::vector<std::string>> m_boolVectorVariables
+          {this, "boolVectorVariableList", {}, "Name list of bool vector-like variables"};
+
+
     /// \brief Setup sys-aware output decorations
     std::unordered_map<std::string, CP::SysWriteDecorHandle<float>>
         m_Fbranches;
 
     std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
-    
+
+    std::unordered_map<std::string, CP::SysWriteDecorHandle<std::vector<bool>>> 
+	m_bool_vectorlike_branches;
+
+    std::unordered_map<std::string, std::vector<bool>>  m_vectorBool;
+
  };
 }
 #endif

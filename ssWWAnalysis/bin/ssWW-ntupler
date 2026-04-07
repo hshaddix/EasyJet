@@ -42,7 +42,8 @@ def ssWW_job_cfg():
     # custom BranchManagers
     extra_ssWW_branches = []
     if flags.Analysis.do_ssWW_analysis:
-        extra_ssWW_branches,float_variable_names,int_variable_names = ssWW_branches(flags)
+        extra_ssWW_branches,float_variable_names,int_variable_names,\
+                bool_vectorlike_variable_names = ssWW_branches(flags)
         cfg.merge(
             ssWW_cfg(
                 flags,
@@ -51,6 +52,7 @@ def ssWW_job_cfg():
                 electronkey=flags.Analysis.container_names.output.electrons,
                 float_variables=float_variable_names,
                 int_variables=int_variable_names,
+                bool_vectorlike_variables=bool_vectorlike_variable_names,
             ),
             seqname
         )

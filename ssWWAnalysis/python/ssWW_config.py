@@ -13,11 +13,13 @@ from EasyjetHub.output.ttree.selected_objects import (
 
 
 def ssWW_cfg(flags, smalljetkey, muonkey, electronkey,
-             float_variables=None, int_variables=None):
+             float_variables=None, int_variables=None, bool_vectorlike_variables=None):
     if not float_variables:
         float_variables = []
     if not int_variables:
         int_variables = []
+    if not bool_vectorlike_variables:
+        bool_vectorlike_variables = []
 
     cfg = ComponentAccumulator()
 
@@ -102,6 +104,7 @@ def ssWW_cfg(flags, smalljetkey, muonkey, electronkey,
             isMC=flags.Input.isMC,
             triggerLists=trigger_branches,
             channels=flags.Analysis.channels,
+            collect_channels_only=flags.Analysis.collect_channels_only,
             trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
             bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
                     else False),
@@ -118,7 +121,8 @@ def ssWW_cfg(flags, smalljetkey, muonkey, electronkey,
             muons=muonkey, muonWP=MuonWPLabel,
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             floatVariableList=float_variables,
-            intVariableList=int_variables
+            intVariableList=int_variables,
+            boolVectorVariableList=bool_vectorlike_variables,
         )
     )
 
@@ -147,6 +151,14 @@ def get_BaselineVarsssWWAlg_highlevelvariables(flags):
     return high_level_float_variables, high_level_int_variables
 
 
+def get_BaselineVarsssWWAlg_boolvectorlikevariables(flags):
+    bool_vectorlike_variables = [
+        "el_ECIDS", "el_author",
+        "el_TrigMatching", "mu_TrigMatching",
+    ]
+    return bool_vectorlike_variables
+
+
 def ssWW_branches(flags):
     branches = []
 
@@ -155,6 +167,7 @@ def ssWW_branches(flags):
     all_baseline_variable_names = []
     float_variable_names = []
     int_variable_names = []
+    bool_vectorlike_variable_names = []
 
     # these are the variables that will always be stored by easyjet specific to ssWW
     # further below there are more high level variables which can be
@@ -171,7 +184,13 @@ def ssWW_branches(flags):
         float_variable_names += high_level_float_variables
         int_variable_names += high_level_int_variables
 
-    all_baseline_variable_names += [*float_variable_names, *int_variable_names]
+    bool_vectorlike_variable_names = \
+        get_BaselineVarsssWWAlg_boolvectorlikevariables(flags)
+
+    all_baseline_variable_names += [
+        *float_variable_names, *int_variable_names,
+        *bool_vectorlike_variable_names
+    ]
 
     for var in all_baseline_variable_names:
         branches += [f"EventInfo.{var}_%SYS% -> ssWW_{var}_%SYS%"]
@@ -193,7 +212,7 @@ def ssWW_branches(flags):
         "LowDyVR", "LowMjjVR", "LowNjVR",
         "tFakeVR", "tEWKVR", "lllVR",
         "ZeeVR",
-        "DijetsCR",
+        "prescale_DijetsCR", "unprescale_DijetsCR",
     ]:
         branches += [f"EventInfo.pass_{region}_%SYS% -> ssWW_pass_{region}_%SYS%"]
 
@@ -208,4 +227,5 @@ def ssWW_branches(flags):
         branches += \
             [f"EventInfo.pass_trigger_{cat}_%SYS% -> ssWW_pass_trigger_{cat}_%SYS%"]
 
-    return branches, float_variable_names, int_variable_names
+    return branches, float_variable_names, \
+        int_variable_names, bool_vectorlike_variable_names

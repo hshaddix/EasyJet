@@ -1,0 +1,137 @@
+include: [EasyjetHub/base-config.yaml]
+
+channels: 
+  - "prescale_DijetsCR"
+  - "unprescale_DijetsCR"
+
+#If set to True, the output ntuple will only has the events in the channels
+#If set to False, a loose selection "pass_baseline" will be used to filter events into the output ntuple
+collect_channels_only: True
+
+# Which analysis to consider
+do_ssWW_analysis: true
+
+bypass: false
+
+
+# Toggles for object types
+do_small_R_jets: true
+do_muons: true
+do_electrons: true
+do_met : true
+
+# Toggles for reconstructed objects decorations
+Small_R_jet:
+  min_pT: 20.e+3  # for the jets entering the MET computation and the overlap removal
+  max_eta: 4.5
+  min_pT_ssWW: 20.e+3 # for the jet selection
+  max_eta_ssWW: 4.5
+  # btagging working points 
+  btag_wp: "GN2v01_FixedCutBEff_85"
+  amount: 2
+  amount_bjet: 0
+  # to use multiple btagging WPs
+  btag_extra_wps:
+    - GN2v01_FixedCutBEff_77
+    - GN2v01_FixedCutBEff_70
+    
+  variables_int_bjets: ["truthLabel"]
+
+Electron:
+  maxD0Significance: 5 
+  maxDeltaZ0SinTheta: 0.5
+  ID: "LooseBLayerLH"
+  Iso: "NonIso"
+  min_pT: 4.5e+3
+  min_pT_ssWW: 4.5e+3
+  do_IFF_decoration: true
+  max_eta_ssWW: 2.47
+  chargeIDSelectionRun2: false #Set to false for investigating charge MisID
+  do_track_decoration: true
+  extra_wps:
+  - ["TightLH", "Tight_VarRad"]  # previously Gradient. The fisrt one is used to define the pass-ID region
+  - ["TightLH", "Loose_VarRad"]
+  - ["MediumLH", "Tight_VarRad"]
+  - ["MediumLH", "Loose_VarRad"]
+  - ["MediumLH", "NonIso"] 
+  - ["LooseBLayerLH", "Tight_VarRad"]
+  - ["LooseBLayerLH", "Loose_VarRad"]
+
+Muon:
+  maxD0Significance: 15
+  maxDeltaZ0SinTheta: 1.5
+  ID: "Loose"
+  Iso: "NonIso"
+  min_pT: 3.e+3
+  max_eta: 2.5 # no recommendation yet for forward muons with eta between 2.5 and 2.7.
+  min_pT_ssWW: 3.e+3
+  max_eta_ssWW: 2.5 # no recommendation yet for forward muons with eta between 2.5 and 2.7.
+  do_IFF_decoration: true
+  extra_wps:
+  - ["Medium", "PflowTight_VarRad", 3, 0.5] # previously FixedCutPflowTight. The fisrt one is used to define the pass-ID region
+  - ["Medium", "PflowLoose_VarRad", 3, 0.5]
+  - ["Medium", "PflowLoose_VarRad", 10, 0.5]
+  - ["Loose", "PflowTight_VarRad", 3, 0.5]
+  - ["Loose", "PflowLoose_VarRad", 3, 0.5]
+  - ["Loose", "PflowLoose_VarRad", 10, 0.5]
+
+Lepton:
+  amount: 3
+  variables_int: ["isPrompt","truthOrigin", "truthType", "ele_ECIDS"]
+
+Met:
+  saveSignificance: true
+
+# list of triggers per year to consider
+Trigger:
+  include: [ssWWAnalysis/trigger.yaml]
+# apply trigger lists to filter events
+do_trigger_filtering: true
+
+# write objects with overlap removal applied
+# turning this on you have to decide on one large R jet collection
+do_overlap_removal: true
+OverlapRemoval:
+  # Enable overlap removal between large-R jets and objects for which 
+  # large-R jet OR removal is implemented in Athena
+  do_large_R_jets: false
+  do_small_R_jet_large_R_jet: false
+
+#Enable cutflow 
+save_cutflow: true
+
+CutList :
+  - PASS_TRIGGER
+  - PASS_TWO_LEPTONS
+  - PASS_LEPTON_ID
+  - EXACTLY_TWO_LEPTONS
+  - TWO_SAME_CHARGE_LEPTONS
+  - DILEPTON_MASS_THRESHOLD
+  - DILEPTON_MASS_SIDEBAND_EE
+  - AT_LEAST_TWO_JETS
+  - DIJETS_MASS_LOW
+  - MET
+  - BJET_VETO
+  - DIJETS_DELTA_RAPIDITY
+  - DIJETS_MASS_HIGH
+
+Categories :
+  - IS_ee
+  - IS_mm
+  - IS_em
+  - IS_me
+
+# Include the TTree configuration and update details
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  # Our overrides. All defaults are off
+  slim_variables_with_syst: true
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    muons: 'container_names.output.muons'
+    electrons: 'container_names.output.electrons'
+    met : 'container_names.output.met'
+  collection_options:
+    small_R_jets:
+      btag_info: true
+      # JVT_details: true

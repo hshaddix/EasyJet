@@ -1,6 +1,21 @@
 include: [EasyjetHub/base-config.yaml]
 
-channels: ["SR","WZCR","misIDCR", "incVR", "LowDyVR", "LowMjjVR", "LowNjVR", "tFakeVR", "tEWKVR", "lllVR", "ZeeVR", "DijetsCR"]
+channels: 
+  - "SR"
+  - "WZCR"
+  - "misIDCR"
+  - "incVR"
+  - "LowDyVR"
+  - "LowMjjVR"
+  - "LowNjVR"
+  - "tFakeVR"
+  - "tEWKVR"
+  - "lllVR"
+  - "ZeeVR"
+
+#If set to True, the output ntuple will only has the events in the channels
+#If set to False, a loose selection "pass_baseline" will be used to filter events into the output ntuple
+collect_channels_only: False
 
 # Which analysis to consider
 do_ssWW_analysis: true

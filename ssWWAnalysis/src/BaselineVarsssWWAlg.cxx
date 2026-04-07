@@ -39,6 +39,8 @@ namespace ssWWVBS
     
     ATH_CHECK (m_ele_selected.initialize(m_systematicsList, m_ssWWElectronHandle));
     ATH_CHECK (m_mu_selected.initialize(m_systematicsList, m_ssWWMuonHandle));
+    ATH_CHECK (m_ele_TrigMatching.initialize(m_systematicsList, m_ssWWElectronHandle));
+    ATH_CHECK (m_mu_TrigMatching.initialize(m_systematicsList, m_ssWWMuonHandle));
 
     // Charge Flip only supported for Run 2
     if (!m_isRun3){
@@ -73,6 +75,15 @@ namespace ssWWVBS
       CP::SysWriteDecorHandle<int> whandle{var+"_%SYS%", this};
       m_Ibranches.emplace(var, whandle);
       ATH_CHECK(m_Ibranches.at(var).initialize(m_systematicsList, m_eventHandle));
+    };
+
+    for (const std::string &var : m_boolVectorVariables){
+      ATH_MSG_DEBUG("initializing bool vector-like variable: " << var);
+      CP::SysWriteDecorHandle<std::vector<bool>> whandle{var+"_%SYS%", this};
+      m_bool_vectorlike_branches.emplace(var, whandle);
+      std::vector<bool> wvector;
+      m_vectorBool.emplace(var, wvector);
+      ATH_CHECK(m_bool_vectorlike_branches.at(var).initialize(m_systematicsList, m_eventHandle));
     };
 
     if (!m_isBtag.empty()) {
@@ -129,6 +140,10 @@ namespace ssWWVBS
 
       for (const auto& var: m_intVariables) {
         m_Ibranches.at(var).set(*event, -99, sys);
+      }
+
+      for (const std::string &var : m_boolVectorVariables ){
+        m_vectorBool.at(var).clear();
       }
 
       // Count leptons
@@ -248,6 +263,31 @@ namespace ssWWVBS
         }
       }
 
+
+      for (const xAOD::Electron* ele : *electrons) {
+	// electron author vector
+	m_vectorBool.at("el_author").push_back(ele->author()==1);
+	// electron ECIDS vector
+	if (!m_isRun3){
+          m_vectorBool.at("el_ECIDS").push_back(m_eleECIDS.get(*ele,sys));
+	}
+	else{
+          m_vectorBool.at("el_ECIDS").push_back(false);
+	}
+	// electron match to single-ele trigger chain vector
+	m_vectorBool.at("el_TrigMatching").push_back(m_ele_TrigMatching.get(*ele, sys));
+      }
+
+      for (const xAOD::Muon* mu : *muons) {
+	// muon match to single-mu trigger chain vector
+	m_vectorBool.at("mu_TrigMatching").push_back(m_mu_TrigMatching.get(*mu, sys));
+      }
+
+      //vector decor set
+      for (const std::string &var : m_boolVectorVariables ){
+        m_bool_vectorlike_branches.at(var).set(*event,m_vectorBool.at(var),sys);
+      }
+
       // MET
       TVector3 metVec3;
       metVec3.SetPtEtaPhi(met->met(), 0, met->phi());
@@ -255,15 +295,13 @@ namespace ssWWVBS
       // Assumes m=0, wrong for final states with several neutrinos
       met_tlv.SetVectM(metVec3, 0);
 
+      m_Fbranches.at("MET_Track_met").set(*event, met_track->met(), sys);
+      m_Fbranches.at("MET_Track_phi").set(*event, met_track->phi(), sys);
+
       // dilepton kinematics
       TLorentzVector ll;
       TLorentzVector Leading_lep;
       TLorentzVector Subleading_lep;
-      if (nLeptons >=1){ 
-	Leading_lep = leptons[0].first->p4();
-	m_Fbranches.at("MET_Track_met").set(*event, met_track->met(), sys);
-	m_Fbranches.at("MET_Track_phi").set(*event, met_track->phi(), sys);
-      }
 
       if (nLeptons >= 2){
 

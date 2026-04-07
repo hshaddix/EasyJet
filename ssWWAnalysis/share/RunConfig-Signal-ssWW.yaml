@@ -6,7 +6,9 @@ Electron:
   - ["TightLH", "Loose_VarRad"]  
   - ["MediumLH", "Tight_VarRad"]  
   - ["MediumLH", "Loose_VarRad"]  
-  - ["MediumLH", "NonIso"]  # The last one is used for Fake Factor method antiID region 
+  - ["MediumLH", "NonIso"] 
+  - ["LooseBLayerLH", "Tight_VarRad"]  
+  - ["LooseBLayerLH", "Loose_VarRad"]  
   
   max_eta_ssWW: 2.47
   chargeIDSelectionRun2: false #Set to false for investigating charge MisID 
@@ -20,7 +22,10 @@ Muon:
   extra_wps:
   - ["Medium", "PflowTight_VarRad", 3, 0.5] # previously FixedCutPflowTight. The fisrt one is used to define the pass-ID region
   - ["Medium", "PflowLoose_VarRad", 3, 0.5] 
-  - ["Medium", "PflowLoose_VarRad", 10, 0.5] # The last one is used for Fake Factor method antiID region
+  - ["Medium", "PflowLoose_VarRad", 10, 0.5]
+  - ["Loose", "PflowTight_VarRad", 3, 0.5] 
+  - ["Loose", "PflowLoose_VarRad", 3, 0.5] 
+  - ["Loose", "PflowLoose_VarRad", 10, 0.5]
   do_IFF_decoration: true
 
 Lepton:
