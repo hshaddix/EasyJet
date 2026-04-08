@@ -17,17 +17,43 @@ if [[ -z "${VALIDATION_REFERENCE_MR:-}" ]]; then
     exit 1
 fi
 
-refeosdir=$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$VALIDATION_REFERENCE_MR
+projectdir="root://${EOS_ACCOUNT_PROJECT}.cern.ch"
+refeosdir="$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$VALIDATION_REFERENCE_MR"
+desteosdir="$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$CI_MERGE_REQUEST_IID"
 
 echo $EOS_ACCOUNT_PASSWORD | kinit -l 1h $EOS_ACCOUNT_USERNAME 
 klist
 
-# copy files that don't exist in this dir from the previous VALIDATION_REFERENCE_MR directory
-for reffile in $(xrdfs root://${EOS_ACCOUNT_PROJECT}.cern.ch ls $refeosdir); do
+# Returns the time of last file modification
+# or 0 if the file does not exist / stat fails.
+get_mtime() {
+    local path="$1"
+    local mtime_str
+    mtime_str=$(xrdfs "$projectdir" stat "$path" 2>/dev/null | awk '/MTime:/{print $2, $3}')
+    if [[ -z "$mtime_str" ]]; then
+        echo 0
+        return
+    fi
+    date -d "$mtime_str" +%s 2>/dev/null || echo 0
+}
+
+
+# copy files from VALIDATION_REFERENCE_MR directory.
+# If a file already exists, overwrite it if the reference is newer.
+for reffile in $(xrdfs $projectdir ls $refeosdir); do
     filename=$(basename $reffile)
-    destfile=$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$CI_MERGE_REQUEST_IID/$filename
-    if ! xrdfs root://${EOS_ACCOUNT_PROJECT}.cern.ch ls $destfile > /dev/null 2>&1; then
-        echo "copying missing previous file ${filename} from reference"
-        xrdcp root://${EOS_ACCOUNT_PROJECT}.cern.ch//$reffile root://${EOS_ACCOUNT_PROJECT}.cern.ch//$destfile
+    destfile="$desteosdir/$filename"
+
+    ref_mtime=$(get_mtime "$reffile")
+    dest_mtime=$(get_mtime "$destfile")
+
+    if [[ "$dest_mtime" -eq 0 ]]; then
+        echo "copying missing file '${filename}' from reference"
+        xrdcp "${projectdir}//${reffile}" "${projectdir}//${destfile}"
+    elif [[ "$ref_mtime" -gt "$dest_mtime" ]]; then
+        echo "updating '${filename}': reference (mtime=${ref_mtime}) is newer than dest (mtime=${dest_mtime})"
+        xrdcp "${projectdir}//${reffile}" "${projectdir}//${destfile}"
+    else
+        echo "skipping '${filename}': dest is up-to-date (dest_mtime=${dest_mtime}, ref_mtime=${ref_mtime})"
     fi
 done
