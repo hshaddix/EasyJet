@@ -145,13 +145,20 @@ variables:
       - 23 # branch removed
       - 24 # branch added
 
+# Common prerequisites shared by all validator jobs.
+.validator_prerequisites:
+  needs:
+    - job: get-latest-merged-mr
+      artifacts: true
+    - job: compile
+      artifacts: true
+
 # Data
 
 validator_fast_data18:
   extends: .ntuple_validation
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_fast_data18
       artifacts: false
   script:
@@ -160,8 +167,7 @@ validator_fast_data18:
 validator_fast_data22:
   extends: .ntuple_validation
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_fast_data22
       artifacts: false
   script:
@@ -171,8 +177,7 @@ validator_bbtt_data22:
   extends: .ntuple_validation
   <<: *changes_bbtt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbtt_data22
       artifacts: false
   script:
@@ -182,8 +187,7 @@ validator_bbtt_data22_boosted:
   extends: .ntuple_validation
   <<: *changes_bbtt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbtt_data22_boosted
       artifacts: false
   script:
@@ -193,8 +197,7 @@ validator_bbyy_data22_lite:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbyy_data22_lite
       artifacts: false
   script:
@@ -204,8 +207,7 @@ validator_HHandHyy_data22:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_HHandHyy_data22
       artifacts: false
   script:
@@ -215,8 +217,7 @@ validator_SHbbyy_data22_lite:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_SHbbyy_data22_lite
       artifacts: false
   script:
@@ -228,8 +229,7 @@ validator_bbbb_mc20:
   extends: .ntuple_validation
   <<: *changes_bbbb
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbbb_mc20
       artifacts: false
   script:
@@ -239,8 +239,7 @@ validator_bbyy_mc20_syst:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbyy_mc20_syst
       artifacts: false
   script:
@@ -250,8 +249,7 @@ validator_SHbbyy_mc20:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_SHbbyy_mc20
       artifacts: false
   script:
@@ -261,8 +259,7 @@ validator_bbyy_mc20_lite:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbyy_mc20_lite
       artifacts: false
   script:
@@ -272,8 +269,7 @@ validator_HHandHyy_mc20:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_HHandHyy_mc20
       artifacts: false
   script:
@@ -283,8 +279,7 @@ validator_bbtt_mc20:
   extends: .ntuple_validation
   <<: *changes_bbtt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbtt_mc20
       artifacts: false
   script:
@@ -294,8 +289,7 @@ validator_bbVV_mc20:
   extends: .ntuple_validation
   <<: *changes_bbVV
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbVV_mc20
       artifacts: false
   script:
@@ -305,8 +299,7 @@ validator_bbVVVBF_mc20:
   extends: .ntuple_validation
   <<: *changes_bbVV
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbVVVBF_mc20
       artifacts: false
   script:
@@ -316,8 +309,7 @@ validator_ttHH_mc20:
   extends: .ntuple_validation
   <<: *changes_ttHH
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ttHH_mc20
       artifacts: false
   script:
@@ -327,8 +319,7 @@ validator_bbll_mc20:
   extends: .ntuple_validation
   <<: *changes_bbll
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbll_mc20
       artifacts: false
   script:
@@ -338,8 +329,7 @@ validator_bbll_mc20_syst:
   extends: .ntuple_validation
   <<: *changes_bbll
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbll_mc20_syst
       artifacts: false
   script:
@@ -349,8 +339,7 @@ validator_lltt_mc20:
   extends: .ntuple_validation
   <<: *changes_lltt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_lltt_mc20
       artifacts: false
   script:
@@ -360,8 +349,7 @@ validator_vbshiggs_fulllep_mc20:
   extends: .ntuple_validation
   <<: *changes_vbshiggs
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_vbshiggs_fulllep_mc20
       artifacts: false
   script:
@@ -371,8 +359,7 @@ validator_vbshiggs_semilep_mc20:
   extends: .ntuple_validation
   <<: *changes_vbshiggs
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_vbshiggs_semilep_mc20
       artifacts: false
   script:
@@ -382,8 +369,7 @@ validator_VBSVV4q_mc20:
   extends: .ntuple_validation
   <<: *changes_VBSVV4q
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_VBSVV4q_mc20
       artifacts: false
   script:
@@ -393,8 +379,7 @@ validator_VBSVV4q_mc20_llj1:
   extends: .ntuple_validation
   <<: *changes_VBSVV4q
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_VBSVV4q_mc20_llj1
       artifacts: false
   script:
@@ -404,8 +389,7 @@ validator_jjjj_mc20:
   extends: .ntuple_validation
   <<: *changes_jjjj
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_jjjj_mc20
       artifacts: false
   script:
@@ -415,8 +399,7 @@ validator_ssWW_mc20:
   extends: .ntuple_validation
   <<: *changes_ssWW
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ssWW_mc20
       artifacts: false
   script:
@@ -426,8 +409,7 @@ validator_ZQG_mc20:
   extends: .ntuple_validation
   <<: *changes_ZQG
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ZQG_mc20
       artifacts: false
   script:
@@ -437,8 +419,7 @@ validator_ZCharm_mc20:
   extends: .ntuple_validation
   <<: *changes_ZCharm
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ZCharm_mc20
       artifacts: false
   script:
@@ -448,8 +429,7 @@ validator_llyy_mc20:
   extends: .ntuple_validation
   <<: *changes_HZallyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_llyy_mc20
       artifacts: false
   script:
@@ -459,8 +439,7 @@ validator_ttcalib_mc20:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ttcalib_mc20
       artifacts: false
   script:
@@ -470,19 +449,17 @@ validator_zllycalib_mc20:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zllycalib_mc20
       artifacts: false
   script:
     - easyjet-validate zllycalib-mc20
-    
+
 validator_zlljcalib_mc20:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zlljcalib_mc20
       artifacts: false
   script:
@@ -492,8 +469,7 @@ validator_zbbycalib_mc20:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zbbycalib_mc20
       artifacts: false
   script:
@@ -503,8 +479,7 @@ validator_zbbjcalib_mc20:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zbbjcalib_mc20
       artifacts: false
   script:
@@ -514,8 +489,7 @@ validator_bbbbtt_mc20:
   extends: .ntuple_validation
   <<: *changes_bbbbtt
   needs:
-    - job: compile
-      artifacts: true 
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbbbtt_mc20
       artifacts: false 
   script:
@@ -527,8 +501,7 @@ validator_sh4b_mc20af3:
   extends: .ntuple_validation
   <<: *changes_bbbb
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_sh4b_mc20af3
       artifacts: false
   script:
@@ -538,8 +511,7 @@ validator_SHbbyy_mc20af3_lite:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_SHbbyy_mc20af3_lite
       artifacts: false
   script:
@@ -551,8 +523,7 @@ validator_bbbb_mc23:
   extends: .ntuple_validation
   <<: *changes_bbbb
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbbb_mc23
       artifacts: false
   script:
@@ -562,8 +533,7 @@ validator_bbbb_mc23_syst:
   extends: .ntuple_validation
   <<: *changes_bbbb
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbbb_mc23_syst
       artifacts: false
   script:
@@ -573,8 +543,7 @@ validator_bbtt_mc23:
   extends: .ntuple_validation
   <<: *changes_bbtt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbtt_mc23
       artifacts: false
   script:
@@ -584,8 +553,7 @@ validator_bbtt_mc23_boosted:
   extends: .ntuple_validation
   <<: *changes_bbtt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbtt_mc23_boosted
       artifacts: false
   script:
@@ -595,8 +563,7 @@ validator_bbVV_mc23:
   extends: .ntuple_validation
   <<: *changes_bbVV
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbVV_mc23
       artifacts: false
   script:
@@ -606,8 +573,7 @@ validator_bbVVVBF_mc23:
   extends: .ntuple_validation
   <<: *changes_bbVV
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbVVVBF_mc23
       artifacts: false
   script:
@@ -617,8 +583,7 @@ validator_SHbbyy_mc23af3:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_SHbbyy_mc23af3
       artifacts: false
   script:
@@ -628,8 +593,7 @@ validator_bbtt_mc23_syst:
   extends: .ntuple_validation
   <<: *changes_bbtt
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbtt_mc23_syst
       artifacts: false
   script:
@@ -639,8 +603,7 @@ validator_bbll_mc23_lite:
   extends: .ntuple_validation
   <<: *changes_bbll
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbll_mc23_lite
       artifacts: false
   script:
@@ -649,8 +612,7 @@ validator_bbll_mc23_lite:
 validator_EMTopo_mc23:
   extends: .ntuple_validation
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_EMTopo_mc23
       artifacts: false
   script:
@@ -660,8 +622,7 @@ validator_hhml_mc23:
   extends: .ntuple_validation
   <<: *changes_multilepton
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_hhml_mc23
       artifacts: false
   script:
@@ -671,8 +632,7 @@ validator_ttcalib_mc23:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ttcalib_mc23
       artifacts: false
   script:
@@ -682,19 +642,17 @@ validator_zllycalib_mc23:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zllycalib_mc23
       artifacts: false
   script:
     - easyjet-validate zllycalib-mc23
-    
+   
 validator_zlljcalib_mc23:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zlljcalib_mc23
       artifacts: false
   script:
@@ -704,8 +662,7 @@ validator_zbbycalib_mc23:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zbbycalib_mc23
       artifacts: false
   script:
@@ -715,8 +672,7 @@ validator_zbbjcalib_mc23:
   extends: .ntuple_validation
   <<: *changes_XbbCalib
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_zbbjcalib_mc23
       artifacts: false
   script:
@@ -727,8 +683,7 @@ validator_yyml_mc23_lite:
   extends: .ntuple_validation
   <<: *changes_yyML
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_yyml_mc23_lite
       artifacts: false
   script:
@@ -738,8 +693,7 @@ validator_bbyy_mc23_lite:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbyy_mc23_lite
       artifacts: false
   script:
@@ -749,8 +703,7 @@ validator_HHandHyy_mc23:
   extends: .ntuple_validation
   <<: *changes_bbyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_HHandHyy_mc23
       artifacts: false
   script:
@@ -760,8 +713,7 @@ validator_llyy_mc23:
   extends: .ntuple_validation
   <<: *changes_HZallyy
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_llyy_mc23
       artifacts: false
   script:
@@ -771,10 +723,9 @@ validator_bbbbtt_mc23:
   extends: .ntuple_validation
   <<: *changes_bbbbtt
   needs:
-    - job: compile
-      artifacts: true 
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_bbbbtt_mc23
-      artifacts: false 
+      artifacts: false
   script:
     - easyjet-validate bbbbtt-mc23
 
@@ -782,8 +733,7 @@ validator_monojet_mc23:
   extends: .ntuple_validation
   <<: *changes_monojet
   needs:
-    - job: compile
-      artifacts: true 
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_monojet_mc23
       artifacts: false 
   script:
@@ -793,8 +743,7 @@ validator_ssWW_mc23:
   extends: .ntuple_validation
   <<: *changes_ssWW
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ssWW_mc23
       artifacts: false
   script:
@@ -804,8 +753,7 @@ validator_ZQG_mc23:
   extends: .ntuple_validation
   <<: *changes_ZQG
   needs:
-    - job: compile
-      artifacts: true
+    - !reference [.validator_prerequisites, needs]
     - job: ntupler_ZQG_mc23
       artifacts: false
   script:

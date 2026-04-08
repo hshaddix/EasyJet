@@ -49,10 +49,10 @@ for reffile in $(xrdfs $projectdir ls $refeosdir); do
 
     if [[ "$dest_mtime" -eq 0 ]]; then
         echo "copying missing file '${filename}' from reference"
-        xrdcp "${projectdir}//${reffile}" "${projectdir}//${destfile}"
+        xrdcp --force "${projectdir}//${reffile}" "${projectdir}//${destfile}"
     elif [[ "$ref_mtime" -gt "$dest_mtime" ]]; then
         echo "updating '${filename}': reference (mtime=${ref_mtime}) is newer than dest (mtime=${dest_mtime})"
-        xrdcp "${projectdir}//${reffile}" "${projectdir}//${destfile}"
+        xrdcp --force "${projectdir}//${reffile}" "${projectdir}//${destfile}"
     else
         echo "skipping '${filename}': dest is up-to-date (dest_mtime=${dest_mtime}, ref_mtime=${ref_mtime})"
     fi

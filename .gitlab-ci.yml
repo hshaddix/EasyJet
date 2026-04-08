@@ -39,6 +39,7 @@ before_script:
   - env
 
 include:
+  - ".gitlab/pipelines/.refmr-gitlab-ci.yaml"
   - ".gitlab/pipelines/.linting-gitlab-ci.yaml"
   - ".gitlab/pipelines/.build-gitlab-ci.yaml"
   - ".gitlab/pipelines/.unittest-gitlab-ci.yaml"

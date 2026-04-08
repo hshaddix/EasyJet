@@ -1,0 +1,31 @@
+# .gitlab/pipelines/.refmr-gitlab-ci.yaml
+
+get-latest-merged-mr:
+  stage: linting   
+  image: alpine:latest
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_PROJECT_PATH == "easyjet/easyjet"
+    - when: never
+  before_script:
+    - apk add --no-cache curl jq
+  script:
+    - |
+      set -euo pipefail
+
+      REF_MR="$(curl -sS --header "JOB-TOKEN: ${CI_JOB_TOKEN}" \
+        "${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/merge_requests?state=merged&target_branch=main&order_by=merged_at&sort=desc&per_page=1" \
+        | jq -r '.[0].iid')"
+
+      if [ -z "${REF_MR}" ] || [ "${REF_MR}" = "null" ]; then
+        echo "Failed to fetch latest merged MR IID for target_branch=main"
+        exit 1
+      fi
+
+      echo "Latest merged MR to main = ${REF_MR}"
+      echo "VALIDATION_REFERENCE_MR=${REF_MR}" > refmr.env
+
+  artifacts:
+    reports:
+      dotenv: refmr.env
+
+
