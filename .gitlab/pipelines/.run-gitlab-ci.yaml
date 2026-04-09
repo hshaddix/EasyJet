@@ -43,6 +43,12 @@ variables:
       changes: ["bbbbttAnalysis/**/*"]
     - <<: *rule_core_pkgs
 
+.changes_bbbbbb: &changes_bbbbbb
+  rules:
+    - if: *if_to_central
+      changes: ["bbbbbbAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 .changes_bbll: &changes_bbll
   rules:
     - if: *if_to_central
@@ -351,6 +357,12 @@ ntupler_bbbbtt_mc20:
   script:
     - easyjet-test bbbbtt-mc20
 
+ntupler_bbbbbb_mc20:
+  extends: .ntupler
+  <<: *changes_bbbbbb
+  script:
+    - easyjet-test bbbbbb-mc20
+
 # MC20 AF3
 
 ntupler_sh4b_mc20af3:
@@ -504,6 +516,12 @@ ntupler_bbbbtt_mc23:
   <<: *changes_bbbbtt
   script:
     - easyjet-test bbbbtt-mc23
+
+ntupler_bbbbbb_mc23:
+  extends: .ntupler
+  <<: *changes_bbbbbb
+  script:
+    - easyjet-test bbbbbb-mc23
 
 ntupler_ssWW_mc23:
   extends: .ntupler

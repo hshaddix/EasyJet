@@ -25,6 +25,12 @@ variables:
       changes: ["bbbbttAnalysis/**/*"]
     - <<: *rule_core_pkgs
 
+.changes_bbbbbb: &changes_bbbbbb
+  rules:
+    - if: *if_to_central
+      changes: ["bbbbbbAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 .changes_bbll: &changes_bbll
   rules:
     - if: *if_to_central
@@ -495,6 +501,16 @@ validator_bbbbtt_mc20:
   script:
     - easyjet-validate bbbbtt-mc20
 
+validator_bbbbbb_mc20:
+  extends: .ntuple_validation
+  <<: *changes_bbbbbb
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_bbbbbb_mc20
+      artifacts: false
+  script:
+    - easyjet-validate bbbbbb-mc20
+
 # MC20 AF3
 
 validator_sh4b_mc20af3:
@@ -728,6 +744,16 @@ validator_bbbbtt_mc23:
       artifacts: false
   script:
     - easyjet-validate bbbbtt-mc23
+
+validator_bbbbbb_mc23:
+  extends: .ntuple_validation
+  <<: *changes_bbbbbb
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_bbbbbb_mc23
+      artifacts: false
+  script:
+    - easyjet-validate bbbbbb-mc23
 
 validator_monojet_mc23:
   extends: .ntuple_validation
