@@ -42,6 +42,11 @@ get_mtime() {
 # If a file already exists, overwrite it if the reference is newer.
 for reffile in $(xrdfs $projectdir ls $refeosdir); do
     filename=$(basename $reffile)
+    # skip eos system file
+    if [[ "$filename" == .sys.* ]]; then
+        echo "skipping system file '${filename}'"
+        continue
+    fi
     destfile="$desteosdir/$filename"
 
     ref_mtime=$(get_mtime "$reffile")
