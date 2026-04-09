@@ -300,7 +300,7 @@ namespace HHBBTT
 
     }
 
-    else if(year>=2023){
+    else if(year==2023){
       ditau_paths_L1Topo = {"HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB30_L1DR_TAU20ITAU12I_J25"};
       ditau_paths_4J12 = {"HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB_L1TAU20IM_2TAU12IM_4J12p0ETA25"};
       tau35_match_paths = {
@@ -343,15 +343,17 @@ namespace HHBBTT
       boosted_paths = {"HLT_j360_a10_lcw_sub_L1J100"};
     }
     else if(year==2016){
-      boosted_paths = {"HLT_j360_a10_lcw_L1J100", "HLT_j400_a10r_L1J100"};
+      boosted_paths = {"HLT_j420_a10_lcw_sub_L1J100"};
     } else if(year==2017){
-      boosted_paths = {"HLT_j390_a10t_lcw_jes_30smcINF_L1J100"};
+      boosted_paths = {"HLT_j390_a10t_lcw_jes_30smcINF_L1J100", "HLT_j420_a10t_lcw_jes_40smcINF_L1J100", "HLT_j460_a10t_lcw_jes_L1J100"};
     } else if(year==2018){
-      boosted_paths = {"HLT_j420_a10t_lcw_jes_35smcINF_L1J100"};
+      boosted_paths = {"HLT_j420_a10t_lcw_jes_35smcINF_L1J100", "HLT_j420_a10r_lcw_jes_35smcINF_L1SC111", "HLT_j460_a10t_lcw_jes_L1J100"};
     } else if(year==2022){
       boosted_paths = {"HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100"}; 
     } else if(year==2023){
       boosted_paths = {"HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100"};
+    } else if(year==2024){
+       boosted_paths = {"HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1jJ160"};
     }
   }
 
@@ -367,6 +369,8 @@ namespace HHBBTT
       boosted_paths = {"HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111_CJ15"}; 
     } else if(year==2023){
       boosted_paths = {"HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111_CJ15"};
+    } else if(year==2024){
+      boosted_paths = {"HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111_CjJ40"};
     }
   }
 
@@ -386,6 +390,8 @@ namespace HHBBTT
       met_paths = {"HLT_xe65_cell_xe90_pfopufit_L1XE50"}; 
     } else if(year==2023){
       met_paths = {"HLT_xe65_cell_xe90_pfopufit_L1XE50"};
+    } else if(year==2024){
+      met_paths = {"HLT_xe65_cell_xe105_nn_L1jXE100"};
     }
   }
 
