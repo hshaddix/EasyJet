@@ -39,6 +39,7 @@ def muon_sequence(flags, configAcc):
         configSeq.setOptionValue('.inputContainer', 'Muons_LRTMerged')
     configSeq.setOptionValue('.minPt', flags.Analysis.Muon.min_pT)
     configSeq.setOptionValue('.maxEta', flags.Analysis.Muon.max_eta)
+    configSeq.setOptionValue('.runTrackBiasing', flags.Analysis.Muon.runTrackBiasing)
     configSeq.setOptionValue('.writeTrackD0Z0', True)
     configSeq.setOptionValue('.decorateTruth', True)
 

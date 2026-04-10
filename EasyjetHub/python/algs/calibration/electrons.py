@@ -34,6 +34,8 @@ def electron_sequence(flags, configAcc):
     configSeq.setOptionValue('.crackVeto', True)
     configSeq.setOptionValue('.decorrelationModel',
                              flags.Analysis.Electron.correlationModelScale)
+    configSeq.setOptionValue('.runTrackBiasing',
+                             flags.Analysis.Electron.runTrackBiasing)
     configSeq.setOptionValue('.writeTrackD0Z0', True)
 
     # PID configuration

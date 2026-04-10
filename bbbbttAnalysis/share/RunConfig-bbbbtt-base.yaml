@@ -62,6 +62,7 @@ Electron:
     - ["TightLH_nottva", "Tight_VarRad"]
   do_parent_decoration: true
   correlationModelId: "TOTAL"
+  runTrackBiasing: true
 
 Muon:
   ID: "Loose_nottva"
@@ -71,6 +72,7 @@ Muon:
     - ["Loose_nottva", "PflowTight_VarRad"]
     - ["Medium_nottva", "PflowTight_VarRad"]
   do_parent_decoration: true
+  runTrackBiasing: true
 
 
 Tau:

@@ -163,6 +163,7 @@ Electron:
   correlationModelReco: "SIMPLIFIED"
   extra_wps: []
   forceFullSimConfig: false
+  runTrackBiasing: false
 
 Muon:
   min_pT: 3.e+3
@@ -182,6 +183,7 @@ Muon:
   variables: ["pt", "eta", "phi", "E", "effSF"]
   variables_int: []
   extra_wps: []
+  runTrackBiasing: false
 
 Tau:
   min_pT: 20.e+3
