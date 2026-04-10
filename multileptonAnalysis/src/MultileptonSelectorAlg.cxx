@@ -93,11 +93,9 @@ namespace MULTILEPTON
 
       bool WPgiven = !m_isBtag.empty();
       auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
-      auto nonbjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
       for(const xAOD::Jet* jet : *jets) {
         if (WPgiven) {
           if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets->push_back(jet);
-          else nonbjets->push_back(jet);
         }
       }
 
@@ -111,8 +109,8 @@ namespace MULTILEPTON
       ANA_CHECK (m_tauHandle.retrieve (taus, sys));
 
 
-      for (const auto& [key, value] : m_bools) {
-        m_bools.at(key) = false;
+      for (auto& [key, value] : m_bools) {
+        value = false;
       }
 
       setThresholds(event, sys);
@@ -147,7 +145,8 @@ namespace MULTILEPTON
       if (sys.name()=="" && m_saveCutFlow) {
         // Compute total_events
         m_total_events+=1;
-        if(m_isMC) m_total_mcEventWeight+= m_generatorWeight.get(*event, sys);
+        float genWeight = m_isMC ? m_generatorWeight.get(*event, sys) : 1.0;
+        if(m_isMC) m_total_mcEventWeight+= genWeight;
 
         for (const auto &cut : m_inputCutKeys) {
           auto cutname = m_boolnames.at(cut);
@@ -155,7 +154,7 @@ namespace MULTILEPTON
             m_hhmlCuts(cutname).passed = m_bools.at(cut);
             if (m_hhmlCuts(cutname).passed) {
               m_hhmlCuts(cutname).counter += 1;
-              if(m_isMC) m_hhmlCuts(cutname).w_counter += m_generatorWeight.get(*event, sys);
+              if(m_isMC) m_hhmlCuts(cutname).w_counter += genWeight;
             }
           }
         }
@@ -172,7 +171,7 @@ namespace MULTILEPTON
         // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
         for (unsigned int i=0; i<consecutive_cuts; i++) {
           m_hhmlCuts[i].relativeCounter += 1;
-          if(m_isMC) m_hhmlCuts[i].w_relativeCounter += m_generatorWeight.get(*event, sys);
+          if(m_isMC) m_hhmlCuts[i].w_relativeCounter += genWeight;
         }
       }
 
@@ -363,11 +362,13 @@ namespace MULTILEPTON
     bool trigPassed_SET = false;
     if (electrons){
       for (const auto& trig : single_ele_paths){
+        if (trigPassed_SET) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for (const auto& ele : *electrons){
             bool match = m_matchingTool->match(*ele, trig);
             trigPassed_SET |= match && ele->pt() > m_pt_threshold[MULTILEPTON::SLT][MULTILEPTON::ele];
+            if (trigPassed_SET) break;
           }
         }
       }
@@ -398,11 +399,13 @@ namespace MULTILEPTON
     bool trigPassed_SMT = false;
     if (muons){
       for(const auto& trig : single_mu_paths){
+        if (trigPassed_SMT) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for (const auto& mu : *muons){
             bool match = m_matchingTool->match(*mu, trig);
             trigPassed_SMT |= match && mu->pt() > m_pt_threshold[MULTILEPTON::SLT][MULTILEPTON::mu];
+            if (trigPassed_SMT) break;
           }
         }
       }
@@ -460,9 +463,11 @@ namespace MULTILEPTON
     bool trigPassed_DET = false;
     if (electrons && electrons->size() >= 2){
       for (const auto &trig : di_ele_paths){
+        if (trigPassed_DET) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for (const auto &ele0: *electrons){
+            if (trigPassed_DET) break;
             for (const auto &ele1: *electrons){
               if (ele0 == ele1) continue;
               bool match = m_matchingTool->match({ele0, ele1}, trig);
@@ -473,6 +478,7 @@ namespace MULTILEPTON
                  ele0->pt() > m_pt_threshold[MULTILEPTON::DLT][MULTILEPTON::subleadingele])
               );
               trigPassed_DET |= match && pass_cut;
+              if (trigPassed_DET) break;
             } // ele1 loop end
           } // ele0 loop end
         } // pass check end
@@ -504,9 +510,11 @@ namespace MULTILEPTON
     bool trigPassed_DMT = false;
     if (muons && muons->size() >= 2){
       for (const auto &trig : di_mu_paths){
+        if (trigPassed_DMT) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for (const auto &mu0: *muons){
+            if (trigPassed_DMT) break;
             for (const auto &mu1: *muons){
               if (mu0 == mu1) continue;
               bool match = m_matchingTool->match({mu0, mu1}, trig);
@@ -517,6 +525,7 @@ namespace MULTILEPTON
                  mu0->pt() > m_pt_threshold[MULTILEPTON::DLT][MULTILEPTON::subleadingmu])
               );
               trigPassed_DMT |= match && pass_cut;
+              if (trigPassed_DMT) break;
             } // mu1 loop end
           } // mu0 loop end
         } // pass check end
@@ -548,15 +557,18 @@ namespace MULTILEPTON
     bool trigPassed_EMT = false;
     if (electrons && muons){
       for(const auto& trig : emu_paths){
+        if (trigPassed_EMT) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for(const auto& ele : *electrons){
+            if (trigPassed_EMT) break;
             for(const auto& mu : *muons){
               bool match = m_matchingTool->match(*ele, trig) && m_matchingTool->match(*mu, trig);
               bool pass_cut = (
                   ele->pt() > m_pt_threshold[MULTILEPTON::ASLT][MULTILEPTON::leadingele] &&
                   mu->pt() > m_pt_threshold[MULTILEPTON::ASLT][MULTILEPTON::leadingmu]);
               trigPassed_EMT |= match && pass_cut;
+              if (trigPassed_EMT) break;
             }
           }
         }
@@ -615,11 +627,13 @@ namespace MULTILEPTON
 
     bool trigPassed_STT = false;
     for(const auto& trig : single_tau_paths){
+      if (trigPassed_STT) break;
       bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
       if (pass){
         for(const auto& tau : *taus){
           bool match = m_matchingTool->match(*tau, trig, 0.2);
           trigPassed_STT |= match && tau->pt() > m_pt_threshold[MULTILEPTON::STT][MULTILEPTON::tau];
+          if (trigPassed_STT) break;
         }
       }
     }
@@ -700,6 +714,7 @@ namespace MULTILEPTON
     bool trigPassed_DTT = false;
     if (taus->size() >= 2){
       for(const auto& trig : di_tau_paths){
+        if (trigPassed_DTT) break;
         bool pass = false;
         if (m_triggerdecos.contains("trigPassed_"+trig)){
           pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
@@ -709,6 +724,7 @@ namespace MULTILEPTON
 
         if (pass){
           for (const auto& tau0 : *taus){
+            if (trigPassed_DTT) break;
             for (const auto& tau1 : *taus){
               if (tau0 == tau1) continue;
               bool match = m_matchingTool->match({tau0,tau1}, trig, 0.2);
@@ -719,6 +735,7 @@ namespace MULTILEPTON
                   tau0->pt() > m_pt_threshold[MULTILEPTON::DTT][MULTILEPTON::subleadingtau]) 
                 );
               trigPassed_DTT |= match && pass_cut;
+              if (trigPassed_DTT) break;
             }
           }
         }
@@ -802,15 +819,18 @@ namespace MULTILEPTON
     bool trigPassed_ETT = false;
     if (electrons){
       for(const auto& trig : ele_tau_paths){
+        if (trigPassed_ETT) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for (const auto& ele : *electrons){
+            if (trigPassed_ETT) break;
             for (const auto& tau : *taus){
               bool match = m_matchingTool->match(*ele, trig) && m_matchingTool->match(*tau, trig, 0.2);
               bool pass_cut = (
                   ele->pt() > m_pt_threshold[MULTILEPTON::ETT][MULTILEPTON::ele] &&
                   tau->pt() > m_pt_threshold[MULTILEPTON::ETT][MULTILEPTON::tau]);
               trigPassed_ETT |= match && pass_cut;
+              if (trigPassed_ETT) break;
             }
           }
         }
@@ -859,15 +879,18 @@ namespace MULTILEPTON
     bool trigPassed_MTT = false;
     if (muons){
       for(const auto& trig : mu_tau_paths){
+        if (trigPassed_MTT) break;
         bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         if (pass){
           for (const auto& mu : *muons){
+            if (trigPassed_MTT) break;
             for (const auto& tau : *taus){
               bool match = m_matchingTool->match(*mu, trig) && m_matchingTool->match(*tau, trig, 0.2);
               bool pass_cut = (
                   mu->pt() > m_pt_threshold[MULTILEPTON::MTT][MULTILEPTON::mu] &&
                   tau->pt() > m_pt_threshold[MULTILEPTON::MTT][MULTILEPTON::tau]);
               trigPassed_MTT |= match && pass_cut;
+              if (trigPassed_MTT) break;
             }
           }
         }
@@ -1023,7 +1046,8 @@ namespace MULTILEPTON
         const ConstDataVector<xAOD::JetContainer>& bjets,
         CutManager& hhmlCuts){
 
-    auto classifier = SubChannelClassify(&muons, &electrons, &taus, &bjets);
+    auto classifier = SubChannelClassify(
+      &muons, &electrons, &taus, static_cast<int>(bjets.size()));
 
     if (hhmlCuts.exists("pass_2lsc")){
       m_bools.at(MULTILEPTON::pass_2lsc) = evaluate2lscSelection(classifier, hhmlCuts);
@@ -1063,13 +1087,19 @@ namespace MULTILEPTON
 					const CP::SystematicSet& sys) {
     
     int year = m_year.get(*event, sys);
+    bool is22_75b = m_is22_75bunches.get(*event, sys);
+    
+    // Only reassign if year or period changed
+    int cacheKey = (year << 1) | static_cast<int>(is22_75b);
+    if (cacheKey == m_cachedThresholdKey) return;
+    m_cachedThresholdKey = cacheKey;
 
     // Single-lepton triggers
     // electron
     if(year==2015)
       m_pt_threshold[MULTILEPTON::SLT][MULTILEPTON::ele] = 25. * Athena::Units::GeV;
     // 2022 75 bunches
-    else if(m_is22_75bunches.get(*event, sys))
+    else if(is22_75b)
       m_pt_threshold[MULTILEPTON::SLT][MULTILEPTON::ele] = 18. * Athena::Units::GeV;
     else
       m_pt_threshold[MULTILEPTON::SLT][MULTILEPTON::ele] = 27. * Athena::Units::GeV;

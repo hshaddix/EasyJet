@@ -60,13 +60,11 @@ namespace MULTILEPTON
       ANA_CHECK(m_jetHandle.retrieve(jets, sys));
 
       // setup KF tool inputs
+      const size_t nJets = jets->size();
       double KF1_Mbb = -99.;
-      if (jets->size() >= 2)
+      if (nJets >= 2)
       {
-        TLorentzVector j1 = jets->at(0)->p4();
-        TLorentzVector j2 = jets->at(1)->p4();
-        TLorentzVector jj = j1 + j2;
-        KF1_Mbb = jj.M();
+        KF1_Mbb = (jets->at(0)->p4() + jets->at(1)->p4()).M();
       }
 
       double LH_KF1=999;
@@ -81,34 +79,43 @@ namespace MULTILEPTON
       auto workJetCont_Iter1 = std::make_unique<xAOD::JetContainer>();
       auto workJetAuxCont_Iter1 = std::make_unique<xAOD::JetAuxContainer>();
       workJetCont_Iter1->setStore(workJetAuxCont_Iter1.get());
+      workJetCont_Iter1->reserve(nJets);
 
       for (const auto* jet : *jets) {
-        xAOD::Jet* thisJet = new xAOD::Jet(*jet);  
-        workJetCont_Iter1->push_back(thisJet);     
+        xAOD::Jet* thisJet = new xAOD::Jet();
+        workJetCont_Iter1->push_back(thisJet);
+        *thisJet = *jet;
       }
 
       // Run KF tool for Iteration 1
       ATH_CHECK(m_KFTool->applyKF_bb4l(*electrons, *muons, *workJetCont_Iter1, LH_KF1, Conv_KF1, 1));
 
-      auto constDataWorkJetCont_Iter1 = std::make_unique<ConstDataVector<xAOD::JetContainer>>();
-      constDataWorkJetCont_Iter1->reserve(workJetCont_Iter1->size());
-      for (xAOD::Jet* jet : *workJetCont_Iter1) {
-        constDataWorkJetCont_Iter1->push_back(std::make_unique<xAOD::Jet>(*jet).release());
-      }
-
-      //CALCULATE KF1 Mbb
+      //CALCULATE KF1 Mbb (before copying to CDV)
       xAOD::Jet* bjet1 = nullptr;
       xAOD::Jet* bjet2 = nullptr;
 
-      for(xAOD::Jet* jet : *workJetCont_Iter1){
-        if(jet->pt() < m_Jet_Min_Pt) continue;
-        if(m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5){
-          if(!bjet1) bjet1 = jet;
-          else if(!bjet2) bjet2 = jet;
+      for (xAOD::Jet* jet : *workJetCont_Iter1) {
+        if (jet->pt() < m_Jet_Min_Pt) continue;
+        if (m_isBtag.get(*jet, sys) && std::abs(jet->eta()) < 2.5) {
+          if (!bjet1) bjet1 = jet;
+          else if (!bjet2) { bjet2 = jet; break; }
         }
       }
-      if(bjet1 && bjet2){
-        KF1_Mbb=(bjet1->p4()+bjet2->p4()).M();
+      if (bjet1 && bjet2) {
+        KF1_Mbb = (bjet1->p4() + bjet2->p4()).M();
+      }
+
+      // Record working containers to event store so jets survive the scope
+      const xAOD::JetContainer* rawWorkJets_Iter1 = workJetCont_Iter1.get();
+      std::string workKey_Iter1 = "MbbKFWorkJets_Iter1_" + sys.name();
+      ATH_CHECK(evtStore()->record(std::move(workJetCont_Iter1), workKey_Iter1));
+      ATH_CHECK(evtStore()->record(std::move(workJetAuxCont_Iter1), workKey_Iter1 + "Aux."));
+
+      // Create VIEW_ELEMENTS CDV (avoids deep-copying jets a second time)
+      auto constDataWorkJetCont_Iter1 = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
+      constDataWorkJetCont_Iter1->reserve(rawWorkJets_Iter1->size());
+      for (const xAOD::Jet* jet : *rawWorkJets_Iter1) {
+        constDataWorkJetCont_Iter1->push_back(jet);
       }
 
       // Set the Mbb decorator
@@ -125,19 +132,28 @@ namespace MULTILEPTON
       auto workJetCont_Iter2 = std::make_unique<xAOD::JetContainer>();
       auto workJetAuxCont_Iter2 = std::make_unique<xAOD::JetAuxContainer>();
       workJetCont_Iter2->setStore(workJetAuxCont_Iter2.get());
+      workJetCont_Iter2->reserve(nJets);
 
       // We must copy from the ORIGINAL *jets again to get a fresh start!
       for (const auto* jet : *jets) {
-        xAOD::Jet* thisJet = new xAOD::Jet(*jet);  
-        workJetCont_Iter2->push_back(thisJet);     
+        xAOD::Jet* thisJet = new xAOD::Jet();
+        workJetCont_Iter2->push_back(thisJet);
+        *thisJet = *jet;
       }
 
       ATH_CHECK(m_KFTool->applyKF_bb4l(*electrons, *muons, *workJetCont_Iter2, LH_KF2, Conv_KF2, 2));
 
-      auto constDataWorkJetCont_Iter2 = std::make_unique<ConstDataVector<xAOD::JetContainer>>();
-      constDataWorkJetCont_Iter2->reserve(workJetCont_Iter2->size());
-      for (xAOD::Jet* jet : *workJetCont_Iter2) {
-        constDataWorkJetCont_Iter2->push_back(std::make_unique<xAOD::Jet>(*jet).release());
+      // Record working containers to event store so jets survive the scope
+      const xAOD::JetContainer* rawWorkJets_Iter2 = workJetCont_Iter2.get();
+      std::string workKey_Iter2 = "MbbKFWorkJets_Iter2_" + sys.name();
+      ATH_CHECK(evtStore()->record(std::move(workJetCont_Iter2), workKey_Iter2));
+      ATH_CHECK(evtStore()->record(std::move(workJetAuxCont_Iter2), workKey_Iter2 + "Aux."));
+
+      // Create VIEW_ELEMENTS CDV (avoids deep-copying jets a second time)
+      auto constDataWorkJetCont_Iter2 = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
+      constDataWorkJetCont_Iter2->reserve(rawWorkJets_Iter2->size());
+      for (const xAOD::Jet* jet : *rawWorkJets_Iter2) {
+        constDataWorkJetCont_Iter2->push_back(jet);
       }
 
       m_LH_KF2.set(*event, LH_KF2, sys);

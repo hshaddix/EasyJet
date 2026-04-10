@@ -30,7 +30,7 @@ namespace MULTILEPTON
     m = 2,
   };
 
-  enum class FlAVOR_2L
+  enum class FLAVOR_2L
   {
     unknown = -1,
     ee = 1,

@@ -81,7 +81,7 @@ namespace MULTILEPTON
         //Needed to calculate mbb (according to the bbyy channel strategy)
         Gaudi::Property<float> m_Jet_Min_Pt{this, "JetMinPt", 20.*Athena::Units::GeV, "Minimum pT of jets"};
 
-        CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "GN2v01_FixedCutBEff_85", "Name of input decorator for b-tagging"};
+        CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "ftag_select_GN2v01_FixedCutBEff_85", "Name of input decorator for b-tagging"};
 
     };
 }

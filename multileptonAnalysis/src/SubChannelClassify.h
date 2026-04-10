@@ -24,13 +24,12 @@ public:
     SubChannelClassify(const xAOD::MuonContainer *,
                        const xAOD::ElectronContainer *,
                        const xAOD::TauJetContainer *,
-                       const ConstDataVector<xAOD::JetContainer> *,
-                       const xAOD::EventInfo * event=nullptr);
+                       const int n_bjets);
 
     CH_ID classify_id() const;
 
     FLAVOR_1L classify_flavor_1L() const;
-    FlAVOR_2L classify_flavor_2L() const;
+    FLAVOR_2L classify_flavor_2L() const;
     FLAVOR_3L classify_flavor_3L() const;
     FLAVOR_4L classify_flavor_4L() const;
 
@@ -74,11 +73,9 @@ public:
     int getSubChannelFlavor() const { return m_sub_channel_flavor; }
 
 private:
-    const xAOD::EventInfo *m_event;
     const xAOD::MuonContainer *m_muons;
     const xAOD::ElectronContainer *m_electrons;
     const xAOD::TauJetContainer *m_taus;
-    const ConstDataVector<xAOD::JetContainer> *m_bjets;
     std::vector<std::tuple<int, int, const xAOD::IParticle *>> m_leptons;
 
     // Same-Flavor Opposite-Charge

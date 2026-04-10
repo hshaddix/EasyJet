@@ -6,6 +6,7 @@ expert_mode_warning_level: default
 
 # Which analysis to consider
 do_hhml_analysis: true
+
 save_extrabb4l_vars: false
 do_KinematicFit: false
 extra_KinematicFit_variables: false
@@ -76,37 +77,12 @@ Electron:
   correlationModelId: "TOTAL"
   extra_wps: 
     - ["TightDNN", "Tight_VarRad"]
-    - ["TightDNN", "TightTrackOnly_VarRad"]
-    - ["TightDNN", "TightTrackOnly_FixedRad"]
-    - ["TightDNN", "HighPtCaloOnly"]
     - ["TightDNN", "Loose_VarRad"]
-    - ["MediumDNN", "Tight_VarRad"]
-    - ["MediumDNN", "TightTrackOnly_VarRad"]
-    - ["MediumDNN", "TightTrackOnly_FixedRad"]
-    - ["MediumDNN", "HighPtCaloOnly"]
-    - ["MediumDNN", "Loose_VarRad"]
-    - ["LooseDNN", "Loose_VarRad"]
     - ["LooseDNN", "Tight_VarRad"]
-    - ["LooseDNN", "TightTrackOnly_VarRad"]
-    - ["LooseDNN", "TightTrackOnly_FixedRad"]
-    - ["LooseDNN", "HighPtCaloOnly"]
+    - ["LooseDNN", "Loose_VarRad"]
     - ["TightLH", "Tight_VarRad"]
-    - ["TightLH", "TightTrackOnly_VarRad"]
-    - ["TightLH", "TightTrackOnly_FixedRad"]
-    - ["TightLH", "HighPtCaloOnly"]
     - ["TightLH", "Loose_VarRad"]
-    - ["MediumLH", "Tight_VarRad"]
-    - ["MediumLH", "TightTrackOnly_VarRad"]
-    - ["MediumLH", "TightTrackOnly_FixedRad"]
-    - ["MediumLH", "HighPtCaloOnly"]
-    - ["MediumLH", "Loose_VarRad"]
     - ["LooseBLayerLH", "Tight_VarRad"]
-    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
-    - ["LooseBLayerLH", "TightTrackOnly_FixedRad"]
-    - ["LooseBLayerLH", "HighPtCaloOnly"]
-    # - ["LooseBLayerLH", "Loose_VarRad"]
-    # - ["TightLH", "NonIso"]
-    # - ["MediumLH", "NonIso"]
   do_parent_decoration: true
   do_track_decoration: true
   do_IFF_decoration: true
@@ -117,29 +93,10 @@ Muon:
   ID: "Loose"
   Iso: "Loose_VarRad"
   extra_wps:
-    - ["Tight", "PflowLoose_VarRad"]
-    - ["Tight", "PflowTight_VarRad"]
-    - ["Tight", "Loose_VarRad"]
-    - ["Tight", "Tight_VarRad"]
     - ["Medium", "PflowLoose_VarRad"]
     - ["Medium", "PflowTight_VarRad"]
-    - ["Medium", "Loose_VarRad"]
-    - ["Medium", "Tight_VarRad"]
-    - ["HighPt", "PflowLoose_VarRad"]
-    - ["HighPt", "PflowTight_VarRad"]
-    - ["HighPt", "Loose_VarRad"]
-    - ["HighPt", "Tight_VarRad"]
     - ["Loose", "PflowLoose_VarRad"]
     - ["Loose", "PflowTight_VarRad"]
-    - ["Loose", "Tight_VarRad"]
-    # - ["Loose", "Loose_VarRad"]
-    # - ["Tight", "NonIso"]
-    # - ["Medium", "NonIso"]
-    # - ["HighPt", "NonIso"]
-    # - ["LowPt", "PflowLoose_VarRad"]
-    # - ["LowPt", "PflowTight_VarRad"]
-    # - ["LowPt", "Loose_VarRad"]
-    # - ["LowPt", "Tight_VarRad"]
   do_parent_decoration: true
   do_IFF_decoration: true
   max_eta: 2.5
@@ -161,6 +118,10 @@ do_trigger_filtering: true
 # write objects with overlap removal applied
 # turning this on you have to decide on one large R jet collection
 do_overlap_removal: true
+
+OverlapRemoval:
+  innerDR: 0.15
+  outerDR: 0.15
 
 #Enable cutflow 
 save_cutflow: true

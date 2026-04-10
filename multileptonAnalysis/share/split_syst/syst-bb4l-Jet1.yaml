@@ -1,0 +1,26 @@
+do_CP_systematics: true
+systematics_regex: 
+  - JET_JER_EffectiveNP_4_PseudoData__1down
+  - JET_JER_EffectiveNP_4_PseudoData__1up
+  - JET_JER_EffectiveNP_4__1down
+  - JET_JER_EffectiveNP_4__1up
+  - JET_JER_EffectiveNP_5_PseudoData__1down
+  - JET_JER_EffectiveNP_5_PseudoData__1up
+  - JET_JER_EffectiveNP_5__1down
+  - JET_JER_EffectiveNP_5__1up
+  - JET_EtaIntercalibration_TotalStat__1down
+  - JET_EtaIntercalibration_TotalStat__1up
+  - JET_Pileup_PtTerm__1down
+  - JET_Pileup_PtTerm__1up
+  - JET_EffectiveNP_Modelling2__1down
+  - JET_EffectiveNP_Modelling2__1up
+  - JET_EffectiveNP_Modelling3__1down
+  - JET_EffectiveNP_Modelling3__1up
+  - JET_EffectiveNP_Statistical2__1down
+  - JET_EffectiveNP_Statistical2__1up
+  - JET_EffectiveNP_Statistical5__1down
+  - JET_EffectiveNP_Statistical5__1up
+  - JET_EffectiveNP_Detector1__1down
+  - JET_EffectiveNP_Detector1__1up
+  - JET_EffectiveNP_Mixed3__1down
+  - JET_EffectiveNP_Mixed3__1up

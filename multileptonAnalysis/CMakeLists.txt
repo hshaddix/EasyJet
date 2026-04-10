@@ -41,6 +41,7 @@ atlas_install_python_modules(
 )
 atlas_install_data(
   share/*.yaml
+  share/split_syst/*.yaml
 )
 
 # atlas_install_data( data/* )

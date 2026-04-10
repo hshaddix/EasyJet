@@ -1,0 +1,16 @@
+do_CP_systematics: true
+systematics_regex: 
+  - EG_RESOLUTION_ALL__1down
+  - EG_RESOLUTION_ALL__1up
+  - EG_SCALE_ALL__1down
+  - EG_SCALE_ALL__1up
+  - EG_RESOLUTION_AF3__1down
+  - EG_RESOLUTION_AF3__1up
+  - EG_SCALE_AF3__1down
+  - EG_SCALE_AF3__1up
+  - EL_EFF_Reco_CorrUncertaintyNP.*
+  - EL_EFF_Reco_SIMPLIFIED_UncorrUncertaintyNP.*
+  - EL_EFF_Iso_TOTAL_1NPCOR_PLUS_UNCOR.*
+  - EL_EFF_ID_TOTAL_1NPCOR_PLUS_UNCOR.*
+  - EL_EFF_TriggerEff_TOTAL_1NPCOR_PLUS_UNCOR.*
+  - EL_EFF_Trigger_TOTAL_1NPCOR_PLUS_UNCOR.*

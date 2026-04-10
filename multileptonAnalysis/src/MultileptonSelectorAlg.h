@@ -174,7 +174,8 @@ private:
 		m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
 
     std::unordered_map<MULTILEPTON::TriggerChannel, std::unordered_map<MULTILEPTON::Var, float>> m_pt_threshold;
-
+    int m_cachedThresholdKey{-1};
+    
     StatusCode initialiseCutflow();
 
     void evaluateTriggerCuts(

@@ -1,0 +1,4 @@
+do_CP_systematics: true
+systematics_regex: 
+  - .*GEN.* # theory systematics
+  - PRW_DATASF.*

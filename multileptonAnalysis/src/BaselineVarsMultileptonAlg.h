@@ -20,6 +20,8 @@
 #include <xAODTau/TauJetContainer.h>
 #include <xAODMissingET/MissingETContainer.h>
 
+#include <array>
+
 namespace MULTILEPTON
 {
 
@@ -62,7 +64,7 @@ private:
         m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
 
     CP::SysReadHandle<xAOD::JetContainer> m_kfJetHandle{
-        this, "KFJets", "bb4lAnalysisKFJets_%SYS%","KF jet container to read"};
+        this, "KFJets", "bb4lAnalysisKF2Jets_%SYS%","KF jet container to read"};
 
     CP::SysReadDecorHandle<float> m_KF_MBB{"KF_mbb_%SYS%", this};
 
@@ -87,8 +89,8 @@ private:
     CP::SysReadDecorHandle<int>
         m_nmuons{ this, "nmuons", "n_muons_%SYS%", "Number of muons from muon-in-jet correction"};
 
-    StatusCode SaveExtrabb4lVars(const std::vector<const xAOD::Jet*> &Hbbjets,
-                            const std::vector<const xAOD::Jet*> &KFJets,
+    StatusCode SaveExtrabb4lVars(const std::array<const xAOD::Jet*, 2> &Hbbjets,
+                            const std::array<const xAOD::Jet*, 2> &KFJets,
                             const xAOD::EventInfo *event, const auto& sys);
 
     /// \brief Setup sys-aware output decorations

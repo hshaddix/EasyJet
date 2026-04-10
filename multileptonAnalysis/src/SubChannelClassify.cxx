@@ -14,28 +14,27 @@ namespace MULTILEPTON
       const xAOD::MuonContainer *muons,
       const xAOD::ElectronContainer *electrons,
       const xAOD::TauJetContainer *taus,
-      const ConstDataVector<xAOD::JetContainer> *bjets,
-      const xAOD::EventInfo *event)
-    : m_event(event)
-    , m_muons(muons)
+      const int n_bjets)
+    : m_muons(muons)
     , m_electrons(electrons)
     , m_taus(taus)
-    , m_bjets(bjets)
-    , m_n_bjets(m_bjets->size())
+    , m_n_bjets(n_bjets)
     , m_n_electrons(m_electrons->size())
     , m_n_muons(m_muons->size())
     , m_n_leptons(m_n_electrons + m_n_muons)
     , m_n_taus(m_taus->size())
   {
+    m_leptons.reserve(m_n_leptons);
+
     for (int i = 0; i < m_n_electrons; i++)
     {
-      const xAOD::Electron *ele = electrons->at(i);
+      const xAOD::Electron *ele = m_electrons->at(i);
       m_leptons.emplace_back(i, -11 * ele->charge(), ele);
     }
 
     for (int i = 0; i < m_n_muons; i++)
     {
-      const xAOD::Muon *mu = muons->at(i);
+      const xAOD::Muon *mu = m_muons->at(i);
       m_leptons.emplace_back(i, -13 * mu->charge(), mu);
     }
 
@@ -49,7 +48,7 @@ namespace MULTILEPTON
         m_leptons.begin(), m_leptons.end(), 0,
         [](int sum, const std::tuple<int, int, const xAOD::IParticle *> &lep)
         { return sum + -1 * ((get<1>(lep) > 0) - (get<1>(lep) < 0)); });
-    m_total_charge_tau = std::accumulate(taus->begin(), taus->end(), 0,
+    m_total_charge_tau = std::accumulate(m_taus->begin(), m_taus->end(), 0,
                                          [](int sum, const xAOD::TauJet *tau)
                                          { return sum + tau->charge(); });
 
@@ -58,7 +57,8 @@ namespace MULTILEPTON
 
     if (m_sub_channel_id == CH_ID::hhbb4l)
     {
-      // m_sub_channel_flavor = static_cast<int>(classify_flavor_4L());
+      // m_sub_channel_flavor = static_cast<int>(classify_flavor_4L()); // commented out as requested by bb4l analyzers
+      m_sub_channel_flavor = -1;
     }
     else if (m_sub_channel_id == CH_ID::hh3l || m_sub_channel_id == CH_ID::hh3l1tau)
     {
@@ -144,6 +144,12 @@ namespace MULTILEPTON
   {
     if (m_n_leptons < 2)
       return;
+
+    const int max_pairs = (m_n_leptons * (m_n_leptons - 1)) / 2;
+    m_lep_SFOC.reserve(max_pairs);
+    m_lep_SFSC.reserve(max_pairs);
+    m_lep_DF.reserve(max_pairs);
+
     for (int i = 0; i < m_n_leptons; i++)
     {
       for (int j = i + 1; j < m_n_leptons; j++)
@@ -169,6 +175,7 @@ namespace MULTILEPTON
         [min_pT](const std::tuple<int, int, const xAOD::IParticle *> &lep)
         { return get<2>(lep)->pt() > min_pT; });
   }
+  
   bool SubChannelClassify::check_low_mass(float min_m) const
   {
 
@@ -208,15 +215,15 @@ namespace MULTILEPTON
       return FLAVOR_1L::unknown;
   }
 
-  FlAVOR_2L SubChannelClassify::classify_flavor_2L() const {
+  FLAVOR_2L SubChannelClassify::classify_flavor_2L() const {
     if (m_n_electrons == 2)
-      return FlAVOR_2L::ee;
+      return FLAVOR_2L::ee;
     else if (m_n_muons == 2)
-      return FlAVOR_2L::mm;
+      return FLAVOR_2L::mm;
     else if (m_n_electrons == 1 && m_n_muons == 1)
-      return m_electrons->at(0)->pt() > m_muons->at(0)->pt() ? FlAVOR_2L::em : FlAVOR_2L::me;
+      return m_electrons->at(0)->pt() > m_muons->at(0)->pt() ? FLAVOR_2L::em : FLAVOR_2L::me;
     else
-      return FlAVOR_2L::unknown;
+      return FLAVOR_2L::unknown;
   }
 
   FLAVOR_3L SubChannelClassify::classify_flavor_3L() const {

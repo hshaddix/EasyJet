@@ -1,0 +1,24 @@
+do_CP_systematics: true
+systematics_regex: 
+  - MUON_CB__1down
+  - MUON_CB__1up
+  - MUON_SAGITTA_DATASTAT__1down
+  - MUON_SAGITTA_DATASTAT__1up
+  - MUON_SAGITTA_GLOBAL__1down
+  - MUON_SAGITTA_GLOBAL__1up
+  - MUON_SAGITTA_PTEXTRA__1down
+  - MUON_SAGITTA_PTEXTRA__1up
+  - MUON_SAGITTA_RESBIAS__1down
+  - MUON_SAGITTA_RESBIAS__1up
+  - MUON_SCALE__1down
+  - MUON_SCALE__1up
+  - MUON_EFF_ISO_STAT.* 
+  - MUON_EFF_ISO_SYS.*
+  - MUON_EFF_RECO_STAT_LOWPT.*
+  - MUON_EFF_RECO_STAT.*
+  - MUON_EFF_TTVA_STAT.*
+  - MUON_EFF_TTVA_SYS.*
+  - MUON_EFF_RECO_SYS_LOWPT.*
+  - MUON_EFF_RECO_SYS.*
+  - MUON_EFF_TrigStatUncertainty.*
+  - MUON_EFF_TrigSystUncertainty.*
