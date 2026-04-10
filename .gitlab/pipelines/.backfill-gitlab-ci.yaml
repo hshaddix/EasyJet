@@ -3,14 +3,6 @@
 # analysis package was touched. We need to copy over the
 # reference files for packages that were not touched.
 ###########################################################
-# Common prerequisites shared by backfill job.
-.backfill_prerequisites:
-  needs:
-    - job: get-latest-merged-mr
-      artifacts: true
-    - job: compile
-      artifacts: true
-
 backfill:
   variables:
     GIT_STRATEGY: none
@@ -19,7 +11,11 @@ backfill:
   stage: backfill
   tags:
     - k8s-eos
-  needs:
-    - !reference [.backfill_prerequisites, needs]
+  # need to make this a dependency and not 
+  # needs because otherwise this might run
+  # before run and validate
+  dependencies:
+    - get-latest-merged-mr
+    - compile
   script:
     - easyjet-backfill
