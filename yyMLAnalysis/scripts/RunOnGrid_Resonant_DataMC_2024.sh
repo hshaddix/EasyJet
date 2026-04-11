@@ -4,10 +4,10 @@ campaign=v2
 
 dir_samples="../easyjet/yyMLAnalysis/datasets/PHYS/"
 yaml="RunConfig-yyml.yaml"
-#mc_campaign="mc23_13p6TeV"
-mc_campaign="mc23e"
+mc_campaign_signal="mc23e"
+mc_campaign="${mc_campaign_signal}_p6"
 mc_list_sample_names=(
-    "PHYS_Signal_Resonant_HH_$mc_campaign.txt"
+    "PHYS_Signal_Resonant_HH_$mc_campaign_signal.txt"
     "PHYS_SingleHiggs_$mc_campaign.txt"
     "PHYS_Vyy_$mc_campaign.txt"
     "PHYS_ttyy_$mc_campaign.txt"
@@ -22,7 +22,7 @@ easyjet-gridsubmit --mc-list <(sed -e '$a\' "${mc_list_sample_names[@]/#/${dir_s
     --campaign ${campaign} \
     --noEmail
 
-easyjet-gridsubmit --data-list ${dir_samples}/PHYS_data24.txt \
+easyjet-gridsubmit --data-list ${dir_samples}/PHYS_data24_p6.txt \
     --run-config yyMLAnalysis/${yaml} \
     --exec yyml-ntupler \
     --nGBperJob 50 \
