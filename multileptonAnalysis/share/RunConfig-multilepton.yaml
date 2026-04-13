@@ -63,9 +63,6 @@ Small_R_jet:
   max_eta: 4.5
   variables_bjets: ["uncorrPt", "muonCorrPt"]
   variables_int_bjets: ["nmuons"]
-  do_MCMC_dsid_fix: true
-  MCMC_dsid_map:
-    Sheprpa2211: [345708, 345709]
 
 Tau:
   ID: "RNNMedium_eleid"
