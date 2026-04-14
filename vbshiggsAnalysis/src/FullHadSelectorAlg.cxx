@@ -98,8 +98,8 @@ StatusCode FullHadSelectorAlg::execute() {
 
         for (auto& [key, _] : m_bools) m_bools[key] = false;
 
-
-        if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
+	m_bools[PASS_LEPTON_VETO] = (muons->empty() && electrons->empty());
+	if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
         if (largeJets->size() >= 2) m_bools[PASS_TWO_LARGE_JETS] = true;
 
         bool passAll = true;

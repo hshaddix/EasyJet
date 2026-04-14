@@ -3,37 +3,39 @@ include: [vbshiggsAnalysis/RunConfig-common.yaml ]
 # Which analysis to consider
 channels: ["FullHad"]
 
-Small_R_jet:
-  amount: 2
-
-expert_mode_warning_level: default
-
 do_resolved: true
+UseVBFRNN : true
 
-# Use VBFRNN tagger
-UseVBFRNN : false
 
-# Toggles for object types
-do_met : true
+Small_R_jet:
+    # btagging working points 
+  btag_wp: "GN2v01_FixedCutBEff_90"
+  amount: 0
+  useFJvt: true
+  # to use multiple btagging WPs
+  btag_extra_wps:
+    - GN2v01_Continuous
 
-Truth:
-#  DSID_nWLep_samples:
-
-  DSID_vgammaOR:
-    - 410470 # PhPy8EG_A14_ttbar_hdamp258p75_nonallhad
-
+Large_R_jet:
+  min_pT: 200.e+3
+  maxEta: 2.0
+  runMuonJetPtCorr: false
+  amount: 1
+  GN2X_hbb_wps:
+    - "FlatMassQCDEff_1p55"
 
 OverlapRemoval:
-  # Enable overlap removal between large-R jets and objects for which
+  # Enable overlap removal between large-R jets and objects for which 
   # large-R jet OR removal is implemented in Athena
-  do_large_R_jets: true
-  do_small_R_jet_large_R_jet: false
+  do_large_R_jets: false
+  do_small_R_jet_large_R_jet: true
 
 
 Trigger:
   include: [vbshiggsAnalysis/trigger-had.yaml]
+  writeOutput: False
 
-CutList :
-      - PASS_EXACTLY_TWO_SMALL_JETS
-
+CutList : 
+  - PASS_EXACTLY_TWO_SMALL_JETS
+  - PASS_LEPTON_VETO
 
