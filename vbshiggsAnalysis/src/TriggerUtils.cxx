@@ -33,14 +33,14 @@ namespace VBSHIGGS
         "HLT_e140_lhloose_L1EM22VHI", "HLT_e300_etcut_L1EM22VHI"
       };
     }
-    else if(runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event)){
+    else if(runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event) || runBoolDecos.at(VBSHIGGS::is24_75bunches)(*event)){
       single_ele_paths = {
         "HLT_e26_lhtight_ivarloose_L1EM22VHI", "HLT_e60_lhmedium_L1EM22VHI",
         "HLT_e140_lhloose_L1EM22VHI", "HLT_e140_lhloose_noringer_L1EM22VHI",
         "HLT_e300_etcut_L1EM22VHI"
       };
     }
-    else if(year==2023){
+    else if(year==2023 || year==2024){
       single_ele_paths = {
         "HLT_e26_lhtight_ivarloose_L1eEM26M", "HLT_e60_lhmedium_L1eEM26M",
         "HLT_e140_lhloose_L1eEM26M", "HLT_e140_lhloose_noringer_L1eEM26M",
@@ -58,10 +58,13 @@ namespace VBSHIGGS
     else if(2016<=year && year<=2018){
       single_mu_paths = {"HLT_mu26_ivarmedium", "HLT_mu50"};
     }
-    else if(2022<=year && year<=2023 &&
+    else if(2022<=year && year<=2024 &&
 	    !runBoolDecos.at(VBSHIGGS::is22_75bunches)(*event) &&
 	    !runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event) &&
-	    !runBoolDecos.at(VBSHIGGS::is23_400bunches)(*event)){
+	    !runBoolDecos.at(VBSHIGGS::is23_400bunches)(*event)&&
+      !runBoolDecos.at(VBSHIGGS::is24_75bunches)(*event) &&
+	    !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodD)(*event) &&
+	    !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodL)(*event)){
       single_mu_paths = {
         "HLT_mu24_ivarmedium_L1MU14FCH", "HLT_mu50_L1MU14FCH",
         "HLT_mu60_0eta105_msonly_L1MU14FCH", "HLT_mu60_L1MU14FCH",

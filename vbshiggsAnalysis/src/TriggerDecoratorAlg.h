@@ -79,6 +79,9 @@ namespace VBSHIGGS
         {VBSHIGGS::is22_75bunches, "is2022_75bunches"},
         {VBSHIGGS::is23_75bunches, "is2023_75bunches"},
         {VBSHIGGS::is23_400bunches, "is2023_400bunches"},
+        {VBSHIGGS::is24_75bunches, "is2024_75bunches"},
+        {VBSHIGGS::is24_400bunches_periodD, "is2024_400bunches_periodD"},
+        {VBSHIGGS::is24_400bunches_periodL, "is2024_400bunches_periodL"},
       };
       std::map<VBSHIGGS::RunBooleans, SG::ReadDecorHandleKey<xAOD::EventInfo>> m_runBooleans_key;
       typedef std::unordered_map<VBSHIGGS::RunBooleans, SG::ReadDecorHandle<xAOD::EventInfo, char> > runBoolReadDecoMap;

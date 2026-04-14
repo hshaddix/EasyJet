@@ -30,6 +30,9 @@ namespace VBSHIGGS
     is22_75bunches,
     is23_75bunches,
     is23_400bunches,
+    is24_75bunches,
+    is24_400bunches_periodD,
+    is24_400bunches_periodL,
   };
 
   enum Booleans{
