@@ -1,33 +1,20 @@
 include: [EasyjetHub/base-config.yaml]
 
-channels: 
-  - "SR"
-  - "WZCR"
-  - "misIDCR"
-  - "incVR"
-  - "LowDyVR"
-  - "LowMjjVR"
-  - "LowNjVR"
-  - "tFakeVR"
-  - "tEWKVR"
-  - "lllVR"
-  - "ZeeVR"
-
-#If set to True, the output ntuple will only has the events in the channels
-#If set to False, a loose selection "pass_baseline" will be used to filter events into the output ntuple
-collect_channels_only: False
-
 # Which analysis to consider
 do_ssWW_analysis: true
 
 bypass: false
 
+expert_mode_warning_level: ignore
 
 # Toggles for object types
 do_small_R_jets: true
 do_muons: true
 do_electrons: true
 do_met : true
+do_VgammaOR: true
+VGammaOR_dR_lepton_photon_cuts: [0.1, 0.2]
+add_BadBatman_jet_cleaning: false
 
 # Toggles for reconstructed objects decorations
 Small_R_jet:
@@ -35,36 +22,61 @@ Small_R_jet:
   max_eta: 4.5
   min_pT_ssWW: 20.e+3 # for the jet selection
   max_eta_ssWW: 4.5
+  useFJvt: True
   # btagging working points 
-  btag_wp: "GN2v01_FixedCutBEff_85"
+  btag_wp: "GN2v01_FixedCutBEff_90"
   amount: 2
   amount_bjet: 0
   # to use multiple btagging WPs
   btag_extra_wps:
     - GN2v01_FixedCutBEff_77
     - GN2v01_FixedCutBEff_70
+    - GN2v01_FixedCutBEff_85
     
   variables_int_bjets: ["truthLabel"]
 
 Electron:
   maxD0Significance: 5 
   maxDeltaZ0SinTheta: 0.5
-  ID: "LooseBLayerLH"
-  Iso: "NonIso"
+  ID: "LooseDNN"
+  Iso: "Loose_VarRad"
   min_pT: 4.5e+3
   min_pT_ssWW: 4.5e+3
   do_IFF_decoration: true
+  max_eta_ssWW: 2.47
+  chargeIDSelectionRun2: false #Set to false for investigating charge MisID 
+  do_track_decoration: true
+
+  extra_wps:
+  - ["TightDNN", "Tight_VarRad"]
+  - ["TightLH", "Tight_VarRad"]  # previously Gradient. The fisrt one is used to define the pass-ID region
+  - ["TightLH", "Loose_VarRad"]  
+  - ["MediumLH", "Tight_VarRad"]  
+  - ["MediumLH", "Loose_VarRad"]  
+  - ["MediumLH", "NonIso"] 
+  - ["LooseBLayerLH", "Tight_VarRad"]  
+  - ["LooseBLayerLH", "Loose_VarRad"]  
+  - ["LooseBLayerLH", "NonIso"] #allows previous wp to be used if needed
 
 Muon:
   maxD0Significance: 15
   maxDeltaZ0SinTheta: 1.5
   ID: "Loose"
-  Iso: "NonIso"
+  Iso: "PflowLoose_VarRad"
   min_pT: 3.e+3
   max_eta: 2.5 # no recommendation yet for forward muons with eta between 2.5 and 2.7.
-  min_pT_ssWW: 3.e+3
+  min_pT_ssWW: 5.e+3
   max_eta_ssWW: 2.5 # no recommendation yet for forward muons with eta between 2.5 and 2.7.
   do_IFF_decoration: true
+
+  extra_wps:
+  - ["Medium", "PflowTight_VarRad", 3, 0.5] # previously FixedCutPflowTight. The fisrt one is used to define the pass-ID region
+  - ["Medium", "PflowLoose_VarRad", 3, 0.5]
+  - ["Medium", "PflowLoose_VarRad", 10, 0.5] 
+  - ["Loose", "PflowTight_VarRad", 3, 0.5] 
+  - ["Loose", "PflowLoose_VarRad", 3, 0.5]
+  - ["Loose", "PflowLoose_VarRad", 10, 0.5]
+  - ["Loose", "NonIso", 15, 1.5] #allows previous wp to be used if needed
 
 Lepton:
   amount: 3
@@ -82,11 +94,6 @@ do_trigger_filtering: true
 # write objects with overlap removal applied
 # turning this on you have to decide on one large R jet collection
 do_overlap_removal: true
-OverlapRemoval:
-  # Enable overlap removal between large-R jets and objects for which 
-  # large-R jet OR removal is implemented in Athena
-  do_large_R_jets: false
-  do_small_R_jet_large_R_jet: false
 
 #Enable cutflow 
 save_cutflow: true

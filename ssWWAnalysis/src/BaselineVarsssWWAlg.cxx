@@ -22,7 +22,7 @@ namespace ssWWVBS
   }
 
   StatusCode BaselineVarsssWWAlg::initialize()
-  {
+  {  
     // Read syst-aware input handles
     ATH_CHECK (m_ssWWJetHandle.initialize(m_systematicsList));
     ATH_CHECK (m_ssWWElectronHandle.initialize(m_systematicsList));
@@ -54,9 +54,12 @@ namespace ssWWVBS
       ATH_CHECK (m_mu_truthOrigin.initialize(m_systematicsList, m_ssWWMuonHandle));
       ATH_CHECK (m_mu_truthType.initialize(m_systematicsList, m_ssWWMuonHandle));
 
-      ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
-      m_ele_SF = CP::SysReadDecorHandle<float>("effSF_"+m_eleWPName+"_%SYS%", this);
-      ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
+      if((m_eleWPName != "TightDNN_Tight_VarRad") && (m_eleWPName != "LooseDNN_Loose_VarRad"))
+      {  
+        ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
+        m_ele_SF = CP::SysReadDecorHandle<float>("effSF_"+m_eleWPName+"_%SYS%", this);
+        ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
+      }
 
       ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
       m_mu_SF = CP::SysReadDecorHandle<float>("effSF_"+m_muWPName+"_%SYS%", this);
@@ -224,12 +227,16 @@ namespace ssWWVBS
         m_Fbranches.at(prefix+"_eta").set(*event, tlv.Eta(), sys);
         m_Fbranches.at(prefix+"_phi").set(*event, tlv.Phi(), sys);
         m_Fbranches.at(prefix+"_E").set(*event, tlv.E(), sys);
+          
         if(m_isMC){
           float SF = 1.;
           if(std::abs(lep_pdgid)==13)
             SF = m_mu_SF.get(*leptons[i].first,sys);
-          else SF = m_ele_SF.get(*leptons[i].first,sys);
-          m_Fbranches.at(prefix+"_effSF").set(*event, SF, sys);
+          else if((m_eleWPName != "TightDNN_Tight_VarRad") && (m_eleWPName != "LooseDNN_Loose_VarRad"))
+          {
+            SF = m_ele_SF.get(*leptons[i].first,sys);
+            m_Fbranches.at(prefix+"_effSF").set(*event, SF, sys);
+          }
         }
         // Charge-Flip
         int ele_ECIDS = -99;
@@ -241,7 +248,7 @@ namespace ssWWVBS
         int charge = lep_pdgid > 0 ? -1 : 1;
         m_Ibranches.at(prefix+"_charge").set(*event, charge, sys);
         m_Ibranches.at(prefix+"_pdgid").set(*event, lep_pdgid, sys);
-      
+        
         // leptons truth information
         if (m_isMC){
           int lep_truthOrigin = std::abs(lep_pdgid)==11 ?
@@ -402,5 +409,3 @@ namespace ssWWVBS
   }
 
 }
-
-
