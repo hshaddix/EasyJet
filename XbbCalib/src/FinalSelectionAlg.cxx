@@ -33,6 +33,7 @@ StatusCode FinalSelectionAlg::initialize() {
     if (const auto* v = obj.if_contains(key)) {
       auto ret = std::optional(*v);
       obj.erase(key);
+      return ret;
     }
     return std::optional<boost::json::value>(std::nullopt);
   };
@@ -54,6 +55,12 @@ StatusCode FinalSelectionAlg::initialize() {
   // event handle must be initialised before decoration handles that reference it
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
   ATH_CHECK(m_passHandle.initialize(m_systematicsList, m_eventHandle));
+
+  if (c.n_lrjets_min) {
+    m_lrjetsNHandle = std::make_shared<CP::SysReadDecorHandle<int>>(
+        "lrjets_n_%SYS%", this);
+    ATH_CHECK(m_lrjetsNHandle->initialize(m_systematicsList, m_eventHandle));
+  }
 
   if (!m_blindingVariable.value().empty()) {
     m_blindingHandle = std::make_unique<CP::SysReadDecorHandle<float>>(

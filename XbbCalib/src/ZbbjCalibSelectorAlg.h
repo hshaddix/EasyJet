@@ -2,14 +2,13 @@
   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
 */
 
-// Always protect against multiple includes!
-
 #ifndef SELECTIONFLAGSZBBJCALIBALG_H
 #define SELECTIONFLAGSZBBJCALIBALG_H
 
 #include <AthenaBaseComps/AthHistogramAlgorithm.h>
 
 #include <SystematicsHandles/SysReadHandle.h>
+#include <SystematicsHandles/SysWriteHandle.h>
 #include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
@@ -20,37 +19,63 @@
 #include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
 
+#include <AthContainers/AuxElement.h>
+#include <AthContainers/ConstDataVector.h>
+
 namespace XBBCALIB
 {
 
-  /// \brief An algorithm for counting containers
+  /// \brief Dijet event selection for Zbbj calibration, with BJR pT reordering
   class ZbbjCalibSelectorAlg final : public AthHistogramAlgorithm {
 
     public:
       ZbbjCalibSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
 
-      /// \brief Initialisation method, for setting up tools and other persistent
-      /// configs
       StatusCode initialize() override;
-      /// \brief Execute method, for actions to be taken in the event loop
       StatusCode execute() override;
-      /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+      StatusCode finalize() override;
 
     private :
-      // ToolHandle<whatever> handle {this, "pythonName", "defaultValue",
-      // "someInfo"};
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run selector algorithm in pass-through mode" };
 
-      /// \brief Setup syst-aware input container handles
+      // BJR decoration names
+      Gaudi::Property<std::string> m_bjrPtName
+        { this, "bjrPtDecoration", "bJR10v01_pt", "BJR pT decoration name" };
+      Gaudi::Property<std::string> m_bjrMassName
+        { this, "bjrMassDecoration", "bJR10v01_mass", "BJR mass decoration name" };
+
+      // Dijet selection cuts
+      Gaudi::Property<unsigned int> m_minJets
+        { this, "minJets", 2, "Minimum number of jets" };
+      Gaudi::Property<float> m_bjrMassCut
+        { this, "bjrMassCut", 40e3, "Minimum BJR mass for both jets [MeV]" };
+      Gaudi::Property<float> m_leadJetUfoPtCut
+        { this, "leadJetUfoPtCut", 500e3, "Minimum leading jet UFO/calo pT [MeV] (trigger plateau)" };
+      Gaudi::Property<float> m_minJetBjrPtCut
+        { this, "minJetBjrPtCut", 200e3, "Minimum BJR pT for both jets [MeV]" };
+      Gaudi::Property<float> m_leadJetPtCut
+        { this, "leadJetPtCut", -1, "Minimum leading jet BJR pT [MeV] (-1 = disabled)" };
+      Gaudi::Property<float> m_asymmetryCut
+        { this, "asymmetryCut", 0.15, "Maximum pT asymmetry (pt0-pt1)/(pt0+pt1)" };
+      Gaudi::Property<float> m_rapidityCut
+        { this, "rapidityCut", 1.2, "Maximum rapidity difference |y0-y1|" };
+
+      // Accessors (initialised from property strings)
+      std::unique_ptr<SG::AuxElement::ConstAccessor<float>> m_accBjrPt;
+      std::unique_ptr<SG::AuxElement::ConstAccessor<float>> m_accBjrMass;
+
+      /// \brief Syst-aware handles
       CP::SysListHandle m_systematicsList {this};
 
       CP::SysReadHandle<xAOD::JetContainer>
-      m_lrjetHandle{ this, "largeRJets", "",   "Large-R jet container to read" };
+      m_lrjetHandle{ this, "largeRJets", "", "Large-R jet container to read" };
+
+      CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>>
+      m_outHandle{ this, "bjrOrderedJets", "", "Output container reordered by BJR pT" };
 
       CP::SysReadHandle<xAOD::EventInfo>
-      m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };
+      m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
 
       CP::SysFilterReporterParams m_filterParams {this, "XbbCalib selection"};
 

@@ -1,13 +1,30 @@
-disable_metadata: true
+disable_metadata: false
 selection:
   n_lrjets_min: 1
 variables:
-  Zcand0_m:
+  Zcand0_bJR10v01_mass:
     lower: 50000
     upper: 250000
     n_bins: 100
 weights:
-  all_runs: []
-  run2: []
+  all_runs:
+    - PileupWeight_NOSYS
+  run2:
+    - beamSpotWeight
 multidim:
-  enable: false
+  leading:
+    mass_var: Zcand0_bJR10v01_mass
+    mass_lower: 50000
+    mass_upper: 150000
+    mass_n_bins: 50
+    pt_var: Zcand0_bJR10v01_pt
+    pt_edges: [450000., 500000., 600000., 1000000.]
+    wp_prefix: Zcand0
+  subleading:
+    mass_var: Zcand1_bJR10v01_mass
+    mass_lower: 50000
+    mass_upper: 150000
+    mass_n_bins: 50
+    pt_var: Zcand1_bJR10v01_pt
+    pt_edges: [450000., 500000., 600000., 1000000.]
+    wp_prefix: Zcand1

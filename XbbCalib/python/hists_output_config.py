@@ -125,23 +125,27 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
         )
     )
 
-    if hists_cfg.multidim.enable:
-        md = hists_cfg.multidim
-        wp_decos = [""] + [f"Zcand_0_{wp}" for wp in tag_wps]
+    # multidim config: dict keyed by name. Each entry defines one
+    # ZbbHistogramAlg (e.g. leading / subleading). The dict key becomes
+    # the HDF5 group name.
+    for name, md in hists_cfg.multidim.items():
+        mass_var = str(md.mass_var)
+        wp_decos = [""] + [f"{md.wp_prefix}_{wp}" for wp in tag_wps]
+
         cfg.addEventAlgo(
             CompFactory.XBBCALIB.ZbbHistogramAlg(
-                "ZbbHistogramAlg",
+                f"ZbbHistogramAlg_{name}",
                 event="EventInfo",
                 weightDecoration=weight_deco,
                 selectionDecoration=selection_flag,
-                massVar=str(md.mass_var),
+                massVar=mass_var,
                 ptVar=str(md.pt_var),
                 massBins=int(md.mass_n_bins),
                 massLower=float(md.mass_lower),
                 massUpper=float(md.mass_upper),
                 ptEdges=list(md.pt_edges),
                 wpDecorations=wp_decos,
-                groupName="multidim",
+                groupName=name,
                 histName="mass_pt_wp_sys",
                 output=h5_svc,
             )

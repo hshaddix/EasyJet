@@ -23,6 +23,7 @@ def ZbbjCalib_cfg(flags, largejetkey,
     cfg = ComponentAccumulator()
 
     selected_large_r = "XbbCalibLRJets_%SYS%"
+    bjr_ordered_large_r = "XbbCalibBJROrderedLRJets_%SYS%"
 
     cfg.merge(
         JetSelectorAlgCfg(
@@ -40,17 +41,16 @@ def ZbbjCalib_cfg(flags, largejetkey,
         CompFactory.XBBCALIB.ZbbjCalibSelectorAlg(
             "ZbbjCalibSelectorAlg",
             largeRJets=selected_large_r,
+            bjrOrderedJets=bjr_ordered_large_r,
             eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
             bypass=flags.Analysis.bypass,
         )
     )
 
-   
-
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.BaselineVarsZbbjCalibAlg(
             "BaselineVarsZbbjCalibAlg",
-            largeRJets=selected_large_r,
+            largeRJets=bjr_ordered_large_r,
             floatsToCopy=lrj_floats_to_copy(flags),
             intsToCopy=lrj_gn3x_working_points(flags),
             copiedVariablePrefix0=copiedVariablePrefix0,
@@ -64,7 +64,7 @@ def ZbbjCalib_cfg(flags, largejetkey,
     )
     cfg.merge(hists_output_cfg(
         flags, flags.Analysis.output.h5.hists, out_path,
-        tag_wps=[]))
+        tag_wps=lrj_gn3x_working_points(flags)))
 
     return cfg
 

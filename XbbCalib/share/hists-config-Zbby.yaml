@@ -24,10 +24,11 @@ weights:
   run2:
     - beamSpotWeight
 multidim:
-  enable: true
-  mass_var: Zcand_0_m
-  mass_lower: 50000
-  mass_upper: 150000
-  mass_n_bins: 50
-  pt_var: Zcand_0_pt
-  pt_edges: [250000., 350000., 500000., 700000., 1000000., 1500000.]
+  jet0:
+    mass_var: Zcand_0_m
+    mass_lower: 50000
+    mass_upper: 150000
+    mass_n_bins: 50
+    pt_var: Zcand_0_pt
+    pt_edges: [250000., 350000., 500000., 700000., 1000000., 1500000.]
+    wp_prefix: Zcand_0

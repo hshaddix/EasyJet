@@ -86,12 +86,16 @@ namespace XBBCALIB
       ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys));
 
       m_lrjets_n.set(*event, static_cast<int>(lrjets->size()), sys);
-      
+
       if (lrjets->size() >= 1) {
         const xAOD::Jet* largeJet0 = lrjets->at(0);
         m0_z_candidate_4vec->set(*event, *lrjets->at(0), sys);
         m0_float_copier->set(*event, *largeJet0, sys);
         m0_int_copier->set(*event, *largeJet0, sys);
+      } else {
+        m0_z_candidate_4vec->setDefault(*event, sys);
+        m0_float_copier->setDefault(*event, sys);
+        m0_int_copier->setDefault(*event, sys);
       }
 
       if (lrjets->size() >= 2) {
@@ -99,6 +103,10 @@ namespace XBBCALIB
         m1_z_candidate_4vec->set(*event, *lrjets->at(1), sys);
         m1_float_copier->set(*event, *largeJet1, sys);
         m1_int_copier->set(*event, *largeJet1, sys);
+      } else {
+        m1_z_candidate_4vec->setDefault(*event, sys);
+        m1_float_copier->setDefault(*event, sys);
+        m1_int_copier->setDefault(*event, sys);
       }
     
     }
