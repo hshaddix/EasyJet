@@ -87,7 +87,7 @@ def get_electron_branches(flags, tree_flags, input_container, output_prefix):
     if flags.Input.isMC and \
        flags.Analysis.Electron.do_IFF_decoration:
         electron_branches.variables += [
-            ("IFFClass_%SYS", None),
+            ("IFFClass_NOSYS", None),
             ("truthType", None),
             ("truthOrigin", None),
             ("firstEgMotherTruthType", None),
