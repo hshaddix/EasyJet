@@ -55,7 +55,12 @@ private:
     CP::SysFilterReporterParams m_filterParams {this, "vbshiggs selection"};
 
     Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
+    std::vector<VBSHIGGS::Booleans> m_inputCutKeys;
     Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
+
+    std::unordered_map<VBSHIGGS::Booleans, CP::SysWriteDecorHandle<char>> m_Bbranches;
+    CP::SysWriteDecorHandle<char> m_passallcuts{"PassAllCuts_%SYS%", this};
+
 
 
     std::map<Booleans, bool> m_bools;

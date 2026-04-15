@@ -29,6 +29,20 @@ StatusCode FullHadSelectorAlg::initialize() {
 
 
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
+
+    for (auto& [key, value] : m_boolnames) {
+      m_bools.emplace(key, false);
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
+      m_Bbranches.emplace(key, whandle);
+      ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
+    }
+
+    
+    ATH_CHECK(m_passallcuts.initialize(m_systematicsList, m_eventHandle));
+
+    ATH_CHECK(m_metHandle.initialize(m_systematicsList));
+
+
     ATH_CHECK(m_smallJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_largeJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
@@ -44,7 +58,8 @@ StatusCode FullHadSelectorAlg::initialize() {
   }
 
     ATH_CHECK (m_systematicsList.initialize());
-    ATH_CHECK(initialiseCutflow());
+    if (m_saveCutFlow) ATH_CHECK(initialiseCutflow());
+
 
     return StatusCode::SUCCESS;
 }
@@ -96,7 +111,7 @@ StatusCode FullHadSelectorAlg::execute() {
 	  return StatusCode::FAILURE;
 	}
 
-        for (auto& [key, _] : m_bools) m_bools[key] = false;
+  for (auto& [key, _] : m_bools) m_bools[key] = false;
 
 	m_bools[PASS_LEPTON_VETO] = (muons->empty() && electrons->empty());
 	if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
@@ -105,15 +120,28 @@ StatusCode FullHadSelectorAlg::execute() {
         bool passAll = true;
         for (auto& [key, val] : m_bools) passAll &= val;
         m_bools[PASS_ALL_CUTS] = passAll;
+  m_passallcuts.set(*event, passAll, sys);
 
-	/*
-	for (const auto& [key, name] : m_boolnames) {
-            if (m_bools[key]) {
-                m_vbshiggsCuts[name].passed = true;
-                m_vbshiggsCuts[name].counter++;
-            }
-        }
-	*/
+
+	// for (const auto& [key, name] : m_boolnames) {
+  //           if (m_bools[key]) {
+  //               m_vbshiggsCuts[name].passed = true;
+  //               m_vbshiggsCuts[name].counter++;
+  //           }
+  //       }
+
+    // Count how many cuts the event passed and increase the relative counter
+  for (const auto &cut : m_inputCutKeys) {
+    if(m_vbshiggsCuts.exists(m_boolnames.at(cut))) {
+      m_vbshiggsCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
+      if (m_vbshiggsCuts(m_boolnames.at(cut)).passed){
+        m_vbshiggsCuts(m_boolnames.at(cut)).counter+=1;
+      }
+    }
+  }
+  for (const auto& [key, value] : m_bools) {
+    m_Bbranches.at(key).set(*event, value, sys);
+  }
         m_totalEvents++;
     }
 
@@ -130,10 +158,33 @@ StatusCode FullHadSelectorAlg::initialiseCutflow() {
     std::vector<std::string> boolnamesList;
     for (const auto& [key, name] : m_boolnames) boolnamesList.push_back(name);
 
-    m_vbshiggsCuts.CheckInputCutList(boolnamesList, boolnamesList);
+    // m_vbshiggsCuts.CheckInputCutList(boolnamesList, boolnamesList);
+    m_vbshiggsCuts.CheckInputCutList(m_inputCutList, boolnamesList);
 
-    for (const auto& [key, name] : m_boolnames)
-        m_vbshiggsCuts.add(name);
+
+    m_inputCutKeys.resize(m_inputCutList.size());
+    std::vector<bool> inputWasFound(m_inputCutList.size(), false);
+
+    for (const auto& [key, name] : m_boolnames) {
+    auto it = std::find(m_inputCutList.begin(), m_inputCutList.end(), name);
+    if (it != m_inputCutList.end()) {
+      auto index = it - m_inputCutList.begin();
+      m_inputCutKeys.at(index) = key;
+      inputWasFound.at(index) = true;
+    }
+  }
+
+
+    for (unsigned int index = 0; index < inputWasFound.size(); index++) {
+      if (inputWasFound.at(index)) continue;
+      ATH_MSG_ERROR("CutLists don't match. Please double check your configuration " + m_inputCutList[index]);
+    }
+
+    for (const auto& cut : m_inputCutKeys) {
+      m_vbshiggsCuts.add(m_boolnames.at(cut));
+    }
+    // for (const auto& [key, name] : m_boolnames)
+    //     m_vbshiggsCuts.add(name);
 
 
     unsigned int nbins = m_vbshiggsCuts.size() + 1;

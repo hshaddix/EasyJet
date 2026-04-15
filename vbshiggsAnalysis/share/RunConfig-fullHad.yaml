@@ -5,6 +5,7 @@ channels: ["FullHad"]
 
 do_resolved: true
 UseVBFRNN : true
+save_cutflow: true
 
 
 Small_R_jet:
@@ -27,12 +28,16 @@ Large_R_jet:
 OverlapRemoval:
   # Enable overlap removal between large-R jets and objects for which 
   # large-R jet OR removal is implemented in Athena
-  do_large_R_jets: false
+  do_large_R_jets: true
   do_small_R_jet_large_R_jet: true
 
 
+# Trigger:
+#   include: [vbshiggsAnalysis/share/trigger-had.yaml]
+#   writeOutput: False
+
 Trigger:
-  include: [vbshiggsAnalysis/trigger-had.yaml]
+  include: [vbshiggsAnalysis/trigger-lep.yaml]
   writeOutput: False
 
 CutList : 
