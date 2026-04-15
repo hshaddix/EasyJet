@@ -59,12 +59,12 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
 
     if flags.Analysis.Muon.do_track_decoration:
         muon_branches.variables += [
-            (f"idtrack_{var}", None)
+            (f"idtrack_{var}", "float")
             for var in ["pt", "eta", "phi", "d0", "z0", "chi2OverDoF",
                         "nIBL", "nPIX", "nPIX_shared", "nSCT", "nSCT_shared"]
         ]
         muon_branches.variables += [
-            (f"cbtrack_{var}", None)
+            (f"cbtrack_{var}", "float")
             for var in ["d0", "z0", "chi2OverDoF"]
         ]
         muon_branches.variables += [
@@ -74,7 +74,7 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
 
         if (flags.Input.ProcessingTags == ["StreamDAOD_LLP1"]):
             muon_branches.variables += [
-                (f"idtrack_{var}", None)
+                (f"idtrack_{var}", "float")
                 for var in ["nNextToIBL", "nPIX_split", "nTRT"]
             ]
 
