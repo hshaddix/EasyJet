@@ -366,11 +366,11 @@ namespace HHBBTT
     } else if(year==2018){
       boosted_paths = {"HLT_2j330_a10t_lcw_jes_35smcINF_L1J100"};
     } else if(year==2022){
-      boosted_paths = {"HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111_CJ15"}; 
+      boosted_paths = {"HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1SC111_CJ15"}; 
     } else if(year==2023){
-      boosted_paths = {"HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111_CJ15"};
+      boosted_paths = {"HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1SC111_CJ15"};
     } else if(year==2024){
-      boosted_paths = {"HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111_CjJ40"};
+      boosted_paths = {"HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1SC111_CjJ40"};
     }
   }
 

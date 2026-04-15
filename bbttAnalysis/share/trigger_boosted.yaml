@@ -67,7 +67,7 @@ chains:
   #LRT
   - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
   #DLRT
-  - 'HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111-CJ15'
+  - 'HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1SC111-CJ15'
   #STT
   - 'HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100'
   #DTT
@@ -81,7 +81,7 @@ chains:
   #LRT
   - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
   #DLRT
-  - 'HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111-CJ15'
+  - 'HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1SC111-CJ15'
   #STT
   - 'HLT_tau160_mediumRNN_tracktwoMVA_L1eTAU140'
   - 'HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100'
@@ -99,7 +99,7 @@ chains:
   #LRT
   - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1jJ160'
   #DLRT
-  - 'HLT_2j330_35smcINF_a10t_lcw_jes_L1SC111-CjJ40'
+  - 'HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1SC111-CjJ40'
   #STT
   - 'HLT_tau160_mediumRNN_tracktwoMVA_L1eTAU140'
   #MET
