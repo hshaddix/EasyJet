@@ -14,10 +14,11 @@ do_resolved: true
 UseVBFRNN : false
 
 # Toggles for object types
+do_large_R_UFO_jets: true
+do_small_R_jets: true
 do_muons: true
 do_electrons: true
 do_met : true
-
 
 Electron:
   ID: "LooseBLayerLH"
@@ -28,11 +29,9 @@ Electron:
 
     - ["MediumLH", "Loose_VarRad"]
     - ["MediumLH", "Tight_VarRad"]
-    - ["MediumLH", "NonIso"]
 
     - ["TightLH", "Loose_VarRad"]
     - ["TightLH", "Tight_VarRad"]
-    - ["TightLH", "NonIso"]
 
     - ["LooseDNNElectron", "Loose_VarRad"]
     - ["LooseDNNElectron", "Tight_VarRad"]
@@ -54,11 +53,9 @@ Muon:
     
     - ["Medium", "PflowLoose_VarRad"]
     - ["Medium", "PflowTight_VarRad"]
-    - ["Medium", "NonIso"]
 
     - ["Tight", "PflowLoose_VarRad"]
     - ["Tight", "PflowTight_VarRad"]
-    - ["Tight", "NonIso"]
 
   do_IFF_decoration: true
   do_reco_decoration: true
@@ -68,7 +65,6 @@ Muon:
 Small_R_jet:
   # btagging working points 
   btag_wp: "GN2v01_FixedCutBEff_90"
-  amount: 0
   useFJvt: true
   # to use multiple btagging WPs
   btag_extra_wps:
@@ -108,6 +104,12 @@ ttree_output:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
+    muons: 'container_names.output.muons'
+    electrons: 'container_names.output.electrons'
+  truth_outputs:
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+    electrons: 'container_names.input.truthelectrons'
+    muons: 'container_names.input.truthmuons'
   collection_options:
     small_R_jets:
       run_selection: true
@@ -119,6 +121,12 @@ ttree_output:
       substructure_info: true
       truth_labels: true
       bjet_regression: true
+    electrons:
+      run_selection: true
+      truth_parent_info: true
+    muons:
+      run_selection: true
+      truth_parent_info: true
 
 CutList :
       - PASS_TRIGGER 

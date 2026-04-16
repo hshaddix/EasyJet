@@ -24,10 +24,6 @@ namespace VBSHIGGS{
     ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
     ATH_CHECK (m_vbsjetHandle.initialize(m_systematicsList));
     ATH_CHECK (m_largejetHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_GN2Xv01_phbb.initialize(m_systematicsList, m_largejetHandle));
-    ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_largejetHandle));
-    ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_largejetHandle));
-    ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_largejetHandle));
 
     if (!m_isBtag.empty()) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
@@ -108,7 +104,7 @@ namespace VBSHIGGS{
       } 
       int nLeptons = electrons->size() + muons->size();
       int nLargejets = largeJets->size();
-      bool pass_OneLepton = (nLeptons == 1);
+      bool pass_OneLepton = (nLeptons > 0);
       bool pass_boost = (nLargejets > 0);
       bool pass_preselection =  m_bools.at(VBSHIGGS::PASS_TRIGGER) && pass_OneLepton && pass_boost ;
 

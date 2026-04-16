@@ -66,10 +66,6 @@ namespace VBSHIGGS{
       CP::SysReadDecorHandle<char> m_passTriggerSLT {this, "passTriggerSLT", "pass_trigger_SLT_%SYS%", "events pass any singlep triggers"};
 
       CP::SysReadHandle<xAOD::JetContainer> m_largejetHandle{ this, "largejets", "vbshiggsAnalysisLargeJets_%SYS%", "Large R Jet container to read"};
-      CP::SysReadDecorHandle<float> m_GN2Xv01_phbb = {this, "phbb", "GN2Xv01_phbb", "GN2Xv01_phbb"};
-      CP::SysReadDecorHandle<float> m_GN2Xv01_phcc = {this, "phcc", "GN2Xv01_phcc", "GN2Xv01_phcc"};
-      CP::SysReadDecorHandle<float> m_GN2Xv01_pqcd = {this, "pqcd", "GN2Xv01_pqcd", "GN2Xv01_pqcd"};
-      CP::SysReadDecorHandle<float> m_GN2Xv01_ptop = {this, "ptop", "GN2Xv01_ptop", "GN2Xv01_ptop"};
 
       CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{ this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", "Signal Jet container to read" };
       CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{ this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", "Higgs Candidates container to read"};
