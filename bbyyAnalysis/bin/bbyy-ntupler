@@ -22,8 +22,6 @@ from EasyjetHub.hub import (
 
 from EasyjetHub.output.ttree.minituple_config import check_ntuple_output_file
 
-from bbyyAnalysis.bbyy_config import bbyy_branches
-from bbyyAnalysis.bbyy_config import bbyy_cfg
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
 from EasyjetHub.algs.orthogonality.orth_config import orth_branches
 from EasyjetHub.algs.orthogonality.orth_config import orth_cfg
@@ -44,9 +42,10 @@ def bbyy_job_cfg():
     seqname = "bbyySeq"
     cfg = default_sequence_cfg(flags, seqname)
 
-    # Optionally run orthogonality check (only runs if you set do_orth_check to true in your RunConfig)
+    # Optionally run orthogonality check (only runs if you set do_orth_check
+    # to true in your RunConfig)
     extra_orth_branches = []
-    if(flags.Analysis.orthogonality.do_orth_check):
+    if (flags.Analysis.orthogonality.do_orth_check):
         cfg.merge(
             orth_cfg(
                 flags,
@@ -55,15 +54,28 @@ def bbyy_job_cfg():
             ),
             seqname
         )
-        
+
         extra_orth_branches = orth_branches(flags)
-    
+
     # Extend the list of output branches via flags
     # For more sophistication this could be done using
     # custom BranchManagers
+    if flags.Analysis.do_HHbbyy_Hyy_Analysis:
+        from bbyyAnalysis.bbyy_HH_H_config import bbyy_HH_H_branches as bbyy_branches
+        from bbyyAnalysis.bbyy_HH_H_config import bbyy_HH_H_cfg as bbyy_cfg
+
+    elif flags.Analysis.do_SH_Analysis:
+        from bbyyAnalysis.bbyy_SH_config import bbyy_SH_branches as bbyy_branches
+        from bbyyAnalysis.bbyy_SH_config import bbyy_SH_cfg as bbyy_cfg
+
+    else:
+        from bbyyAnalysis.bbyy_base_config import bbyy_branches
+        from bbyyAnalysis.bbyy_base_config import bbyy_cfg
+
     extra_bbyy_branches = []
     if flags.Analysis.do_bbyy_analysis:
-        extra_bbyy_branches, float_variable_names, int_variable_names = bbyy_branches(flags)
+        extra_bbyy_branches, float_variable_names, int_variable_names = bbyy_branches(
+            flags)
         cfg.merge(
             bbyy_cfg(
                 flags,
@@ -79,7 +91,6 @@ def bbyy_job_cfg():
         )
         cfg.merge(event_counter_cfg("n_bbyy"), seqname)
 
-        
     # Explicitly call the minituple config because we want to provide
     # additional branches, the list of which is generated dynamically
     # rather than statically in the yaml
@@ -89,10 +100,10 @@ def bbyy_job_cfg():
         seqname,
         extra_branches)
     cfg.merge(outcfg)
-    
+
     # Record the number of events for logging and tests
     cfg.merge(event_counter_cfg("n_events"), seqname)
-    
+
     return cfg, flags, args, ntuple_output_file_list
 
 
@@ -107,7 +118,7 @@ def main():
     else:
         return_code = run_job(flags, args, cfg)
         from os import environ
-        outpklfile = environ.get("PICKLECAFILE", None) # check if --stop-after-config
+        outpklfile = environ.get("PICKLECAFILE", None)  # check if --stop-after-config
         if return_code and outpklfile is None:
             check_ntuple_output_file(ntuple_output_file_list)
 

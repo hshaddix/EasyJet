@@ -52,7 +52,7 @@ atlas_install_scripts(
   )
 
 atlas_install_python_modules(
-  python/bbyy_config.py
+  python/bbyy_*config.py
 )
 atlas_install_data(
   data/*

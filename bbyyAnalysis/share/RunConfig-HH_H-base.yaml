@@ -4,6 +4,9 @@ expert_mode_warning_level: default
 
 # Which analysis to consider
 do_bbyy_analysis: true
+do_HHbbyy_Hyy_Analysis: true
+do_SH_Analysis: false
+
 # Decay mode considered for truth decoration
 Truth:
   decayModes: ["bbyy"]

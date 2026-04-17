@@ -4,6 +4,9 @@ expert_mode_warning_level: default
 
 # Which analysis to consider
 do_bbyy_analysis: true
+do_HHbbyy_Hyy_Analysis: false
+do_SH_Analysis: false
+
 # Decay mode considered for truth decoration
 Truth:
   decayModes: ["bbyy"]
@@ -96,7 +99,8 @@ do_overlap_removal: true
 store_high_level_variables: false
 
 #Enable cutflow 
-save_cutflow: true
+save_cutflow: false
+CutList: []
 do_resonant_PNN: false
 do_resonant_onebtag: false
 
