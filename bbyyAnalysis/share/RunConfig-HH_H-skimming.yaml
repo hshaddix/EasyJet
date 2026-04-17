@@ -27,3 +27,10 @@ Small_R_jet:
   gn3_scores: true
 Truth:
   do_STXS: true
+
+ttree_output:
+  reco_outputs:
+      small_R_jets: 'container_names.output.reco4PFlowJet'
+  collection_options:
+    small_R_jets:
+      no_bjet_calib_p4: true
