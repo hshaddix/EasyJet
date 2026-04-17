@@ -40,8 +40,8 @@ namespace HHBBTT
       ATH_CHECK (m_ditauHandle.initialize(m_systematicsList));
     }
 
-    if (!m_Pass_GN3XPV01_hbb.empty()) {
-      ATH_CHECK (m_Pass_GN3XPV01_hbb.initialize(m_systematicsList, m_lRjetHandle));  
+    if (!m_Pass_GN3XPV01_hbb_bjr.empty()) {
+      ATH_CHECK (m_Pass_GN3XPV01_hbb_bjr.initialize(m_systematicsList, m_lRjetHandle));  
     }
 
     if (!m_Pass_GN3XPV01_htt.empty()) {
@@ -283,7 +283,7 @@ namespace HHBBTT
         for (const xAOD::Jet *lRjet : *lRjets) {
 
           // b tagging
-          if (m_Pass_GN3XPV01_hbb.get(*lRjet, sys)) n_boosted_b_jets++;
+          if (m_Pass_GN3XPV01_hbb_bjr.get(*lRjet, sys)) n_boosted_b_jets++;
           // tau tagging
           if (m_Pass_GN3XPV01_htt.get(*lRjet, sys)) n_boosted_tau_jets++;
         }

@@ -22,7 +22,7 @@ namespace HHBBTT
 
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK (m_lRjetHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_Pass_GN3XPV01_hbb.initialize(m_systematicsList, m_lRjetHandle));
+    ATH_CHECK (m_Pass_GN3XPV01_hbb_bjr.initialize(m_systematicsList, m_lRjetHandle));
     ATH_CHECK (m_Pass_GN3XPV01_htt.initialize(m_systematicsList, m_lRjetHandle));
 
     // make decorators
@@ -64,7 +64,7 @@ namespace HHBBTT
         for (const xAOD::Jet *lRjet : *largeRjets) {
 
           // Get tagged jets 
-          if (m_Pass_GN3XPV01_hbb.get(*lRjet, sys) && !b_jet) {
+          if (m_Pass_GN3XPV01_hbb_bjr.get(*lRjet, sys) && !b_jet) {
             b_jet = lRjet;
           } else if ( m_Pass_GN3XPV01_htt.get(*lRjet, sys) && !tau_jet) {
             tau_jet = lRjet;

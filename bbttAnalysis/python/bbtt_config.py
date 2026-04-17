@@ -106,10 +106,10 @@ def bbtt_SelectorAlgCfg(flags):
     ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
     if flags.Analysis.do_large_R_UFO_jets:
         fms = flags.Analysis.Large_R_jet.flat_mass_selections
-        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{fms.GN3XPV01_hbb.wps[-1]}"
+        GN3XPV01_hbb_bjr_WP = f"xbb_select_GN3XPV01_hbb_bjr_{fms.GN3XPV01_hbb_bjr.wps[-1]}"
         GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{fms.GN3XPV01_htt.wps[-1]}"
     else:
-        GN3XPV01_hbb_WP = GN3XPV01_htt_WP = ""
+        GN3XPV01_hbb_bjr_WP = GN3XPV01_htt_WP = ""
     cfg.addEventAlgo(
         CompFactory.HHBBTT.HHbbttSelectorAlg(
             "HHbbttSelectorAlg",
@@ -135,7 +135,7 @@ def bbtt_SelectorAlgCfg(flags):
                             flags.Analysis.ttree_output.stream_name),
             doLargeRJets=flags.Analysis.do_large_R_UFO_jets,
             ditaus=flags.Analysis.container_names.output.ditaus,
-            GN3XPV01_hbb_WP=GN3XPV01_hbb_WP,
+            GN3XPV01_hbb_bjr_WP=GN3XPV01_hbb_bjr_WP,
             GN3XPV01_htt_WP=GN3XPV01_htt_WP
         )
     )
@@ -181,14 +181,14 @@ def bbtt_BaselineVarsAlgCfg(flags, muonkey, electronkey, taukey,
 
     if flags.Analysis.do_boosted_dihiggs:
         fms = flags.Analysis.Large_R_jet.flat_mass_selections
-        GN3XPV01_hbb_WP = f"xbb_select_GN3XPV01_hbb_{fms.GN3XPV01_hbb.wps[-1]}"
+        GN3XPV01_hbb_bjr_WP = f"xbb_select_GN3XPV01_hbb_bjr_{fms.GN3XPV01_hbb_bjr.wps[-1]}"
         GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{fms.GN3XPV01_htt.wps[-1]}"
         cfg.addEventAlgo(
             CompFactory.HHBBTT.BaselineVarsBoostedbbttAlg(
                 "BaselineVarsBoostedbbttAlg",
                 isMC=flags.Input.isMC,
                 floatVariableList=float_variables,
-                GN3XPV01_hbb_WP=GN3XPV01_hbb_WP,
+                GN3XPV01_hbb_bjr_WP=GN3XPV01_hbb_bjr_WP,
                 GN3XPV01_htt_WP=GN3XPV01_htt_WP
             )
         )

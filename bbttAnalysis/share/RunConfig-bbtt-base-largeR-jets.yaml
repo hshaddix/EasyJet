@@ -22,5 +22,9 @@ Large_R_jet:
   runMuonJetPtCorr: true
   # Use the most loose working point for selection here.
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml, EasyjetHub/xbb-taggers/GN2XTauV00_htt.yaml, EasyjetHub/xbb-taggers/GN2Xv01.yaml]
+    include: [
+      EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml, 
+      EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml,
+      EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml,
+    ]
   amount_leadingjet: 2
