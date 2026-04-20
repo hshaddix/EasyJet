@@ -110,18 +110,31 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
     ]
 
     # do trigger pass and matching for each lepton for single lepton triggers
-    cfg.addEventAlgo(
-        CompFactory.VBSHIGGS.TriggerDecoratorAlg(
-            "VBSHIGGSTriggerDecoratorAlg",
-            muons="vbshiggsAnalysisMuons_%SYS%",
-            electrons="vbshiggsAnalysisElectrons_%SYS%",
-            trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
-            triggerLists=trigger_branches,
-            eleTriggerSF=get_trigger_legs_scale_factor_list(flags, 'Electron'),
-            muTriggerSF=get_trigger_legs_scale_factor_list(flags, 'Muon'),
-            saveHighLevelVariables=flags.Analysis.save_high_level_variables,
+    if "FullLep" in flags.Analysis.channels:
+        cfg.addEventAlgo(
+            CompFactory.VBSHIGGS.TriggerDecoratorAlg(
+                "VBSHIGGSTriggerDecoratorAlg",
+                muons="vbshiggsAnalysisMuons_%SYS%",
+                electrons="vbshiggsAnalysisElectrons_%SYS%",
+                trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
+                triggerLists=trigger_branches,
+                eleTriggerSF=get_trigger_legs_scale_factor_list(flags, 'Electron'),
+                muTriggerSF=get_trigger_legs_scale_factor_list(flags, 'Muon'),
+                saveHighLevelVariables=flags.Analysis.save_high_level_variables,
+            )
         )
-    )
+    
+    # trigger pass for jets for fully hadronic channel, as there is no lepton to match to
+    if "FullHad" in flags.Analysis.channels:
+        cfg.addEventAlgo(
+            CompFactory.VBSHIGGS.HadTriggerDecoratorAlg(
+                "VBSHIGGSHadTriggerDecoratorAlg",
+                trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
+                triggerLists=trigger_branches,
+                saveHighLevelVariables=flags.Analysis.save_high_level_variables,
+            )
+        )
+
 
     # truth info
     if flags.Input.isMC and flags.Analysis.AddTruthVBSQuarks:

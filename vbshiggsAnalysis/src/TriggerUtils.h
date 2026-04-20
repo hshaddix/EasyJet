@@ -20,6 +20,12 @@ namespace VBSHIGGS
     void getSingleMuTriggers(int year, const xAOD::EventInfo* event,
 			     const runBoolReadDecoMap& runBoolDecos,
 			     std::vector<std::string>& single_mu_paths);
+    void getSingleLargeJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& single_large_jet_paths);
+    void getSingleSmallJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& single_small_jet_paths);
 }
 
 #endif

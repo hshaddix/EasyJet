@@ -22,25 +22,31 @@ Large_R_jet:
   maxEta: 2.0
   runMuonJetPtCorr: false
   amount: 1
-  GN2X_hbb_wps:
-    - "FlatMassQCDEff_1p55"
+  flat_mass_selections:
+    include: 
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
 
-OverlapRemoval:
-  # Enable overlap removal between large-R jets and objects for which 
-  # large-R jet OR removal is implemented in Athena
-  do_large_R_jets: true
-  do_small_R_jet_large_R_jet: true
+  # GN2X_hbb_wps:
+  #   - "FlatMassQCDEff_1p55"
 
+# OverlapRemoval:
+#   # Enable overlap removal between large-R jets and objects for which 
+#   # large-R jet OR removal is implemented in Athena
+#   do_large_R_jets: true
+#   do_small_R_jet_large_R_jet: true
 
-# Trigger:
-#   include: [vbshiggsAnalysis/share/trigger-had.yaml]
-#   writeOutput: False
 
 Trigger:
-  include: [vbshiggsAnalysis/trigger-lep.yaml]
+  include: [vbshiggsAnalysis/trigger-had.yaml]
   writeOutput: False
+
+# Trigger:
+  # include: [vbshiggsAnalysis/trigger-lep.yaml]
+  # writeOutput: False
 
 CutList : 
   - PASS_EXACTLY_TWO_SMALL_JETS
   - PASS_LEPTON_VETO
+  - PASS_TWO_LARGE_JETS
 

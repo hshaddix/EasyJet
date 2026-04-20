@@ -72,4 +72,62 @@ namespace VBSHIGGS
       };
     }
   }
+
+  void getSingleLargeJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& single_large_jet_paths){
+    if (year==2016){
+      single_large_jet_paths={"HLT_j420_a10_lcw_L1J100"};
+    }
+    else if (year==2017){
+      single_large_jet_paths={"HLT_j420_a10t_lcw_jes_L1J100", "HLT_j460_a10t_lcw_jes_L1J100"};
+    }
+    else if (year==2018){
+      single_large_jet_paths={"HLT_j460_a10t_lcw_jes_L1J100"};
+    }
+
+    else if (2022 <= year && year <= 2023 &&
+             !runBoolDecos.at(VBSHIGGS::is22_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is23_400bunches)(*event)&&
+             !runBoolDecos.at(VBSHIGGS::is24_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodD)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodL)(*event)){
+      single_large_jet_paths={"HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1J100"};
+    }
+
+}
+
+void getSingleSmallJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& single_small_jet_paths){
+    if (year==2016){
+      single_small_jet_paths={"HLT_j100_2j55_bmv2c2060_split", "HLT_2j55_bmv2c2060_split_ht300_L14J15"};
+    }
+    else if (year==2017){
+      single_small_jet_paths={"HLT_j225_gsc300_bmv2c1070_split", "HLT_j150_gsc175_bmv2c1060_split_j45_gsc60_bmv2c1060_split"};
+    }
+    else if (year==2018){
+      single_small_jet_paths={"HLT_j225_gsc300_bmv2c1070_split", "HLT_j175_gsc225_bmv2c1040_split"};
+    }
+
+    else if (year==2022 &&
+             !runBoolDecos.at(VBSHIGGS::is22_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is23_400bunches)(*event)&&
+             !runBoolDecos.at(VBSHIGGS::is24_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodD)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodL)(*event)){
+      single_small_jet_paths={"HLT_j80c_020jvt_j55c_020jvt_j28c_020jvt_j20c_020jvt_SHARED_2j20c_020jvt_bdl1d77_pf_ftf_presel2c20XX2c20b85_L1J45p0ETA21_3J15p0ETA25", "HLT_j150_2j55_0eta290_020jvt_bdl1d70_pf_ftf_preselj80XX2j45b90_L1J85_3J30"};
+             }
+    else if (year==2023 &&
+            !runBoolDecos.at(VBSHIGGS::is22_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is23_400bunches)(*event)&&
+             !runBoolDecos.at(VBSHIGGS::is24_75bunches)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodD)(*event) &&
+             !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodL)(*event)){
+              single_small_jet_paths={"HLT_j75c_020jvt_j50c_020jvt_j25c_020jvt_j20c_020jvt_SHARED_2j20c_020jvt_bgn177_pf_ftf_presel2c20XX2c20b85_L1J45p0ETA21_3J15p0ETA25", "HLT_j150_2j55_0eta290_020jvt_bgn170_pf_ftf_preselj80XX2j45b90_L1J85_3J30"};
+             }
+    }
 }

@@ -13,6 +13,7 @@ namespace VBSHIGGS
   enum TriggerChannel
   {
     SLT,
+    HAD,
   };
 
   enum Var_Trigger 

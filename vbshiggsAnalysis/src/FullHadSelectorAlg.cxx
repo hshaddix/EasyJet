@@ -40,9 +40,6 @@ StatusCode FullHadSelectorAlg::initialize() {
     
     ATH_CHECK(m_passallcuts.initialize(m_systematicsList, m_eventHandle));
 
-    ATH_CHECK(m_metHandle.initialize(m_systematicsList));
-
-
     ATH_CHECK(m_smallJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_largeJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
@@ -122,6 +119,8 @@ StatusCode FullHadSelectorAlg::execute() {
         m_bools[PASS_ALL_CUTS] = passAll;
   m_passallcuts.set(*event, passAll, sys);
 
+  
+
 
 	// for (const auto& [key, name] : m_boolnames) {
   //           if (m_bools[key]) {
@@ -130,19 +129,35 @@ StatusCode FullHadSelectorAlg::execute() {
   //           }
   //       }
 
-    // Count how many cuts the event passed and increase the relative counter
-  for (const auto &cut : m_inputCutKeys) {
-    if(m_vbshiggsCuts.exists(m_boolnames.at(cut))) {
-      m_vbshiggsCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
-      if (m_vbshiggsCuts(m_boolnames.at(cut)).passed){
-        m_vbshiggsCuts(m_boolnames.at(cut)).counter+=1;
+  if (sys.name() == "" && m_saveCutFlow) {
+    m_totalEvents += 1;
+    // Count how many configured cuts this event passed.
+    for (const auto& cut : m_inputCutKeys) {
+      if (m_vbshiggsCuts.exists(m_boolnames.at(cut))) {
+        m_vbshiggsCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
+        if (m_vbshiggsCuts(m_boolnames.at(cut)).passed) {
+          m_vbshiggsCuts(m_boolnames.at(cut)).counter += 1;
+        }
       }
     }
+
+    // Count consecutive cut passing for relative/standard cutflow histograms.
+    unsigned int consecutive_cuts = 0;
+    for (size_t i = 0; i < m_vbshiggsCuts.size(); ++i) {
+      if (m_vbshiggsCuts[i].passed)
+        consecutive_cuts++;
+      else
+        break;
+    }
+
+    for (unsigned int i = 0; i < consecutive_cuts; i++) {
+      m_vbshiggsCuts[i].relativeCounter += 1;
+    }
   }
+
   for (const auto& [key, value] : m_bools) {
     m_Bbranches.at(key).set(*event, value, sys);
   }
-        m_totalEvents++;
     }
 
     return StatusCode::SUCCESS;
@@ -151,6 +166,14 @@ StatusCode FullHadSelectorAlg::execute() {
 StatusCode FullHadSelectorAlg::finalize() {
     ATH_MSG_INFO("Total events processed = " << m_totalEvents);
     m_vbshiggsCuts.CheckCutResults();
+
+    if (m_saveCutFlow) {
+      m_vbshiggsCuts.DoAbsoluteEfficiency(m_totalEvents, efficiency("AbsoluteEfficiency"));
+      m_vbshiggsCuts.DoRelativeEfficiency(m_totalEvents, efficiency("RelativeEfficiency"));
+      m_vbshiggsCuts.DoStandardCutFlow(m_totalEvents, efficiency("StandardCutFlow"));
+      m_vbshiggsCuts.DoCutflowLabeling(m_totalEvents, hist("EventsPassed_BinLabeling"));
+    }
+
     return StatusCode::SUCCESS;
 }
 
