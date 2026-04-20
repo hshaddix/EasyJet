@@ -110,7 +110,7 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
     ]
 
     # do trigger pass and matching for each lepton for single lepton triggers
-    if "FullLep" in flags.Analysis.channels:
+    if ("FullLep" in flags.Analysis.channels) or ("SemiLep" in flags.Analysis.channels):
         cfg.addEventAlgo(
             CompFactory.VBSHIGGS.TriggerDecoratorAlg(
                 "VBSHIGGSTriggerDecoratorAlg",
