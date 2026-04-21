@@ -81,7 +81,7 @@ CutList:
 
 Small_R_jet:
   amount_bjet: 0
-  doL1Matching: false
+  doL1Matching: true
 
 Tau:
   amount: 0
