@@ -61,7 +61,7 @@ namespace VBSHIGGS
       std::unordered_map<VBSHIGGS::TriggerChannel, bool> m_trig_bools;
       std::unordered_map<VBSHIGGS::TriggerChannel, std::string> m_triggerChannels = 
       {
-        {VBSHIGGS::HAD, "HAD"},
+        {VBSHIGGS::JET, "JET"},
       };
 
       std::unordered_map<VBSHIGGS::RunBooleans, std::string> m_runBooleans =
