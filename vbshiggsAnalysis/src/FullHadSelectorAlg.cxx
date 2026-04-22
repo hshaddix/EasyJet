@@ -22,6 +22,8 @@ StatusCode FullHadSelectorAlg::initialize() {
 
     //  ATH_CHECK(m_systematicsList.initialize());
     ATH_CHECK (m_filterParams.initialize(m_systematicsList));
+    ATH_CHECK (m_passTriggerJET.initialize(m_systematicsList, m_eventHandle));
+
     if (m_doResolved){
       ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
       ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
@@ -114,7 +116,9 @@ StatusCode FullHadSelectorAlg::execute() {
 	if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
         if (largeJets->size() >= 2) m_bools[PASS_TWO_LARGE_JETS] = true;
         if (largeJets->size() >=3) m_bools[PASS_THREE_LARGE_JETS] = true;
-
+        if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
+          m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+        } 
         bool passAll = true;
         for (auto& [key, val] : m_bools) passAll &= val;
         m_bools[PASS_ALL_CUTS] = passAll;

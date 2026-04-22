@@ -90,22 +90,38 @@ namespace VBSHIGGS
     return StatusCode::SUCCESS;
   }
 
-  void HadTriggerDecoratorAlg::evaluateTriggerCuts(const xAOD::EventInfo *event, const runBoolReadDecoMap& runBoolDecos, const CP::SystematicSet& sys) {
+  void HadTriggerDecoratorAlg::evaluateTriggerCuts(const xAOD::EventInfo *event,
+						   const runBoolReadDecoMap& runBoolDecos,
+						   const CP::SystematicSet& sys) {
 
-    (void)runBoolDecos;
+    std::vector<std::string> single_small_jet_paths;
+    std::vector<std::string> single_large_jet_paths;
 
-    bool trigPassed_HAD = false;
-    for (const auto& trig : m_triggers) {
-      auto it = m_triggerdecos.find(trig);
-      if (it == m_triggerdecos.end()) {
-        ATH_MSG_WARNING("Missing trigger decorator for " << trig);
-        continue;
+    const int year = m_year.get(*event, sys);
+    getSingleSmallJetTriggers(year, event, runBoolDecos, single_small_jet_paths);
+    getSingleLargeJetTriggers(year, event, runBoolDecos, single_large_jet_paths);
+
+    bool trigPassed_smallJet = false;
+    bool trigPassed_largeJet = false;
+    evaluateSingleJetTrigger(event, single_small_jet_paths, trigPassed_smallJet, sys);
+    evaluateSingleJetTrigger(event, single_large_jet_paths, trigPassed_largeJet, sys);
+
+    m_trig_bools.at(VBSHIGGS::JET) = trigPassed_smallJet || trigPassed_largeJet;
+
+  }
+
+  void HadTriggerDecoratorAlg::evaluateSingleJetTrigger(const xAOD::EventInfo* event,
+							const std::vector<std::string>& jet_paths,
+							bool& jet_pass,
+							const CP::SystematicSet& sys) {
+    for (const auto& trig : jet_paths) {
+      std::string trig_key = "trigPassed_" + trig;
+
+      bool pass = m_triggerdecos.at(trig_key).get(*event, sys);
+      if (pass) {
+        jet_pass = true;
       }
-      trigPassed_HAD |= it->second.get(*event, sys);
     }
-
-    m_trig_bools.at(VBSHIGGS::HAD) = trigPassed_HAD;
-
   }
 
 

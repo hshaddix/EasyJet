@@ -51,7 +51,10 @@ private:
     // CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "Muons", "Muon container"}; 
     CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Muon container"}; 
     // CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "MET", "Missing ET container" }; 
-    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "AnalysisMET_%SYS%", "Missing ET container" }; 
+    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "AnalysisMET_%SYS%", "Missing ET container" };
+    CP::SysReadDecorHandle<char> m_passTriggerJET {this, "passTriggerJET", "pass_trigger_JET_%SYS%", "events pass any jet triggers"};
+
+    
     CP::SysFilterReporterParams m_filterParams {this, "vbshiggs selection"};
 
     Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
@@ -68,7 +71,8 @@ private:
         {PASS_EXACTLY_TWO_SMALL_JETS, "PASS_EXACTLY_TWO_SMALL_JETS"},
         {PASS_TWO_LARGE_JETS, "PASS_TWO_LARGE_JETS"},
         {PASS_THREE_LARGE_JETS, "PASS_THREE_LARGE_JETS"},
-	{PASS_LEPTON_VETO, "PASS_LEPTON_VETO"},
+	    {PASS_LEPTON_VETO, "PASS_LEPTON_VETO"},
+        {PASS_TRIGGER, "PASS_TRIGGER"},
         {PASS_ALL_CUTS, "PASS_ALL_CUTS"}
     };
 
@@ -82,6 +86,8 @@ private:
     bool m_doBoosted{true};
     bool m_doResolved{true};
 
+    Gaudi::Property<std::vector<std::string>> m_triggers 
+    { this, "triggerLists", {}, "Name list of trigger" };
 
     // Gaudi::Property<bool> m_doResolved { this, "do_resolved", false, "Run Resolved category" };
 

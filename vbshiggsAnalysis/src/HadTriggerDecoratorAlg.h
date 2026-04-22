@@ -17,12 +17,9 @@
 #include <AsgDataHandles/ReadDecorHandle.h>
 
 #include <xAODEventInfo/EventInfo.h>
-#include <xAODEgamma/ElectronContainer.h>
-#include <xAODMuon/MuonContainer.h>
 #include "TriggerMatchingTool/IMatchingTool.h"
 
 #include <EasyjetHub/CutManager.h>
-#include <algorithm>
 #include "vbshiggsEnums.h"
 
 namespace VBSHIGGS
@@ -39,7 +36,6 @@ namespace VBSHIGGS
       std::unordered_map<VBSHIGGS::TriggerChannel, std::unordered_map<VBSHIGGS::Var_Trigger, float>> m_pt_threshold;
 
       CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };
-
 
       CP::SysReadDecorHandle<unsigned int> m_year {this, "year", "dataTakingYear", ""};
 
@@ -80,6 +76,11 @@ namespace VBSHIGGS
       void evaluateTriggerCuts(const xAOD::EventInfo *event,
 			       const runBoolReadDecoMap& runBoolDecos,
 			       const CP::SystematicSet& sys);
+
+      void evaluateSingleJetTrigger(const xAOD::EventInfo* event,
+            const std::vector<std::string>& jet_paths,
+            bool& jet_pass,
+            const CP::SystematicSet& sys);
 
       void setThresholds(const xAOD::EventInfo* event,
 			 const runBoolReadDecoMap& runBoolDecos,

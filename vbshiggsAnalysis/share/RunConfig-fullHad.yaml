@@ -19,7 +19,7 @@ Small_R_jet:
 
 Large_R_jet:
   min_pT: 200.e+3
-  maxEta: 2.0
+  maxEta: 5.0
   runMuonJetPtCorr: false
   amount: 1
   flat_mass_selections:
@@ -50,4 +50,5 @@ CutList :
   - PASS_LEPTON_VETO
   - PASS_TWO_LARGE_JETS
   - PASS_THREE_LARGE_JETS
+  - PASS_TRIGGER
 
