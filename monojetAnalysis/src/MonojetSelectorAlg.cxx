@@ -55,7 +55,7 @@ namespace MONOJET
     // make trigger decorators
     for (auto trig : m_triggers) {
       std::string triggerDecorName = "trigPassed_"+trig;
-      CP::SysReadDecorHandle<bool> deco{ this, "trig" + triggerDecorName, triggerDecorName, "Name of trigger" };
+      CP::SysReadDecorHandle<bool> deco{triggerDecorName, this};
       m_triggerdecos.emplace(triggerDecorName, deco);
       ATH_CHECK(m_triggerdecos.at(triggerDecorName).initialize(m_systematicsList, m_eventHandle));
     }
