@@ -69,6 +69,9 @@ Small_R_jet:
   # to use multiple btagging WPs
   btag_extra_wps:
     - GN2v01_Continuous
+  do_MCMC_dsid_fix: true
+  MCMC_dsid_map: 
+    Sherpa2211: [364336,364337,700793,700320,700344]
 
 Large_R_jet:
   maxEta: 2.0
