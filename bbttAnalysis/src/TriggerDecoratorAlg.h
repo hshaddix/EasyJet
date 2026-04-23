@@ -124,8 +124,6 @@ namespace HHBBTT
     std::unordered_map<HHBBTT::TriggerChannel,
       SG::WriteDecorHandleKey<xAOD::TauJetContainer> > m_tau_trigMatch_DecorKey;
     std::unordered_map<HHBBTT::TriggerChannel,
-      SG::WriteDecorHandleKey<xAOD::JetContainer> > m_jet_trigMatch_ThresholdKey;
-    std::unordered_map<HHBBTT::TriggerChannel,
       SG::WriteDecorHandleKey<xAOD::JetContainer> > m_jet_trigMatch_OnlinePtKey;
     std::unordered_map<HHBBTT::TriggerChannel,
       SG::WriteDecorHandleKey<xAOD::JetContainer> > m_jet_trigMatch_OnlineEtaKey;
