@@ -175,26 +175,6 @@ namespace HHHBBBBTT
       }
     }
 
-  // don't calculate SFs for LTT (not avilable for LooseID-LooseIso in Run 2)
-  //   else if(m_categoryBranches.at(HHHBBBBTT::pass_baseline_LTT).get(*event, sys)){
-  //     if(ele0){
-	// std::pair<std::string, std::string> ele_tau_SF_path;
-	// getEleTauTriggers(year, event, runBoolDecos, ele_tau_SF_path);
-	// if(!ele_tau_SF_path.first.empty())
-	//   triggerSF *= m_eleTriggerSF.at(ele_tau_SF_path.first).get(*ele0, sys);
-	// if(!ele_tau_SF_path.second.empty())
-	//   triggerSF *= m_tauTriggerSF.at(ele_tau_SF_path.second).get(*tau0, sys);
-  //     }
-  //     else if(mu0){
-	// std::pair<std::string, std::string> mu_tau_SF_path;
-	// getMuTauTriggers(year, event, runBoolDecos, mu_tau_SF_path);
-	// if(!mu_tau_SF_path.first.empty())
-	//   triggerSF *= m_muonTriggerSF.at(mu_tau_SF_path.first).get(*mu0, sys);
-	// if(!mu_tau_SF_path.second.empty())
-	//   triggerSF *= m_tauTriggerSF.at(mu_tau_SF_path.second).get(*tau0, sys);
-  //     }
-  //   }
-
     else if(m_categoryBranches.at(HHHBBBBTT::pass_baseline_STT).get(*event, sys)){
       std::string single_tau_SF_path;
       getSingleTauTriggers(year, event, runBoolDecos, single_tau_SF_path);

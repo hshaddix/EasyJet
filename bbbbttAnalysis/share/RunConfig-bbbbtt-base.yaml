@@ -9,8 +9,8 @@ systematics_suffix_separator: "___"
 do_bbbbtt_analysis: true
 do_antiID_regions: true
 do_0B_regions: false
-do_1B_regions: true
-do_2B_regions: true
+do_1B_regions: false
+do_2B_regions: false
 do_3B_regions: true
 enable_MMC_cut: false
 
@@ -77,7 +77,7 @@ Muon:
 
 Tau:
   ID: "Baseline"
-  extra_wps: ["GNTauLoose", "GNTauMedium", "GNTauTight", "RNNLoose", "RNNMedium", "RNNTight"]
+  extra_wps: ["GNTauLoose", "GNTauMedium", "GNTauTight"]
   do_parent_decoration: true
   amount: 2
   variables: ["RNN"]

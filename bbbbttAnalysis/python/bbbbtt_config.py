@@ -23,12 +23,6 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
 
     cfg = ComponentAccumulator()
 
-    # anti-iso lepton control region is not compatible with the other
-    # regions at the moment:
-    use_noniso_leptons = "AntiIsoLepHad" in flags.Analysis.channels
-    if (use_noniso_leptons and len(flags.Analysis.channels) > 1):
-        raise ValueError("Cannot run 'antiiso-lephad' with any other channels")
-
     # muons:
     cfg.merge(MuonSelectorAlgCfg(flags,
                                  containerInKey=muonkey,
@@ -79,7 +73,6 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
             minTauPt=flags.Analysis.Tau.min_pT,
             muonWPs=muon_WPs,
             eleWPs=ele_WPs,
-            useNonIsoLeptons=use_noniso_leptons,
             eventDecisionOutputDecoration=(
                 "bbbbtt_pass_presel_noMMC_%SYS%" if flags.Analysis.enable_MMC_cut
                 else "bbbbtt_pass_presel_%SYS%"),
@@ -324,9 +317,9 @@ def bbbbtt_branches(flags):
     # trigger variables do not need to be added to variable_names
     # as it is written out in HHHbbbbttSelectorAlg
     for var in ["_trigger_", "_baseline_"]:
-        for cat in ["SR", "SLT", "LTT", "STT", "DTT",
+        for cat in ["SR", "SLT", "STT", "DTT",
                     "DTT_2016", "DTT_4J12", "DTT_L1Topo",
-                    "DTT_4J12_delayed", "DTT_L1Topo_delayed", "DBT", "BTT"]:
+                    "DTT_4J12_delayed", "DTT_L1Topo_delayed", "DBT"]:
             if (var == "_baseline_"
                     and cat in ["DTT_4J12_delayed", "DTT_L1Topo_delayed"]):
                 continue
@@ -334,9 +327,9 @@ def bbbbtt_branches(flags):
                          f"bbbbtt_pass{var}{cat}"
                          + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
-    for cat in ["SR", "SLT", "LTT", "STT", "DTT",
+    for cat in ["SR", "SLT", "STT", "DTT",
                 "DTT_2016", "DTT_4J12", "DTT_L1Topo",
-                "DTT_4J12_delayed", "DTT_L1Topo_delayed", "DBT", "BTT",
+                "DTT_4J12_delayed", "DTT_L1Topo_delayed", "DBT",
                 "LepHad", "HadHad"]:
         for nb in ["0B", "1B", "2B", "3B", "4B"]:
             branches += [f"EventInfo.pass_{cat}_{nb}_%SYS% ->"
@@ -344,12 +337,11 @@ def bbbbtt_branches(flags):
                          + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
     for cat in ["baseline_LepHad", "baseline_HadHad", "LepHad", "HadHad",
-                "ZCR", "TopEMuCR", "AntiIsoLepHad"]:
+                "ZCR", "TopEMuCR"]:
         branches += [f"EventInfo.pass_{cat}_%SYS% -> bbbbtt_pass_{cat}"
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
-    for var in ["N_LEPTONS_CUT_LEPHAD", "N_LEPTONS_CUT_ANTIISOLEPHAD",
-                "N_LEPTONS_CUT_HADHAD"]:
+    for var in ["N_LEPTONS_CUT_LEPHAD", "N_LEPTONS_CUT_HADHAD"]:
         branches += [f"EventInfo.{var}_%SYS% -> bbbbtt_{var.lower()}"
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 

@@ -84,18 +84,6 @@ namespace HHHBBBBTT
     SG::ReadDecorHandleKey<xAOD::MuonContainer> mu_SLT;
     mu_SLT = m_muonHandle.getNamePattern() + ".trigMatch_SLT";
     m_mu_trigMatch_DecorKey.emplace(HHHBBBBTT::SLT, mu_SLT);
-    SG::ReadDecorHandleKey<xAOD::MuonContainer> mu_LTT;
-    mu_LTT = m_muonHandle.getNamePattern() + ".trigMatch_LTT";
-    m_mu_trigMatch_DecorKey.emplace(HHHBBBBTT::LTT, mu_LTT);
-    SG::ReadDecorHandleKey<xAOD::MuonContainer> mu_MTT_2016;
-    mu_MTT_2016 = m_muonHandle.getNamePattern() + ".trigMatch_MTT_2016";
-    m_mu_trigMatch_DecorKey.emplace(HHHBBBBTT::MTT_2016, mu_MTT_2016);
-    SG::ReadDecorHandleKey<xAOD::MuonContainer> mu_MTT_high;
-    mu_MTT_high = m_muonHandle.getNamePattern() + ".trigMatch_MTT_high";
-    m_mu_trigMatch_DecorKey.emplace(HHHBBBBTT::MTT_high, mu_MTT_high);
-    SG::ReadDecorHandleKey<xAOD::MuonContainer> mu_MTT_low;
-    mu_MTT_low = m_muonHandle.getNamePattern() + ".trigMatch_MTT_low";
-    m_mu_trigMatch_DecorKey.emplace(HHHBBBBTT::MTT_low, mu_MTT_low);
 
     for (const auto& [channel, key] : m_mu_trigMatch_DecorKey){
       ATH_CHECK(m_mu_trigMatch_DecorKey.at(channel).initialize());
@@ -104,15 +92,6 @@ namespace HHHBBBBTT
     SG::ReadDecorHandleKey<xAOD::ElectronContainer> ele_SLT;
     ele_SLT = m_electronHandle.getNamePattern() + ".trigMatch_SLT";
     m_ele_trigMatch_DecorKey.emplace(HHHBBBBTT::SLT, ele_SLT);
-    SG::ReadDecorHandleKey<xAOD::ElectronContainer> ele_LTT;
-    ele_LTT = m_electronHandle.getNamePattern() + ".trigMatch_LTT";
-    m_ele_trigMatch_DecorKey.emplace(HHHBBBBTT::LTT, ele_LTT);
-    SG::ReadDecorHandleKey<xAOD::ElectronContainer> ele_ETT;
-    ele_ETT = m_electronHandle.getNamePattern() + ".trigMatch_ETT";
-    m_ele_trigMatch_DecorKey.emplace(HHHBBBBTT::ETT, ele_ETT);
-    SG::ReadDecorHandleKey<xAOD::ElectronContainer> ele_ETT_4J12;
-    ele_ETT_4J12 = m_electronHandle.getNamePattern() + ".trigMatch_ETT_4J12";
-    m_ele_trigMatch_DecorKey.emplace(HHHBBBBTT::ETT_4J12, ele_ETT_4J12);
     
     for (const auto& [channel, key] : m_ele_trigMatch_DecorKey){
       ATH_CHECK(m_ele_trigMatch_DecorKey.at(channel).initialize());
@@ -133,7 +112,6 @@ namespace HHHBBBBTT
       else if ( name == "HadHad") m_channels.push_back(HHHBBBBTT::HadHad);
       else if ( name == "ZCR") m_channels.push_back(HHHBBBBTT::ZCR);
       else if ( name == "TopEMuCR") m_channels.push_back(HHHBBBBTT::TopEMuCR);
-      else if ( name == "AntiIsoLepHad") m_channels.push_back(HHHBBBBTT::AntiIsoLepHad);
       else{
         ATH_MSG_ERROR("Unknown channel");
         return StatusCode::FAILURE;
@@ -210,7 +188,7 @@ namespace HHHBBBBTT
         m_selected_el.set(*electron, false, sys);
         if (pass_looseId_looseIso) n_leptons_looseId_looseIso_for_veto++;
 
-        if (electron->pt() > 10. * Athena::Units::GeV && pass_looseId_looseIso) {
+        if (electron->pt() > 15. * Athena::Units::GeV && pass_looseId_looseIso) {
           n_leptons_looseId_looseIso++;
           m_selected_el.set(*electron, true, sys);
           if(!ele0) ele0 = electron;
@@ -233,7 +211,7 @@ namespace HHHBBBBTT
         m_selected_mu.set(*muon, false, sys);
         if (pass_looseId_looseIso) n_leptons_looseId_looseIso_for_veto++;
 
-        if (std::abs(muon->eta()) < 2.5 && muon->pt() > 10. * Athena::Units::GeV && pass_looseId_looseIso) {
+        if (std::abs(muon->eta()) < 2.5 && muon->pt() > 15. * Athena::Units::GeV && pass_looseId_looseIso) {
           n_leptons_looseId_looseIso++;
           m_selected_mu.set(*muon, true, sys);
           if(!mu0) mu0 = muon;
@@ -253,20 +231,15 @@ namespace HHHBBBBTT
 
       int charge_lepton = 0;
       bool lep_ptcut_SLT = false;
-      bool lep_ptcut_LTT = false;
       if(ele0){
 	charge_lepton = ele0->charge();
 	if (ele0->pt() > m_pt_threshold[HHHBBBBTT::SLT][HHHBBBBTT::ele])
 	  lep_ptcut_SLT = true;
-	else
-	  lep_ptcut_LTT = true;
       }
       if(mu0){
 	charge_lepton = mu0->charge();
 	if (mu0->pt() > m_pt_threshold[HHHBBBBTT::SLT][HHHBBBBTT::mu])
 	  lep_ptcut_SLT = true;
-	else
-	  lep_ptcut_LTT = true;
       }
 
       if (n_leptons_looseId_looseIso == 1 && n_leptons_looseId_looseIso_for_veto == 1)
@@ -298,8 +271,6 @@ namespace HHHBBBBTT
       }
 
       bool tau_ptcut_SLT = n_taus>0;
-      bool tau_ptcut_LTT = n_taus>0 &&
-	tau0->pt() > m_pt_threshold[HHHBBBBTT::LTT][HHHBBBBTT::leadingtau];
       bool tau_ptcut_STT_lead = n_taus>0 &&
 	tau0->pt() > m_pt_threshold[HHHBBBBTT::STT][HHHBBBBTT::leadingtau];
       bool tau_ptcut_STT_sublead = n_taus>1 &&
@@ -334,7 +305,6 @@ namespace HHHBBBBTT
       m_bools.at(HHHBBBBTT::MTAUTAU_VIS_MASS) = tautau_vis.M() > 40. * Athena::Units::GeV;
 
       const xAOD::Jet* jet0 = jets->size()>0 ? jets->at(0) : nullptr;
-      const xAOD::Jet* jet1 = jets->size()>1 ? jets->at(1) : nullptr;
 
       auto eta_lt3p2_jets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
           SG::VIEW_ELEMENTS);
@@ -368,12 +338,11 @@ namespace HHHBBBBTT
                               ele0, ele_trigMatchDecos,
                               mu0, mu_trigMatchDecos,
                               tau0, tau1, tau_trigMatchDecos,
-                              jet0, jet1, eta_lt2p5_jet0,
+                              jet0, eta_lt2p5_jet0,
                               eta_lt2p5_jet1,  eta_lt3p2_jet0);
       }
       else{
         m_bools.at(HHHBBBBTT::pass_trigger_SLT) = true;
-        m_bools.at(HHHBBBBTT::pass_trigger_LTT) = true;
         m_bools.at(HHHBBBBTT::pass_trigger_STT) = true;
         m_bools.at(HHHBBBBTT::pass_trigger_DTT) = true;
         m_bools.at(HHHBBBBTT::pass_trigger_DTT_2016) = true;
@@ -388,7 +357,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_trigger_SR) =
 	(m_bools.at(HHHBBBBTT::pass_trigger_SLT) ||
-	 m_bools.at(HHHBBBBTT::pass_trigger_LTT) ||
 	 m_bools.at(HHHBBBBTT::pass_trigger_STT) ||
 	 m_bools.at(HHHBBBBTT::pass_trigger_DTT) ||
 	 m_bools.at(HHHBBBBTT::pass_trigger_DBT));
@@ -483,28 +451,6 @@ namespace HHHBBBBTT
             else if (m_bools.at(HHHBBBBTT::TWO_BJETS)) m_bools.at(HHHBBBBTT::pass_DBT_2B) = true;
             else if (m_bools.at(HHHBBBBTT::ONE_BJET)) m_bools.at(HHHBBBBTT::pass_DBT_1B) = true;
             else if (m_bools.at(HHHBBBBTT::ZERO_BJETS)) m_bools.at(HHHBBBBTT::pass_DBT_0B) = true;
-          }
-        }
-
-        // LTT
-        if (lep_ptcut_LTT && tau_ptcut_LTT){
-          m_bools.at(HHHBBBBTT::pass_baseline_LTT) = true;
-          if (m_bools.at(HHHBBBBTT::pass_trigger_LTT)){
-            if (!m_bools.at(HHHBBBBTT::pass_SLT_4B) &&
-                m_bools.at(HHHBBBBTT::FOUR_BJETS))
-              m_bools.at(HHHBBBBTT::pass_LTT_4B) = true;
-            else if (!m_bools.at(HHHBBBBTT::pass_SLT_3B) &&
-                m_bools.at(HHHBBBBTT::THREE_BJETS))
-              m_bools.at(HHHBBBBTT::pass_LTT_3B) = true;
-            else if (!m_bools.at(HHHBBBBTT::pass_SLT_2B) &&
-                m_bools.at(HHHBBBBTT::TWO_BJETS))
-              m_bools.at(HHHBBBBTT::pass_LTT_2B) = true;
-            else if(!m_bools.at(HHHBBBBTT::pass_SLT_1B) &&
-                    m_bools.at(HHHBBBBTT::ONE_BJET))
-              m_bools.at(HHHBBBBTT::pass_LTT_1B) = true;
-              else if(!m_bools.at(HHHBBBBTT::pass_SLT_0B) &&
-                    m_bools.at(HHHBBBBTT::ZERO_BJETS))
-              m_bools.at(HHHBBBBTT::pass_LTT_0B) = true;
           }
         }
       }
@@ -637,7 +583,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_baseline_SR) =
         (m_bools.at(HHHBBBBTT::pass_baseline_SLT) ||
-         m_bools.at(HHHBBBBTT::pass_baseline_LTT) ||
          m_bools.at(HHHBBBBTT::pass_baseline_STT) ||
          m_bools.at(HHHBBBBTT::pass_baseline_DTT) ||
          m_bools.at(HHHBBBBTT::pass_baseline_DBT) ||
@@ -645,7 +590,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_SR_0B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_0B) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_0B) ||
          m_bools.at(HHHBBBBTT::pass_STT_0B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_0B) ||
          m_bools.at(HHHBBBBTT::pass_DBT_0B) ||
@@ -653,7 +597,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_SR_1B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_1B) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_1B) ||
          m_bools.at(HHHBBBBTT::pass_STT_1B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_1B) ||
          m_bools.at(HHHBBBBTT::pass_DBT_1B) ||
@@ -661,7 +604,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_SR_2B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_2B) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_2B) ||
          m_bools.at(HHHBBBBTT::pass_STT_2B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_2B) ||
          m_bools.at(HHHBBBBTT::pass_DBT_2B) ||
@@ -669,7 +611,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_SR_3B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_3B) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_3B) ||
          m_bools.at(HHHBBBBTT::pass_STT_3B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_3B) ||
          m_bools.at(HHHBBBBTT::pass_DBT_3B) ||
@@ -677,7 +618,6 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_SR_4B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_4B) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_4B) ||
          m_bools.at(HHHBBBBTT::pass_STT_4B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_4B) ||
          m_bools.at(HHHBBBBTT::pass_DBT_4B) ||
@@ -685,8 +625,7 @@ namespace HHHBBBBTT
 
       m_bools.at(HHHBBBBTT::pass_baseline_LepHad) =
         (m_bools.at(HHHBBBBTT::pass_baseline_SLT) ||
-         (m_bools.at(HHHBBBBTT::pass_baseline_DBT) && !m_bools.at(HHHBBBBTT::TWO_TAU)) ||
-         m_bools.at(HHHBBBBTT::pass_baseline_LTT) );
+         (m_bools.at(HHHBBBBTT::pass_baseline_DBT) && !m_bools.at(HHHBBBBTT::TWO_TAU)));
       m_bools.at(HHHBBBBTT::pass_baseline_HadHad) =
         (m_bools.at(HHHBBBBTT::pass_baseline_STT) ||
          m_bools.at(HHHBBBBTT::pass_baseline_DTT) ||
@@ -694,8 +633,7 @@ namespace HHHBBBBTT
          m_bools.at(HHHBBBBTT::pass_baseline_BTT) );
       m_bools.at(HHHBBBBTT::pass_LepHad_4B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_4B) ||
-         (m_bools.at(HHHBBBBTT::pass_DBT_4B) && !m_bools.at(HHHBBBBTT::TWO_TAU)) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_4B) );
+         (m_bools.at(HHHBBBBTT::pass_DBT_4B) && !m_bools.at(HHHBBBBTT::TWO_TAU)));
       m_bools.at(HHHBBBBTT::pass_HadHad_4B) =
         (m_bools.at(HHHBBBBTT::pass_STT_4B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_4B) ||
@@ -703,8 +641,7 @@ namespace HHHBBBBTT
          m_bools.at(HHHBBBBTT::pass_BTT_4B) );
       m_bools.at(HHHBBBBTT::pass_LepHad_3B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_3B) ||
-         (m_bools.at(HHHBBBBTT::pass_DBT_3B) && !m_bools.at(HHHBBBBTT::TWO_TAU)) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_3B) );
+         (m_bools.at(HHHBBBBTT::pass_DBT_3B) && !m_bools.at(HHHBBBBTT::TWO_TAU)));
       m_bools.at(HHHBBBBTT::pass_HadHad_3B) =
         (m_bools.at(HHHBBBBTT::pass_STT_3B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_3B) ||
@@ -712,8 +649,7 @@ namespace HHHBBBBTT
          m_bools.at(HHHBBBBTT::pass_BTT_3B) );
       m_bools.at(HHHBBBBTT::pass_LepHad_2B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_2B) ||
-         (m_bools.at(HHHBBBBTT::pass_DBT_2B) && !m_bools.at(HHHBBBBTT::TWO_TAU)) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_2B) );
+         (m_bools.at(HHHBBBBTT::pass_DBT_2B) && !m_bools.at(HHHBBBBTT::TWO_TAU)));
       m_bools.at(HHHBBBBTT::pass_HadHad_2B) =
         (m_bools.at(HHHBBBBTT::pass_STT_2B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_2B) ||
@@ -721,8 +657,7 @@ namespace HHHBBBBTT
          m_bools.at(HHHBBBBTT::pass_BTT_2B) );
       m_bools.at(HHHBBBBTT::pass_LepHad_1B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_1B) ||
-         (m_bools.at(HHHBBBBTT::pass_DBT_1B) && !m_bools.at(HHHBBBBTT::TWO_TAU)) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_1B) );
+         (m_bools.at(HHHBBBBTT::pass_DBT_1B) && !m_bools.at(HHHBBBBTT::TWO_TAU)));
       m_bools.at(HHHBBBBTT::pass_HadHad_1B) =
         (m_bools.at(HHHBBBBTT::pass_STT_1B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_1B) ||
@@ -730,8 +665,7 @@ namespace HHHBBBBTT
          m_bools.at(HHHBBBBTT::pass_BTT_1B) );
       m_bools.at(HHHBBBBTT::pass_LepHad_0B) =
         (m_bools.at(HHHBBBBTT::pass_SLT_0B) ||
-         (m_bools.at(HHHBBBBTT::pass_DBT_0B) && !m_bools.at(HHHBBBBTT::TWO_TAU)) ||
-         m_bools.at(HHHBBBBTT::pass_LTT_0B) );
+         (m_bools.at(HHHBBBBTT::pass_DBT_0B) && !m_bools.at(HHHBBBBTT::TWO_TAU)));
       m_bools.at(HHHBBBBTT::pass_HadHad_0B) =
         (m_bools.at(HHHBBBBTT::pass_STT_0B) ||
          m_bools.at(HHHBBBBTT::pass_DTT_0B) ||
@@ -767,11 +701,6 @@ namespace HHHBBBBTT
         }
       }
 
-      // fake enriched antiiso-lephad region check:
-      m_bools.at(HHHBBBBTT::pass_AntiIsoLepHad) = m_bools.at(HHHBBBBTT::pass_SLT_1B) || m_bools.at(pass_SLT_2B) 
-                                               || m_bools.at(HHHBBBBTT::pass_LTT_1B) || m_bools.at(pass_LTT_2B);
-      m_bools.at(HHHBBBBTT::pass_AntiIsoLepHad) &= m_bools.at(HHHBBBBTT::N_LEPTONS_CUT_ANTIISOLEPHAD);
-
       // Channels
       bool pass = false;
       for(const auto& channel : m_channels){
@@ -791,7 +720,6 @@ namespace HHHBBBBTT
         }
         else if(channel == HHHBBBBTT::ZCR) pass |= m_bools.at(HHHBBBBTT::pass_ZCR);
         else if(channel == HHHBBBBTT::TopEMuCR) pass |= m_bools.at(HHHBBBBTT::pass_TopEMuCR);
-        else if(channel == HHHBBBBTT::AntiIsoLepHad) pass |= m_bools.at(HHHBBBBTT::pass_AntiIsoLepHad);
       }
 
       //****************
@@ -874,21 +802,19 @@ namespace HHHBBBBTT
    const xAOD::Muon* mu, const muTrigMatchReadDecoMap& mu_trigMatchDecos,
    const xAOD::TauJet* tau0, const xAOD::TauJet* tau1,
    const tauTrigMatchReadDecoMap& tau_trigMatchDecos,
-   const xAOD::Jet* jet0, const xAOD::Jet* jet1, 
+   const xAOD::Jet* jet0, 
    const xAOD::Jet* eta_lt2p5_jet0, const xAOD::Jet* eta_lt2p5_jet1,
    const xAOD::Jet* eta_lt3p2_jet0){
 
     // only run trigger selection if in channel
     bool use_SLT = false;
-    bool use_LTT = false;
     bool use_STT = false;
     bool use_DTT = false;
     bool use_DBT = false;
     bool use_BTT = false;
     for (const auto &channel : m_channels){
-      if (channel == HHHBBBBTT::LepHad || channel == HHHBBBBTT::AntiIsoLepHad){
+      if (channel == HHHBBBBTT::LepHad){
         use_SLT = true;
-        use_LTT = true;
       }
       else if (channel == HHHBBBBTT::HadHad){
         use_STT = true;
@@ -905,13 +831,6 @@ namespace HHHBBBBTT
       applySingleLepTriggerSelection(event, triggerdecos,
 				     ele, ele_trigMatchDecos,
 				     mu, mu_trigMatchDecos);
-    }
-    if(use_LTT){
-      applyLepHadTriggerSelection(event, triggerdecos,
-				  ele, ele_trigMatchDecos,
-				  mu, mu_trigMatchDecos,
-				  tau0, tau_trigMatchDecos,
-				  jet0, jet1);
     }
     if(use_STT){
       applySingleTauTriggerSelection(event, triggerdecos,
@@ -952,79 +871,6 @@ namespace HHHBBBBTT
     else trigPassed_SMT = false;
 
     m_bools.at(HHHBBBBTT::pass_trigger_SLT) = (trigPassed_SET || trigPassed_SMT);
-  }
-
-  void HHHbbbbttSelectorAlg::applyLepHadTriggerSelection
-  (const xAOD::EventInfo* event,  const trigPassReadDecoMap& triggerdecos,
-   const xAOD::Electron* ele, const eleTrigMatchReadDecoMap& ele_trigMatchDecos,
-   const xAOD::Muon* mu, const muTrigMatchReadDecoMap& mu_trigMatchDecos,
-   const xAOD::TauJet* tau, const tauTrigMatchReadDecoMap& tau_trigMatchDecos,
-   const xAOD::Jet* jet0, const xAOD::Jet* jet1){
-
-    bool trigPassed_ETT_4J12 = triggerdecos.at(HHHBBBBTT::ETT_4J12)(*event);
-    if(ele && tau && jet0 && jet1){
-      trigPassed_ETT_4J12 &= static_cast<bool>(ele_trigMatchDecos.at(HHHBBBBTT::ETT_4J12)(*ele));
-      trigPassed_ETT_4J12 &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::ETT_4J12)(*tau));
-      trigPassed_ETT_4J12 &=
-	(ele->pt() > m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::ele] &&
-	 tau->pt() > m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::leadingtau] &&
-	 jet0->pt() > m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::leadingjet] &&
-	 jet1->pt() > m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::subleadingjet]);
-    }
-    else trigPassed_ETT_4J12 = false;
-
-    bool trigPassed_ETT = triggerdecos.at(HHHBBBBTT::ETT)(*event);
-    if(ele && tau && jet0){
-      trigPassed_ETT &= static_cast<bool>(ele_trigMatchDecos.at(HHHBBBBTT::ETT)(*ele));
-      trigPassed_ETT &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::ETT)(*tau));
-      trigPassed_ETT &=
-	(ele->pt() > m_pt_threshold[HHHBBBBTT::ETT][HHHBBBBTT::ele] &&
-	 tau->pt() > m_pt_threshold[HHHBBBBTT::ETT][HHHBBBBTT::leadingtau] &&
-	 jet0->pt() > m_pt_threshold[HHHBBBBTT::ETT][HHHBBBBTT::leadingjet]);
-    }
-    else trigPassed_ETT = false;
-
-    bool trigPassed_MTT_2016 = triggerdecos.at(HHHBBBBTT::MTT_2016)(*event);
-    if(mu && tau && jet0){
-      trigPassed_MTT_2016 &= static_cast<bool>(mu_trigMatchDecos.at(HHHBBBBTT::MTT_2016)(*mu));
-      trigPassed_MTT_2016 &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::MTT_2016)(*tau));
-      trigPassed_MTT_2016 &=
-	(mu->pt() > m_pt_threshold[HHHBBBBTT::MTT_2016][HHHBBBBTT::mu] &&
-	 tau->pt() > m_pt_threshold[HHHBBBBTT::MTT_2016][HHHBBBBTT::leadingtau] &&
-	 jet0->pt() > m_pt_threshold[HHHBBBBTT::MTT_2016][HHHBBBBTT::leadingjet]);
-    }
-    else trigPassed_MTT_2016 = false;
-
-    bool trigPassed_MTT_high = triggerdecos.at(HHHBBBBTT::MTT_high)(*event);
-    if(mu && tau && jet0){
-      trigPassed_MTT_high &= static_cast<bool>(mu_trigMatchDecos.at(HHHBBBBTT::MTT_high)(*mu));
-      trigPassed_MTT_high &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::MTT_high)(*tau));
-      trigPassed_MTT_high &=
-	(mu->pt() > m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::mu] &&
-	 tau->pt() > m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingtau] &&
-	 jet0->pt() > m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingjet]);
-    }
-    else trigPassed_MTT_high = false;
-
-    bool trigPassed_MTT_low = triggerdecos.at(HHHBBBBTT::MTT_low)(*event);  
-    /*Eta cuts not applied for LTT as they are in DTT
-    If LTT is included again, this should be revisited*/
-
-    if(mu && tau && jet0 && jet1){
-      trigPassed_MTT_low &= static_cast<bool>(mu_trigMatchDecos.at(HHHBBBBTT::MTT_low)(*mu));
-      trigPassed_MTT_low &= static_cast<bool>(tau_trigMatchDecos.at(HHHBBBBTT::MTT_low)(*tau));
-      trigPassed_MTT_low &=
-        (mu->pt() > m_pt_threshold[HHHBBBBTT::MTT_low][HHHBBBBTT::mu] &&
-         tau->pt() > m_pt_threshold[HHHBBBBTT::MTT_low][HHHBBBBTT::leadingtau] &&
-         tau->pt() < m_pt_threshold[HHHBBBBTT::MTT_low][HHHBBBBTT::leadingtaumax] &&
-         jet0->pt() > m_pt_threshold[HHHBBBBTT::MTT_low][HHHBBBBTT::leadingjet] &&
-         jet1->pt() > m_pt_threshold[HHHBBBBTT::MTT_low][HHHBBBBTT::subleadingjet]);
-    }
-    else trigPassed_MTT_low = false;
-
-    m_bools.at(HHHBBBBTT::pass_trigger_LTT) =
-      (trigPassed_ETT || trigPassed_ETT_4J12 ||
-       trigPassed_MTT_2016 || trigPassed_MTT_low || trigPassed_MTT_high);
   }
 
   void HHHbbbbttSelectorAlg::applySingleTauTriggerSelection
@@ -1207,42 +1053,6 @@ namespace HHHBBBBTT
 
   void HHHbbbbttSelectorAlg::setThresholds(const xAOD::EventInfo* event,
 					const CP::SystematicSet& sys){
-
-    // Global thresholds independent from data-taking period
-
-    // Lepton+tau triggers
-    float min_ele_LTT = 18. * Athena::Units::GeV;
-    m_pt_threshold[HHHBBBBTT::LTT][HHHBBBBTT::ele] = min_ele_LTT;
-
-    float min_mu_LTT = 15. * Athena::Units::GeV;
-    m_pt_threshold[HHHBBBBTT::LTT][HHHBBBBTT::mu] = min_mu_LTT;
-
-    float min_tau_LTT = 30. * Athena::Units::GeV;
-    m_pt_threshold[HHHBBBBTT::LTT][HHHBBBBTT::leadingtau] = min_tau_LTT;
-
-    m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::ele] = min_ele_LTT;
-    m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::leadingtau] = min_tau_LTT;
-    m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::leadingjet] = 45. * Athena::Units::GeV;
-    m_pt_threshold[HHHBBBBTT::ETT_4J12][HHHBBBBTT::subleadingjet] = 45. * Athena::Units::GeV;
-
-    m_pt_threshold[HHHBBBBTT::ETT][HHHBBBBTT::ele] = min_ele_LTT;
-    m_pt_threshold[HHHBBBBTT::ETT][HHHBBBBTT::leadingtau] = min_tau_LTT;
-    m_pt_threshold[HHHBBBBTT::ETT][HHHBBBBTT::leadingjet] = 80. * Athena::Units::GeV;
-
-    m_pt_threshold[HHHBBBBTT::MTT_2016][HHHBBBBTT::mu] = min_mu_LTT;
-    m_pt_threshold[HHHBBBBTT::MTT_2016][HHHBBBBTT::leadingtau] = min_tau_LTT;
-    m_pt_threshold[HHHBBBBTT::MTT_2016][HHHBBBBTT::leadingjet] = 80. * Athena::Units::GeV;
-
-    float min_tau_MTT_high = 40. * Athena::Units::GeV;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::mu] = min_mu_LTT;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingtau] = min_tau_MTT_high;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingjet] = 45. * Athena::Units::GeV;
-
-    m_pt_threshold[HHHBBBBTT::MTT_low][HHHBBBBTT::mu] = min_mu_LTT;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingtau] = min_tau_LTT;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingtaumax] = min_tau_MTT_high;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::leadingjet] = 45. * Athena::Units::GeV;
-    m_pt_threshold[HHHBBBBTT::MTT_high][HHHBBBBTT::subleadingjet] = 45. * Athena::Units::GeV;
 
     // For data-taking period dependent thresholds 
     int year = m_year.get(*event, sys);

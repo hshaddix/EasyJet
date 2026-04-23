@@ -69,8 +69,6 @@ private:
       { this, "do2BRegions", false, "Add 2B signal regions" };
     Gaudi::Property<bool> m_do3BRegions
       { this, "do3BRegions", false, "Add 3B signal regions" };
-    Gaudi::Property<bool> m_useNonIsoLeptons
-      { this, "useNonIsoLeptons", false, "use NonIso lepton wps" };
 
     Gaudi::Property<bool> m_bypass
       { this, "bypass", false, "Run selector algorithm in pass-through mode" };
@@ -138,12 +136,6 @@ private:
     std::unordered_map<HHHBBBBTT::TriggerChannel, std::string> m_triggerChannels =
       {
 	{HHHBBBBTT::SLT, "SLT"},
-	{HHHBBBBTT::LTT, "LTT"},
-	{HHHBBBBTT::ETT, "ETT"},
-	{HHHBBBBTT::ETT_4J12, "ETT_4J12"},
-	{HHHBBBBTT::MTT_2016, "MTT_2016"},
-	{HHHBBBBTT::MTT_high, "MTT_high"},
-	{HHHBBBBTT::MTT_low, "MTT_low"},
 	{HHHBBBBTT::STT, "STT"},
 	{HHHBBBBTT::DTT, "DTT"},
 	{HHHBBBBTT::DTT_2016, "DTT_2016"},
@@ -200,22 +192,16 @@ private:
     {HHHBBBBTT::MBB_MASS, "MBB_MASS"},
     {HHHBBBBTT::MTAUTAU_VIS_MASS, "MTAUTAU_VIS_MASS"},
     {HHHBBBBTT::N_LEPTONS_CUT_LEPHAD, "N_LEPTONS_CUT_LEPHAD"},
-    {HHHBBBBTT::N_LEPTONS_CUT_ANTIISOLEPHAD, "N_LEPTONS_CUT_ANTIISOLEPHAD"},
     {HHHBBBBTT::ONE_TAU, "ONE_TAU"},
     {HHHBBBBTT::OS_CHARGE_LEPHAD, "OS_CHARGE_LEPHAD"},
     {HHHBBBBTT::OS_CHARGE_LEPTONS, "OS_CHARGE_LEPTONS"},
     {HHHBBBBTT::pass_baseline_SLT, "pass_baseline_SLT"},
     {HHHBBBBTT::pass_baseline_LTT, "pass_baseline_LTT"},
     {HHHBBBBTT::pass_SLT_4B, "pass_SLT_4B"},
-    {HHHBBBBTT::pass_LTT_4B, "pass_LTT_4B"},
     {HHHBBBBTT::pass_SLT_3B, "pass_SLT_3B"},
-    {HHHBBBBTT::pass_LTT_3B, "pass_LTT_3B"},
     {HHHBBBBTT::pass_SLT_2B, "pass_SLT_2B"},
-    {HHHBBBBTT::pass_LTT_2B, "pass_LTT_2B"},
     {HHHBBBBTT::pass_SLT_1B, "pass_SLT_1B"},
-    {HHHBBBBTT::pass_LTT_1B, "pass_LTT_1B"},
     {HHHBBBBTT::pass_SLT_0B, "pass_SLT_0B"},
-    {HHHBBBBTT::pass_LTT_0B, "pass_LTT_0B"},
     {HHHBBBBTT::N_LEPTONS_CUT_HADHAD, "N_LEPTONS_CUT_HADHAD"},
     {HHHBBBBTT::TWO_TAU, "TWO_TAU"},
     {HHHBBBBTT::OS_CHARGE_HADHAD, "OS_CHARGE_HADHAD"},
@@ -293,7 +279,6 @@ private:
     {HHHBBBBTT::pass_HadHad, "pass_HadHad"},
     {HHHBBBBTT::pass_ZCR, "pass_ZCR"},
     {HHHBBBBTT::pass_TopEMuCR, "pass_TopEMuCR"},
-    {HHHBBBBTT::pass_AntiIsoLepHad, "pass_AntiIsoLepHad"},
     };
 
     /// \brief Cutflow Variables
@@ -323,7 +308,7 @@ private:
        const xAOD::Muon* mu, const muTrigMatchReadDecoMap& mu_trigMatchDecos,
        const xAOD::TauJet* tau0, const xAOD::TauJet* tau1,
        const tauTrigMatchReadDecoMap& tau_trigMatchDecos,
-       const xAOD::Jet* jet0, const xAOD::Jet* jet1,
+       const xAOD::Jet* jet0,
        const xAOD::Jet* eta_lt2p5_jet0, const xAOD::Jet* eta_lt2p5_jet1,
        const xAOD::Jet* eta_lt3p2_jet0);
 
@@ -331,12 +316,6 @@ private:
       (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos,
        const xAOD::Electron* ele, const eleTrigMatchReadDecoMap& ele_trigMatchDecos,
        const xAOD::Muon* mu, const muTrigMatchReadDecoMap& mu_trigMatchDecos);
-    void applyLepHadTriggerSelection
-      (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos,
-       const xAOD::Electron* ele, const eleTrigMatchReadDecoMap& ele_trigMatchDecos,
-       const xAOD::Muon* mu, const muTrigMatchReadDecoMap& mu_trigMatchDecos,
-       const xAOD::TauJet* tau, const tauTrigMatchReadDecoMap& tau_trigMatchDecos,
-       const xAOD::Jet* jet0, const xAOD::Jet* jet1);
     void applySingleTauTriggerSelection
       (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos,
        const xAOD::TauJet* tau, const tauTrigMatchReadDecoMap& tau_trigMatchDecos);

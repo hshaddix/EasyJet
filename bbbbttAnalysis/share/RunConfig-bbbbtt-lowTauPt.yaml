@@ -78,7 +78,7 @@ Muon:
 Tau:
   min_pT: 15.e+3
   ID: "CustomBaseline"
-  extra_wps: ["GNTauLoose_nopt", "GNTauLoose", "GNTauMedium", "GNTauTight", "RNNLoose", "RNNMedium", "RNNTight"]
+  extra_wps: ["GNTauLoose_nopt", "GNTauLoose", "GNTauMedium", "GNTauTight"]
   do_parent_decoration: true
   amount: 2
   variables: ["RNN"]

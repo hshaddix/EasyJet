@@ -10,7 +10,6 @@ namespace HHHBBBBTT
     HadHad,
     ZCR,
     TopEMuCR,
-    AntiIsoLepHad,
   };
 
   enum TriggerChannel
@@ -91,21 +90,15 @@ namespace HHHBBBBTT
     MBB_MASS,
     MTAUTAU_VIS_MASS,
     N_LEPTONS_CUT_LEPHAD,
-    N_LEPTONS_CUT_ANTIISOLEPHAD,
     ONE_TAU,
     OS_CHARGE_LEPHAD,
     pass_baseline_SLT,
     pass_baseline_LTT,
     pass_SLT_4B,
-    pass_LTT_4B,
     pass_SLT_3B,
-    pass_LTT_3B,
     pass_SLT_2B,
-    pass_LTT_2B,
     pass_SLT_1B,
-    pass_LTT_1B,
     pass_SLT_0B,
-    pass_LTT_0B,
 
     N_LEPTONS_CUT_HADHAD,
     TWO_TAU,
@@ -192,7 +185,6 @@ namespace HHHBBBBTT
 
     pass_ZCR,
     pass_TopEMuCR,
-    pass_AntiIsoLepHad,
   };
 
   // working points used for selecting leptons:

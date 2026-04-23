@@ -117,12 +117,10 @@ private:
     categoryReadDecoMap m_categoryBranches;
     std::unordered_map < HHHBBBBTT::Booleans, std::string > m_boolnames{
       {HHHBBBBTT::pass_baseline_SLT, "pass_baseline_SLT"},
-      {HHHBBBBTT::pass_baseline_LTT, "pass_baseline_LTT"},
       {HHHBBBBTT::pass_baseline_STT, "pass_baseline_STT"},
       {HHHBBBBTT::pass_baseline_DTT, "pass_baseline_DTT"},
       {HHHBBBBTT::pass_ZCR, "pass_ZCR"},
       {HHHBBBBTT::pass_TopEMuCR, "pass_TopEMuCR"},
-      {HHHBBBBTT::pass_AntiIsoLepHad, "pass_AntiIsoLepHad"}
     };
 
     /// \brief Setup sys-aware output decorations
