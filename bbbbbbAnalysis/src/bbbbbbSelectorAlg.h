@@ -1,8 +1,7 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
-// Always protect against multiple includes!
 
 #ifndef SELECTIONFLAGS6BALG_H
 #define SELECTIONFLAGS6BALG_H
