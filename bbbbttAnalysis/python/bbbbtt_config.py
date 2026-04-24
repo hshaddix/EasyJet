@@ -41,7 +41,7 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
                                 # Baseline always needed for anti-taus
                                 minPt=flags.Analysis.Tau.min_pT,
                                 containerInKey=taukey,
-                                containerOutKey="bbbbttAnalysisTaus_%SYS%"))
+                                containerOutKey="bbbbttAnalysisTausContainer_%SYS%"))
 
     cfg.merge(JetSelectorAlgCfg(
         flags,
@@ -110,7 +110,7 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
                 jets="bbbbttAnalysisJets_%SYS%",
                 electrons="bbbbttAnalysisElectrons_%SYS%",
                 muons="bbbbttAnalysisMuons_%SYS%",
-                taus="bbbbttAnalysisTaus_%SYS%",
+                taus="bbbbttAnalysisTausContainer_%SYS%",
                 met="AnalysisMET_%SYS%",
             )
         )

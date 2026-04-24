@@ -86,7 +86,7 @@ private:
     m_muonHandle{ this, "muons", "bbbbttAnalysisMuons_%SYS%", "Muon container to read" };
 
     CP::SysReadHandle<xAOD::TauJetContainer>
-    m_tauHandle{ this, "taus", "bbbbttAnalysisTaus_%SYS%", "Tau container to read" };
+    m_tauHandle{ this, "taus", "bbbbttAnalysisTausContainer_%SYS%", "Tau container to read" };
 
     CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };

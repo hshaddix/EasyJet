@@ -62,7 +62,7 @@ private:
       m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
 
     CP::SysReadHandle<xAOD::TauJetContainer>
-      m_bbbbttTauHandle{ this, "bbbbttTaus", "bbbbttAnalysisTaus_%SYS%", "Tau container to read" };
+      m_bbbbttTauHandle{ this, "bbbbttTaus", "bbbbttAnalysisTausContainer_%SYS%", "Tau container to read" };
     CP::SysReadHandle<xAOD::TauJetContainer>
       m_tauHandle{ this, "taus", "AnalysisTaus_%SYS%", "Original tau container to read" };
 

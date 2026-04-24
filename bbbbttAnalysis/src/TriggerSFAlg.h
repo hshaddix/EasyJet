@@ -69,7 +69,7 @@ private:
     CP::SysReadHandle<xAOD::TauJetContainer>
       m_tauHandle{ this, "taus", "AnalysisTaus_%SYS%", "Original tau container to read" };
     CP::SysReadHandle<xAOD::TauJetContainer>
-      m_bbbbttTauHandle{ this, "bbbbttTaus", "bbbbttAnalysisTaus_%SYS%", "bbbbtt tau container to read" };
+      m_bbbbttTauHandle{ this, "bbbbttTaus", "bbbbttAnalysisTausContainer_%SYS%", "bbbbtt tau container to read" };
 
     CP::SysReadHandle<xAOD::EventInfo>
       m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
