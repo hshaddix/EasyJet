@@ -140,9 +140,7 @@ namespace HHBBTT
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::MuonContainer, char> > muTrigMatchWriteDecoMap;
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::ElectronContainer, char> > eleTrigMatchWriteDecoMap;
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::TauJetContainer, char> > tauTrigMatchWriteDecoMap;
-    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::JetContainer, std::vector<int>> > jetTrigMatchThresholdMap;
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::JetContainer, float> > jetTrigMatchOnlineFloatMap;
-    typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::JetContainer, std::vector<int>> > jetReadTrigMatchThresholdMap;
     typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::JetContainer, float> > jetReadTrigMatchfloatMap;
 
     std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_HLTPTDecorKey;
