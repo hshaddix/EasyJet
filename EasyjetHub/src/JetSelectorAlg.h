@@ -46,6 +46,9 @@ private:
 
     CP::SysReadHandle<xAOD::JetContainer>
       m_inHandle{ this, "containerInKey", "",   "Jet container to read" };
+      
+    CP::SysReadHandle<xAOD::JetContainer>
+      m_rawinHandle{ this, "containerRawInKey", "",   "Jet unthinned container to read" };
 
     // \brief Setup syst-aware input decorations
     CP::SysReadDecorHandle<char> m_select

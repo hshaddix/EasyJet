@@ -6,6 +6,9 @@ Trigger:
   selection:
     include: [bbttAnalysis/trigger_taus.yaml]
 
+Small_R_jet:
+  save_all_jets: true
+
 # Produce separate files per channel + CutBookKeeper
 splitOutputTree: true
 splitCBK: true

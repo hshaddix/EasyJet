@@ -19,6 +19,10 @@ namespace Easyjet
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK (m_outHandle.initialize(m_systematicsList));
 
+    if (!m_rawinHandle.empty()) {
+      ATH_CHECK (m_rawinHandle.initialize(m_systematicsList));
+    }
+
     // Intialise syst-aware input/output decorators  
     ATH_CHECK (m_nSelPart.initialize(m_systematicsList, m_eventHandle));
 
@@ -37,14 +41,24 @@ namespace Easyjet
       bleadBranches_keys.emplace_back("isbjet"+std::to_string(i+1)+"_%SYS%");
     }
     m_bleadBranches = CP::SysWriteDecorHandleArray<char>(bleadBranches_keys, this);
-    ATH_CHECK(m_bleadBranches.initialize(m_systematicsList,m_inHandle));
+    if (!m_rawinHandle.empty()) {
+      ATH_CHECK(m_bleadBranches.initialize(m_systematicsList,m_rawinHandle));
+    }
+    else{
+      ATH_CHECK(m_bleadBranches.initialize(m_systematicsList,m_inHandle));
+    }
 
     std::vector<std::string> jleadBranches_keys{};
     for(int i=0; i<m_jetAmount; i++){
       jleadBranches_keys.emplace_back("isjet"+std::to_string(i+1)+"_%SYS%");
     }
     m_jleadBranches = CP::SysWriteDecorHandleArray<char> (jleadBranches_keys, this);
-    ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_inHandle));
+    if (!m_rawinHandle.empty()) {
+      ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_rawinHandle));
+    }
+    else{
+      ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_inHandle));
+    }
 
     for (const auto& trig : m_triggers) {
       m_bTagTrigMatching_in.emplace_back("ftag_bTagTrigMatching_" + trig + "_%SYS%", this);
@@ -56,7 +70,12 @@ namespace Easyjet
     for(auto& handle : m_bTagTrigMatching_out)
       ATH_CHECK(handle.initialize(m_systematicsList, m_outHandle, SG::AllowEmpty));
 
-    ANA_CHECK (m_isSelectedJet.initialize (m_systematicsList, m_inHandle));
+    if (!m_rawinHandle.empty()) {
+      ATH_CHECK (m_isSelectedJet.initialize(m_systematicsList,m_rawinHandle));
+    }
+    else{
+      ANA_CHECK (m_isSelectedJet.initialize (m_systematicsList, m_inHandle));
+    }
 
     if(!m_nmuons_in.empty()){
       ATH_CHECK (m_nmuons_in.initialize(m_systematicsList, m_inHandle));

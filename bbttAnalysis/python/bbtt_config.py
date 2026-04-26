@@ -40,6 +40,7 @@ def bbtt_ObjectSelectorAlgCfg(flags, smalljetkey, muonkey, electronkey, taukey):
     cfg.merge(JetSelectorAlgCfg(
         flags,
         containerInKey=smalljetkey,
+        containerRawInKey=smalljetkey.replace('_thin_%SYS%', '_%SYS%'),
         containerOutKey="bbttAnalysisJets_%SYS%",
         minPt=20 * Units.GeV,
         bTagWPDecorName=(
