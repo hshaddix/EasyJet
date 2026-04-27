@@ -72,6 +72,12 @@ private:
 
   Gaudi::Property<bool> m_doResolved{this, "do_resolved", false};
 
+    // W-tagger
+    Gaudi::Property<std::string> m_WTag_Type { this, "wtag_type", "", "WTagger type"};
+    Gaudi::Property<std::string> m_WTag_WP { this, "wtag_wp", "", "WTagger wp"};
+    CP::SysReadDecorHandle<float> m_WTag_score{"", this};
+    CP::SysReadDecorHandle<char> m_Pass_WTag{"", this};
+
   Gaudi::Property<std::vector<std::string>> m_floatVariables{
     this, "floatVariableList", {}};
 

@@ -65,6 +65,12 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
     m_Ibranches.emplace(var, h);
     ATH_CHECK(m_Ibranches.at(var).initialize(m_systematicsList, m_eventHandle));
   }
+
+  m_WTag_score = CP::SysReadDecorHandle<float> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Score", this);
+  m_Pass_WTag = CP::SysReadDecorHandle<char> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
+  ATH_CHECK(m_WTag_score.initialize(m_systematicsList, m_vbsLRJetHandle));
+  ATH_CHECK(m_Pass_WTag.initialize(m_systematicsList, m_vbsLRJetHandle));
+
   ATH_CHECK(m_systematicsList.initialize());
   return StatusCode::SUCCESS;
 }
@@ -166,47 +172,65 @@ StatusCode BaselineVarsFullHadAlg::execute() {
 }
 
   
-      if (m_doResolved){
-          //b-jet sector
-          for (std::size_t i=0; i<std::min(HJets->size(),(std::size_t)2); i++){
-            std::string prefix = "Jet_Higgs_candidate"+std::to_string(i+1);
-            m_Fbranches.at(prefix+"_m").set(*event, HJets->at(i)->m(), sys);
-            m_Fbranches.at(prefix+"_pt").set(*event, HJets->at(i)->pt(), sys);
-            m_Fbranches.at(prefix+"_eta").set(*event, HJets->at(i)->eta(), sys);
-            m_Fbranches.at(prefix+"_phi").set(*event, HJets->at(i)->phi(), sys);
-            m_Fbranches.at(prefix+"_E").set(*event, HJets->at(i)->e(), sys);
+  // if (m_doResolved){
+  //b-jet sector
+  ///////////////////////////////// Resolved Higgs->bb candidates /////////////////////////////////////////////
 
-           }
+  TLorentzVector HDijet;
+  TLorentzVector HJet1;
+  TLorentzVector HJet2;
+  for (std::size_t i=0; i<std::min(HJets->size(),(std::size_t)2); i++){
+    std::string prefix = "Jet_Higgs_candidate"+std::to_string(i+1);
+    m_Fbranches.at(prefix+"_m").set(*event, HJets->at(i)->m(), sys);
+    m_Fbranches.at(prefix+"_pt").set(*event, HJets->at(i)->pt(), sys);
+    m_Fbranches.at(prefix+"_eta").set(*event, HJets->at(i)->eta(), sys);
+    m_Fbranches.at(prefix+"_phi").set(*event, HJets->at(i)->phi(), sys);
+    m_Fbranches.at(prefix+"_E").set(*event, HJets->at(i)->e(), sys);
 
-          TLorentzVector HDijet;
-          TLorentzVector HJet1;
-          TLorentzVector HJet2;
-          if (HJets->size() >=2){
-            HDijet = HJets->at(0)->p4()+ HJets->at(1)->p4();
-            HJet1 = HJets->at(0)->p4();
-            HJet2 = HJets->at(1)->p4();
-            // std::cout << "Higgs dijet mass: " << HDijet.M() << std::endl;
-            m_Fbranches.at("Hdijet_m").set(*event, HDijet.M(), sys);
-            m_Fbranches.at("Hdijet_pt").set(*event, HDijet.Pt(), sys);
-            m_Fbranches.at("Hdijet_eta").set(*event, HDijet.Eta(), sys);
-            m_Fbranches.at("Hdijet_phi").set(*event, HDijet.Phi(), sys);
-            m_Fbranches.at("dRHjj").set(*event, HJet1.DeltaR(HJet2), sys);
-            m_Fbranches.at("dPhiHjj").set(*event, HJet1.DeltaPhi(HJet2), sys);
-            m_Fbranches.at("dEtaHjj").set(*event, HJet1.Eta() - HJet2.Eta(), sys);
-          }
+    }
 
-
-
-      // if (HJets->size() >= 2) {
-      //   TLorentzVector h1 = HJets->at(0)->p4();
-      //   TLorentzVector h2 = HJets->at(1)->p4();
-      //   TLorentzVector hh = h1 + h2;
-
-      //   m_Fbranches.at("Hdijet_m").set(*event, hh.M(), sys);
-      //   m_Fbranches.at("Hdijet_pt").set(*event, hh.Pt(), sys);
-      //   m_Fbranches.at("dRHjj").set(*event, h1.DeltaR(h2), sys);
+  if (HJets->size() >=2){
+    HDijet = HJets->at(0)->p4()+ HJets->at(1)->p4();
+    HJet1 = HJets->at(0)->p4();
+    HJet2 = HJets->at(1)->p4();
+    // std::cout << "Higgs dijet mass: " << HDijet.M() << std::endl;
+    m_Fbranches.at("Hdijet_m").set(*event, HDijet.M(), sys);
+    m_Fbranches.at("Hdijet_pt").set(*event, HDijet.Pt(), sys);
+    m_Fbranches.at("Hdijet_eta").set(*event, HDijet.Eta(), sys);
+    m_Fbranches.at("Hdijet_phi").set(*event, HDijet.Phi(), sys);
+    m_Fbranches.at("dRHjj").set(*event, HJet1.DeltaR(HJet2), sys);
+    m_Fbranches.at("dPhiHjj").set(*event, HJet1.DeltaPhi(HJet2), sys);
+    m_Fbranches.at("dEtaHjj").set(*event, HJet1.Eta() - HJet2.Eta(), sys);
+  }
       // }
-      }
+
+  // Two W/Z vector bosons. Two cases for the Higgs: boosted H, resolved H
+  // For W/Z vector bosons. It can also be either boosted or resolved.
+  // For kl, we expect less than 3 large R jets. For k2v, expect 3 or more large R jets. 
+
+  auto VJets_resolvedH = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
+        for(const xAOD::Jet* jet : *signalJets) {
+          // only central jets          if (std::abs(jet->eta())>=2.5) continue;
+          // non b-tagged jets 
+          // Don't include b-tagged jets for W boson jet candidates. However, for Z, bjets make up a nontrivial fraction of the candidates. B(Z->bb) ~ 15%. 
+          if ( !m_isBtag.empty() && m_isBtag.get(*jet, sys) ) continue;
+          VJets_resolvedH->push_back(jet);
+        }
+        if (VJets_resolvedH->size()>=2){
+          TLorentzVector VJet1_rH = VJets_resolvedH->at(0)->p4();
+          TLorentzVector VJet2_rH = VJets_resolvedH->at(1)->p4();
+          m_Fbranches.at("resolvedVCandidate1_m").set(*event, VJet1_rH.M(), sys);
+          m_Fbranches.at("resolvedVCandidate1_pt").set(*event, VJet1_rH.Pt(), sys);
+          m_Fbranches.at("resolvedVCandidate1_eta").set(*event, VJet1_rH.Eta(), sys);
+          m_Fbranches.at("resolvedVCandidate1_phi").set(*event, VJet1_rH.Phi(), sys); 
+          m_Fbranches.at("resolvedVCandidate2_m").set(*event, VJet2_rH.M(), sys);
+          m_Fbranches.at("resolvedVCandidate2_pt").set(*event, VJet2_rH.Pt(), sys);
+          m_Fbranches.at("resolvedVCandidate2_eta").set(*event, VJet2_rH.Eta(), sys);
+          m_Fbranches.at("resolvedVCandidate2_phi").set(*event, VJet2_rH.Phi(), sys);
+        }
+
+
+
     if(!m_UseVBFRNN){
           if ( vbsjets->size() >= 2 ){
             const xAOD::Jet* vbsJet1 = vbsjets->at(0);
