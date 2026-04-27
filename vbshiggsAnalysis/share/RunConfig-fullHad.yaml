@@ -4,7 +4,7 @@ include: [vbshiggsAnalysis/RunConfig-common.yaml ]
 channels: ["FullHad"]
 
 do_resolved: true
-UseVBFRNN : true
+UseVBFRNN : false
 save_cutflow: true
 
 
@@ -19,7 +19,7 @@ Small_R_jet:
 
 Large_R_jet:
   min_pT: 200.e+3
-  maxEta: 5.0
+  maxEta: 2.0
   runMuonJetPtCorr: false
   amount: 1
   flat_mass_selections:
