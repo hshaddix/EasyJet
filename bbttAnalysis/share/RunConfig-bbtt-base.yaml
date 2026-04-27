@@ -61,6 +61,10 @@ Small_R_jet:
   amount_bjet: 2
   doHLTMatching: true
   doL1Matching: true
+  do_MCMC_dsid_fix: true
+  MCMC_dsid_map:
+    Sherpa2214: [364302, 364303, 364304, 364305]
+    Herwig713: [346348, 346347, 346346]
 
 Electron:
   ID: "LooseBLayerLH_nottva"
