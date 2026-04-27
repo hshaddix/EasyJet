@@ -22,7 +22,7 @@ bbbbbbAnalysis/
 │   │   ├── resolved.py     # Resolved analysis configuration
 │   │   └── trihiggs.py     # Main tri-Higgs analysis chain
 │   └── utils/              # Utility functions
-│       └── option_validation.py
+│       └── option_validation_6b.py
 ├── scripts/                # Grid submission scripts
 ├── share/                  # YAML run configurations
 │   ├── RunConfig-bbbbbb-base.yaml

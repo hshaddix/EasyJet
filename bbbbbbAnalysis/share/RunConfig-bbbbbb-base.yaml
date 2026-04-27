@@ -1,4 +1,4 @@
-include: EasyjetHub/base-config.yaml
+include: [EasyjetHub/base-config.yaml]
 
 systematics_suffix_separator: "_"
 
@@ -50,8 +50,8 @@ Small_R_jet:
 
 # orthogonality studies  
 orthogonality:
-  include: EasyjetHub/orth-config.yaml 
-  do_orth_check: false    
+  include: [EasyjetHub/orth-config.yaml]
+  do_orth_check: false
 
 do_CP_systematics: false
 systematics_regex: []
@@ -70,6 +70,6 @@ GRL:
   store_decoration: true
 
 ttree_output:
-  include: EasyjetHub/AnalysisMiniTree-config.yaml
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
   slim_variables_with_syst: true
 

@@ -38,8 +38,22 @@ atlas_add_component(bbbbbbAnalysis
   TrigCompositeUtilsLib
   PathResolver
   EasyjetHubLib
-  VBFTaggerLib
   TriggerMatchingToolLib
 )
 
-atlas_install_data( share/* )
+# Install python modules, joboptions, and share content
+atlas_install_scripts(
+  bin/bbbbbb-ntupler
+)
+
+atlas_install_python_modules(
+  python/config
+  python/utils
+)
+atlas_install_data(
+  share/*.yaml
+)
+
+# atlas_install_data( data/* )
+# You can access your data from code using path resolver, e.g.
+# PathResolverFindCalibFile("JetMETCommon/file.txt")

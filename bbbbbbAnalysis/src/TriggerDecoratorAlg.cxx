@@ -233,7 +233,7 @@ namespace HHH6B
   std::string TriggerDecoratorAlg::getSFDecorKeyName( const triggerSFType t) const
   {
     const static std::map<HHH6B::TriggerType, std::string> typeToStr = {{HHH6B::L1, "l1"}, {HHH6B::HLT, "hlt"}};
-    const static std::map<HHH6B::TriggerSFSystType, std::string> sfsystypeToStr = {{HHH6B::SF_NOSYS, "nosys"}, {HHH6B::SF_STAT, "stat__1up"}, {HHH6B::SF_SYST, "syst__1up"}};
+    const static std::map<HHH6B::TriggerSFSystType, std::string> sfsystypeToStr = {{HHH6B::SF_NOSYS, "nosys"}, {HHH6B::SF_STAT, "stats__1up"}, {HHH6B::SF_SYST, "syst__1up"}};
     return "trigger_smallrjet_sf_"+typeToStr.at(t.first)+"_"+sfsystypeToStr.at(t.second);
   };
 

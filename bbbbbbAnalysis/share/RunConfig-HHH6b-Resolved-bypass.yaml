@@ -1,0 +1,12 @@
+# Light config for easyjet-test / integration (selector bypass, no trigger skimming).
+# include must be a list (TextConfig / combineConfigFiles).
+include: [bbbbbbAnalysis/RunConfig-HHH6b-Resolved.yaml]
+
+bypass: true
+do_trigger_filtering: false
+
+# Resolved config uses doL1Matching / doHLTMatching false; EventInfo trigger-bucket
+# decorations are not set up in a way AsgxAODNTupleMaker can type at init, so
+# ntuple would fail on bucket / pass_trigger_* if these stayed true.  Disable for CI.
+do_resolved_trigger_SF: false
+do_resolved_trigger_bucket: false
