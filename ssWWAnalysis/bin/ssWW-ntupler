@@ -19,6 +19,7 @@ from EasyjetHub.output.ttree.minituple_config import check_ntuple_output_file
 
 from ssWWAnalysis.ssWW_config import ssWW_branches
 from ssWWAnalysis.ssWW_config import ssWW_cfg
+from ssWWAnalysis.ssWW_config import ssWWTruth_cfg
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
 
 def ssWW_job_cfg():
@@ -43,7 +44,22 @@ def ssWW_job_cfg():
     extra_ssWW_branches = []
     if flags.Analysis.do_ssWW_analysis:
         extra_ssWW_branches,float_variable_names,int_variable_names,\
-                bool_vectorlike_variable_names = ssWW_branches(flags)
+                bool_vectorlike_variable_names,truth_float_variable_names = ssWW_branches(flags)
+        
+        #Adding truth selection algorithm to sequence
+        if flags.Input.isMC:
+            cfg.merge(
+                ssWWTruth_cfg(
+                    flags,
+                    truthsmalljetkey=flags.Analysis.container_names.input.truth4Jet,
+                    truthmetkey=flags.Analysis.container_names.input.truthmet,
+                    truthmuonkey=flags.Analysis.container_names.input.truthmuons,
+                    truthelectronkey=flags.Analysis.container_names.input.truthelectrons,
+                    float_variables=truth_float_variable_names
+                ),
+                seqname
+            )
+
         cfg.merge(
             ssWW_cfg(
                 flags,

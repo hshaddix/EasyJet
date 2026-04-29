@@ -3,10 +3,18 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
 from AthenaConfiguration.Enums import LHCPeriod
+import AthenaCommon.SystemOfUnits as Units
 
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg,
-    JetSelectorAlgCfg)
+    JetSelectorAlgCfg, TruthMuonSelectorAlgCfg, TruthElectronSelectorAlgCfg,
+    TruthLeptonOrderingAlgCfg, TruthJetSelectorAlgCfg)
+
+# from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
+#     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg,
+#     JetSelectorAlgCfg,TruthMuonSelectorAlgCfg, TruthElectronSelectorAlgCfg,
+#     TruthLeptonOrderingAlgCfg, TruthJetSelectorAlgCfg, TruthMetSelectorAlgCfg)
+
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
@@ -129,6 +137,63 @@ def ssWW_cfg(flags, smalljetkey, muonkey, electronkey,
     return cfg
 
 
+def ssWWTruth_cfg(flags, truthsmalljetkey, truthmetkey, truthmuonkey,
+                  truthelectronkey, float_variables=None):
+
+    if not float_variables:
+        float_variables = []
+
+    cfg = ComponentAccumulator()
+
+    # cfg.merge(TruthMetSelectorAlgCfg(flags,
+    #                                 containerInKey=truthmetkey,
+    #                                 containerOutKey="ssWWTruthMet",
+    #                                 minPt=30 * Units.GeV))
+
+    cfg.merge(TruthMuonSelectorAlgCfg(flags,
+                                      containerInKey=truthmuonkey,
+                                      containerOutKey="ssWWTruthMuons",
+                                      minPt=25 * Units.GeV,
+                                      maxEta=flags.Analysis.Muon.max_eta_ssWW))
+
+    cfg.merge(TruthElectronSelectorAlgCfg(flags,
+                                          containerInKey=truthelectronkey,
+                                          containerOutKey="ssWWTruthElectrons",
+                                          minPt=25 * Units.GeV,
+                                          maxEta=2.5
+                                          ))
+
+    cfg.merge(TruthLeptonOrderingAlgCfg(flags,
+                                        containerInTruthElectronKey=truthelectronkey,
+                                        containerInTruthMuonKey=truthmuonkey))
+
+    cfg.merge(TruthJetSelectorAlgCfg(flags, name="TruthSmallRJet_SelectorAlg",
+                                     containerInKey=truthsmalljetkey,
+                                     containerOutKey="ssWWTruthJets",
+                                     minPt=20 * Units.GeV,
+                                     maxEta=flags.Analysis.Small_R_jet.max_eta_ssWW,
+                                     hasTruthLabel=True,
+                                     truthLabelDecorName=truthsmalljetkey
+                                     + ".HadronConeExclTruthLabelID",
+                                     decorOutName="TruthEvents.nSmallJets",
+                                     decoration=truthsmalljetkey + ".isTruthJet"))
+
+    cfg.addEventAlgo(
+        CompFactory.ssWWVBS.ssWWTruthSelectorAlg(
+            "ssWWTruthSelectorAlg",
+            truthcutList=flags.Analysis.TruthCutList,
+            saveCutFlow=flags.Analysis.save_cutflow,
+            truthSmallJetInContainer="ssWWTruthJets",
+            truthElectronInContainer="ssWWTruthElectrons",
+            truthMuonInContainer="ssWWTruthMuons",
+            floatVariableList=float_variables,
+            # truthMetInContainer="ssWWTruthMet",
+        )
+    )
+
+    return cfg
+
+
 def get_BaselineVarsssWWAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
@@ -157,6 +222,29 @@ def get_BaselineVarsssWWAlg_boolvectorlikevariables(flags):
         "el_TrigMatching", "mu_TrigMatching",
     ]
     return bool_vectorlike_variables
+def get_ssWWTruthSelectorAlg_variables(flags):
+    branches = []
+    float_variable_names = []
+
+    for var in [*flags.Analysis.Small_R_jet.variables_truthjets]:
+        for index in range(flags.Analysis.Small_R_jet.amount):
+            # Store the float variables
+            if var in flags.Analysis.Small_R_jet.variables_truthjets:
+                float_variable_names += [f"TruthJet_{index+1}_{var}"]
+            branches += [f"EventInfo.TruthJet_{index+1}_{var} \
+                        -> ssWW_TruthJet_{index+1}_{var}"]
+
+    # Leptons
+    for var in [*flags.Analysis.Lepton.variables_truth]:
+        float_variable_names += [f"Truth_ll_{var}"]
+        branches += [f"EventInfo.Truth_ll_{var} \
+                    -> ssWW_Truth_ll_{var}"]
+        for lepton in range(1, 3):
+            float_variable_names += [f"TruthLepton_{lepton}_{var}"]
+            branches += [f"EventInfo.TruthLepton_{lepton}_{var} \
+                        -> ssWW_TruthLepton_{lepton}_{var}"]
+
+    return branches, float_variable_names
 
 
 def ssWW_branches(flags):
@@ -168,6 +256,7 @@ def ssWW_branches(flags):
     float_variable_names = []
     int_variable_names = []
     bool_vectorlike_variable_names = []
+    truth_float_variable_names = []
 
     # these are the variables that will always be stored by easyjet specific to ssWW
     # further below there are more high level variables which can be
@@ -221,6 +310,18 @@ def ssWW_branches(flags):
         for cut in cutList:
             branches += [f"EventInfo.{cut}_%SYS% -> ssWW_{cut}_%SYS%"]
 
+        if flags.Input.isMC:
+            truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
+            truth_branches, truth_float_variable_names = (
+                get_ssWWTruthSelectorAlg_variables(flags)
+            )
+            branches += truth_branches
+            for cut in truthcutList:
+                branches += [f"EventInfo.{cut} \
+                            -> ssWW_{cut}"]
+                branches += ["EventInfo.PassTruthCuts \
+                            -> ssWW_PassTruthCuts"]
+
     # trigger variables do not need to be added to variable_names
     # as it is written out in ssWWSelectorAlg
     for cat in ["SLT", "prescaleSLT",]:
@@ -228,4 +329,4 @@ def ssWW_branches(flags):
             [f"EventInfo.pass_trigger_{cat}_%SYS% -> ssWW_pass_trigger_{cat}_%SYS%"]
 
     return branches, float_variable_names, \
-        int_variable_names, bool_vectorlike_variable_names
+        int_variable_names, bool_vectorlike_variable_names, truth_float_variable_names

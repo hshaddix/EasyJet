@@ -34,6 +34,7 @@ Small_R_jet:
     - GN2v01_FixedCutBEff_85
     
   variables_int_bjets: ["truthLabel"]
+  variables_truthjets: ["pt", "eta", "phi", "E"]
 
 Electron:
   maxD0Significance: 5 
@@ -81,6 +82,7 @@ Muon:
 Lepton:
   amount: 3
   variables_int: ["isPrompt","truthOrigin", "truthType", "ele_ECIDS"]
+  variables_truth: ["pt", "eta", "phi", "E", "m"]
 
 Met:
   saveSignificance: true
@@ -118,6 +120,20 @@ Categories :
   - IS_mm
   - IS_em
   - IS_me
+
+TruthCutList :
+      - EXACTLY_TWO_LEPTONS_TRUTH
+      - SAME_CHARGE_LEPTONS_TRUTH
+      - DILEPTON_MASS_TRUTH
+      - MET_TRUTH
+      - TWO_JETS_TRUTH
+      - DIJET_MASS_TRUTH
+      - DIJET_RAPIDITY_TRUTH
+
+TruthCategories :
+      - IS_ee_TRUTH
+      - IS_mm_TRUTH
+      - IS_em_TRUTH
 
 # Include the TTree configuration and update details
 ttree_output:
