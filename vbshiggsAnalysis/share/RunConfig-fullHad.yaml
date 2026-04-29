@@ -5,6 +5,7 @@ channels: ["FullHad"]
 
 do_resolved: true
 UseVBFRNN : false
+VerVBFRNN : "VBFRNNv2p3p0"
 save_cutflow: true
 
 

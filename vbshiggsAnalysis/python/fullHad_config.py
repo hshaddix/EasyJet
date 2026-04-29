@@ -68,6 +68,10 @@ def get_BaselineVarsFullHadAlg_variables(flags):
         for i in [1, 2]:
             for var in ["m", "pt", "eta", "phi", "E"]:
                 float_variable_names.append(f"Jet_Higgs_candidate{i}_{var}")
+        for i in [1, 2]:
+            for var in ["m", "pt", "eta", "phi"]:
+                float_variable_names.append(f"resolvedWCandidate{i}_{var}")
+                float_variable_names.append(f"resolvedZCandidate{i}_{var}")
         float_variable_names += [
             "Hdijet_m", "Hdijet_pt", "Hdijet_eta", "Hdijet_phi",
             "dRHjj", "dPhiHjj", "dEtaHjj"

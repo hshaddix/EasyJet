@@ -6,7 +6,67 @@
 #include "AthContainers/AuxElement.h"
 #include "TLorentzVector.h"
 #include <cmath>
+#include <array>
+#include <limits>
 #include "AthContainers/ConstDataVector.h"
+
+namespace {
+
+constexpr float Wmass = 80.379f; // W boson mass
+constexpr float Zmass = 91.1876f; // Z boson mass
+
+struct BosonPairingResult {
+  bool valid{false};
+  float score{std::numeric_limits<float>::max()};
+  TLorentzVector candidate1;
+  TLorentzVector candidate2;
+};
+
+BosonPairingResult findBestBosonPairing(const std::vector<const xAOD::Jet*>& jets,
+                                        float targetMass)
+{
+  BosonPairingResult best;
+  if (jets.size() < 4) {
+    return best;
+  }
+
+  for (std::size_t i = 0; i + 3 < jets.size(); ++i) {
+    for (std::size_t j = i + 1; j + 2 < jets.size(); ++j) {
+      for (std::size_t k = j + 1; k + 1 < jets.size(); ++k) {
+        for (std::size_t l = k + 1; l < jets.size(); ++l) {
+          const std::array<std::array<std::size_t, 4>, 3> pairings{{
+            {{i, j, k, l}},
+            {{i, k, j, l}},
+            {{i, l, j, k}}
+          }};
+
+          for (const auto& pairing : pairings) {
+            const TLorentzVector candidate1 = jets[pairing[0]]->p4() + jets[pairing[1]]->p4();
+            const TLorentzVector candidate2 = jets[pairing[2]]->p4() + jets[pairing[3]]->p4();
+            const float score = std::abs(candidate1.M() - targetMass)
+                              + std::abs(candidate2.M() - targetMass);
+
+            if (score < best.score) {
+              best.valid = true;
+              best.score = score;
+              if (candidate1.Pt() >= candidate2.Pt()) {
+                best.candidate1 = candidate1;
+                best.candidate2 = candidate2;
+              } else {
+                best.candidate1 = candidate2;
+                best.candidate2 = candidate1;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return best;
+}
+
+} // namespace
 
 namespace VBSHIGGS {
 
@@ -207,26 +267,41 @@ StatusCode BaselineVarsFullHadAlg::execute() {
   // Two W/Z vector bosons. Two cases for the Higgs: boosted H, resolved H
   // For W/Z vector bosons. It can also be either boosted or resolved.
   // For kl, we expect less than 3 large R jets. For k2v, expect 3 or more large R jets. 
-
-  auto VJets_resolvedH = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
+//////////////////////////////////////// Resolved Higgs->bb with Resolved V jets /////////////////////////////////////
+  // auto resolvedVCandidates_resolvedH = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
+  std::vector<const xAOD::Jet*> resolvedVCandidates_resolvedH;
         for(const xAOD::Jet* jet : *signalJets) {
-          // only central jets          if (std::abs(jet->eta())>=2.5) continue;
+          // only central jets          
+          if (std::abs(jet->eta())>=2.5) continue;
           // non b-tagged jets 
           // Don't include b-tagged jets for W boson jet candidates. However, for Z, bjets make up a nontrivial fraction of the candidates. B(Z->bb) ~ 15%. 
           if ( !m_isBtag.empty() && m_isBtag.get(*jet, sys) ) continue;
-          VJets_resolvedH->push_back(jet);
+          resolvedVCandidates_resolvedH.push_back(jet);
         }
-        if (VJets_resolvedH->size()>=2){
-          TLorentzVector VJet1_rH = VJets_resolvedH->at(0)->p4();
-          TLorentzVector VJet2_rH = VJets_resolvedH->at(1)->p4();
-          m_Fbranches.at("resolvedVCandidate1_m").set(*event, VJet1_rH.M(), sys);
-          m_Fbranches.at("resolvedVCandidate1_pt").set(*event, VJet1_rH.Pt(), sys);
-          m_Fbranches.at("resolvedVCandidate1_eta").set(*event, VJet1_rH.Eta(), sys);
-          m_Fbranches.at("resolvedVCandidate1_phi").set(*event, VJet1_rH.Phi(), sys); 
-          m_Fbranches.at("resolvedVCandidate2_m").set(*event, VJet2_rH.M(), sys);
-          m_Fbranches.at("resolvedVCandidate2_pt").set(*event, VJet2_rH.Pt(), sys);
-          m_Fbranches.at("resolvedVCandidate2_eta").set(*event, VJet2_rH.Eta(), sys);
-          m_Fbranches.at("resolvedVCandidate2_phi").set(*event, VJet2_rH.Phi(), sys);
+        const auto resolvedWCandidates = findBestBosonPairing(resolvedVCandidates_resolvedH,
+                                                              Wmass);
+        const auto resolvedZCandidates = findBestBosonPairing(resolvedVCandidates_resolvedH,
+                                                              Zmass);
+        if (resolvedWCandidates.valid){
+          m_Fbranches.at("resolvedWCandidate1_m").set(*event, resolvedWCandidates.candidate1.M(), sys);
+          m_Fbranches.at("resolvedWCandidate1_pt").set(*event, resolvedWCandidates.candidate1.Pt(), sys);
+          m_Fbranches.at("resolvedWCandidate1_eta").set(*event, resolvedWCandidates.candidate1.Eta(), sys);
+          m_Fbranches.at("resolvedWCandidate1_phi").set(*event, resolvedWCandidates.candidate1.Phi(), sys);
+          m_Fbranches.at("resolvedWCandidate2_m").set(*event, resolvedWCandidates.candidate2.M(), sys);
+          m_Fbranches.at("resolvedWCandidate2_pt").set(*event, resolvedWCandidates.candidate2.Pt(), sys);
+          m_Fbranches.at("resolvedWCandidate2_eta").set(*event, resolvedWCandidates.candidate2.Eta(), sys);
+          m_Fbranches.at("resolvedWCandidate2_phi").set(*event, resolvedWCandidates.candidate2.Phi(), sys);
+        }
+
+        if (resolvedZCandidates.valid){
+          m_Fbranches.at("resolvedZCandidate1_m").set(*event, resolvedZCandidates.candidate1.M(), sys);
+          m_Fbranches.at("resolvedZCandidate1_pt").set(*event, resolvedZCandidates.candidate1.Pt(), sys);
+          m_Fbranches.at("resolvedZCandidate1_eta").set(*event, resolvedZCandidates.candidate1.Eta(), sys);
+          m_Fbranches.at("resolvedZCandidate1_phi").set(*event, resolvedZCandidates.candidate1.Phi(), sys);
+          m_Fbranches.at("resolvedZCandidate2_m").set(*event, resolvedZCandidates.candidate2.M(), sys);
+          m_Fbranches.at("resolvedZCandidate2_pt").set(*event, resolvedZCandidates.candidate2.Pt(), sys);
+          m_Fbranches.at("resolvedZCandidate2_eta").set(*event, resolvedZCandidates.candidate2.Eta(), sys);
+          m_Fbranches.at("resolvedZCandidate2_phi").set(*event, resolvedZCandidates.candidate2.Phi(), sys);
         }
 
 
