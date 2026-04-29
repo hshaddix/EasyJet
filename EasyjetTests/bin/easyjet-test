@@ -228,7 +228,7 @@ DEFAULT_CONFIG=EasyjetHub/RunConfig.yaml
 declare -A CONFIGS=(
     # Data
     [bbtt-data22]=bbttAnalysis/RunConfig-bbtt-all-channels-bypass.yaml
-    [bbtt-data22-boosted]=bbttAnalysis/RunConfig-bbtt-all-channels-boosted-bypass.yaml
+    [bbtt-data22-boosted]=bbttAnalysis/RunConfig-bbtt-boosted-bypass.yaml
     [bbyy-data22-lite]=bbyyAnalysis/RunConfig-bbyy-skimming-legacy-bypass.yaml
     [HHandHyy-data22]=bbyyAnalysis/RunConfig-HH_H-skimming-bypass.yaml
     [SHbbyy-data22-lite]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
@@ -269,7 +269,7 @@ declare -A CONFIGS=(
     [bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-bypass.yaml
     [bbbb-mc23-syst]=bbbbAnalysis/RunConfig-HH4b-All-bypass-syst.yaml
     [bbtt-mc23]=bbttAnalysis/RunConfig-bbtt-all-channels-bypass.yaml
-    [bbtt-mc23-boosted]=bbttAnalysis/RunConfig-bbtt-all-channels-boosted-bypass.yaml
+    [bbtt-mc23-boosted]=bbttAnalysis/RunConfig-bbtt-boosted-bypass.yaml
     [bbtt-mc23e-boosted]=bbttAnalysis/RunConfig-bbtt-boosted-bypass-mc23e.yaml
     [bbVV-mc23]=bbVVAnalysis/RunConfig-bbVV-bypass.yaml
     [bbVVVBF-mc23]=bbVVAnalysis/RunConfig-VBF-bypass.yaml
