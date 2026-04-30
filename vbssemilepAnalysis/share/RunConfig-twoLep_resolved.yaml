@@ -1,0 +1,114 @@
+include: [vbssemilepAnalysis/RunConfig-common.yaml ]
+
+expert_mode_warning_level: default
+# Which analysis to consider
+channels: ["twoLep"]
+
+do_large_R_UFO_jets: true
+do_resolved: true
+# Use VBFRNN tagger
+UseVBFRNN : false
+
+Electron:
+  maxD0Significance: 10
+  maxDeltaZ0SinTheta: 0.5
+  ID: "LooseBLayerLH"
+  Iso: "NonIso"
+  amount: 0
+  correlationModelId: "TOTAL"
+  extra_wps:
+    - ["LooseBLayerLH", "Loose_VarRad"]
+    - ["LooseBLayerLH", "Tight_VarRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_FixedRad"]
+
+    - ["MediumLH", "Loose_VarRad"]
+    - ["MediumLH", "Tight_VarRad"]
+    - ["MediumLH", "TightTrackOnly_VarRad"]
+    - ["MediumLH", "TightTrackOnly_FixedRad"]
+    - ["MediumLH", "NonIso"]
+
+    - ["TightLH", "Loose_VarRad"]
+    - ["TightLH", "Tight_VarRad"]
+    - ["TightLH", "TightTrackOnly_VarRad"]
+    - ["TightLH", "TightTrackOnly_FixedRad"]
+    - ["TightLH", "NonIso"]
+
+    - ["LooseDNNElectron", "Loose_VarRad"]
+    - ["LooseDNNElectron", "Tight_VarRad"]
+    - ["LooseDNNElectron", "TightTrackOnly_VarRad"]
+    - ["LooseDNNElectron", "TightTrackOnly_FixedRad"]
+
+    - ["MediumDNNElectron", "Loose_VarRad"]
+    - ["MediumDNNElectron", "Tight_VarRad"]
+    - ["MediumDNNElectron", "TightTrackOnly_VarRad"]
+    - ["MediumDNNElectron", "TightTrackOnly_FixedRad"]
+
+    - ["TightDNNElectron", "Loose_VarRad"]
+    - ["TightDNNElectron", "Tight_VarRad"]
+    - ["TightDNNElectron", "TightTrackOnly_VarRad"]
+    - ["TightDNNElectron", "TightTrackOnly_FixedRad"]
+  do_IFF_decoration: true
+  do_reco_decoration: true
+  chargeIDSelectionRun2: false
+  
+Muon:
+  maxD0Significance: 10
+  maxDeltaZ0SinTheta: 0.5
+  ID: "Loose"
+  Iso: "NonIso"
+  eta_max: 2.5
+  amount: 0
+  extra_wps:
+    - ["Loose", "PflowLoose_VarRad"]
+    - ["Loose", "PflowTight_VarRad"]
+    
+    - ["Medium", "PflowLoose_VarRad"]
+    - ["Medium", "PflowTight_VarRad"]
+    - ["Medium", "NonIso"]
+    
+
+    - ["Tight", "PflowLoose_VarRad"]
+    - ["Tight", "PflowTight_VarRad"]
+    - ["Tight", "NonIso"]
+
+    - ["HighPt", "PflowLoose_VarRad"]
+    - ["HighPt", "PflowTight_VarRad"]
+    - ["HighPt", "NonIso"]
+
+  do_IFF_decoration: true
+  do_reco_decoration: true
+
+Lepton:
+  amount: 0
+#  variables_int: ["isPrompt","truthOrigin", "truthType", "ele_ECIDS", 
+#                  "ele_firstEgMotherTruthType", "ele_firstEgMotherTruthOrigin", "ele_firstEgMotherPdgId"]
+
+# Toggles for reconstructed objects decorations
+
+Large_R_jet:
+  maxEta: 2.5
+  amount: -1
+  flat_mass_selections:
+    include: #[EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml]
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
+  wtag_type: "ANN" # ANN, DNN
+  wtag_wp: "50"
+  wtag_extra_wps: ["50","60","80","90"]
+  
+# list of triggers per year to consider
+Trigger:
+  include: [vbssemilepAnalysis/trigger-lep.yaml]
+  writeOutput: False
+
+CutList :
+  - PASS_TRIGGER
+  - PASS_TWO_LEPTONS
+  - PASS_TWO_SIGNAL_JETS
+  - PASS_B_VETO
+  - PASS_B_TAGGED
+  - PASS_TWO_SS_CHARGE_LEPTONS
+  - PASS_TWO_OS_CHARGE_LEPTONS
+  - PASS_ONE_LARGE_JET
+

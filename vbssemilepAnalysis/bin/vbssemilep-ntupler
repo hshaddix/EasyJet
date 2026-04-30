@@ -1,0 +1,124 @@
+#!/bin/env python
+
+#
+# Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+#
+
+#
+# Extends easyjet-ntupler with disemilep-specific algorithms
+#
+
+import sys
+import time
+
+from EasyjetHub.hub import (
+    AnalysisArgumentParser,
+    analysis_configuration,
+    run_job,
+    default_sequence_cfg,
+    output_cfg
+)
+from EasyjetHub.output.ttree.minituple_config import check_ntuple_output_file
+
+from vbssemilepAnalysis.twoLep_config import twoLep_branches
+from vbssemilepAnalysis.oneLep_config import oneLep_branches
+from vbssemilepAnalysis.vbssemilep_cfg import vbssemilep_cfg
+from EasyjetHub.algs.event_counter_config import event_counter_cfg
+
+from AthenaCommon.Logging import logging
+from AthenaCommon.Constants import DEBUG
+
+# Set the global log level to DEBUG
+logging.getLogger().setLevel(DEBUG)
+# Optionally, set the log level for specific components
+logging.getLogger("BaselineVarsoneLepAlg").setLevel(DEBUG)
+logging.getLogger("oneLepSelectorAlg").setLevel(DEBUG)
+logging.getLogger("twoLepSelectorAlg").setLevel(DEBUG)
+logging.getLogger("BaselineVarstwoLepAlg").setLevel(DEBUG)
+
+def vbssemilep_job_cfg():
+    parser = AnalysisArgumentParser()
+
+    # Fill the configuration flags from the
+    # parsed arguments
+    # Returned flags are locked
+    flags, args = analysis_configuration(parser)
+
+    for channel in flags.Analysis.channels:
+        if channel not in ["oneLep", "twoLep"]:
+            raise RuntimeError("Invalid channel {}, 'oneLep'"\
+                               " or 'twoLep' ".format(channel))
+    # Get a standard ComponentAccumulator with the following infrastructure:
+    # - basic services for event loop, messaging etc
+    # - apply preselection on triggers and data quality
+    # - build event info with calibrations etc
+    seqname = "vbssemilepSeq"
+    cfg = default_sequence_cfg(flags, seqname)
+    
+    # Extend the list of output branches via flags
+    # For more sophistication this could be done using
+    # custom BranchManagers
+    
+    cfg.merge(
+        vbssemilep_cfg(flags,
+                     smalljetkey=flags.Analysis.container_names.output.reco4PFlowJet,
+                     largejetkey=flags.Analysis.container_names.output.reco10UFOJet,
+                     muonkey=flags.Analysis.container_names.output.muons,
+                     electronkey=flags.Analysis.container_names.output.electrons,
+                     ), seqname
+    )
+    if not flags.Analysis.suppress_metadata_json:
+        cfg.merge(event_counter_cfg("n_vbssemilep"), seqname)
+
+    # Explicitly call the minituple config because we want to provide
+    # additional branches, the list of which is generated dynamically
+    # rather than statically in the yaml
+    extra_branches = []
+    if "oneLep" in flags.Analysis.channels:
+        extra_vbssemilep_branches, float_variable_names, int_variable_names = oneLep_branches(flags)
+        extra_branches += extra_vbssemilep_branches
+    if "twoLep" in flags.Analysis.channels:
+        extra_vbssemilep_branches, float_variable_names, int_variable_names = twoLep_branches(flags)
+        extra_branches += extra_vbssemilep_branches
+
+    outcfg, ntuple_output_file_list = output_cfg(
+        flags,
+        seqname,
+        extra_branches)
+    cfg.merge(outcfg)
+
+    # Record the number of events for logging and tests
+    if not flags.Analysis.suppress_metadata_json:
+        cfg.merge(event_counter_cfg("n_events"), seqname)
+    return cfg, flags, args, ntuple_output_file_list
+
+
+def main():
+    # record the total run time
+    starttime = time.process_time()
+
+    cfg, flags, args, ntuple_output_file_list = vbssemilep_job_cfg()
+
+    if args.dry_run:
+        return_code = BootstrapHelper.StatusCode(True)
+    else:
+        return_code = run_job(flags, args, cfg)
+        from os import environ
+        outpklfile = environ.get("PICKLECAFILE", None) # check if --stop-after-config
+        if return_code and outpklfile is None:
+            check_ntuple_output_file(ntuple_output_file_list)
+
+    # this is for unit tests: if jobs run too long something is wrong
+    if args.timeout:
+        duration = time.process_time() - starttime
+        if duration > args.timeout:
+            raise RuntimeError(
+                f"runtime ({duration:.1f}s) exceed timeout ({args.timeout:.0f}s)"
+            )
+    return return_code.isSuccess()
+
+
+# Execute the main function if this file was executed as a script
+if __name__ == "__main__":
+    is_successful = main()
+    sys.exit(0 if is_successful else 1)

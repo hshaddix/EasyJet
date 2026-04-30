@@ -1,0 +1,127 @@
+include: vbssemilepAnalysis/RunConfig-common.yaml 
+
+# Which analysis to consider
+channels: ["twoLep"]
+
+do_large_R_UFO_jets: true
+do_resolved: false
+# Use VBFRNN tagger
+UseVBFRNN : false
+
+Electron:
+  maxD0Significance: 10
+  maxDeltaZ0SinTheta: 0.5
+  ID: "LooseBLayerLH"
+  Iso: "NonIso"
+  amount: 0
+  correlationModelId: "TOTAL"
+  extra_wps:
+    - ["LooseBLayerLH", "Loose_VarRad"]
+    - ["LooseBLayerLH", "Tight_VarRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_FixedRad"]
+
+    - ["MediumLH", "Loose_VarRad"]
+    - ["MediumLH", "Tight_VarRad"]
+    - ["MediumLH", "TightTrackOnly_VarRad"]
+    - ["MediumLH", "TightTrackOnly_FixedRad"]
+    - ["MediumLH", "NonIso"]
+
+    - ["TightLH", "Loose_VarRad"]
+    - ["TightLH", "Tight_VarRad"]
+    - ["TightLH", "TightTrackOnly_VarRad"]
+    - ["TightLH", "TightTrackOnly_FixedRad"]
+    - ["TightLH", "NonIso"]
+
+    - ["LooseDNNElectron", "Loose_VarRad"]
+    - ["LooseDNNElectron", "Tight_VarRad"]
+    - ["LooseDNNElectron", "TightTrackOnly_VarRad"]
+    - ["LooseDNNElectron", "TightTrackOnly_FixedRad"]
+
+    - ["MediumDNNElectron", "Loose_VarRad"]
+    - ["MediumDNNElectron", "Tight_VarRad"]
+    - ["MediumDNNElectron", "TightTrackOnly_VarRad"]
+    - ["MediumDNNElectron", "TightTrackOnly_FixedRad"]
+
+    - ["TightDNNElectron", "Loose_VarRad"]
+    - ["TightDNNElectron", "Tight_VarRad"]
+    - ["TightDNNElectron", "TightTrackOnly_VarRad"]
+    - ["TightDNNElectron", "TightTrackOnly_FixedRad"]
+  do_IFF_decoration: true
+  do_reco_decoration: true
+  
+Muon:
+  maxD0Significance: 10
+  maxDeltaZ0SinTheta: 0.5
+  ID: "Loose"
+  Iso: "NonIso"
+  amount: 0
+  extra_wps:
+    - ["Loose", "PflowLoose_VarRad"]
+    - ["Loose", "PflowTight_VarRad"]
+    
+    - ["Medium", "PflowLoose_VarRad"]
+    - ["Medium", "PflowTight_VarRad"]
+    - ["Medium", "NonIso"]
+    
+
+    - ["Tight", "PflowLoose_VarRad"]
+    - ["Tight", "PflowTight_VarRad"]
+    - ["Tight", "NonIso"]
+
+    - ["HighPt", "PflowLoose_VarRad"]
+    - ["HighPt", "PflowTight_VarRad"]
+    - ["HighPt", "NonIso"]
+
+  do_IFF_decoration: true
+  do_reco_decoration: true
+
+Lepton:
+  amount: 2
+  variables_int: ["isPrompt","truthOrigin", "truthType", "ele_ECIDS", 
+                  "ele_firstEgMotherTruthType", "ele_firstEgMotherTruthOrigin", "ele_firstEgMotherPdgId"]
+
+# Toggles for reconstructed objects decorations
+Small_R_jet:
+  # btagging working points 
+  btag_wp: "GN2v01_FixedCutBEff_90"
+  amount: 2
+  useFJvt: true
+  
+  # to use multiple btagging WPs
+  btag_extra_wps:
+    - GN2v01_Continuous
+
+Large_R_jet:
+  maxEta: 2.0
+  amount: -1
+  flat_mass_selections:
+    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml]
+  wtag_type: "ANN" # ANN, DNN
+  wtag_wp: "50"
+  wtag_extra_wps: ["50","60","80","90"]
+    
+# list of triggers per year to consider
+Trigger:
+  include: vbssemilepAnalysis/trigger-lep.yaml
+  writeOutput: False
+
+CutList :
+  - PASS_TRIGGER
+  - PASS_TWO_LEPTONS
+  - PASS_TWO_SIGNAL_JETS
+  - PASS_VBS_BASELINE
+  - PASS_B_VETO
+  - PASS_B_TAGGED
+  - PASS_TWO_SS_CHARGE_LEPTONS
+  - PASS_TWO_OS_CHARGE_LEPTONS
+  - PASS_RES_W_WINDOW
+  - PASS_ONE_LARGE_JET
+
+ttree_output:
+  reco_outputs:
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+  collection_options:
+    large_R_jets:
+      truth_labels: true
+      WTransformer_details: true

@@ -1,0 +1,121 @@
+include: [EasyjetHub/base-config.yaml]
+
+do_CP_systematics: false
+
+# Variables that we would want for nominal only nTuples
+save_high_level_variables: true
+### tagging jets vs RNN strategy
+### false: select tagging jets ---> signal candidate jets
+### true : select signal candidate jets ---> load VBF-RNN
+UseVBFRNN : false
+VerVBFRNN : VBFRNNv1p0p0
+
+# Add truth VBS quark info
+AddTruthVBSQuarks : false
+
+# tagging jets pairing options
+# HighestMjjForwardJets or HighestMjjJets or LeadingPTjj 
+TagJetsCriteria: "LeadingPTjj"
+DeltaRJj: 1.0
+# HighestPT or HighestScore order
+SigJetsCriteria: "HighestPT"
+# use GN2x information or not (not on current LLJ1 ptag)
+loadGN3x: true
+
+# expand list to store truth information
+# expand list to store truth information
+Truth:
+  DSID_samples:
+    - 561972 # MGPy8EG_EW6_WZjj_llqq
+    - 561973 # MGPy8EG_EW6_ZZjj_llqq
+    
+  truthParticleContainersToFix:
+    - "TruthBoson"
+    - "TruthBosonsWithDecayParticles"
+    - "TruthElectrons"
+    - "TruthMuons"
+    - "TruthPhotons"
+    - "TruthNeutrinos"
+    - "TruthTaus"
+    - "TruthTop"
+    - "TruthBottom"
+    - "TruthCharm"
+    - "TruthHFWithDecayParticles"
+    - "TruthForwardProtons"
+    - "BornLeptons"
+    
+  truthVertexContainersToFix: 
+    - "TruthBosonsWithDecayVertices"
+
+# Toggles for object types
+do_muons: true
+do_electrons: true
+do_met : true
+do_small_R_jets: true
+do_large_R_UFO_jets: true
+#do_VR_jets: false
+
+Electron:
+  ID: "MediumLH"
+  Iso: "Loose_VarRad"
+  amount: 0
+  correlationModelId: "TOTAL"
+
+Muon:
+  ID: "Medium"
+  Iso: "PflowLoose_VarRad"
+  amount: 0
+
+Lepton:
+  amount: 0
+
+# apply trigger lists to filter events
+do_trigger_filtering: true
+# compute and store trigger scale factors
+do_trigsf: true
+
+do_overlap_removal: true
+OverlapRemoval:
+  # Enable overlap removal between large-R jets and objects for which 
+  # large-R jet OR removal is implemented in Athena
+  do_large_R_jets: true
+  do_small_R_jet_large_R_jet: false
+
+#Enable cutflow 
+save_cutflow: true
+
+# Toggles for reconstructed objects decorations
+Small_R_jet:
+  # btagging working points 
+  btag_wp: "GN2v01_FixedCutBEff_90"
+  amount: 0
+  useFJvt: true
+  
+  # to use multiple btagging WPs
+  btag_extra_wps:
+    - GN2v01_Continuous
+
+# Include the TTree configuration and update details
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  # Our overrides. All defaults are off
+  slim_variables_with_syst: true
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+    muons: 'container_names.output.muons'
+    electrons: 'container_names.output.electrons'
+    met : 'container_names.output.met'
+  collection_options:
+    small_R_jets:
+      run_selection: true
+      truth_parent_info: true
+      btag_info: true
+    large_R_jets:
+      run_selection: true
+      truth_labels: true
+      btag_details: true
+      substructure_info: true
+      truth_labels: true
+      bjet_regression: true
+      WTransformer_details: true
