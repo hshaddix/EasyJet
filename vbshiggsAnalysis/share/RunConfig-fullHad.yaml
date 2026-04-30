@@ -27,27 +27,49 @@ Large_R_jet:
     include: 
       - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
       - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
+  wtag_type: "ANN" # ANN, DNN
+  wtag_wp: "50"
+  wtag_extra_wps: ["50","60","80","90"]
 
   # GN2X_hbb_wps:
   #   - "FlatMassQCDEff_1p55"
 
-# OverlapRemoval:
+OverlapRemoval:
 #   # Enable overlap removal between large-R jets and objects for which 
 #   # large-R jet OR removal is implemented in Athena
-#   do_large_R_jets: true
-#   do_small_R_jet_large_R_jet: true
+  do_large_R_jets: true
+  do_small_R_jet_large_R_jet: true
 
 
 Trigger:
   include: [vbshiggsAnalysis/trigger-had.yaml]
-  writeOutput: False
+  writeOutput: true
 
-# Trigger:
-  # include: [vbshiggsAnalysis/trigger-lep.yaml]
-  # writeOutput: False
+
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  # Our overrides. All defaults are off
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+  truth_outputs:
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+  collection_options:
+    small_R_jets:
+      run_selection: true
+      truth_parent_info: true
+      btag_info: true
+    large_R_jets:
+      run_selection: true
+      btag_details: true
+      substructure_info: true
+      truth_labels: true
+      bjet_regression: true
+
 
 CutList : 
   - PASS_EXACTLY_TWO_SMALL_JETS
+  - PASS_EXACTLY_TWO_LARGE_JETS
   - PASS_LEPTON_VETO
   - PASS_TWO_LARGE_JETS
   - PASS_THREE_LARGE_JETS

@@ -9,7 +9,6 @@ save_high_level_variables: true
 ### false: select tagging jets ---> higgs candidate jets
 ### true : select higgs candidate jets ---> load VBF-RNN
 UseVBFRNN : false
-VerVBFRNN : "VBFRNNv2p3p2"
 
 # Add truth VBS quark info
 AddTruthVBSQuarks : false

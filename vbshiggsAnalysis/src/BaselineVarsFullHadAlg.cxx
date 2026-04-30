@@ -25,6 +25,8 @@ struct BosonPairingResult {
 BosonPairingResult findBestBosonPairing(const std::vector<const xAOD::Jet*>& jets,
                                         float targetMass)
 {
+
+  // For the resolved vector boson case, where both vector bosons are both reconstructed with AK4 jets.
   BosonPairingResult best;
   if (jets.size() < 4) {
     return best;
@@ -231,66 +233,92 @@ StatusCode BaselineVarsFullHadAlg::execute() {
   m_Ibranches.at("nLargeJets").set(*event, nLargeJets, sys);
 }
 
+
+
+////////////////////////////////////// W Tagger scores //////////////////////////////////////////////
+  for(unsigned int i=0; i<std::min(size_t(3),largeJets->size()); i++){
+    const xAOD::Jet* largeJet = largeJets->at(i);
+    std::string prefix = "LargeJet"+std::to_string(i+1);
+    // Get score of W-tagger
+    float wtagger_score = m_WTag_score.get(*largeJet, sys);
+    m_Fbranches.at(prefix+"_m").set(*event, largeJet->m(), sys);
+    m_Fbranches.at(prefix+"_pt").set(*event, largeJet->pt(), sys);
+    m_Fbranches.at(prefix+"_eta").set(*event, largeJet->eta(), sys);
+    m_Fbranches.at(prefix+"_phi").set(*event, largeJet->phi(), sys);
+    m_Fbranches.at(prefix + "_" + m_WTag_Type + m_WTag_WP + "Tagger_Score").set(*event, wtagger_score, sys);
+    int pass_wtag = static_cast<int>(m_Pass_WTag.get(*largeJet, sys));
+    m_Ibranches.at(prefix+"_Pass_"+m_WTag_Type+m_WTag_WP).set(*event, pass_wtag, sys);
+  }
+
   
   // if (m_doResolved){
   //b-jet sector
   ///////////////////////////////// Resolved Higgs->bb candidates /////////////////////////////////////////////
 
-  TLorentzVector HDijet;
-  TLorentzVector HJet1;
-  TLorentzVector HJet2;
-  for (std::size_t i=0; i<std::min(HJets->size(),(std::size_t)2); i++){
-    std::string prefix = "Jet_Higgs_candidate"+std::to_string(i+1);
-    m_Fbranches.at(prefix+"_m").set(*event, HJets->at(i)->m(), sys);
-    m_Fbranches.at(prefix+"_pt").set(*event, HJets->at(i)->pt(), sys);
-    m_Fbranches.at(prefix+"_eta").set(*event, HJets->at(i)->eta(), sys);
-    m_Fbranches.at(prefix+"_phi").set(*event, HJets->at(i)->phi(), sys);
-    m_Fbranches.at(prefix+"_E").set(*event, HJets->at(i)->e(), sys);
+  if (m_doResolved) {
+    TLorentzVector HDijet;
+    TLorentzVector HJet1;
+    TLorentzVector HJet2;
+    for (std::size_t i=0; i<std::min(HJets->size(),(std::size_t)2); i++){
+      std::string prefix = "Jet_Higgs_candidate"+std::to_string(i+1);
+      m_Fbranches.at(prefix+"_m").set(*event, HJets->at(i)->m(), sys);
+      m_Fbranches.at(prefix+"_pt").set(*event, HJets->at(i)->pt(), sys);
+      m_Fbranches.at(prefix+"_eta").set(*event, HJets->at(i)->eta(), sys);
+      m_Fbranches.at(prefix+"_phi").set(*event, HJets->at(i)->phi(), sys);
+      m_Fbranches.at(prefix+"_E").set(*event, HJets->at(i)->e(), sys);
 
+      }
+
+    if (HJets->size() >=2){
+      HDijet = HJets->at(0)->p4()+ HJets->at(1)->p4();
+      HJet1 = HJets->at(0)->p4();
+      HJet2 = HJets->at(1)->p4();
+      // std::cout << "Higgs dijet mass: " << HDijet.M() << std::endl;
+      m_Fbranches.at("Hdijet_m").set(*event, HDijet.M(), sys);
+      m_Fbranches.at("Hdijet_pt").set(*event, HDijet.Pt(), sys);
+      m_Fbranches.at("Hdijet_eta").set(*event, HDijet.Eta(), sys);
+      m_Fbranches.at("Hdijet_phi").set(*event, HDijet.Phi(), sys);
+      m_Fbranches.at("dRHjj").set(*event, HJet1.DeltaR(HJet2), sys);
+      m_Fbranches.at("dPhiHjj").set(*event, HJet1.DeltaPhi(HJet2), sys);
+      m_Fbranches.at("dEtaHjj").set(*event, HJet1.Eta() - HJet2.Eta(), sys);
     }
-
-  if (HJets->size() >=2){
-    HDijet = HJets->at(0)->p4()+ HJets->at(1)->p4();
-    HJet1 = HJets->at(0)->p4();
-    HJet2 = HJets->at(1)->p4();
-    // std::cout << "Higgs dijet mass: " << HDijet.M() << std::endl;
-    m_Fbranches.at("Hdijet_m").set(*event, HDijet.M(), sys);
-    m_Fbranches.at("Hdijet_pt").set(*event, HDijet.Pt(), sys);
-    m_Fbranches.at("Hdijet_eta").set(*event, HDijet.Eta(), sys);
-    m_Fbranches.at("Hdijet_phi").set(*event, HDijet.Phi(), sys);
-    m_Fbranches.at("dRHjj").set(*event, HJet1.DeltaR(HJet2), sys);
-    m_Fbranches.at("dPhiHjj").set(*event, HJet1.DeltaPhi(HJet2), sys);
-    m_Fbranches.at("dEtaHjj").set(*event, HJet1.Eta() - HJet2.Eta(), sys);
   }
-      // }
 
   // Two W/Z vector bosons. Two cases for the Higgs: boosted H, resolved H
   // For W/Z vector bosons. It can also be either boosted or resolved.
   // For kl, we expect less than 3 large R jets. For k2v, expect 3 or more large R jets. 
 //////////////////////////////////////// Resolved Higgs->bb with Resolved V jets /////////////////////////////////////
   // auto resolvedVCandidates_resolvedH = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
-  std::vector<const xAOD::Jet*> resolvedVCandidates_resolvedH;
+
+  // resovledVCandidates_boostedH also works for the case where there are 2 large R jets. Higgs boosted V1 boosted and V2 resolved. 
+  // The remaining non b-tagged jets that are not matched to the Higgs will be used to reconstruct the V boson candidates.
+  if (m_doResolved) {
+    std::vector<const xAOD::Jet*> resolvedVCandidates_boostedH;
         for(const xAOD::Jet* jet : *signalJets) {
           // only central jets          
           if (std::abs(jet->eta())>=2.5) continue;
           // non b-tagged jets 
           // Don't include b-tagged jets for W boson jet candidates. However, for Z, bjets make up a nontrivial fraction of the candidates. B(Z->bb) ~ 15%. 
+          // Assume Z->bb is negligible
           if ( !m_isBtag.empty() && m_isBtag.get(*jet, sys) ) continue;
-          resolvedVCandidates_resolvedH.push_back(jet);
+          resolvedVCandidates_boostedH.push_back(jet);
         }
-        const auto resolvedWCandidates = findBestBosonPairing(resolvedVCandidates_resolvedH,
+        const auto resolvedWCandidates = findBestBosonPairing(resolvedVCandidates_boostedH,
                                                               Wmass);
-        const auto resolvedZCandidates = findBestBosonPairing(resolvedVCandidates_resolvedH,
+        const auto resolvedZCandidates = findBestBosonPairing(resolvedVCandidates_boostedH,
                                                               Zmass);
         if (resolvedWCandidates.valid){
           m_Fbranches.at("resolvedWCandidate1_m").set(*event, resolvedWCandidates.candidate1.M(), sys);
           m_Fbranches.at("resolvedWCandidate1_pt").set(*event, resolvedWCandidates.candidate1.Pt(), sys);
           m_Fbranches.at("resolvedWCandidate1_eta").set(*event, resolvedWCandidates.candidate1.Eta(), sys);
           m_Fbranches.at("resolvedWCandidate1_phi").set(*event, resolvedWCandidates.candidate1.Phi(), sys);
+          m_Fbranches.at("resolvedWCandidate1_E").set(*event, resolvedWCandidates.candidate1.E(), sys);
+
           m_Fbranches.at("resolvedWCandidate2_m").set(*event, resolvedWCandidates.candidate2.M(), sys);
           m_Fbranches.at("resolvedWCandidate2_pt").set(*event, resolvedWCandidates.candidate2.Pt(), sys);
           m_Fbranches.at("resolvedWCandidate2_eta").set(*event, resolvedWCandidates.candidate2.Eta(), sys);
           m_Fbranches.at("resolvedWCandidate2_phi").set(*event, resolvedWCandidates.candidate2.Phi(), sys);
+          m_Fbranches.at("resolvedWCandidate2_E").set(*event, resolvedWCandidates.candidate2.E(), sys);
         }
 
         if (resolvedZCandidates.valid){
@@ -302,9 +330,76 @@ StatusCode BaselineVarsFullHadAlg::execute() {
           m_Fbranches.at("resolvedZCandidate2_pt").set(*event, resolvedZCandidates.candidate2.Pt(), sys);
           m_Fbranches.at("resolvedZCandidate2_eta").set(*event, resolvedZCandidates.candidate2.Eta(), sys);
           m_Fbranches.at("resolvedZCandidate2_phi").set(*event, resolvedZCandidates.candidate2.Phi(), sys);
+          m_Fbranches.at("resolvedZCandidate2_E").set(*event, resolvedZCandidates.candidate2.E(), sys);
         }
 
+  // resolvedVCandidates_resolvedH. 
+  // First match the VBS jets. 
+            //   Higgs selection algorithm
+            // 1) First select leading 2 b-jets
+            // 2) if only 1 b-jet present  select it with leading light-jet
+            // 3) if no b-jet found select leading 2 light-jets
+            // Then the V jets are matched from the remaining
 
+      /////// Resolved H  Resolved V jets/////////
+    auto potentialVCandidates = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
+            signalJets->begin(), signalJets->end(), SG::VIEW_ELEMENTS);
+    // Erase HCandidates from signal jet container
+    if (HJets->size() >=2){
+      potentialVCandidates->erase( std::remove_if( potentialVCandidates->begin(), potentialVCandidates->end(),
+                [&](const xAOD::Jet* jet) -> bool { return jet == HJets->at(0) || jet == HJets->at(1) ;} ),
+                potentialVCandidates->end() );
+    }
+
+    auto VJets_resolvedH = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
+    for(const xAOD::Jet* jet : *potentialVCandidates) {
+      // only central jets
+      if (std::abs(jet->eta())>=2.5) continue;
+      // non b-tagged jets 
+      if ( !m_isBtag.empty() && m_isBtag.get(*jet, sys) ) continue;
+      VJets_resolvedH->push_back(jet);
+    }
+
+    if (VJets_resolvedH->size() >=4){ // Both Vector bosons are resolved. 
+      // convert to the form expected by findBestBosonPairing
+      std::vector<const xAOD::Jet*> vjets;
+      vjets.reserve(VJets_resolvedH->size());
+      for (const xAOD::Jet* j : *VJets_resolvedH) vjets.push_back(j);
+
+      // find best W pairing
+      auto fullyresolvedWpair = findBestBosonPairing(vjets, Wmass);
+      if (fullyresolvedWpair.valid) {
+        m_Fbranches.at("fullyresolved_WCandidate1_m").set(*event, fullyresolvedWpair.candidate1.M(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate1_pt").set(*event, fullyresolvedWpair.candidate1.Pt(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate1_eta").set(*event, fullyresolvedWpair.candidate1.Eta(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate1_phi").set(*event, fullyresolvedWpair.candidate1.Phi(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate1_E").set(*event, fullyresolvedWpair.candidate1.E(), sys);
+
+        m_Fbranches.at("fullyresolved_WCandidate2_m").set(*event, fullyresolvedWpair.candidate2.M(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate2_pt").set(*event, fullyresolvedWpair.candidate2.Pt(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate2_eta").set(*event, fullyresolvedWpair.candidate2.Eta(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate2_phi").set(*event, fullyresolvedWpair.candidate2.Phi(), sys);
+        m_Fbranches.at("fullyresolved_WCandidate2_E").set(*event, fullyresolvedWpair.candidate2.E(), sys);
+      }
+
+      // find best Z pairing
+      auto fullyresolvedZpair = findBestBosonPairing(vjets, Zmass);
+      if (fullyresolvedZpair.valid) {
+        m_Fbranches.at("fullyresolved_ZCandidate1_m").set(*event, fullyresolvedZpair.candidate1.M(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate1_pt").set(*event, fullyresolvedZpair.candidate1.Pt(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate1_eta").set(*event, fullyresolvedZpair.candidate1.Eta(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate1_phi").set(*event, fullyresolvedZpair.candidate1.Phi(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate1_E").set(*event, fullyresolvedZpair.candidate1.E(), sys);
+
+        m_Fbranches.at("fullyresolved_ZCandidate2_m").set(*event, fullyresolvedZpair.candidate2.M(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate2_pt").set(*event, fullyresolvedZpair.candidate2.Pt(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate2_eta").set(*event, fullyresolvedZpair.candidate2.Eta(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate2_phi").set(*event, fullyresolvedZpair.candidate2.Phi(), sys);
+        m_Fbranches.at("fullyresolved_ZCandidate2_E").set(*event, fullyresolvedZpair.candidate2.E(), sys);
+      }
+
+    }
+  } // if (m_doResolved)
 
     if(!m_UseVBFRNN){
           if ( vbsjets->size() >= 2 ){

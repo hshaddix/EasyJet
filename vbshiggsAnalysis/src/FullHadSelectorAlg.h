@@ -68,6 +68,7 @@ private:
 
     std::map<Booleans, bool> m_bools;
     std::map<Booleans, std::string> m_boolnames{
+        {PASS_EXACTLY_TWO_LARGE_JETS, "PASS_EXACTLY_TWO_LARGE_JETS"},
         {PASS_EXACTLY_TWO_SMALL_JETS, "PASS_EXACTLY_TWO_SMALL_JETS"},
         {PASS_TWO_LARGE_JETS, "PASS_TWO_LARGE_JETS"},
         {PASS_THREE_LARGE_JETS, "PASS_THREE_LARGE_JETS"},

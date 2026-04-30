@@ -51,6 +51,8 @@ def fullHad_cfg(flags, float_variables=None, int_variables=None):
             do_resolved=flags.Analysis.do_resolved,
             bTagWPDecorName="ftag_select_"
                             + flags.Analysis.Small_R_jet.btag_wp,
+            wtag_type=flags.Analysis.Large_R_jet.wtag_type,
+            wtag_wp=flags.Analysis.Large_R_jet.wtag_wp, 
             floatVariableList=float_variables,
             intVariableList=int_variables
         )
@@ -63,15 +65,28 @@ def get_BaselineVarsFullHadAlg_variables(flags):
     int_variable_names = []
 
     int_variable_names += ["nJets", "nBJets", "nCentralJets", "nForwardJets", "nLargeJets"]
+    
+    # obj = "LargeJet1"
+    wtag_type = flags.Analysis.Large_R_jet.wtag_type
+    wtag_wp = flags.Analysis.Large_R_jet.wtag_wp
+    for obj in ["LargeJet1", "LargeJet2", "LargeJet3"]:
+        for var in ["m", "pt", "eta", "phi", "GN2X"]:
+            float_variable_names.append(f"{obj}_{var}")
+        for var in ["phbb", "pqcd", "phcc", "ptop"]:
+            float_variable_names.append(f"{obj}_GN2X_{var}")
+
+        float_variable_names += [obj + "_" + wtag_type + wtag_wp + "Tagger_Score"]
+        int_variable_names += [obj + "_Pass_" + wtag_type
+                                   + wtag_wp]
 
     if flags.Analysis.do_resolved:
         for i in [1, 2]:
             for var in ["m", "pt", "eta", "phi", "E"]:
                 float_variable_names.append(f"Jet_Higgs_candidate{i}_{var}")
-        for i in [1, 2]:
-            for var in ["m", "pt", "eta", "phi"]:
                 float_variable_names.append(f"resolvedWCandidate{i}_{var}")
                 float_variable_names.append(f"resolvedZCandidate{i}_{var}")
+                float_variable_names.append(f"fullyresolved_WCandidate{i}_{var}")
+                float_variable_names.append(f"fullyresolved_ZCandidate{i}_{var}")
         float_variable_names += [
             "Hdijet_m", "Hdijet_pt", "Hdijet_eta", "Hdijet_phi",
             "dRHjj", "dPhiHjj", "dEtaHjj"
