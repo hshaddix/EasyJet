@@ -1,120 +1,16 @@
-include: [EasyjetHub/base-config.yaml]
-
-expert_mode_warning_level: default
+include: [bbyyAnalysis/RunConfig-bbyy-base.yaml]
 
 # Which analysis to consider
-do_bbyy_analysis: true
 do_HHbbyy_Hyy_Analysis: true
-do_SH_Analysis: false
-
-# Decay mode considered for truth decoration
-Truth:
-  decayModes: ["bbyy"]
 
 # Toggles for object types
-do_small_R_jets: true
-do_muons: true
-do_electrons: true
-do_photons: true
-do_met: true
+do_GNN2bjetSelection: true
+
 do_KinematicFit: true
 extra_KinematicFit_variables: true
-do_Boosted: false
-do_GNN2bjetSelection: false
-
-# Toggles for reconstructed objects decorations
-Small_R_jet:
-  min_pT: 20.e+3
-  useFJvt: true
-  # btagging nominal working point
-  btag_wp: "GN2v01_FixedCutBEff_85"
-  # to use multiple btagging WPs
-  btag_extra_wps:
-    - GN2v01_Continuous
-
-  amount: 4
-  variables_int_allJets: ["truthLabel", "PassWP", "pcbt"]
-  do_parent_decoration: true
-  btag_egReductionB: "Medium"
-  btag_egReductionC: "Medium"
-  btag_egReductionLight: "Medium"
 
 TopReconstruction:
   BDT_path: "bbyyAnalysis/model_topRecoBDT.root"
-
-Electron:
-  min_pT_bbyy: 10.e+3 # minimum pT of selected electons (for lepton veto). Separate from min pT of electrons used for OR.
-  ID: "MediumLH"
-  Iso: "Loose_VarRad"
-  correlationModelId: "TOTAL"
-
-Muon:
-  min_pT_bbyy: 10.e+3 # minimum pT of selected muons (for lepton veto). Separate from min pT of muons used for OR.
-  ID: "Medium"
-  Iso: "PflowLoose_VarRad"
-
-# photon ID and isolation requirements
-Photon:
-  min_pT_bbyy: 10.e+3 # minimum pT of selected Photons. Separate from min pT of photons used for OR.
-  ID: "Loose" # Loose, Tight
-  Iso: "NonIso"
-  amount: 2
-  variables: ["ptOvermyy"]
-  variables_int: ["isEMTight"]
-  # The first extra wp is used for the final photon selections
-  extra_wps: 
-    - ["Tight", "FixedCutLoose"]
-    - ["Tight", "NonIso"]
-    - ["Loose", "FixedCutLoose"]
-
-Met:
-  saveSignificance: true
-
-OverlapRemoval:
-  favourPhotonOverLepton: false # if set to true, HgamOR is applied
-  allowNoPV: true 
-
-# orthogonality studies  
-orthogonality:
-  include: [EasyjetHub/orth-config.yaml ]
-  do_orth_check: false # if set to true, this will just add more information to your output ntuple on whether events fall into HH-like categories - it will not remove events (assuming overlap removal including all objects does not have an impact on your analysis)
-
-# list of triggers per year to consider
-Trigger:
-  include: [bbyyAnalysis/trigger.yaml]
-# flag for trigger filtering
-do_trigger_filtering: false
-
-# apply loose jet cleaning only
-add_BadBatman_jet_cleaning: false
-
-# write objects with overlap removal applied
-do_overlap_removal: true
-
-# Store high level variables by default 
-# when the config file set the high level variables
-store_high_level_variables: false
-
-#Enable cutflow 
-save_cutflow: true
-do_resonant_PNN: false
-do_resonant_onebtag: false
-
-# flag that toggles single photon trigger in the cutflow
-# so that PASS_TRIGGER = single || diphoton
-enable_single_photon_trigger: true
-
-# flag that toggles run-through mode in SelectorAlg
-bypass: false
-
-# flag for event cleaning
-do_event_cleaning: true
-
-# event cleaning flags
-dump_event_cleaning_info: true
-
-# name that will go in the tree bbyy_pass_<selection_name>_%SYS%
-selection_name: "allcuts"
 
 # bdt models used for categorisation and VBF jets selection
 # They should appear in this order lowMass / highMass / VBF jets
@@ -124,7 +20,6 @@ save_VBF_vars: true
 save_extra_vars: true
 save_nonresonant_BDTInput_variables: true
 save_HbbCand_vars: true
-save_pass_trigger_info: true
 
 BDT_path:
   - "bbyyAnalysis/bdt_legacy_lowMass.root"
@@ -154,27 +49,7 @@ GNN_path_run3:
   - "bbyyAnalysis/GNN_VBFTarget_run3.onnx"
 
 #  choose VBF jets selection method
-VBFjetsMethod: "mjj" # "mjj" "pTsorting"
 
-#Use a dedicated GRL for bbyy due to photon triggers
-GRL:
-  years:
-    include: [bbyyAnalysis/photon_grl_years.yaml]
-  files:
-    include: [bbyyAnalysis/photon_grl.yaml]
-
-PileupReweighting:
-  extra_prw:
-    - postfix: "photon"
-      lumicalc_files:
-        include: [bbyyAnalysis/lumicalc_photon.yaml]
-      prw_files:
-        include: [bbyyAnalysis/prw_photon.yaml]
-
-ttree_output:
-  include: [bbyy-base-output.yaml]
-
-do_HHbbyy_Hyy_Analysis: true
 save_detailed_Input_variables: true
 do_Hyy_multiclass: true
 
