@@ -20,6 +20,7 @@ bbbbbbAnalysis/
 ├── python/
 │   ├── config/             # Python configuration modules
 │   │   ├── resolved.py     # Resolved analysis configuration
+│   │   ├── boosted.py      # Boosted analysis configuration
 │   │   └── trihiggs.py     # Main tri-Higgs analysis chain
 │   └── utils/              # Utility functions
 │       └── option_validation_6b.py
@@ -27,7 +28,9 @@ bbbbbbAnalysis/
 ├── share/                  # YAML run configurations
 │   ├── RunConfig-bbbbbb-base.yaml
 │   ├── RunConfig-HHH6b-Resolved.yaml
+│   ├── RunConfig-HHH6b-Boosted.yaml
 │   └── triggers-resolved.yaml
+│   └── triggers-boosted.yaml
 ├── src/                    # C++ algorithm implementations
 └── CMakeLists.txt
 ```
@@ -41,6 +44,7 @@ The package implements the following Athena algorithms (in namespace `HHH6B`):
 | `bbbbbbSelectorAlg` | Event selection with configurable cuts (trigger, jet multiplicity, b-tag multiplicity) |
 | `JetPairingAlg` | Pairs jets into three Higgs candidates using different strategies |
 | `BaselineVarsResolvedAlg` | Computes kinematic variables for the resolved analysis |
+| `BaselineVarsBoostedAlg` | Computes kinematic variables for the resolved analysis |
 | `SmallRJetTriggerSFAlg` | Calculates trigger scale factors for small-R jets |
 | `TriggerDecoratorAlg` | Decorates events with trigger bucket information |
 
@@ -114,6 +118,7 @@ Available cuts in `CutList`:
 - `AT_LEAST_FOUR_JETS_OR_TWO_LRJETS`
 - `AT_LEAST_SIX_JETS_OR_THREE_LRJETS`
 - `AT_LEAST_SIX_JETS_FOUR_BJETS`
+- `AT_LEAST_THREE_LRJETS`
 
 ## Output Variables
 
@@ -130,11 +135,11 @@ The ntuple output includes:
 - `DeltaEtaJet1Jet2`, `DeltaEtaJet3Jet4`, `DeltaEtaJet5Jet6`
 - `DeltaPhiJet1Jet2`, `DeltaPhiJet3Jet4`, `DeltaPhiJet5Jet6`
 - `Jet12Pt`, `Jet34Pt`, `Jet56Pt`, `Jet12Mass`, `Jet34Mass`, `Jet56Mass`
-- `M4j` (combined 4-jet mass)
+- `M6j` (combined 6-jet mass)
 - `MassDiff12vs34`, `MassDiff12vs56`, `MassDiff34vs56`
 
 ### Event Shape Variables
-- `Thrust`, `Sphericity`, `Planarity`, `Aplanarity`
+- `Thrust`, `Sphericity`, `Transverse sphericity`, `Planarity`, `Aplanarity`
 
 ### Selection Variables
 - `pass_4b`, `pass_5b`, `pass_6b` (b-jet multiplicity categories)
@@ -180,7 +185,7 @@ The analysis uses b-jet triggers across Run 2 and Run 3 data-taking periods. See
 
 ## Code Developers
 
-This package is mostly derived from the bbbbAnalysis package for the HH -> 4b analysis. The package structure and the algorithms have the same pattern. The developers for the bbbbbbAnalysis package: Can Suslu, .. (feel free to add your name). The developers of the bbbbAnalysis can be seen from the README file of that package. 
+This package is mostly derived from the bbbbAnalysis package for the HH -> 4b analysis. The package structure and the algorithms have the same pattern. The developers for the bbbbbbAnalysis package: Can Suslu, Jurjan Bootsma, .. (feel free to add your name). The developers of the bbbbAnalysis can be seen from the README file of that package. 
 
 <!-- ## Authors
 

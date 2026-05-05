@@ -105,6 +105,7 @@ private:
       // Jet event shape variables
       "resolved_Thrust_",              // thrust
       "resolved_Sphericity_",          // sphericity  
+      "resolved_TransverseSphericity_",// transverse sphericity  
       "resolved_Planarity_",           // planarity
       "resolved_Aplanarity_",          // aplanarity
       // Parent mask variables for b-jets
