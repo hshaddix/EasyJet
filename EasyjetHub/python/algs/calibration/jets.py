@@ -32,8 +32,9 @@ def jet_sequence(
 
     output_name = drop_sys(flags.Analysis.container_names.output[jet_type])
 
-    configSeq += makeConfig("Jets", containerName=output_name,
-                            jetCollection=jetColl)
+    configSeq += makeConfig("Jets")
+    configSeq.setOptionValue(".containerName", output_name)
+    configSeq.setOptionValue(".jetCollection", jetColl)
     # don't run JVT only for EMTopo jets
     configSeq.setOptionValue(".runNNJvtUpdate", jet_type != "reco4EMTopoJet")
     configSeq.setOptionValue(".runJvtSelection", jet_type != "reco4EMTopoJet")
@@ -243,8 +244,7 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     # due to CP algs configs in Athena
     jetColl = "AntiKt10UFOCSSKSoftDropBeta100Zcut10Jets"
 
-    configSeq += makeConfig('Jets', containerName=output_name,
-                            jetCollection=jetColl)
+    configSeq += makeConfig('Jets')
     configSeq.setOptionValue('.containerName', output_name)
     configSeq.setOptionValue('.jetCollection', jetColl)
 
