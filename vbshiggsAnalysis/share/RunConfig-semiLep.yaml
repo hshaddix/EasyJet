@@ -72,7 +72,7 @@ Small_R_jet:
   do_MCMC_dsid_fix: true
   MCMC_dsid_map: 
     Sherpa2211: [364336,364337,700793,700320,700344]
-
+    Sherpa2214: [700793]
 Large_R_jet:
   maxEta: 2.0
   amount: 1
@@ -97,7 +97,7 @@ OverlapRemoval:
 
 # list of triggers per year to consider
 Trigger:
-  include: [vbshiggsAnalysis/trigger-lep.yaml]
+  include: [vbshiggsAnalysis/trigger-Semilep.yaml]
 # Include the TTree configuration and update details
 
 ttree_output:
@@ -124,6 +124,7 @@ ttree_output:
       substructure_info: true
       truth_labels: true
       bjet_regression: true
+      WTransformer_details: true
     electrons:
       run_selection: true
       truth_parent_info: true
