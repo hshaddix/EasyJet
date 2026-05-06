@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsFullHadAlg.h"
@@ -9,11 +9,12 @@
 #include <array>
 #include <limits>
 #include "AthContainers/ConstDataVector.h"
+#include <AthenaKernel/Units.h>
 
 namespace {
 
-constexpr float Wmass = 80.379f; // W boson mass
-constexpr float Zmass = 91.1876f; // Z boson mass
+constexpr float Wmass = 80.379f*Athena::Units::GeV; // W boson mass
+constexpr float Zmass = 91.1876f*Athena::Units::GeV; // Z boson mass
 
 struct BosonPairingResult {
   bool valid{false};
@@ -443,7 +444,7 @@ StatusCode BaselineVarsFullHadAlg::execute() {
 
             for(unsigned int j=0; j<std::min(size_t(2),RNNJets_container->size()); j++) {
               std::string prefix = "Jet"+std::to_string(j+1);
-              const xAOD::Jet* RNNJet = RNNJets_container->at(0);
+              const xAOD::Jet* RNNJet = RNNJets_container->at(j);
 
               m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_m").set(*event, RNNJet->m(), sys);
               m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_pt").set(*event, RNNJet->pt(), sys);
