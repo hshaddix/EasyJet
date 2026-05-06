@@ -121,7 +121,10 @@ StatusCode FullHadSelectorAlg::execute() {
           m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
         } 
         bool passAll = true;
-        for (auto& [key, val] : m_bools) passAll &= val;
+        for (auto& [key, val] : m_bools) {
+          if (key == PASS_ALL_CUTS) continue;
+          passAll &= val;
+        }
         m_bools[PASS_ALL_CUTS] = passAll;
   m_passallcuts.set(*event, passAll, sys);
 
