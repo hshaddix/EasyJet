@@ -42,7 +42,7 @@ OverlapRemoval:
 #   # Enable overlap removal between large-R jets and objects for which 
 #   # large-R jet OR removal is implemented in Athena
   do_large_R_jets: true
-  do_small_R_jet_large_R_jet: true
+  do_small_R_jet_large_R_jet: false
 
 
 Trigger:
@@ -69,6 +69,7 @@ ttree_output:
       substructure_info: true
       truth_labels: true
       bjet_regression: true
+      WTransformer_details: true
 
 
 CutList : 
