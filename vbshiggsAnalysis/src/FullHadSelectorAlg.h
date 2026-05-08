@@ -46,10 +46,8 @@ private:
 
     // CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "LargeJets", "Large boosted jets"}; 
     CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large boosted jets"}; 
-    // CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "Electrons", "Electron container"}; 
-    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "vbshiggsAnalysisElectrons_%SYS%", "Electron container"}; 
-    // CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "Muons", "Muon container"}; 
-    CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Muon container"}; 
+    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
+     CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
     CP::SysReadDecorHandle<char> m_passTriggerJET {this, "passTriggerJET", "pass_trigger_JET_%SYS%", "events pass any jet triggers"};
 
     
@@ -68,7 +66,7 @@ private:
     std::map<Booleans, std::string> m_boolnames{
         {PASS_EXACTLY_TWO_LARGE_JETS, "PASS_EXACTLY_TWO_LARGE_JETS"},
         {PASS_EXACTLY_TWO_SMALL_JETS, "PASS_EXACTLY_TWO_SMALL_JETS"},
-        {PASS_TWO_LARGE_JETS, "PASS_TWO_LARGE_JETS"},
+        {PASS_MORE_THAN_TWO_LARGE_JETS, "PASS_MORE_THAN_TWO_LARGE_JETS"},
         {PASS_THREE_LARGE_JETS, "PASS_THREE_LARGE_JETS"},
 	    {PASS_LEPTON_VETO, "PASS_LEPTON_VETO"},
         {PASS_TRIGGER, "PASS_TRIGGER"},

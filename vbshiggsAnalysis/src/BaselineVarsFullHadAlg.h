@@ -33,8 +33,6 @@ private:
 
   Gaudi::Property<bool> m_isMC { this, "isMC", false, "Is this simulation?" };
   CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
-  //   CP::SysReadDecorHandle<char> m_isBtag{
-  //     this, "isBtag", "DFCommonJets_btagged_%SYS%", ""};
 
   CP::SysReadDecorHandle<int> m_PCBT {this, "PCBTDecorName", "", "Name of pseudo-continuous b-tagging decorator"};
 
@@ -53,12 +51,6 @@ private:
   CP::SysReadHandle<xAOD::JetContainer> m_RNNjetBoostedHandle{ this, "RNNJets_boosted", "RNNJets_boostedCategory_%SYS%", "input RNN jets container for boosted 20 GeV" };
 
   CP::SysReadHandle<xAOD::JetContainer> m_RNNjetResolvedHandle{ this, "RNNJets_resolved", "RNNJets_resolvedCategory_%SYS%", "input RNN jets container for resolved 20 GeV" };
-
-  CP::SysReadHandle<xAOD::ElectronContainer> m_vbsElectronHandle{ this, "vbsElectrons", "vbshiggsAnalysisElectrons_%SYS%",   "Electron container to read" };
-  CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
-
-  CP::SysReadHandle<xAOD::MuonContainer> m_vbsMuonHandle{ this, "vbsMuons", "vbshiggsAnalysisMuons_%SYS%",   "Muon container to read" };
-  CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
   
   
   CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{

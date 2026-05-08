@@ -85,9 +85,6 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
 
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
   ATH_CHECK(m_vbsLRJetHandle.initialize(m_systematicsList));
-  ATH_CHECK (m_vbsElectronHandle.initialize(m_systematicsList));
-  ATH_CHECK (m_vbsMuonHandle.initialize(m_systematicsList));
-
   
   if (m_doResolved) {
     ATH_CHECK(m_signaljetHandle.initialize(m_systematicsList));
@@ -161,11 +158,7 @@ StatusCode BaselineVarsFullHadAlg::execute() {
 	ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys));
     }
 
-    const xAOD::MuonContainer *muons = nullptr;
-    ANA_CHECK (m_vbsMuonHandle.retrieve (muons, sys));
-    
-    const xAOD::ElectronContainer *electrons = nullptr;
-    ANA_CHECK (m_vbsElectronHandle.retrieve (electrons, sys));
+
 
     for (const auto& v : m_floatVariables)
       m_Fbranches.at(v).set(*event, -99.f, sys);
@@ -321,12 +314,7 @@ StatusCode BaselineVarsFullHadAlg::execute() {
         }
 
   // resolvedVCandidates_resolvedH. 
-  // First match the VBS jets. 
-            //   Higgs selection algorithm
-            // 1) First select leading 2 b-jets
-            // 2) if only 1 b-jet present  select it with leading light-jet
-            // 3) if no b-jet found select leading 2 light-jets
-            // Then the V jets are matched from the remaining
+  // After matching the VBS jets and selecting Higgs candidates. The resolved V jets are matched from the remaining non b-tagged jets.
 
       /////// Resolved H  Resolved V jets/////////
     auto potentialVCandidates = std::make_unique<ConstDataVector<xAOD::JetContainer>>(

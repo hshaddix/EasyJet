@@ -103,7 +103,7 @@ StatusCode FullHadSelectorAlg::execute() {
 	m_bools[PASS_LEPTON_VETO] = (muons->empty() && electrons->empty());
 	if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
         if (largeJets->size() == 2) m_bools[PASS_EXACTLY_TWO_LARGE_JETS] = true;
-        if (largeJets->size() > 2) m_bools[PASS_TWO_LARGE_JETS] = true;
+        if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
         if (largeJets->size() >=3) m_bools[PASS_THREE_LARGE_JETS] = true;
         if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
           m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
