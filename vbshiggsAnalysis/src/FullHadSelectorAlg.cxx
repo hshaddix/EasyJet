@@ -102,17 +102,18 @@ StatusCode FullHadSelectorAlg::execute() {
 
 	m_bools[PASS_LEPTON_VETO] = (muons->empty() && electrons->empty());
 	if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
-        if (largeJets->size() == 2) m_bools[PASS_EXACTLY_TWO_LARGE_JETS] = true;
-        if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
-        if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
-          m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
-        } 
-        bool passAll = true;
-        for (auto& [key, val] : m_bools) {
-          if (key == PASS_ALL_CUTS) continue;
-          passAll &= val;
-        }
-        m_bools[PASS_ALL_CUTS] = passAll;
+  if (largeJets->size() == 1) m_bools[PASS_EXACTLY_ONE_LARGE_JET] = true;
+  if (largeJets->size() == 2) m_bools[PASS_EXACTLY_TWO_LARGE_JETS] = true;
+  if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
+  if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
+    m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+  } 
+  bool passAll = true;
+  for (auto& [key, val] : m_bools) {
+    if (key == PASS_ALL_CUTS) continue;
+    passAll &= val;
+  }
+  m_bools[PASS_ALL_CUTS] = passAll;
   m_passallcuts.set(*event, passAll, sys);
 
   
