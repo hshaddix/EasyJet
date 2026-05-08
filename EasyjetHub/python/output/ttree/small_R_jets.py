@@ -48,11 +48,11 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
 
         if flags.Analysis.Small_R_jet.jet_type != "reco4EMTopoJet":
             small_R_jet_branches.variables += [
-                ("jvt_selection", None)
+                ("jvt_selection", "char")
             ]
             if flags.Analysis.Small_R_jet.useFJvt:
                 small_R_jet_branches.variables += [
-                    ("fjvt_selection", None)
+                    ("fjvt_selection", "char")
                 ]
 
     if flags.Analysis.Small_R_jet.jet_type != "reco4EMTopoJet":
@@ -147,11 +147,11 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
 
             if flags.Input.isMC:
                 small_R_jet_branches.variables += [
-                    ("jvt_effSF_%SYS%", None)
+                    ("jvt_effSF_%SYS%", "float")
                 ]
                 if flags.Analysis.Small_R_jet.useFJvt:
                     small_R_jet_branches.variables += [
-                        ("fjvt_effSF_%SYS%", None)
+                        ("fjvt_effSF_%SYS%", "float")
                     ]
 
     if flags.Input.isMC and jet_output_flags.truth_parent_info:
