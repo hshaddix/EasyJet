@@ -387,6 +387,9 @@ namespace HHH6B
     if ((nBoostedJets >= 3) && bbbbbbCuts.exists("AT_LEAST_THREE_LRJETS"))
       bbbbbbCuts("AT_LEAST_THREE_LRJETS").passed = true;
 
+    if ((nBoostedJets == 2 && nResolvedJets >= 2) && bbbbbbCuts.exists("AT_LEAST_TWO_JETS_AND_TWO_LRJETS"))
+      bbbbbbCuts("AT_LEAST_TWO_JETS_AND_TWO_LRJETS").passed = true;
+
   }
 
   StatusCode bbbbbbSelectorAlg::initialiseCutflow(){

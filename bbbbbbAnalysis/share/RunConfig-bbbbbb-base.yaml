@@ -4,6 +4,7 @@ systematics_suffix_separator: "_"
 
 # Which analysis to consider
 do_resolved_trihiggs: false
+do_semiboosted_trihiggs: false
 do_boosted_trihiggs: false
 
 do_resolved_trigger_bucket: false

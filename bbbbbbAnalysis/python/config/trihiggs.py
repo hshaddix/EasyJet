@@ -5,6 +5,11 @@ from bbbbbbAnalysis.config.resolved import (
     resolved_trigger_SF_cfg, resolved_trigger_bucket_cfg,
     resolved_trigger_matching_enabled,
 )
+
+from bbbbbbAnalysis.config.semiboosted import (
+    semiboosted_branches, semiboosted_cfg
+)
+
 from bbbbbbAnalysis.config.boosted import (
     boosted_branches, boosted_cfg
 )
@@ -143,10 +148,22 @@ def trihiggs_cfg(
         )
         cfg.merge(event_counter_cfg("n_resolved"))
 
+    if flags.Analysis.do_semiboosted_trihiggs:
+        bbbbb_extra_branches, float_variable_names = semiboosted_branches(flags)
+        cfg.merge(
+            semiboosted_cfg(
+                flags,
+                largejetkey=lr10jets_sys,
+                smalljetkey=smalljetkey,
+                btag_WP=btag_name,
+                float_variables=float_variable_names,
+            )
+        )
+
     if flags.Analysis.do_boosted_trihiggs:
         bbbbbb_extra_branches, float_variable_names = (
             boosted_branches(flags))
-        cfg.merge(
+        cfg.merge( 
             boosted_cfg(
                 flags,
                 largejetkey=lr10jets_sys,

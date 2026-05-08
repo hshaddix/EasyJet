@@ -19,8 +19,9 @@ bbbbbbAnalysis/
         └── ..              
 ├── python/
 │   ├── config/             # Python configuration modules
-│   │   ├── resolved.py     # Resolved analysis configuration
-│   │   ├── boosted.py      # Boosted analysis configuration
+│   │   ├── resolved.py     # Resolved analysis region configuration
+│   │   ├── semiboosted.py      # Semi-Boosted analysis region configuration
+│   │   ├── boosted.py      # Boosted analysis region configuration
 │   │   └── trihiggs.py     # Main tri-Higgs analysis chain
 │   └── utils/              # Utility functions
 │       └── option_validation_6b.py
@@ -28,8 +29,10 @@ bbbbbbAnalysis/
 ├── share/                  # YAML run configurations
 │   ├── RunConfig-bbbbbb-base.yaml
 │   ├── RunConfig-HHH6b-Resolved.yaml
+│   ├── RunConfig-HHH6b-SemiBoosted.yaml
 │   ├── RunConfig-HHH6b-Boosted.yaml
 │   └── triggers-resolved.yaml
+│   └── triggers-semiboosted.yaml
 │   └── triggers-boosted.yaml
 ├── src/                    # C++ algorithm implementations
 └── CMakeLists.txt
@@ -43,8 +46,9 @@ The package implements the following Athena algorithms (in namespace `HHH6B`):
 |-----------|-------------|
 | `bbbbbbSelectorAlg` | Event selection with configurable cuts (trigger, jet multiplicity, b-tag multiplicity) |
 | `JetPairingAlg` | Pairs jets into three Higgs candidates using different strategies |
-| `BaselineVarsResolvedAlg` | Computes kinematic variables for the resolved analysis |
-| `BaselineVarsBoostedAlg` | Computes kinematic variables for the resolved analysis |
+| `BaselineVarsResolvedAlg` | Computes kinematic variables for the resolved analysis region |
+| `BaselineVarsSemiBoostedAlg` | Computes kinematic variables for the semi-boosted analysis region |
+| `BaselineVarsBoostedAlg` | Computes kinematic variables for the boosted analysis region |
 | `SmallRJetTriggerSFAlg` | Calculates trigger scale factors for small-R jets |
 | `TriggerDecoratorAlg` | Decorates events with trigger bucket information |
 
@@ -91,6 +95,7 @@ easyjet-gridsubmit --mc-list datasets/HHH6b/mc20_DAOD_PHYS_HHH6b_SMHHH.txt \
 | Option | Description | Default |
 |--------|-------------|---------|
 | `do_resolved_trihiggs` | Enable resolved analysis | `true` |
+| `do_semiboosted_trihiggs` | Enable semi-boosted analysis | `false` |
 | `do_boosted_trihiggs` | Enable boosted analysis | `false` |
 | `pairingStrategy` | Jet pairing method (`minDeltaR` or `minTargetMass`) | `minDeltaR` |
 | `do_trigger_filtering` | Filter events on trigger | `true` |
@@ -118,6 +123,7 @@ Available cuts in `CutList`:
 - `AT_LEAST_FOUR_JETS_OR_TWO_LRJETS`
 - `AT_LEAST_SIX_JETS_OR_THREE_LRJETS`
 - `AT_LEAST_SIX_JETS_FOUR_BJETS`
+- `AT_LEAST_TWO_JETS_AND_TWO_LRJETS`
 - `AT_LEAST_THREE_LRJETS`
 
 ## Output Variables
