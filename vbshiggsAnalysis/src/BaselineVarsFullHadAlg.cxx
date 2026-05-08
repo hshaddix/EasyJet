@@ -83,15 +83,8 @@ StatusCode BaselineVarsFullHadAlg::initialize() {
   ATH_MSG_INFO("       FullHadBaselineVarsAlg    ");
   ATH_MSG_INFO("*********************************");
 
-  // if (m_doResolved){
-  //       ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
-  //       ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
-  //     }
-
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
-  ATH_CHECK(m_metHandle.initialize(m_systematicsList));
   ATH_CHECK(m_vbsLRJetHandle.initialize(m_systematicsList));
-  // ATH_CHECK(m_vbsjetHandle.initialize(m_systematicsList));
   ATH_CHECK (m_vbsElectronHandle.initialize(m_systematicsList));
   ATH_CHECK (m_vbsMuonHandle.initialize(m_systematicsList));
 
@@ -173,13 +166,6 @@ StatusCode BaselineVarsFullHadAlg::execute() {
     
     const xAOD::ElectronContainer *electrons = nullptr;
     ANA_CHECK (m_vbsElectronHandle.retrieve (electrons, sys));
-
-
-    
-    const xAOD::MissingETContainer* metCont = nullptr;
-    ANA_CHECK(m_metHandle.retrieve(metCont, sys));
-    const xAOD::MissingET* met = (*metCont)["Final"];
-    if (!met) return StatusCode::FAILURE;
 
     for (const auto& v : m_floatVariables)
       m_Fbranches.at(v).set(*event, -99.f, sys);

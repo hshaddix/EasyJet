@@ -12,8 +12,6 @@
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
 
-#include <xAODMissingET/MissingETContainer.h>
-
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -62,8 +60,6 @@ private:
   CP::SysReadHandle<xAOD::MuonContainer> m_vbsMuonHandle{ this, "vbsMuons", "vbshiggsAnalysisMuons_%SYS%",   "Muon container to read" };
   CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
   
-  CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
-
   
   CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{
     this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", ""};

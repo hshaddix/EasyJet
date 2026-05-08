@@ -50,8 +50,6 @@ private:
     CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{this, "electrons", "vbshiggsAnalysisElectrons_%SYS%", "Electron container"}; 
     // CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "Muons", "Muon container"}; 
     CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Muon container"}; 
-    // CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "MET", "Missing ET container" }; 
-    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{this, "met", "AnalysisMET_%SYS%", "Missing ET container" };
     CP::SysReadDecorHandle<char> m_passTriggerJET {this, "passTriggerJET", "pass_trigger_JET_%SYS%", "events pass any jet triggers"};
 
     

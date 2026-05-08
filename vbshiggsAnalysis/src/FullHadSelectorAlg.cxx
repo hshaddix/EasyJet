@@ -45,9 +45,7 @@ StatusCode FullHadSelectorAlg::initialize() {
     ATH_CHECK(m_smallJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_largeJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
-    // ATH_CHECK (m_vbsjetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_metHandle.initialize(m_systematicsList));
     if (!m_isBtag.empty() && m_doResolved) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
     }
@@ -73,7 +71,6 @@ StatusCode FullHadSelectorAlg::execute() {
         const xAOD::JetContainer* largeJets = nullptr;
 	const xAOD::ElectronContainer* electrons = nullptr;
 	const xAOD::MuonContainer* muons = nullptr;
-	const xAOD::MissingETContainer* metCont = nullptr;
 	const xAOD::JetContainer *signalJets = nullptr;
 	const xAOD::JetContainer *HJets = nullptr;
 
@@ -90,7 +87,6 @@ StatusCode FullHadSelectorAlg::execute() {
   ANA_CHECK(m_largeJetHandle.retrieve(largeJets, sys));
 	ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
 	ANA_CHECK(m_muonHandle.retrieve(muons, sys));
-	ANA_CHECK(m_metHandle.retrieve(metCont, sys));
 	bool WPgiven = !m_isBtag.empty();
 	std::vector<const xAOD::Jet*> bjets;
 
@@ -100,14 +96,6 @@ StatusCode FullHadSelectorAlg::execute() {
 	      if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets.push_back(jet);
 	    }
 	  }
-	}
-
-
-
-	const xAOD::MissingET* met = (*metCont)["Final"];
-	if (!met) {
-	  ATH_MSG_ERROR("Could not retrieve MET");
-	  return StatusCode::FAILURE;
 	}
 
   for (auto& [key, _] : m_bools) m_bools[key] = false;
