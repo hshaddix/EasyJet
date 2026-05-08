@@ -231,7 +231,6 @@ StatusCode BaselineVarsFullHadAlg::execute() {
   }
 
   
-  // if (m_doResolved){
   //b-jet sector
   ///////////////////////////////// Resolved Higgs->bb candidates /////////////////////////////////////////////
 

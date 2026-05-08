@@ -104,7 +104,6 @@ StatusCode FullHadSelectorAlg::execute() {
 	if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
         if (largeJets->size() == 2) m_bools[PASS_EXACTLY_TWO_LARGE_JETS] = true;
         if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
-        if (largeJets->size() >=3) m_bools[PASS_THREE_LARGE_JETS] = true;
         if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
           m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
         } 
@@ -117,15 +116,6 @@ StatusCode FullHadSelectorAlg::execute() {
   m_passallcuts.set(*event, passAll, sys);
 
   
-
-
-	// for (const auto& [key, name] : m_boolnames) {
-  //           if (m_bools[key]) {
-  //               m_vbshiggsCuts[name].passed = true;
-  //               m_vbshiggsCuts[name].counter++;
-  //           }
-  //       }
-
   if (sys.name() == "" && m_saveCutFlow) {
     m_totalEvents += 1;
     // Count how many configured cuts this event passed.

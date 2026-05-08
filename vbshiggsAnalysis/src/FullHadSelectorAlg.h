@@ -37,14 +37,12 @@ public:
 private:
     CP::SysListHandle m_systematicsList {this};
     CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{this, "event", "EventInfo", "Event info container to read"};
-    // CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{this, "smallJets", "SmallJets", "Signal small jets"};
     CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{this, "smallJets", "vbshiggsAnalysisJets_%SYS%", "Signal small jets"}; 
     CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{ this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", "Signal Jet container to read" };
     CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{ this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", "Higgs Candidates container to read"};
     CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
     CP::SysReadHandle<xAOD::JetContainer> m_vbsjetHandle{ this, "vbsjets", "vbshiggsAnalysisVBSJets_%SYS%", "VBS Jet container to read" };
 
-    // CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "LargeJets", "Large boosted jets"}; 
     CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large boosted jets"}; 
     CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
      CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
@@ -67,7 +65,6 @@ private:
         {PASS_EXACTLY_TWO_LARGE_JETS, "PASS_EXACTLY_TWO_LARGE_JETS"},
         {PASS_EXACTLY_TWO_SMALL_JETS, "PASS_EXACTLY_TWO_SMALL_JETS"},
         {PASS_MORE_THAN_TWO_LARGE_JETS, "PASS_MORE_THAN_TWO_LARGE_JETS"},
-        {PASS_THREE_LARGE_JETS, "PASS_THREE_LARGE_JETS"},
 	    {PASS_LEPTON_VETO, "PASS_LEPTON_VETO"},
         {PASS_TRIGGER, "PASS_TRIGGER"},
         {PASS_ALL_CUTS, "PASS_ALL_CUTS"}

@@ -42,23 +42,6 @@ namespace VBSHIGGS
       ATH_CHECK(m_runBooleans_key.at(runBool).initialize());
     }
 
-    if(m_saveHighLevelVariables) {
-    //   ANA_CHECK(m_ele0_passSET_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_ele1_passSET_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_mu0_passSMT_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_mu1_passSMT_decor.initialize(m_systematicsList, m_eventHandle));
-
-    //   ANA_CHECK(m_ele0_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_ele1_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_mu0_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_mu1_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
-
-    //   ANA_CHECK(m_ele0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_ele1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_mu0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-    //   ANA_CHECK(m_mu1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
-    }
-
     ATH_CHECK (m_systematicsList.initialize());
 
     return StatusCode::SUCCESS;
