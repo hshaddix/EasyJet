@@ -44,8 +44,9 @@ private:
     CP::SysReadHandle<xAOD::JetContainer> m_vbsjetHandle{ this, "vbsjets", "vbshiggsAnalysisVBSJets_%SYS%", "VBS Jet container to read" };
 
     CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large boosted jets"}; 
-    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
-     CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read" };
+    // CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
+    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "vbshiggsAnalysisElectrons_%SYS%", "Original electron container to read" };
+     CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Original muon container to read" };
     CP::SysReadDecorHandle<char> m_passTriggerJET {this, "passTriggerJET", "pass_trigger_JET_%SYS%", "events pass any jet triggers"};
 
     
