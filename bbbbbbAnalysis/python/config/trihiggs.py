@@ -6,6 +6,14 @@ from bbbbbbAnalysis.config.resolved import (
     resolved_trigger_matching_enabled,
 )
 
+from bbbbbbAnalysis.config.semiboosted import (
+    semiboosted_branches, semiboosted_cfg
+)
+
+from bbbbbbAnalysis.config.boosted import (
+    boosted_branches, boosted_cfg
+)
+
 from AthenaConfiguration.ComponentFactory import CompFactory
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches,
@@ -89,7 +97,7 @@ def trihiggs_cfg(
                 minPt=200. * Units.GeV,
                 maxPt=3000. * Units.GeV,
                 maxMass=600. * Units.GeV,
-                maxEta=2.0,
+                maxEta=2.5,
                 jetAmount=-1,  # ignore for now
             )
         )
@@ -140,13 +148,26 @@ def trihiggs_cfg(
         )
         cfg.merge(event_counter_cfg("n_resolved"))
 
-    if flags.Analysis.do_boosted_trihiggs:
-        bbbbbb_extra_branches, float_variable_names = (
-            boosted_branches(flags))  # noqa: F821
+    if flags.Analysis.do_semiboosted_trihiggs:
+        bbbbb_extra_branches, float_variable_names = semiboosted_branches(flags)
         cfg.merge(
-            boosted_cfg(  # noqa: F821
+            semiboosted_cfg(
                 flags,
                 largejetkey=lr10jets_sys,
+                smalljetkey=smalljetkey,
+                btag_WP=btag_name,
+                float_variables=float_variable_names,
+            )
+        )
+
+    if flags.Analysis.do_boosted_trihiggs:
+        bbbbbb_extra_branches, float_variable_names = (
+            boosted_branches(flags))
+        cfg.merge( 
+            boosted_cfg(
+                flags,
+                largejetkey=lr10jets_sys,
+                smalljetkey=smalljetkey,
                 float_variables=float_variable_names,
             )
         )
@@ -154,8 +175,7 @@ def trihiggs_cfg(
 
     if (flags.Analysis.do_resolved_trigger_SF
             or flags.Analysis.do_resolved_trigger_bucket) and (
-                resolved_trigger_matching_enabled(flags)
-            ):
+                resolved_trigger_matching_enabled(flags)):
         cfg.merge(
             JetSelectorAlgCfg(
                 flags, name="SmallJetPreSelectorAlg",

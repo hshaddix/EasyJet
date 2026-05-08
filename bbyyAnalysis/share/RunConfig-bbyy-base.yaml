@@ -11,24 +11,22 @@ do_SH_Analysis: false
 Truth:
   decayModes: ["bbyy"]
 
-# event cleaning flags
-dump_event_cleaning_info: true
-do_ggHbjetFilter: true
-
 # Toggles for object types
 do_small_R_jets: true
 do_muons: true
 do_electrons: true
 do_photons: true
 do_met: true
-do_KinematicFit: true
-extra_KinematicFit_variables: false
 do_Boosted: false
-do_GNN2bjetSelection: true
+do_GNN2bjetSelection: false
+
+## Kinematic fit
+do_KinematicFit: false
+extra_KinematicFit_variables: false
 
 # Toggles for reconstructed objects decorations
 Small_R_jet:
-  min_pT: 25.e+3
+  min_pT: 20.e+3
   useFJvt: true
   # btagging nominal working point
   btag_wp: "GN2v01_FixedCutBEff_85"
@@ -42,9 +40,6 @@ Small_R_jet:
   btag_egReductionB: "Medium"
   btag_egReductionC: "Medium"
   btag_egReductionLight: "Medium"
-
-TopReconstruction:
-  BDT_path: "bbyyAnalysis/model_topRecoBDT.root"
 
 Electron:
   min_pT_bbyy: 10.e+3 # minimum pT of selected electons (for lepton veto). Separate from min pT of electrons used for OR.
@@ -70,6 +65,9 @@ Photon:
     - ["Tight", "FixedCutLoose"]
     - ["Tight", "NonIso"]
     - ["Loose", "FixedCutLoose"]
+  do_truth_matching: true
+  do_extended_truth_decoration: true # set this to true for extending the truth matching variables decorations (works only if do_truth_matching is true)
+  do_conversion_decoration: true
 
 Met:
   saveSignificance: true
@@ -85,6 +83,9 @@ orthogonality:
 # list of triggers per year to consider
 Trigger:
   include: [bbyyAnalysis/trigger.yaml]
+  
+save_pass_trigger_info: true
+  
 # flag for trigger filtering
 do_trigger_filtering: false
 
@@ -101,8 +102,6 @@ store_high_level_variables: false
 #Enable cutflow 
 save_cutflow: false
 CutList: []
-do_resonant_PNN: false
-do_resonant_onebtag: false
 
 # flag that toggles single photon trigger in the cutflow
 # so that PASS_TRIGGER = single || diphoton
@@ -114,48 +113,37 @@ bypass: false
 # flag for event cleaning
 do_event_cleaning: true
 
+# event cleaning flags
+dump_event_cleaning_info: true
+
 # name that will go in the tree bbyy_pass_<selection_name>_%SYS%
 selection_name: "allcuts"
+
+#  choose VBF jets selection method
+VBFjetsMethod: "mjj"
+
+# SH specific analysis flags for PNN
+do_resonant_PNN: false
+do_resonant_onebtag: false
 
 # bdt models used for categorisation and VBF jets selection
 # They should appear in this order lowMass / highMass / VBF jets
 
-do_nonresonant_BDTs: true
-save_VBF_vars: true
-save_extra_vars: true
-save_nonresonant_BDTInput_variables: true
+BDT_path: []
+GNN_path_run2: []
+GNN_path_run3: []
+
+do_nonresonant_BDTs: false
+save_VBF_vars: false
+save_extra_vars: false
+save_nonresonant_BDTInput_variables: false
 save_HbbCand_vars: false
-save_pass_trigger_info: true
+save_pass_trigger_info: false
 
-BDT_path:
-  - "bbyyAnalysis/bdt_legacy_lowMass.root"
-  - "bbyyAnalysis/bdt_legacy_highMass.root"
-  - "bbyyAnalysis/bdt_legacy_vbf_jets.root"
-  - "bbyyAnalysis/bdt_HH2025_KF_no_corr_no_Data2024_run2_lowMass.root" #For Higgs Pairs 2025 version with KF
-  - "bbyyAnalysis/bdt_HH2025_KF_no_corr_no_Data2024_run2_highMass.root"
-  - "bbyyAnalysis/bdt_HH2025_KF_no_corr_no_Data2024_run3_lowMass.root"
-  - "bbyyAnalysis/bdt_HH2025_KF_no_corr_no_Data2024_run3_highMass.root"
-  - "bbyyAnalysis/bdt_HH2025_KF_no_corr_Data2024_run3_lowMass.root" #Run 3 model with 2024 included
-  - "bbyyAnalysis/bdt_HH2025_KF_no_corr_Data2024_run3_highMass.root"
-  - "bbyyAnalysis/bdt_HH2025_KF_corr_no_Data2024_lowMass.root" #Run 2 and 3 combined model
-  - "bbyyAnalysis/bdt_HH2025_KF_corr_no_Data2024_highMass.root"
-  - "bbyyAnalysis/bdt_HH2025_KF_corr_Data2024_lowMass.root" #Run 2 and 3 combined model with 2024
-  - "bbyyAnalysis/bdt_HH2025_KF_corr_Data2024_highMass.root"
-  - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run2_lowMass.root" #For Higgs Pairs 2025 version without KF
-  - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run2_highMass.root"
-  - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run3_lowMass.root"
-  - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run3_highMass.root"
+save_detailed_Input_variables: false
+do_Hyy_multiclass: false
 
-GNN_path_run2:
-  - "bbyyAnalysis/GNN_ggFTarget_run2.onnx"
-  - "bbyyAnalysis/GNN_VBFTarget_run2.onnx"
-
-GNN_path_run3:
-  - "bbyyAnalysis/GNN_ggFTarget_run3.onnx"
-  - "bbyyAnalysis/GNN_VBFTarget_run3.onnx"
-
-#  choose VBF jets selection method
-VBFjetsMethod: "mjj" # "mjj" "pTsorting"
+always_do_CBK_systematics: false
 
 #Use a dedicated GRL for bbyy due to photon triggers
 GRL:
@@ -174,9 +162,3 @@ PileupReweighting:
 
 ttree_output:
   include: [bbyy-base-output.yaml]
-
-do_HHbbyy_Hyy_Analysis: false
-save_detailed_Input_variables: false
-do_Hyy_multiclass: false
-
-always_do_CBK_systematics: true

@@ -55,11 +55,8 @@ namespace HH4B
       ATH_CHECK(m_ThresholdsDecorKey.at(trig).initialize());
       // initialize write handle to write a single matched threshold after event-level ambiguity resolution
       m_Threshold.emplace(
-          trig,
-          CP::SysWriteDecorHandle<int>(
-              this, modifiedTrigName + m_matchingLevel + "threshold",
-              modifiedTrigName + "_" + m_matchingLevel + "threshold_%SYS%",
-                    "Trigger threshold for applying trigger SF"));
+          trig, CP::SysWriteDecorHandle<int>(
+              modifiedTrigName + "_" + m_matchingLevel + "threshold_%SYS%", this));
       ATH_CHECK(m_Threshold.at(trig).initialize(m_systematicsList, m_outJetHandle));
       // initialize read handle to read back the single matched threshold
       m_Thresholdread.emplace(
@@ -67,25 +64,15 @@ namespace HH4B
       ATH_CHECK(m_Thresholdread.at(trig).initialize(m_systematicsList, m_inJetHandle));
       // initialize SF write handles
       m_jetSF.emplace(
-          trig, CP::SysWriteDecorHandle<float>(
-                    this, modifiedTrigName + m_matchingLevel + "SF",
-                    modifiedTrigName + "_" + m_matchingLevel + "SF_%SYS%",
-                    "jet-level jet trigger SF"));
+          trig, CP::SysWriteDecorHandle<float>(modifiedTrigName + "_" + m_matchingLevel + "SF_%SYS%", this));
       m_jetSFStatsUp.emplace(
-          trig,
-          CP::SysWriteDecorHandle<float>(
-              this, modifiedTrigName + m_matchingLevel + "SFStatsUp",
-              modifiedTrigName + "_" + m_matchingLevel + "SF_stats__1up",
-              "jet-level jet trigger SF stats uncertainty up"));
+          trig, CP::SysWriteDecorHandle<float>(modifiedTrigName + "_" + m_matchingLevel + "SF_stats__1up", this));
       m_jetSFSystUp.emplace(
-          trig,
-          CP::SysWriteDecorHandle<float>(
-              this, modifiedTrigName + m_matchingLevel + "SFSystUp",
-              modifiedTrigName + "_" + m_matchingLevel + "SF_syst__1up",
-              "jet-level jet trigger SF syst uncertainty up"));
+          trig, CP::SysWriteDecorHandle<float>(modifiedTrigName + "_" + m_matchingLevel + "SF_syst__1up", this));
       ATH_CHECK(m_jetSF.at(trig).initialize(m_systematicsList, m_outJetHandle));
       ATH_CHECK(m_jetSFStatsUp.at(trig).initialize(m_systematicsList, m_outJetHandle));
       ATH_CHECK(m_jetSFSystUp.at(trig).initialize(m_systematicsList, m_outJetHandle));
+
       m_eventSFKey.emplace(trig, m_eventHandle.getNamePattern() + ".trigSF_" + modifiedTrigName + "_" + m_matchingLevel + "SF");
       m_eventSFStatsUpKey.emplace(trig, m_eventHandle.getNamePattern() + ".trigSF_" + modifiedTrigName + "_" + m_matchingLevel + "SF_stats__1up");
       m_eventSFSystUpKey.emplace(trig, m_eventHandle.getNamePattern() + ".trigSF_" + modifiedTrigName + "_" + m_matchingLevel + "SF_syst__1up");

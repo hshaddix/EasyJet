@@ -13,6 +13,7 @@ from EasyjetHub.output.ttree.jet_decor_config import (
 )
 from EasyjetHub.output.ttree.electron_decor_config import electron_decor_config
 from EasyjetHub.output.ttree.muon_decor_config import muon_track_decor_config
+from EasyjetHub.output.ttree.photon_decor_config import photon_decor_config
 
 from EasyjetHub.algs.calibration.muons import muon_sequence
 from EasyjetHub.algs.calibration.electrons import electron_sequence
@@ -73,6 +74,9 @@ def cpalgs_cfg(flags):
     if flags.Analysis.do_muons:
         if flags.Analysis.Muon.do_track_decoration:
             cfg.merge(muon_track_decor_config(flags))
+
+    if flags.Analysis.do_photons:
+        cfg.merge(photon_decor_config(flags))
 
     if flags.Analysis.Large_R_jet.wtag_type and flags.Analysis.Large_R_jet.wtag_wp:
         cfg.merge(wtag_decor_cfg(flags))

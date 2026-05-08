@@ -5,6 +5,7 @@
 /// @author Can Suslu 
 
 #include "BaselineVarsResolvedAlg.h"
+#include "TopologyUtils.h"
 #include "AthContainers/AuxElement.h"
 #include "FourMomUtils/xAODP4Helpers.h"
 #include <AthenaKernel/Units.h>
@@ -21,48 +22,6 @@
 
 namespace HHH6B
 {
-  namespace
-  {
-    std::array<double, 3> momentumTensorEigenvaluesDesc(const std::vector<TLorentzVector>& jetMomentum)
-    {
-      std::array<double, 3> eigenvals_arr{{0.0, 0.0, 0.0}};
-      if (jetMomentum.empty()) return eigenvals_arr;
-
-      TMatrixD tensor(3, 3);
-      double totalSum = 0.0;
-
-      for (const auto& jet : jetMomentum) {
-        const TVector3 mom = jet.Vect();
-        totalSum += mom.Mag2();
-
-        for (int i = 0; i < 3; ++i) {
-          for (int j = 0; j < 3; ++j) {
-            tensor[i][j] += mom[i] * mom[j];
-          }
-        }
-      }
-
-      if (totalSum <= 0.0) return eigenvals_arr;
-
-      tensor *= 1.0 / totalSum;
-
-      TVectorD eigenvals;
-      tensor.EigenVectors(eigenvals);
-
-      for (int i = 0; i < 2; ++i) {
-        for (int j = i + 1; j < 3; ++j) {
-          if (eigenvals[j] > eigenvals[i]) {
-            std::swap(eigenvals[i], eigenvals[j]);
-          }
-        }
-      }
-
-      eigenvals_arr[0] = eigenvals[0];
-      eigenvals_arr[1] = eigenvals[1];
-      eigenvals_arr[2] = eigenvals[2];
-      return eigenvals_arr;
-    }
-  }
 
   BaselineVarsResolvedAlg ::BaselineVarsResolvedAlg(const std::string &name,
                                                     ISvcLocator *pSvcLocator)
@@ -211,11 +170,12 @@ namespace HHH6B
           jetMomenta.push_back(jetMom);
           totalEnergy += jetMom.E();
         }
-        
-        float thrust_value = calculateThrust(jetMomenta, totalEnergy);
-        float sphericity_value = calculateSphericity(jetMomenta);
-        float planarity_value = calculatePlanarity(jetMomenta);
-        float aplanarity_value = calculateAplanarity(jetMomenta);
+      
+        float thrust_value = HHH6B::calculateThrust(jetMomenta, totalEnergy);
+        float sphericity_value = HHH6B::calculateSphericity(jetMomenta);
+        float transversesphericity_value = HHH6B::calculateTransverseSphericity(jetMomenta);
+        float planarity_value = HHH6B::calculatePlanarity(jetMomenta);
+        float aplanarity_value = HHH6B::calculateAplanarity(jetMomenta);
         
         // Store computed variables as decorations
         m_decos.at("resolved_DeltaR12_" + m_bTagWP).set(*eventInfo, deltaR12, sys);
@@ -268,6 +228,7 @@ namespace HHH6B
         // Jet event shape decorations
         m_decos.at("resolved_Thrust_" + m_bTagWP).set(*eventInfo, thrust_value, sys);
         m_decos.at("resolved_Sphericity_" + m_bTagWP).set(*eventInfo, sphericity_value, sys);
+        m_decos.at("resolved_TransverseSphericity_" + m_bTagWP).set(*eventInfo, transversesphericity_value, sys);
         m_decos.at("resolved_Planarity_" + m_bTagWP).set(*eventInfo, planarity_value, sys);
         m_decos.at("resolved_Aplanarity_" + m_bTagWP).set(*eventInfo, aplanarity_value, sys);
         
@@ -402,69 +363,4 @@ namespace HHH6B
     return StatusCode::SUCCESS;
   }
 
-  float BaselineVarsResolvedAlg::calculateThrust(const std::vector<TLorentzVector>& jetMomentum, float totalEnergy) 
-  {
-    if (jetMomentum.empty()) return 0.0;
-    (void)totalEnergy;  // Suppress unused parameter warning
-
-    // Transform jets to 3-momentum for thrust calculation
-    float sumP = 0.0;
-    std::vector<TVector3> jetMomenta;
-    for (const auto& jet : jetMomentum) {
-      TVector3 mom_vec = jet.Vect();
-      jetMomenta.push_back(mom_vec);
-      sumP += mom_vec.Mag();
-    }
-    
-    if (sumP <= 0.0) return 0.0;
-
-    // Find thrust direction by maximizing momentum projections
-    // This is a simplified approach - for truly accurate thrust, use iterative optimization
-    float maxThrust = 0.0;
-    
-    // Check multiple directions on unit sphere
-    for (int phi = 0; phi < 360; phi += 30) {
-      for (int theta = 0; theta < 180; theta += 30) {
-        float phi_rad = phi * TMath::Pi() / 180.0;
-        float theta_rad = theta * TMath::Pi() / 180.0;
-        
-        TVector3 thrust_dir(std::sin(theta_rad) * std::cos(phi_rad),
-                           std::sin(theta_rad) * std::sin(phi_rad),
-                           std::cos(theta_rad));
-        
-        float thrust_sum = 0.0;
-        for (const auto& momentum : jetMomenta) {
-          thrust_sum += std::abs(momentum.Dot(thrust_dir));
-        }
-        
-        maxThrust = std::max(maxThrust, thrust_sum);
-      }
-    }
-    
-    return maxThrust / sumP;
-  }
-
-  float BaselineVarsResolvedAlg::calculateSphericity(const std::vector<TLorentzVector>& jetMomentum) 
-  {
-    const auto eigenvals = momentumTensorEigenvaluesDesc(jetMomentum);
-    // Sphericity = 1.5 * (lambda2 + lambda3)
-    const double sphericity = 1.5 * (eigenvals[1] + eigenvals[2]);
-    return static_cast<float>(sphericity);
-  }
-
-  float BaselineVarsResolvedAlg::calculatePlanarity(const std::vector<TLorentzVector>& jetMomentum) 
-  {
-    const auto eigenvals = momentumTensorEigenvaluesDesc(jetMomentum);
-    // Planarity = 1.5 * lambda2
-    const double planarity = 1.5 * eigenvals[1];
-    return static_cast<float>(planarity);
-  }
-
-  float BaselineVarsResolvedAlg::calculateAplanarity(const std::vector<TLorentzVector>& jetMomentum) 
-  {
-    const auto eigenvals = momentumTensorEigenvaluesDesc(jetMomentum);
-    // Aplanarity = 1.5 * lambda3 (same as planarity)
-    const double aplanarity = 1.5 * eigenvals[2];
-    return static_cast<float>(aplanarity);
-  }
 }

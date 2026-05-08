@@ -14,10 +14,13 @@ add_compile_options(-Werror)
 # Build the Athena component library
 atlas_add_component(bbbbbbAnalysis
   src/BaselineVarsResolvedAlg.cxx
+  src/BaselineVarsSemiBoostedAlg.cxx
+  src/BaselineVarsBoostedAlg.cxx
   src/bbbbbbSelectorAlg.cxx
   src/SmallRJetTriggerSFAlg.cxx
   src/TriggerDecoratorAlg.cxx
   src/JetPairingAlg.cxx
+  src/TopologyUtils.cxx
   src/components/bbbbbbAnalysis_entries.cxx
   LINK_LIBRARIES
   AthenaBaseComps

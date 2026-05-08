@@ -9,7 +9,8 @@ from EasyjetHub.output.ttree.selected_objects import (
 
 
 def resolved_trigger_matching_enabled(flags) -> bool:
-    """L1 and/or HLT small-R trigger matching; required for bucket / SF algs and ntuple aux."""
+    """L1 and/or HLT small-R trigger matching;
+       required for bucket / SF algs and ntuple aux."""
     return (
         flags.Analysis.Small_R_jet.doL1Matching
         or flags.Analysis.Small_R_jet.doHLTMatching
@@ -158,6 +159,7 @@ def _resolved_kinematic_vars():
         "MassDiff34vs56",
         "Thrust",
         "Sphericity",
+        "TransverseSphericity",
         "Planarity",
         "Aplanarity",
         "jet_pairing_indices",

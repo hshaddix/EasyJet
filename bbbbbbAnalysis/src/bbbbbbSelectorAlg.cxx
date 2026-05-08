@@ -378,11 +378,17 @@ namespace HHH6B
     if (nBJets >= 6 && bbbbbbCuts.exists("AT_LEAST_SIX_BJETS"))
       bbbbbbCuts("AT_LEAST_SIX_BJETS").passed = true;
 
+    if ((nResolvedJets >= 6 && nBJets >= 4) && bbbbbbCuts.exists("AT_LEAST_SIX_JETS_FOUR_BJETS"))
+      bbbbbbCuts("AT_LEAST_SIX_JETS_FOUR_BJETS").passed = true;
+
     if ((nBoostedJets >= 3 || nResolvedJets >= 6) && bbbbbbCuts.exists("AT_LEAST_SIX_JETS_OR_THREE_LRJETS"))
       bbbbbbCuts("AT_LEAST_SIX_JETS_OR_THREE_LRJETS").passed = true;
 
-    if ((nResolvedJets >= 6 && nBJets >= 4) && bbbbbbCuts.exists("AT_LEAST_SIX_JETS_FOUR_BJETS"))
-      bbbbbbCuts("AT_LEAST_SIX_JETS_FOUR_BJETS").passed = true;
+    if ((nBoostedJets >= 3) && bbbbbbCuts.exists("AT_LEAST_THREE_LRJETS"))
+      bbbbbbCuts("AT_LEAST_THREE_LRJETS").passed = true;
+
+    if ((nBoostedJets == 2 && nResolvedJets >= 2) && bbbbbbCuts.exists("AT_LEAST_TWO_JETS_AND_TWO_LRJETS"))
+      bbbbbbCuts("AT_LEAST_TWO_JETS_AND_TWO_LRJETS").passed = true;
 
   }
 
