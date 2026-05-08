@@ -65,6 +65,9 @@ Photon:
     - ["Tight", "FixedCutLoose"]
     - ["Tight", "NonIso"]
     - ["Loose", "FixedCutLoose"]
+  do_truth_matching: true
+  do_extended_truth_decoration: true # set this to true for extending the truth matching variables decorations (works only if do_truth_matching is true)
+  do_conversion_decoration: true
 
 Met:
   saveSignificance: true

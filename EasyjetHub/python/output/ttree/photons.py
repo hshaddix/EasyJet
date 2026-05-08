@@ -60,6 +60,28 @@ def get_photon_branches(flags, tree_flags, input_container, output_prefix):
             (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
         ]
+    
+    if flags.Input.isMC and flags.Analysis.Photon.do_truth_matching:
+        photon_branches.variables += [
+            ("truth_pdgId", "int"),
+            ("truth_parent_pdgId", "int"),
+        ]
+        if flags.Analysis.Photon.do_extended_truth_decoration:
+            photon_branches.variables += [
+                ("truth_pt", "float"),
+                ("truth_E", "float"),
+                ("truth_eta", "float"),
+                ("truth_phi", "float"),
+                ("truth_convRadius", "float"),
+            ]
+
+    if flags.Analysis.Photon.do_conversion_decoration:
+        photon_branches.variables += [
+            ("convRadius", "float"),
+            ("isConv", "int"),
+            ("convType", "int")
+        ]
+
 
     # Requires PhotonSelectorAlg to be run
     if ph_output_flags.run_selection:

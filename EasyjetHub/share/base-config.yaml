@@ -139,6 +139,9 @@ Photon:
   extra_wps: []
   forceFullSimConfigForID: false
   forceFullSimConfigForIso: false
+  do_truth_matching: false
+  do_conversion_decoration: false
+  do_extended_truth_decoration: false
 
 Electron:
   min_pT: 4.5e+3

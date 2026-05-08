@@ -17,6 +17,7 @@
 #include "../TruthWBosonInformationAlg.h"
 #include "../MetadataHistAlg.h"
 #include "../ElectronDecoratorAlg.h"
+#include "../PhotonDecoratorAlg.h"
 #include "../MuonTrackDecoratorAlg.h"
 #include "../LeptonOrderingAlg.h"
 #include "../TruthLeptonOrderingAlg.h"
@@ -50,6 +51,7 @@ DECLARE_COMPONENT(SumOfWeightsAlg)
 DECLARE_COMPONENT(TruthWBosonInformationAlg)
 DECLARE_COMPONENT(MetadataHistAlg)
 DECLARE_COMPONENT(ElectronDecoratorAlg)
+DECLARE_COMPONENT(PhotonDecoratorAlg)
 DECLARE_COMPONENT(MuonTrackDecoratorAlg)
 DECLARE_COMPONENT(LeptonOrderingAlg)
 DECLARE_COMPONENT(TruthLeptonOrderingAlg)
