@@ -11,6 +11,7 @@
 #include <SystematicsHandles/SysReadDecorHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
 #include <xAODEventInfo/EventInfo.h>
+#include <AthContainers/AuxElement.h>
 #include <memory>
 #include <optional>
 #include <string>

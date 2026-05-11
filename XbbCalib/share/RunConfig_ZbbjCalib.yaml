@@ -12,6 +12,10 @@ do_ZtautauCalib: false
 # Toggles to bypass event selection
 bypass: false
 
+# If true: veto Z->cc events in Zqq samples (Zqq/Zcc OR); Zcc-dedicated sample untouched; z_is_cc branch omitted from the ntuple.
+# If false: all events stored, z_is_cc branch saved (useful for OR validation and debugging).
+remove_zcc_overlap: true
+
 # Toggles for object types
 do_large_R_UFO_jets: true
 do_small_R_jets: true

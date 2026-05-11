@@ -30,6 +30,8 @@ namespace XBBCALIB
     m_accBjrPt = std::make_unique<SG::AuxElement::ConstAccessor<float>>(m_bjrPtName);
     m_accBjrMass = std::make_unique<SG::AuxElement::ConstAccessor<float>>(m_bjrMassName);
 
+    if (m_remove_zcc_overlap) m_isCC_acc.emplace("z_is_cc");
+
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize());
 
@@ -57,6 +59,12 @@ namespace XBBCALIB
 
       // Create output view container (always written, even if event fails)
       auto ordered = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
+
+      // Veto Z->cc events from Zqq samples (Zcc/Zqq overlap removal)
+      if (m_isCC_acc && (*m_isCC_acc)(*event) == 1) {
+        ANA_CHECK (m_outHandle.record (std::move(ordered), sys));
+        continue;
+      }
 
       // Jets arrive sorted by calorimeter pT from JetSelectorAlg
 
