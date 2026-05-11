@@ -92,11 +92,8 @@ def ttCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
 
 def get_BaselineVarsttCalibAlg_variables(flags):
 
-    # float_variable_names = ["dRJetLep"]
     float_variable_names = ["TagJet_Lepton1_m", "dR_TagJet_Lepton1"]
-    # I feel like more is missing, like mu or el, lep n, idk what esle
-    # int_variable_names = ["ProbeJet_truthid", "lrjets_n"]
-    int_variable_names = []
+    int_variable_names = ["nElectrons", "nMuons"]
 
     for object in ["ProbeJet", "TagJet", "Lepton"]:
         for var in ["pt", "eta", "phi", "m"]:
@@ -113,7 +110,7 @@ def get_BaselineVarsttCalibAlg_variables(flags):
     ]
     if flags.Input.isMC:
         float_variable_names += ["Lepton1_effSF"]
-    # What is the differnce between tag_lep_m& just lep?
+        int_variable_names += ["ProbeJet_R10TruthLabel_R22v1"]
     return float_variable_names, int_variable_names
 
 

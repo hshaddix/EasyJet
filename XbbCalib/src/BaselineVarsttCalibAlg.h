@@ -92,8 +92,9 @@ private:
     CP::SysWriteDecorHandle<float> m_tagjet_lep_m{"TagJet_Lepton1_m_%SYS%",
                                                   this};
     CP::SysWriteDecorHandle<float> m_dRJetLep{"dR_TagJet_Lepton1_%SYS%", this};
-
-
+    // ints
+    CP::SysWriteDecorHandle<int> m_nEl{"nElectrons_%SYS%", this};
+    CP::SysWriteDecorHandle<int> m_nMu{"nMuons_%SYS%", this};
 
     // Setting up the simplified method
     Gaudi::Property<std::string> m_copied_variable_prefix0{
