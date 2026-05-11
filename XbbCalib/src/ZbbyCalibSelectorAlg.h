@@ -20,6 +20,8 @@
 #include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/PhotonContainer.h>
+#include <AthContainers/AuxElement.h>
+#include <optional>
 
 namespace XBBCALIB
 {
@@ -39,6 +41,11 @@ namespace XBBCALIB
       StatusCode finalize() override; ///I added this to write the cutflow histogram.
 
     private :
+      Gaudi::Property<bool> m_remove_zcc_overlap
+        { this, "remove_zcc_overlap", false,
+          "Veto Z->cc events when running on Zqq samples (OR with Zcc-dedicated sample)" };
+      std::optional<SG::AuxElement::ConstAccessor<int>> m_isCC_acc;
+
       /// \brief Setup syst-aware input container handles
       CP::SysListHandle m_systematicsList {this};
 

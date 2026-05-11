@@ -16,6 +16,7 @@
 #include "../ZllyCalibSelectorAlg.h"
 #include "../ZtautauCalibSelectorAlg.h"
 #include "../ZbbHistogramAlg.h"
+#include "../ZDecayTruthLabelAlg.h"
 
 DECLARE_COMPONENT(DataEnrichmentAlg)
 
@@ -38,3 +39,4 @@ DECLARE_COMPONENT(ZlljCalibSelectorAlg)
 DECLARE_COMPONENT(ZllyCalibSelectorAlg)
 DECLARE_COMPONENT(ZtautauCalibSelectorAlg)
 DECLARE_COMPONENT(XBBCALIB::ZbbHistogramAlg)
+DECLARE_COMPONENT(XBBCALIB::ZDecayTruthLabelAlg)

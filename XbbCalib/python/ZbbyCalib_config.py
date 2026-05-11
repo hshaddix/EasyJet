@@ -10,6 +10,7 @@ from EasyjetHub.output.ttree.selected_objects import (
 )
 
 from .vars_to_copy import lrj_floats_to_copy, lrj_gn3x_working_points
+from .zdecay_label_config import ZDecayTruthLabelAlgCfg, truth_z_decay_int_vars, is_zqq_sample
 from XbbCalib.hists_output_config import hists_output_cfg
 
 copiedVariablePrefix0 = "Zcand_0_"
@@ -45,12 +46,15 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
                                    minPt=flags.Analysis.Photon.min_pT,
                                    ))
 
+    cfg.merge(ZDecayTruthLabelAlgCfg(flags))
+
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.ZbbyCalibSelectorAlg(
             "ZbbyCalibSelectorAlg",
             lrjets=selected_large_r_jets,
             photons=selected_photons,
             eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
+            remove_zcc_overlap=flags.Analysis.remove_zcc_overlap and is_zqq_sample(flags),
         )
     )
     # signal jets selection
@@ -107,6 +111,7 @@ def get_BaselineVarsZbbyCalibAlg_variables(flags):
         for x in lrj_gn3x_working_points(flags)
         for p in (copiedVariablePrefix0, copiedVariablePrefix1)
     ]
+    int_variable_names += truth_z_decay_int_vars(flags)
 
     return float_variable_names, int_variable_names
 
@@ -134,11 +139,16 @@ def ZbbyCalib_branches(flags):
     float_variable_names += baseline_float_variables
     int_variable_names += baseline_int_variables
 
-    all_baseline_variable_names += [*float_variable_names, *int_variable_names]
-
+    nosys_variable_names = set(truth_z_decay_int_vars(flags))
+    all_baseline_variable_names += [
+        v for v in [*float_variable_names, *int_variable_names]
+        if v not in nosys_variable_names
+    ]
     for var in all_baseline_variable_names:
         branches += [f"EventInfo.{var}_%SYS% -> ZbbyCalib_{var}"
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]
+    for var in [v for v in int_variable_names if v in nosys_variable_names]:
+        branches += [f"EventInfo.{var} -> ZbbyCalib_{var} type=int"]
 
     # These are the variables always saved with the objects selected by the analysis
     # This is tunable with the flags amount and variables

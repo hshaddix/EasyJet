@@ -33,12 +33,14 @@ atlas_add_component(XbbCalib
   src/FinalSelectionAlg.cxx
   src/FinalWeightAlg.cxx
   src/ZbbHistogramAlg.cxx
+  src/ZDecayTruthLabelAlg.cxx
 
   LINK_LIBRARIES
   AthenaBaseComps
   AsgTools
   AthContainers
   xAODEventInfo
+  xAODTruth
   xAODEgamma
   xAODMuon
   xAODJet
@@ -69,6 +71,7 @@ atlas_install_python_modules(
   python/ZllyCalib_config.py
   python/ZtautauCalib_config.py
   python/vars_to_copy.py
+  python/zdecay_label_config.py
   python/hists_output_config.py
   python/tag_meta_cfg.py
 )

@@ -21,6 +21,7 @@
 
 #include <AthContainers/AuxElement.h>
 #include <AthContainers/ConstDataVector.h>
+#include <optional>
 
 namespace XBBCALIB
 {
@@ -38,6 +39,11 @@ namespace XBBCALIB
     private :
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run selector algorithm in pass-through mode" };
+
+      Gaudi::Property<bool> m_remove_zcc_overlap
+        { this, "remove_zcc_overlap", false,
+          "Veto Z->cc events when running on Zqq samples (OR with Zcc-dedicated sample)" };
+      std::optional<SG::AuxElement::ConstAccessor<int>> m_isCC_acc;
 
       // BJR decoration names
       Gaudi::Property<std::string> m_bjrPtName

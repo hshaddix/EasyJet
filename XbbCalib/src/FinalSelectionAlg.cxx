@@ -11,6 +11,7 @@ struct cutvals_t {
   // all the cuts are stored in this structure so you don't have to
   // edit a header file to add one
   std::optional<int64_t> n_lrjets_min;
+  std::optional<SG::AuxElement::ConstAccessor<int>> veto_z_is_cc;
 };
 
 FinalSelectionAlg::FinalSelectionAlg(const std::string& name, ISvcLocator* sl)
@@ -42,6 +43,9 @@ StatusCode FinalSelectionAlg::initialize() {
   auto& c = *m_cuts;
   if (auto v = pop_if_contains("n_lrjets_min")) {
     c.n_lrjets_min = v->as_int64();
+  }
+  if (auto v = pop_if_contains("veto_z_is_cc"); v && v->as_bool()) {
+    c.veto_z_is_cc.emplace("z_is_cc");
   }
 
   // make sure keys aren't unconsumed
@@ -83,6 +87,10 @@ StatusCode FinalSelectionAlg::execute() {
     const auto& c = *m_cuts;
     if (auto v = c.n_lrjets_min) {
       pass = pass && (m_lrjetsNHandle->get(*event, sys) >= *v);
+    }
+
+    if (c.veto_z_is_cc) {
+      pass = pass && ((*c.veto_z_is_cc)(*event) == 0);
     }
 
     if (m_blindingHandle) {

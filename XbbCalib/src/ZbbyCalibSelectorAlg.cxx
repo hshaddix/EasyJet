@@ -28,8 +28,10 @@ namespace XBBCALIB
     ATH_CHECK (m_photonHandle.initialize(m_systematicsList));
 
 
+    if (m_remove_zcc_overlap) m_isCC_acc.emplace("z_is_cc");
+
     // Intialise syst list (must come after all syst-aware inputs and outputs)
-    ATH_CHECK (m_systematicsList.initialize()); 
+    ATH_CHECK (m_systematicsList.initialize());
 
     return StatusCode::SUCCESS;
   }
@@ -49,6 +51,9 @@ namespace XBBCALIB
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
       ANA_CHECK (m_eventHandle.retrieve (event, sys));
+
+      // Veto Z->cc events from Zqq samples (Zcc/Zqq overlap removal)
+      if (m_isCC_acc && (*m_isCC_acc)(*event) == 1) continue;
 
       const xAOD::JetContainer *lrjets = nullptr;
       ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys));
