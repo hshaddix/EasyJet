@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 */
 
@@ -97,7 +97,7 @@ namespace VBSSEMILEP{
                     if (jet1->eta() * jet2->eta() >= 0 ) continue;
                     
                     double mjj = (jet1->p4() + jet2->p4()).M();
-                    double eta_gap = jet1->p4().Eta() - jet2->p4().Eta();
+                    double eta_gap = std::abs (jet1->p4().Eta() - jet2->p4().Eta());
                     if (mjj < 150*Athena::Units::GeV) continue;
                     // Always accept first valid pair
                     if (mjj > maxMjj) {

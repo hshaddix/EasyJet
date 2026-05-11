@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration   
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration   
 */
 
 #include "TriggerDecoratorAlg.h"
@@ -97,12 +97,12 @@ namespace VBSSEMILEP
       evaluateTriggerCuts(event, runBoolDecos, electrons, muons, sys);
       
 
+      // check if trigger is fired or not
+      checkSingleJetTrigger(event, sys);
+      
       for (auto& [channel, var] : m_trig_bools) {
         m_trig_branches.at(channel).set(*event, var, sys);
       }
-      
-      // check if trigger is fired or not
-      checkSingleJetTrigger(event, sys);
 
       // check trigger matching
       //for(auto jet : *jets )
@@ -204,7 +204,7 @@ namespace VBSSEMILEP
 
     if(m_saveHighLevelVariables) {
       // Store the output as decorators which will be written into the nTuples
-       m_ele0_passSET_decor.set(*event, ele0_passSET, sys);
+      m_ele0_passSET_decor.set(*event, ele0_passSET, sys);
       m_ele1_passSET_decor.set(*event, ele1_passSET, sys);
       m_mu0_passSMT_decor.set(*event, mu0_passSMT, sys);
       m_mu1_passSMT_decor.set(*event, mu1_passSMT, sys);
