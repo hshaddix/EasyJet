@@ -45,6 +45,12 @@ namespace XBBCALIB
         this, m_ints_to_copy, m_systematicsList, m_ttcalib_lrjetHandle,
         m_eventHandle, m_copied_variable_prefix0);
 
+    ATH_CHECK(m_tagjet_lep_m.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_dRJetLep.initialize(m_systematicsList, m_eventHandle));
+
+    ATH_CHECK(m_nEl.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_nMu.initialize(m_systematicsList, m_eventHandle));
+
     if (m_isMC)
     {
 
@@ -61,14 +67,14 @@ namespace XBBCALIB
 
       // initialize the scale factos from AnalysisElectrons and AnalysisMuons
       // initialize the scale factos from AnalysisElectrons and AnalysisMuons
-      // NOTE: use the `electronHandle` and `muonHandle` here because scale factor
-      // systematics are not registered on the `ttcalib_*` handles. We have to read
-      // from the original `Analysis*` lepton containers to pick up the systematics.
+      // NOTE: use the `electronHandle` and `muonHandle` here because scale
+      // factor systematics are not registered on the `ttcalib_*` handles. We
+      // have to read from the original `Analysis*` lepton containers to pick
+      // up the systematics.
       ATH_CHECK(m_ele_SF.initialize(m_systematicsList, m_electronHandle));
       ATH_CHECK(m_mu_SF.initialize(m_systematicsList, m_muonHandle));
       ATH_CHECK(m_Lepton1_effSF.initialize(m_systematicsList, m_eventHandle));
-      ATH_CHECK(m_tagjet_lep_m.initialize(m_systematicsList, m_eventHandle));
-      ATH_CHECK(m_dRJetLep.initialize(m_systematicsList, m_eventHandle));
+
       // ATH_CHECK(
       //     m_ProbeJet_TruthLabel.initialize(m_systematicsList,
       //     m_eventHandle));
@@ -131,6 +137,9 @@ namespace XBBCALIB
       const xAOD::Jet *probejet = nullptr;
       float minDeltaR = std::numeric_limits<float>::max(); // Why max?
 
+      m_nEl.set(*event, nElectrons, sys);
+      m_nMu.set(*event, nMuons, sys);
+
       if (isSingleMuonEvent)
       {
         lepton = muons->at(0)->p4();
@@ -176,11 +185,6 @@ namespace XBBCALIB
         m_TagJet_candidate_4vec->set(*event, *tagjet, sys);
 
         m_Lepton_candidate_4vec->set(*event, lepton, sys);
-        // if (m_isMC)
-        // {
-        //   int truthLabel = m_probeJetTruthLabel.get(*probejet, sys);
-        //   m_ProbeJet_TruthLabel.set(*event, truthLabel, sys);
-        // }
 
         float tag_lep_m = (tagjet->p4() + lepton).M();
         m_tagjet_lep_m.set(*event, tag_lep_m, sys);
@@ -197,10 +201,10 @@ namespace XBBCALIB
 
         m_Lepton_candidate_4vec->setDefault(*event, sys);
 
-        // if (m_isMC)
+        m_tagjet_lep_m.set(*event, -99., sys);
+        m_dRJetLep.set(*event, -99., sys); // why min but above max?
       }
     }
-
     return StatusCode::SUCCESS;
   }
 } // namespace XBBCALIB
