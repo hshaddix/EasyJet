@@ -32,7 +32,7 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
 
     if flags.Analysis.do_primary_vertex_pos:
         eventinfo_branches.variables += [
-            (f"{ref}Pos{var}", None)
+            (f"{ref}Pos{var}", "float")
             for var in ["X", "Y", "Z"]
             for ref in ["beam", "PrimaryVertex"]
         ]
