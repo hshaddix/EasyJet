@@ -31,7 +31,6 @@ namespace VBSHIGGS{
 
     ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
     ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_metHandle.initialize(m_systematicsList));
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
 
     for (auto& [key, value] : m_boolnames) {
@@ -68,8 +67,6 @@ namespace VBSHIGGS{
       const xAOD::ElectronContainer *electrons = nullptr;
       ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
 
-      const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
       
       const xAOD::JetContainer *signaljets = nullptr;
       ANA_CHECK (m_signaljetHandle.retrieve (signaljets, sys));
@@ -91,22 +88,60 @@ namespace VBSHIGGS{
         }
       }
 
-      const xAOD::MissingET* met = (*metCont)["Final"];
-      if (!met) {
-        ATH_MSG_ERROR("Could not retrieve MET");
-        return StatusCode::FAILURE;
-      }
-
+      // TRIGGER selection
       for (auto& [key, value] : m_boolnames) m_bools.at(key) = false;
 
       if (!m_passTriggerSLT.empty() and m_passTriggerSLT.get(*event, sys)) {
         m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
       } 
-      int nLeptons = electrons->size() + muons->size();
+
+      // leptons selection
+      int n_electrons = electrons->size();
+      int n_muons     = muons->size();
+      int n_leptons = n_electrons + n_muons;
+      // 2 leptons channel
+      bool pass_two_os = false;
+      if (n_leptons == 2) {
+        // ee
+        if (n_electrons == 2) {
+          const xAOD::Electron* e0 = (*electrons)[0];
+          const xAOD::Electron* e1 = (*electrons)[1];
+
+          if (e0->charge() * e1->charge() == -1)
+            pass_two_os = true;
+        }
+        // mumu
+        else if (n_muons == 2) {
+          const xAOD::Muon* m0 = (*muons)[0];
+          const xAOD::Muon* m1 = (*muons)[1];
+
+          if (m0->charge() * m1->charge() == -1)
+            pass_two_os = true;
+        }
+        // emu
+        else if (n_electrons == 1 && n_muons == 1) {
+          const xAOD::Electron* e0 = (*electrons)[0];
+          const xAOD::Muon* m0 = (*muons)[0];
+
+          if (e0->charge() * m0->charge() == -1)
+            pass_two_os = true;
+        }
+      }
+      m_bools.at(VBSHIGGS::PASS_TWO_OS_CHARGE_LEPTONS) = pass_two_os;
+
+      // One lepton channel
+      if (n_leptons == 1)
+        m_bools.at(VBSHIGGS::PASS_EXACTLY_ONE_LEPTON) = true;
+
+
+      // At least one large-R jet
       int nLargejets = largeJets->size();
-      bool pass_OneLepton = (nLeptons > 0);
-      bool pass_boost = (nLargejets > 0);
-      bool pass_preselection =  m_bools.at(VBSHIGGS::PASS_TRIGGER) && pass_OneLepton && pass_boost ;
+      if (nLargejets > 0)
+        m_bools.at(VBSHIGGS::PASS_ONE_LARGE_JET) = true;
+
+      bool pass_lepton_selection = m_bools.at(VBSHIGGS::PASS_EXACTLY_ONE_LEPTON) || m_bools.at(VBSHIGGS::PASS_TWO_OS_CHARGE_LEPTONS);
+      // final skimming
+      bool pass_preselection =  m_bools.at(VBSHIGGS::PASS_TRIGGER) && pass_lepton_selection && m_bools.at(VBSHIGGS::PASS_ONE_LARGE_JET);
 
       m_passallcuts.set(*event, pass_preselection, sys);
 

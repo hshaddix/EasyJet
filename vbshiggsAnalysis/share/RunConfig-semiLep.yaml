@@ -133,4 +133,7 @@ ttree_output:
       truth_parent_info: true
 
 CutList :
-      - PASS_TRIGGER 
+  - PASS_TRIGGER 
+  - PASS_EXACTLY_ONE_LEPTON
+  - PASS_TWO_OS_CHARGE_LEPTONS
+  - PASS_ONE_LARGE_JET

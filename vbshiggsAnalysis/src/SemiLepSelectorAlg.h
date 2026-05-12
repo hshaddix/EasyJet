@@ -43,6 +43,10 @@ namespace VBSHIGGS{
     private:
       const std::vector<std::string> m_STANDARD_CUTS{
         "PASS_TRIGGER",
+        "PASS_EXACTLY_ONE_LEPTON", 
+        "PASS_TWO_OS_CHARGE_LEPTONS",
+        "PASS_ONE_LARGE_JET"
+
       };
 
       void leptonSelection(const xAOD::ElectronContainer& electrons,const xAOD::MuonContainer& muons, const xAOD::MissingET *met);
@@ -61,7 +65,6 @@ namespace VBSHIGGS{
 
       CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "vbshiggsAnalysisElectrons_%SYS%",  "Electron container to read" };
       CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "vbshiggsAnalysisMuons_%SYS%",   "Muon container to read" };
-      CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
 
       CP::SysReadDecorHandle<char> m_passTriggerSLT {this, "passTriggerSLT", "pass_trigger_SLT_%SYS%", "events pass any singlep triggers"};
 
@@ -86,7 +89,10 @@ namespace VBSHIGGS{
       std::unordered_map<VBSHIGGS::Booleans, bool> m_bools;
       CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<VBSHIGGS::Booleans, std::string> m_boolnames{
-        {VBSHIGGS::PASS_TRIGGER, "PASS_TRIGGER"}
+        {VBSHIGGS::PASS_TRIGGER, "PASS_TRIGGER"},
+        {VBSHIGGS::PASS_EXACTLY_ONE_LEPTON, "PASS_EXACTLY_ONE_LEPTON"},
+        {VBSHIGGS::PASS_TWO_OS_CHARGE_LEPTONS, "PASS_TWO_OS_CHARGE_LEPTONS"},
+        {VBSHIGGS::PASS_ONE_LARGE_JET, "PASS_ONE_LARGE_JET"},
       };
   };
 }
