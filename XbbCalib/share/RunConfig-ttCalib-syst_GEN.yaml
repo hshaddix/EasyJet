@@ -1,0 +1,9 @@
+include: [XbbCalib/RunConfig-ttCalib.yaml]
+
+# Run all CP syst
+do_CP_systematics: true
+systematics_regex: [".*(GEN).*"]
+
+# Do not output any trees, slim down systematics
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
