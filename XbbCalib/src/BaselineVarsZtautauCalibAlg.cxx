@@ -71,7 +71,7 @@ namespace XBBCALIB
 
       // look up for triggers
       SG::ReadHandle<xAOD::EventInfo> eventInfo(m_eventInfoKey,ctx);
-      SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year_handle (m_yearKey);
+      SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year_handle (m_yearKey, ctx);
       ATH_CHECK (eventInfo.isValid());
       int year = year_handle(*eventInfo);
       // TODO: __TauTauCalib__ LargeR jet trigger match information is not stored yet

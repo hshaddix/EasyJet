@@ -78,35 +78,35 @@ StatusCode MuonTrackDecoratorAlg ::execute(const EventContext &ctx) const {
 
   // Initialize write handles
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackPtDecorHandle(m_idtrackPtDecorKey);
+    idtrackPtDecorHandle(m_idtrackPtDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackEtaDecorHandle(m_idtrackEtaDecorKey);
+    idtrackEtaDecorHandle(m_idtrackEtaDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackPhiDecorHandle(m_idtrackPhiDecorKey);
+    idtrackPhiDecorHandle(m_idtrackPhiDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackD0DecorHandle(m_idtrackD0DecorKey);
+    idtrackD0DecorHandle(m_idtrackD0DecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackZ0DecorHandle (m_idtrackZ0DecorKey);
+    idtrackZ0DecorHandle (m_idtrackZ0DecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackChi2OverDoFDecorHandle(m_idtrackChi2OverDoFDecorKey);
+    idtrackChi2OverDoFDecorHandle(m_idtrackChi2OverDoFDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    cbtrackD0DecorHandle(m_cbtrackD0DecorKey);
+    cbtrackD0DecorHandle(m_cbtrackD0DecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    cbtrackZ0DecorHandle(m_cbtrackZ0DecorKey);
+    cbtrackZ0DecorHandle(m_cbtrackZ0DecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    cbtrackChi2OverDoFDecorHandle(m_cbtrackChi2OverDoFDecorKey);
+    cbtrackChi2OverDoFDecorHandle(m_cbtrackChi2OverDoFDecorKey, ctx);
 
   // Number of hits at each ID layer saved by default
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackNumIBLHitsDecorHandle(m_idtrackNumIBLHitsDecorKey);
+    idtrackNumIBLHitsDecorHandle(m_idtrackNumIBLHitsDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackNumPixelHitsDecorHandle(m_idtrackNumPixelHitsDecorKey);
+    idtrackNumPixelHitsDecorHandle(m_idtrackNumPixelHitsDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackNumPixelSharedHitsDecorHandle(m_idtrackNumPixelSharedHitsDecorKey);
+    idtrackNumPixelSharedHitsDecorHandle(m_idtrackNumPixelSharedHitsDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackNumSCTHitsDecorHandle(m_idtrackNumSCTHitsDecorKey);
+    idtrackNumSCTHitsDecorHandle(m_idtrackNumSCTHitsDecorKey, ctx);
   SG::WriteDecorHandle<xAOD::MuonContainer, float>
-    idtrackNumSCTSharedHitsDecorHandle(m_idtrackNumSCTSharedHitsDecorKey);
+    idtrackNumSCTSharedHitsDecorHandle(m_idtrackNumSCTSharedHitsDecorKey, ctx);
 
   // Muon track decorations
   for (const xAOD::Muon *muon : *muonsIn) {
@@ -197,11 +197,11 @@ StatusCode MuonTrackDecoratorAlg ::execute(const EventContext &ctx) const {
 
     // Numer of hits at each ID layer saved only in LLP1
     SG::WriteDecorHandle<xAOD::MuonContainer, float>
-      idtrackNumNextToIBLHitsDecorHandle(m_idtrackNumNextToIBLHitsDecorKey);
+      idtrackNumNextToIBLHitsDecorHandle(m_idtrackNumNextToIBLHitsDecorKey, ctx);
     SG::WriteDecorHandle<xAOD::MuonContainer, float>
-      idtrackNumPixelSplitHitsDecorHandle(m_idtrackNumPixelSplitHitsDecorKey);
+      idtrackNumPixelSplitHitsDecorHandle(m_idtrackNumPixelSplitHitsDecorKey, ctx);
     SG::WriteDecorHandle<xAOD::MuonContainer, float>
-      idtrackNumTRTHitsDecorHandle(m_idtrackNumTRTHitsDecorKey);
+      idtrackNumTRTHitsDecorHandle(m_idtrackNumTRTHitsDecorKey, ctx);
 
     // Muon track decorations
     for (const xAOD::Muon *muon : *muonsIn) {

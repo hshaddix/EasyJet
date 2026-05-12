@@ -50,8 +50,8 @@ namespace Easyjet
     SG::ReadHandle<xAOD::TauJetContainer> tausIn(m_tausInKey,ctx);
     ATH_CHECK (tausIn.isValid());
 
-    SG::WriteDecorHandle<xAOD::TauJetContainer, int> nProngDecorHandle(m_nProngDecorKey);
-    SG::WriteDecorHandle<xAOD::TauJetContainer, int> decayModeDecorHandle(m_decayModeDecorKey);
+    SG::WriteDecorHandle<xAOD::TauJetContainer, int> nProngDecorHandle(m_nProngDecorKey, ctx);
+    SG::WriteDecorHandle<xAOD::TauJetContainer, int> decayModeDecorHandle(m_decayModeDecorKey, ctx);
 
     for(const xAOD::TauJet* tau : *tausIn) {
       nProngDecorHandle(*tau) = tau->nTracks();
@@ -61,13 +61,13 @@ namespace Easyjet
     }
 
     if(m_isMC){
-      SG::WriteDecorHandle<xAOD::TauJetContainer, int> truthTypeDecorHandle(m_truthTypeDecorKey);
+      SG::WriteDecorHandle<xAOD::TauJetContainer, int> truthTypeDecorHandle(m_truthTypeDecorKey, ctx);
 
-      SG::ReadDecorHandle<xAOD::JetContainer, int> truthLabelLinkedJet(m_truthLabelDecorKey);
-      SG::WriteDecorHandle<xAOD::TauJetContainer, int> tauTruthJetLabelDecorHandle(m_tauTruthJetLabelDecorKey);
+      SG::ReadDecorHandle<xAOD::JetContainer, int> truthLabelLinkedJet(m_truthLabelDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::TauJetContainer, int> tauTruthJetLabelDecorHandle(m_tauTruthJetLabelDecorKey, ctx);
 
       using Link_t = ElementLink< xAOD::JetContainer >;
-      SG::ReadDecorHandle<xAOD::TauJetContainer, Link_t> tauLinkedJetLink(m_tauLinkedJetDecorKey);
+      SG::ReadDecorHandle<xAOD::TauJetContainer, Link_t> tauLinkedJetLink(m_tauLinkedJetDecorKey, ctx);
 
       for(const xAOD::TauJet* tau : *tausIn) {
         truthTypeDecorHandle(*tau) = int(TauAnalysisTools::getTruthParticleType(*tau));

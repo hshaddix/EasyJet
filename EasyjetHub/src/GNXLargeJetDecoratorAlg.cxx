@@ -46,16 +46,16 @@ namespace Easyjet
     // build GN2XTauV00 hadles
     std::map<std::string, SG::ReadDecorHandle<xAOD::JetContainer, float>> GN2XTauV00_handles;
     for (const auto& [name, key] : m_GN2XTauV00_decorKeys) {
-        GN2XTauV00_handles.emplace(name, SG::ReadDecorHandle<xAOD::JetContainer,float>(key));
+	GN2XTauV00_handles.emplace(name, SG::ReadDecorHandle<xAOD::JetContainer,float>(key, ctx));
     }
-    SG::WriteDecorHandle<xAOD::JetContainer, float> GN2XTauV00_score(m_GN2XTauV00_htt_scoreDecorKey);
+    SG::WriteDecorHandle<xAOD::JetContainer, float> GN2XTauV00_score(m_GN2XTauV00_htt_scoreDecorKey, ctx);
 
     // build GN3XPV01 hadles
     std::map<std::string, SG::ReadDecorHandle<xAOD::JetContainer, float>> GN3XPV01_handles;
     for (const auto& [name, key] : m_GN3XPV01_decorKeys) {
-        GN3XPV01_handles.emplace(name, SG::ReadDecorHandle<xAOD::JetContainer,float>(key));
+        GN3XPV01_handles.emplace(name, SG::ReadDecorHandle<xAOD::JetContainer,float>(key, ctx));
     }
-    SG::WriteDecorHandle<xAOD::JetContainer, float> GN3XPV01_score(m_GN3XPV01_htt_scoreDecorKey);
+    SG::WriteDecorHandle<xAOD::JetContainer, float> GN3XPV01_score(m_GN3XPV01_htt_scoreDecorKey, ctx);
 
     // compute scores
     for(const xAOD::Jet* lRjet: *jets) {

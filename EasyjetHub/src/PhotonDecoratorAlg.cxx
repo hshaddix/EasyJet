@@ -66,9 +66,9 @@ namespace Easyjet
 
     if (m_doRetrieveConversionVariables){
 
-      SG::WriteDecorHandle<xAOD::PhotonContainer, float> convRadiusDecorHandle(m_convRadiusDecorKey);
-      SG::WriteDecorHandle<xAOD::PhotonContainer, int> isConvDecorHandle(m_isConvDecorKey);
-      SG::WriteDecorHandle<xAOD::PhotonContainer, int> convTypeDecorHandle(m_convTypeDecorKey);
+      SG::WriteDecorHandle<xAOD::PhotonContainer, float> convRadiusDecorHandle(m_convRadiusDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::PhotonContainer, int> isConvDecorHandle(m_isConvDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::PhotonContainer, int> convTypeDecorHandle(m_convTypeDecorKey, ctx);
 
       // loop over photons
       for(const xAOD::Photon* photon : *photonsIn) {
@@ -88,9 +88,9 @@ namespace Easyjet
     if(m_isMC){
 
       // truth-matching information
-      SG::WriteDecorHandle<xAOD::PhotonContainer, bool> isTruthMatchedDecorHandle(m_isTruthMatchedDecorKey);
-      SG::WriteDecorHandle<xAOD::PhotonContainer, int> pdgIdDecorHandle(m_pdgIdDecorKey);
-      SG::WriteDecorHandle<xAOD::PhotonContainer, int> parentPdgIdDecorHandle(m_parentPdgIdDecorKey);
+      SG::WriteDecorHandle<xAOD::PhotonContainer, bool> isTruthMatchedDecorHandle(m_isTruthMatchedDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::PhotonContainer, int> pdgIdDecorHandle(m_pdgIdDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::PhotonContainer, int> parentPdgIdDecorHandle(m_parentPdgIdDecorKey, ctx);
 
       // loop over photons
       for(const xAOD::Photon* photon : *photonsIn) {
@@ -109,11 +109,11 @@ namespace Easyjet
       // second loop to set the extended truth-matching information
       if (m_doRetrieveExtendedTruthInfos){
         // extended truth-matching information
-        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthPtDecorHandle(m_truthPtDecorKey);
-        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthEDecorHandle(m_truthEDecorKey);
-        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthEtaDecorHandle(m_truthEtaDecorKey);
-        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthPhiDecorHandle(m_truthPhiDecorKey);
-        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthConvRadiusDecorHandle(m_truthConvRadiusDecorKey);
+        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthPtDecorHandle(m_truthPtDecorKey, ctx);
+        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthEDecorHandle(m_truthEDecorKey, ctx);
+        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthEtaDecorHandle(m_truthEtaDecorKey, ctx);
+        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthPhiDecorHandle(m_truthPhiDecorKey, ctx);
+        SG::WriteDecorHandle<xAOD::PhotonContainer, float> truthConvRadiusDecorHandle(m_truthConvRadiusDecorKey, ctx);
         // loop over photons
         for(const xAOD::Photon* photon : *photonsIn) {
           const xAOD::TruthParticle* truthPart = xAOD::TruthHelpers::getTruthParticle(*photon);
