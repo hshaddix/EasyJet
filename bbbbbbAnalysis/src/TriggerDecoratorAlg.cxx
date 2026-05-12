@@ -112,7 +112,7 @@ namespace HHH6B
       pass_decos.at(channel)(*eventInfo) = false;
     }
 
-    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year(m_yearKey);
+    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year(m_yearKey, ctx);
 
     if (year(*eventInfo) < 2022) {
         const auto& SINGbTrigPaths = getTriggerPaths(m_triggerMap, year(*eventInfo), HHH6B::SINGB);

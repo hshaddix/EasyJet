@@ -152,7 +152,7 @@ namespace HHHBBBBTT
       }
     }
 
-    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year(m_yearKey);
+    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year(m_yearKey, ctx);
 
     checkSingleMuTriggers(year(*eventInfo), eventInfo.cptr(),
 			  runBoolDecos, triggerdecos, pass_decos,

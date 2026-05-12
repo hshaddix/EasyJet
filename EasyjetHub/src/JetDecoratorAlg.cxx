@@ -89,9 +89,9 @@ namespace Easyjet
       SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthJetsInKey, ctx);
       ATH_CHECK(truthJets.isValid());
 
-      SG::ReadDecorHandle<xAOD::JetContainer, int> truthLabel(m_truthLabelDecorKey);
-      SG::WriteDecorHandle<xAOD::JetContainer, float> bJetTruthPt(m_bJetTruthPtDecorKey);
-      SG::WriteDecorHandle<xAOD::JetContainer, float> bJetTruthDR(m_bJetTruthDRDecorKey);
+      SG::ReadDecorHandle<xAOD::JetContainer, int> truthLabel(m_truthLabelDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::JetContainer, float> bJetTruthPt(m_bJetTruthPtDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::JetContainer, float> bJetTruthDR(m_bJetTruthDRDecorKey, ctx);
 
       for(const xAOD::Jet* jet: *jets) {
         float minDR = m_minDR;

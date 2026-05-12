@@ -62,7 +62,7 @@ namespace ttHH
       pass_decos.at(channel)(*eventInfo) = false;
     }
 
-    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year(m_yearKey);
+    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year(m_yearKey, ctx);
 
     std::vector<std::string> singLepTrigPaths = m_triggerMap.at(year(*eventInfo)).at(ttHH::SINGLEP);
 

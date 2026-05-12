@@ -54,14 +54,14 @@ namespace Easyjet
 
     if (m_doRetrieveTracks){
 
-      SG::WriteDecorHandle<xAOD::ElectronContainer, float> mllConvDecorHandle(m_mllConvDecorKey);
-      SG::WriteDecorHandle<xAOD::ElectronContainer, float> mllConvAtConvVDecorHandle(m_mllConvAtConvVDecorKey);
-      SG::WriteDecorHandle<xAOD::ElectronContainer, float> radiusConvDecorHandle(m_radiusConvDecorKey);
-      SG::WriteDecorHandle<xAOD::ElectronContainer, float> separationMinDCTDecorHandle(m_separationMinDCTDecorKey);
+      SG::WriteDecorHandle<xAOD::ElectronContainer, float> mllConvDecorHandle(m_mllConvDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::ElectronContainer, float> mllConvAtConvVDecorHandle(m_mllConvAtConvVDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::ElectronContainer, float> radiusConvDecorHandle(m_radiusConvDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::ElectronContainer, float> separationMinDCTDecorHandle(m_separationMinDCTDecorKey, ctx);
 
       using Link_track = ElementLink<xAOD::TrackParticleContainer>;
-      SG::WriteDecorHandle<xAOD::ElectronContainer, Link_track> closestSiTrackDecorHandle(m_closestSiTrackDecorKey);
-      SG::WriteDecorHandle<xAOD::ElectronContainer, Link_track> bestmatchedElTrackDecorHandle(m_bestmatchedElTrackDecorKey);
+      SG::WriteDecorHandle<xAOD::ElectronContainer, Link_track> closestSiTrackDecorHandle(m_closestSiTrackDecorKey, ctx);
+      SG::WriteDecorHandle<xAOD::ElectronContainer, Link_track> bestmatchedElTrackDecorHandle(m_bestmatchedElTrackDecorKey, ctx);
 
       SG::ReadHandle<xAOD::TrackParticleContainer> tracksIn(m_trackParticleKey,ctx);
       ATH_CHECK (tracksIn.isValid());
