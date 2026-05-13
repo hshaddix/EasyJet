@@ -83,6 +83,8 @@ def muon_sequence(flags, configAcc):
         configSeq.setOptionValue('.maxDeltaZ0SinTheta',
                                  maxDeltaZ0SinTheta)
         configSeq.setOptionValue('.saveCombinedSF', True)
+        if flags.Analysis.Muon.MergeLRT:
+            configSeq.setOptionValue('.useLRT', True)
 
     if flags.Analysis.Small_R_jet.runBJetPtCalib or \
        flags.Analysis.Large_R_jet.runMuonJetPtCorr:
