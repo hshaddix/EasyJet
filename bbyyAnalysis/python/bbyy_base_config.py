@@ -44,6 +44,18 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
         containerOutKey="bbyyAnalysisJets_%SYS%",
         PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
         minPt=float(flags.Analysis.Small_R_jet.min_pT),
+        pTsort=False,
+        PCBTsort=True,
+        bTagWPDecorName="",
+        selectBjet=False))
+    
+    cfg.merge(JetSelectorAlgCfg(
+        flags,
+        name="HyyJetSelectorAlg",
+        containerInKey=smalljetkey,
+        containerOutKey="HyyAnalysisJets_%SYS%",
+        PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
+        minPt=float(flags.Analysis.Small_R_jet.min_pT),
         pTsort=True,
         PCBTsort=False,
         bTagWPDecorName="",
@@ -139,7 +151,7 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
             floatVariableList=float_variables['jets'],
             intVariableList=int_variables['jets'],
             doSystematics=flags.Analysis.do_CP_systematics,
-            jets=smalljetkey
+            jets="HyyAnalysisJets_%SYS%"
         )
     )
 
@@ -149,7 +161,7 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
             floatVariableList=float_variables['photonjets'],
             intVariableList=int_variables['photonjets'],
             doSystematics=flags.Analysis.do_CP_systematics,
-            jets=smalljetkey
+            jets="HyyAnalysisJets_%SYS%"
         )
     )
 
@@ -523,8 +535,7 @@ def bbyy_branches(flags):
             "pass_trigger_diphoton_g45_g20",
             "pass_matching_trigger_single_photon",
             "pass_matching_trigger_diphoton_g35_g25",
-            "pass_matching_trigger_diphoton_g45_g20",
-            "rel_pT_bucket"]
+            "pass_matching_trigger_diphoton_g45_g20"]
 
         for trigger in photon_triggers:
             branches += [f"EventInfo.{trigger}_{sys_suffix} -> {trigger}"
