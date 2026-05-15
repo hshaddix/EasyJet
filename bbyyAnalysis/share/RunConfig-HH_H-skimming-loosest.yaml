@@ -6,10 +6,13 @@ bypass: false
 # name that will go in the tree bbyy_pass_<selection_name>_%SYS%
 selection_name: "loosest"
 
+# removing trigger matching for now
 CutList :
       - PASS_TRIGGER
-      - PASS_TRIGGER_MATCHING
       - DIPHOTON_MASS
+
+save_cutflow: true
+
 Small_R_jet:
   gn3_scores: true
 Truth:

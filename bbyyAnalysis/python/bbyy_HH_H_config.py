@@ -25,7 +25,7 @@ def bbyy_HH_H_cfg(flags, smalljetkey, photonkey, muonkey, electronkey,
             intVariableList=int_variables["top"],
             BDT_path=flags.Analysis.TopReconstruction.BDT_path,
             doSystematics=flags.Analysis.do_CP_systematics,
-            jets="bbyyAnalysisJets_%SYS%"
+            jets="HyyAnalysisJets_%SYS%"
         )
     )
 

@@ -33,9 +33,20 @@ def muon_sequence(flags, configAcc):
         configSeq += makeConfig('Muons.LRTMerging')
         configSeq.setOptionValue('.containerName', 'Muons_LRTMerged')
 
+    if flags.Analysis.Muon.MergeZPH:
+        configSeq += makeConfig('Muons.ContainerMerging')
+        configSeq.setOptionValue(
+            '.inputMuonContainers',
+            ['Muons_LRTMerged' if flags.Analysis.Muon.MergeLRT else 'Muons','ZeroPixelHitMuons'],  
+        )   
+        configSeq.setOptionValue('.outputMuonLocation', 'Muons_Merged')
+        configSeq.setOptionValue('.createViewCollection', False)
+
     configSeq += makeConfig('Muons')
     configSeq.setOptionValue('.containerName', output_name)
-    if flags.Analysis.Muon.MergeLRT:
+    if flags.Analysis.Muon.MergeZPH:
+        configSeq.setOptionValue('.inputContainer', 'Muons_Merged')
+    elif flags.Analysis.Muon.MergeLRT:
         configSeq.setOptionValue('.inputContainer', 'Muons_LRTMerged')
     configSeq.setOptionValue('.minPt', flags.Analysis.Muon.min_pT)
     configSeq.setOptionValue('.maxEta', flags.Analysis.Muon.max_eta)
@@ -72,6 +83,8 @@ def muon_sequence(flags, configAcc):
         configSeq.setOptionValue('.maxDeltaZ0SinTheta',
                                  maxDeltaZ0SinTheta)
         configSeq.setOptionValue('.saveCombinedSF', True)
+        if flags.Analysis.Muon.MergeLRT:
+            configSeq.setOptionValue('.useLRT', True)
 
     if flags.Analysis.Small_R_jet.runBJetPtCalib or \
        flags.Analysis.Large_R_jet.runMuonJetPtCorr:

@@ -178,6 +178,7 @@ Muon:
   do_thinning: true
   IsoDecSuffix: ""
   MergeLRT: false
+  MergeZPH: false
   do_parent_decoration: false
   do_track_decoration: false
   do_IFF_decoration: false
