@@ -32,9 +32,12 @@ def tau_sequence(flags, configAcc):
     # PID configuration
     configSeq += makeConfig('TauJets')
     configSeq.setOptionValue('.containerName', output_name)
+    configSeq.setOptionValue('.inputContainer', flags.Analysis.container_names.input.taus)
     if flags.Analysis.Tau.addMuonRM:
         configSeq.setOptionValue('.inputContainer', 'TauJets_MuonRmCombined')
-    configSeq.setOptionValue('.rerunTruthMatching', False)
+    
+    if flags.Analysis.Tau.do_TauLRT:
+        configSeq.setOptionValue('.rerunTruthMatching', True)
     configSeq.setOptionValue('.decorateTruth', True)
     for id in wps:
         configSeq += makeConfig('TauJets.WorkingPoint')
@@ -57,6 +60,11 @@ def tau_sequence(flags, configAcc):
         quality = quality.replace("Custom", "")
         configSeq.setOptionValue('.quality', quality)
         configSeq.setOptionValue('.saveCombinedSF', True)
+        if flags.Analysis.Tau.do_TauLRT:
+            # This is needed for the non-official TauJetsLRT working points, which can have multiple prong options
+            configSeq.setOptionValue('.useSelectionConfigFile', False)
+            configSeq.setOptionValue('.manual_sel_ntracks', [1, 2, 3, 4])
+            configSeq.setOptionValue('.manual_sel_abscharges', [0, 1, 2])
 
     # Anti-tau selections
     if flags.Analysis.do_bbtt_analysis or flags.Analysis.do_bbbbtt_analysis:
