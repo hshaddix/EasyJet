@@ -47,39 +47,17 @@ do_small_R_jets: true
 do_large_R_UFO_jets: true
 
 Electron:
-  ID: "LooseBLayerLH"
+  ID: "MediumLH"
   Iso: "Loose_VarRad"
   amount: 0
-  extra_wps:
-    - ["LooseBLayerLH", "Tight_VarRad"]
-
-    - ["MediumLH", "Loose_VarRad"]
-    - ["MediumLH", "Tight_VarRad"]
-
-    - ["TightLH", "Loose_VarRad"]
-    - ["TightLH", "Tight_VarRad"]
-
-    - ["LooseDNNElectron", "Loose_VarRad"]
-    - ["LooseDNNElectron", "Tight_VarRad"]
-
-    - ["MediumDNNElectron", "Loose_VarRad"]
-    - ["MediumDNNElectron", "Tight_VarRad"]
-
-    - ["TightDNNElectron", "Loose_VarRad"]
-    - ["TightDNNElectron", "Tight_VarRad"]
+  ## Only correlation scheme supported
+  correlationModelId: "TOTAL"
 
 Muon:
-  ID: "Loose"
+  ID: "Medium"
   Iso: "PflowLoose_VarRad"
   amount: 0
-  extra_wps:
-    - ["Loose", "PflowTight_VarRad"]
-    
-    - ["Medium", "PflowLoose_VarRad"]
-    - ["Medium", "PflowTight_VarRad"]
 
-    - ["Tight", "PflowLoose_VarRad"]
-    - ["Tight", "PflowTight_VarRad"]
 
 Lepton:
   amount: 0
