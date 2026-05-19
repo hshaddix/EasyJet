@@ -47,7 +47,7 @@ do_small_R_jets: true
 do_large_R_UFO_jets: true
 
 Electron:
-  ID: "MediumLH"
+  ID: "LooseBLayerLH"
   Iso: "Loose_VarRad"
   amount: 0
   ## Only correlation scheme supported
