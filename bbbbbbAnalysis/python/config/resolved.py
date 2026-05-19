@@ -108,6 +108,7 @@ def resolved_cfg(flags, smalljetkey, float_variables=None):
                 containerOutKey=(
                     "pairedResolvedAnalysisJets_" + btag_sys),
                 pairingStrategy=flags.Analysis.pairingStrategy,
+                analysisRegion="resolved",
             )
         )
 

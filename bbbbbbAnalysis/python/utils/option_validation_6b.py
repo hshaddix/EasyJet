@@ -4,6 +4,9 @@ def validate_hhh6b_analysis_prerequisites(flags):
     if flags.Analysis.do_resolved_trihiggs:
         assert flags.Analysis.do_small_R_jets
 
+    if flags.Analysis.do_semiresolved_trihiggs:
+        assert flags.Analysis.do_large_R_UFO_jets
+
     if flags.Analysis.do_semiboosted_trihiggs:
         assert flags.Analysis.do_large_R_UFO_jets
 
