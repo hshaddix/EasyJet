@@ -54,7 +54,7 @@ Electron:
   correlationModelId: "TOTAL"
 
 Muon:
-  ID: "Medium"
+  ID: "Loose"
   Iso: "PflowLoose_VarRad"
   amount: 0
 
