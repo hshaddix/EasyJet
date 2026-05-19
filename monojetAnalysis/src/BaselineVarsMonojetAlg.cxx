@@ -29,6 +29,9 @@ namespace MONOJET
     ATH_CHECK(m_metHandle.initialize(m_systematicsList));
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
 
+    if (!m_bornLeptons.empty()){
+      ATH_CHECK(m_bornLeptons.initialize());
+    }
 
     if (!m_isBtag.empty()) {
       ATH_CHECK(m_isBtag.initialize(m_systematicsList, m_jetHandle));
@@ -40,6 +43,7 @@ namespace MONOJET
 
     if (m_isMC) {
       ATH_CHECK(m_truthFlav.initialize(m_systematicsList, m_jetHandle));
+
     }
 
     // Intialise syst-aware output decorators
@@ -60,7 +64,7 @@ namespace MONOJET
     ATH_CHECK (m_GN2Xv01_phcc.initialize(m_systematicsList, m_largejetHandle));
     ATH_CHECK (m_GN2Xv01_pqcd.initialize(m_systematicsList, m_largejetHandle));
     ATH_CHECK (m_GN2Xv01_ptop.initialize(m_systematicsList, m_largejetHandle));
-    ATH_CHECK (m_TightCleanPass.initialize(m_systematicsList, m_jetHandle));  
+    ATH_CHECK (m_TightCleanPass.initialize(m_systematicsList, m_jetHandle)); 
 
     //jet substruture
     for(auto jss : m_JSS_list){
@@ -89,7 +93,7 @@ namespace MONOJET
       ANA_CHECK(m_jetHandle.retrieve(jets, sys));
 
       const xAOD::JetContainer *largeJets  = nullptr;
-      ANA_CHECK (m_largejetHandle.retrieve (largeJets , sys));
+      ANA_CHECK (m_largejetHandle.retrieve(largeJets , sys));
 
       const xAOD::MissingETContainer* metCont = nullptr;
       ANA_CHECK(m_metHandle.retrieve(metCont, sys));
@@ -143,16 +147,19 @@ namespace MONOJET
           }
 
           // count bjets
-          if (!m_PCBT.empty()) {
-              int pcbt = m_PCBT.get(*jet, sys);
-
-              for (size_t i = 0; i < m_btagWPs.size(); ++i) {
-                  if (pcbt > static_cast<int>(i)) {
-                      nBJets[i]++;
-                  }
-              }
+          std::unordered_map<std::string,int> wpToBin = {{"90", 1},
+                                                         {"85", 2},
+                                                         {"77", 3},
+                                                         {"70", 4},
+                                                         {"65", 5}};
+	  if (!m_PCBT.empty()) {
+	      int pcbt = m_PCBT.get(*jet, sys);
+	      for (size_t i = 0; i < m_btagWPs.size(); ++i) {
+	          auto it = wpToBin.find(m_btagWPs[i]);
+                  if (it == wpToBin.end()) continue;
+		  if (pcbt > it->second) nBJets[i]++;
+               }
           }
-
           //get DeltaPhi min	
 	        TLorentzVector smallJet_vector(0,0,0,0);
 	        smallJet_vector.SetPtEtaPhiE(jet->pt(),
@@ -186,6 +193,39 @@ namespace MONOJET
 
       }
 
+    //truth
+    int nZbornLeptons = 0;
+    int total_BornLep = 0;
+    int pdgs = 0;
+    std::vector<TLorentzVector> born_leptons;
+    TLorentzVector vV(0, 0, 0, 0);
+
+    if (m_isMC and !m_bornLeptons.empty()){
+        SG::ReadHandle<xAOD::TruthParticleContainer> bornLeptons(m_bornLeptons);
+        ATH_CHECK(bornLeptons.isValid());
+
+        
+	for (const xAOD::TruthParticle *tp : (*bornLeptons)){
+            int pdg = abs(tp->pdgId());
+            if (pdg != 12 && pdg != 14 && pdg != 16 && pdg != 11 && pdg != 13 && pdg != 15) continue;
+            total_BornLep ++;
+            if (tp->status() == 3){
+                pdgs += pdg;
+                nZbornLeptons ++;
+                TLorentzVector v(tp->px(), tp->py(), tp->pz(), tp->e());
+                born_leptons.push_back(v);
+            }
+        }
+    
+        for (auto& lep : born_leptons) {
+            vV += lep;
+        }
+    }
+
+	m_Ibranches.at("truthLep_pdg").set(*event,pdgs,sys);
+        m_Ibranches.at("nTruthLep_fromV").set(*event,nZbornLeptons,sys);
+        m_Ibranches.at("nTruthLep_total").set(*event,total_BornLep,sys);
+        m_Fbranches.at("truthVB_pT").set(*event, vV.Pt(), sys);
 
       // write to ttree
 
@@ -203,12 +243,11 @@ namespace MONOJET
       m_Fbranches.at("sum_pT_CentralJets").set(*event,sum_pT_CentralJets,sys);
       m_Fbranches.at("sum_pT_ForwardJets").set(*event,sum_pT_ForwardJets,sys);
       m_Fbranches.at("sum_pT_LargeRJets").set(*event,sum_pT_LargeRJets,sys);
-
+    
       m_Fbranches.at("DeltaPhi_MET_jets").set(*event,DeltaPhi_MET_jets,sys);
       m_Fbranches.at("DeltaPhi_MET_largeJets").set(*event,DeltaPhi_MET_largeJets,sys);
 	
       m_Ibranches.at("TightJetCleaningPass_event").set(*event,tight_pass_event,sys);
-     
 
       //jet sector
       for (int i = 0; i < std::min(n_jets, (int)m_Small_R_jet_amount); i++) {

@@ -4,11 +4,14 @@ do_Monojet_analysis: true
 bypass: false
 
 met_cut: 200
+Met:
+  saveSignificance: true
 
 do_small_R_jets: true
 do_large_R_UFO_jets: true
 do_muons: true
 do_electrons: true
+do_photons: true
 do_taus: true
 do_met: true
 
@@ -19,7 +22,7 @@ Small_R_jet:
   min_pT: 20.e+3
   max_eta: 4.5
   max_eta_central: 2.5
-  amount: 4
+  amount: 8
   btag_wp: "" 
   runBJetPtCalib: false
   btag_extra_wps:
@@ -47,6 +50,14 @@ Electron:
   min_pT: 7.e+3
   max_eta: 2.47
 
+
+Photon:
+  amount: 0
+  ID: "Tight"
+  Iso: "FixedCutTight"
+  min_pT: 10.e+3
+  max_eta: 2.37
+
 # amount doesn't work as cut, it just specifies more info for the selected amount of objects (e.g. jet1,jet2,jet3,..)
 
 Muon:
@@ -65,10 +76,6 @@ Tau:
   max_eta: 2.5
   
 
-Met:
-  saveSignificance: true
-
-
 Trigger:
   include: [monojetAnalysis/trigger_MET.yaml]
 
@@ -86,6 +93,7 @@ save_Monojet_cutflow: true
 
 CutList:
   - LEPTON_VETO
+  - PHOTON_VETO
   - LARGEJETCUT
   - PASS_TRIGGER
   - METCUT
