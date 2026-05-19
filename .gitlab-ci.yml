@@ -38,6 +38,18 @@ before_script:
   - if [[ -d build ]]; then source build/**/setup.sh; fi
   - env
 
+fork_partial_ci_not_sufficient_for_merge:
+  stage: post
+  before_script: []
+  rules:
+    - if: '$CI_PROJECT_PATH != "easyjet/easyjet" && $CI_MERGE_REQUEST_PROJECT_PATH == "easyjet/easyjet"'
+  script:
+    - echo "This is a fork MR pipeline and only the partial fork CI has run."
+    - echo "The full CI must run in the main easyjet/easyjet project before merging."
+    - echo "Please subscribe to atlas-phys-hdbs-dihiggs-hhframework@cern.ch to get Developer access, then push again."
+    - echo "This pipeline is intentionally marked as failed to prevent merging based only on the partial fork CI."
+    - exit 1
+
 include:
   - ".gitlab/pipelines/.refmr-gitlab-ci.yaml"
   - ".gitlab/pipelines/.linting-gitlab-ci.yaml"
