@@ -134,8 +134,6 @@ private:
       m_truthFlav{ this, "truthFlav", "HadronConeExclTruthLabelID", "Jet truth flavor" };
     CP::SysReadDecorHandle<int> m_nmuons{"n_muons_%SYS%", this};
 
-    CP::SysReadDecorHandle<unsigned int> m_year{this, "year", "dataTakingYear", ""};
-
     Gaudi::Property<std::vector<std::string>> m_floatVariables
       {this, "floatVariableList", {}, "Name list of floating variables"};
 
