@@ -536,6 +536,8 @@ namespace HHBBYY
       bbyyCuts("LESS_THAN_SIX_CENTRAL_JETS").passed = true;
 
     // If Forward Jets + Central jets >=2 --> The event passes.
+    if (jets.size() >= 1 && bbyyCuts.exists("AT_LEAST_ONE_JET"))
+      bbyyCuts("AT_LEAST_ONE_JET").passed = true;
     if (jets.size() >= 2 && bbyyCuts.exists("AT_LEAST_TWO_JETS"))
       bbyyCuts("AT_LEAST_TWO_JETS").passed = true;
     if (bjets.size()>=1 && bbyyCuts.exists("AT_LEAST_ONE_B_JET"))
