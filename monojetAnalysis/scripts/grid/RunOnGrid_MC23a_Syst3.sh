@@ -1,6 +1,6 @@
-runConfig="../easyjet/monojetAnalysis/share/RunConfig-Monojet.yaml"
+runConfig="../easyjet/monojetAnalysis/share/RunConfig-Monojet_Syst3.yaml"
 executable="monojet-ntupler"
-campaignName="mc23a_monojet_v5"
+campaignName="mc23a_monojet_v6_sys3"
 
 #Diboson
 easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/Diboson_mc23a_p7017.txt \
@@ -22,14 +22,14 @@ easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/Rare
     --campaign ${campaignName} \
     --noTag
 #ttbar
-easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/TTbar_mc23a_p7017.txt \
+easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/Ttbar_mc23a_p7017.txt \
     --run-config ${runConfig} \
     --exec ${executable} \
     --campaign ${campaignName} \
     --noTag
 
 #ttbarX
-easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/TTbarX_mc23a_p7017.txt \
+easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/TtbarX_mc23a_p7017.txt \
     --run-config ${runConfig} \
     --exec ${executable} \
     --campaign ${campaignName} \
@@ -46,5 +46,11 @@ easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/Vjet
 easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/Vjets_qq_mc23a_p7017.txt \
     --run-config ${runConfig} \
     --exec ${executable} \
+    --campaign ${campaignName} \
+    --noTag
+#Higgs
+easyjet-gridsubmit --mc-list ../easyjet/monojetAnalysis/datasets/PHYS/MC23a/Higgs_mc23a_p7017.txt \
+    --run-config ${runConfig} \
+    --exec ${executable}  \
     --campaign ${campaignName} \
     --noTag

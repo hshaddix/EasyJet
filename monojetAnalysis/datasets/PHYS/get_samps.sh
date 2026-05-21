@@ -40,6 +40,8 @@ Vjets=('700777'
   '700849'
   '700855')
 
+Higgs=(604309 604310 604305 604306 601597 601600 601482 602421 601601 603907 601507 603327 601602 603908 603414 603415 603416 603417 603422 603423 603424 603425 601599 602632 601500 601583 602685 603325)
+
 echo "Diboson"
 for DSID in "${Diboson[@]}";
 do
@@ -92,3 +94,13 @@ do
        grep ${DSID} all_samples.txt | grep mc23d | awk '{print $5}' >> MC23d/Vjets_mc23d_p7017.txt
        grep ${DSID} all_samples.txt | grep mc23e | awk '{print $5}' >> MC23e/Vjets_mc23e_p7017.txt
 done
+
+echo "Higgs"
+for DSID in "${Higgs[@]}";
+do
+       # centralpage --scope=mc23_13p6TeV WeakBoson Diboson Baseline -p | grep ${DSID}
+       grep ${DSID} all_samples.txt | grep mc23a | awk '{print $5}' >> MC23a/Higgs_mc23a_p7017.txt
+       grep ${DSID} all_samples.txt | grep mc23d | awk '{print $5}' >> MC23d/Higgs_mc23d_p7017.txt
+       grep ${DSID} all_samples.txt | grep mc23e | awk '{print $5}' >> MC23e/Higgs_mc23e_p7017.txt
+done
+

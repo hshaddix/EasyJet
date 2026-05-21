@@ -14,6 +14,7 @@ add_compile_options(-Werror)
 # Build the Athena component library
 atlas_add_component(bbbbbbAnalysis
   src/BaselineVarsResolvedAlg.cxx
+  src/BaselineVarsSemiResolvedAlg.cxx
   src/BaselineVarsSemiBoostedAlg.cxx
   src/BaselineVarsBoostedAlg.cxx
   src/bbbbbbSelectorAlg.cxx

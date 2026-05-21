@@ -4,14 +4,14 @@ import AthenaCommon.SystemOfUnits as Units
 
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import \
     (MuonSelectorAlgCfg, ElectronSelectorAlgCfg, TauSelectorAlgCfg,
-     LeptonOrderingAlgCfg, JetSelectorAlgCfg)
+     PhotonSelectorAlgCfg, LeptonOrderingAlgCfg, JetSelectorAlgCfg)
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
 
 
 def Monojet_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
-                taukey, float_variables=None, int_variables=None):
+                taukey, photonkey, float_variables=None, int_variables=None):
     if not float_variables:
         float_variables = []
     if not int_variables:
@@ -34,6 +34,12 @@ def Monojet_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
     cfg.merge(TauSelectorAlgCfg(flags,
                                 containerInKey=taukey,
                                 containerOutKey="MonojetAnalysisTaus_%SYS%"))
+
+    cfg.merge(PhotonSelectorAlgCfg(flags,
+                                   containerInKey=photonkey,
+                                   containerOutKey="MonojetAnalysisPhotons_%SYS%",
+                                   minPt=flags.Analysis.Photon.min_pT,
+                                   maxEta=flags.Analysis.Photon.max_eta))
 
     cfg.merge(LeptonOrderingAlgCfg(flags,
                                    containerInEleKey=electronkey,
@@ -90,6 +96,7 @@ def Monojet_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
     MuonWPLabel = f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}'
     ElectronWPLabel = f'{flags.Analysis.Electron.ID}_{flags.Analysis.Electron.Iso}'
     TauWPLabel = f'{flags.Analysis.Tau.ID}'
+    PhotonWPLabel = f'{flags.Analysis.Photon.ID}_{flags.Analysis.Photon.Iso}'
     cfg.addEventAlgo(
         CompFactory.MONOJET.BaselineVarsMonojetAlg(
             "FinalVarsMonojetAlg",
@@ -97,6 +104,7 @@ def Monojet_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             muonWP=MuonWPLabel,
             eleWP=ElectronWPLabel,
             tauWP=TauWPLabel,
+            phWP=PhotonWPLabel,
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorName=["ftag_quantile_" + pcbt_wp for pcbt_wp in btag_pcbt_wps][0],
             btagWPs=flags.Analysis.Small_R_jet.monojet_btagWPs,
@@ -115,10 +123,11 @@ def get_BaselineVarsMonojetAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
     float_variable_names += ["sum_pT_CentralJets", "sum_pT_ForwardJets",
-                             "sum_pT_LargeRJets", "DeltaPhi_MET_jets",
-                             "DeltaPhi_MET_largeJets"]
+                             "sum_pT_LargeRJets", "truthVB_pT",
+                             "DeltaPhi_MET_jets", "DeltaPhi_MET_largeJets"]
     int_variable_names += ["nCentralJets", "nForwardJets", "nLargeRJets",
-                           "nTightBadJets", "TightJetCleaningPass_event"]
+                           "nTightBadJets", "TightJetCleaningPass_event",
+                           "nTruthLep_fromV", "nTruthLep_total", "truthLep_pdg"]
 
     for wp in flags.Analysis.Small_R_jet.monojet_btagWPs:
         int_variable_names += ["nBJets" + wp]

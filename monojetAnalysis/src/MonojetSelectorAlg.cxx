@@ -41,6 +41,7 @@ namespace MONOJET
     ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_tauHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_photonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_metHandle.initialize(m_systematicsList));
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
 
@@ -55,7 +56,7 @@ namespace MONOJET
     // make trigger decorators
     for (auto trig : m_triggers) {
       std::string triggerDecorName = "trigPassed_"+trig;
-      CP::SysReadDecorHandle<bool> deco{triggerDecorName, this};
+      CP::SysReadDecorHandle<bool> deco{ this, "trig" + triggerDecorName, triggerDecorName, "Name of trigger" };
       m_triggerdecos.emplace(triggerDecorName, deco);
       ATH_CHECK(m_triggerdecos.at(triggerDecorName).initialize(m_systematicsList, m_eventHandle));
     }
@@ -117,6 +118,9 @@ namespace MONOJET
       const xAOD::TauJetContainer* taus = nullptr;
       ANA_CHECK(m_tauHandle.retrieve(taus, sys));
 
+      const xAOD::PhotonContainer* photons = nullptr;
+      ANA_CHECK(m_photonHandle.retrieve(photons, sys));
+
       // reset all cut flags to default=false
       for (CutEntry& cut : m_MonojetCuts) {
         cut.passed = false;
@@ -131,6 +135,7 @@ namespace MONOJET
       evaluateElectronVeto(*electrons, m_MonojetCuts);
       evaluateMuonVeto(*muons, m_MonojetCuts);
       evaluateTauVeto(*taus, m_MonojetCuts);
+      evaluatePhotonVeto(*photons, m_MonojetCuts);
       evaluateTIGHTCuts(*jets, m_MonojetCuts, sys);
       evaluateALLcuts(m_MonojetCuts);
 
@@ -315,6 +320,15 @@ namespace MONOJET
     }
     if (electrons.size() == 0) MonojetCuts("ELECTRON_VETO").passed = true;
   }
+
+  void MonojetSelectorAlg::evaluatePhotonVeto(const xAOD::PhotonContainer& photons,
+   CutManager& MonojetCuts)
+  {
+    if (!MonojetCuts.exists("PHOTON_VETO")) {
+      return;
+    }
+    if (photons.size() == 0) MonojetCuts("PHOTON_VETO").passed = true;
+  } 
 
     void MonojetSelectorAlg::evaluateMuonVeto(const xAOD::MuonContainer& muons,
     CutManager& MonojetCuts)

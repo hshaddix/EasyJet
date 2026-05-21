@@ -50,9 +50,10 @@ namespace HHH6B
           "AT_LEAST_SIX_BJETS",
           "AT_LEAST_FOUR_JETS_OR_TWO_LRJETS",
           "AT_LEAST_SIX_JETS_FOUR_BJETS",
+          "AT_LEAST_TWO_JETS_AND_TWO_LRJETS",
+          "AT_LEAST_FOUR_JETS_AND_ONE_LRJET",
           "AT_LEAST_THREE_LRJETS",
           "AT_LEAST_SIX_JETS_OR_THREE_LRJETS",
-          "AT_LEAST_TWO_JETS_AND_TWO_LRJETS",
       };
 
       void evaluateTriggerCuts(const xAOD::EventInfo& event, 

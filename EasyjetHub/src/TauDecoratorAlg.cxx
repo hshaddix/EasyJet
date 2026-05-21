@@ -69,13 +69,15 @@ namespace Easyjet
       using Link_t = ElementLink< xAOD::JetContainer >;
       SG::ReadDecorHandle<xAOD::TauJetContainer, Link_t> tauLinkedJetLink(m_tauLinkedJetDecorKey, ctx);
 
-      for(const xAOD::TauJet* tau : *tausIn) {
-        truthTypeDecorHandle(*tau) = int(TauAnalysisTools::getTruthParticleType(*tau));
+      if(!m_skipTruthJetMatching) {
+        for(const xAOD::TauJet* tau : *tausIn) {
+          truthTypeDecorHandle(*tau) = int(TauAnalysisTools::getTruthParticleType(*tau));
 
-        const Link_t& tauTruthJetLink = tauLinkedJetLink(*tau);
-        const xAOD::Jet* tauTruthJet = tauTruthJetLink.isValid() ? tauTruthJetLink.cachedElement() : nullptr;
+          const Link_t& tauTruthJetLink = tauLinkedJetLink(*tau);
+          const xAOD::Jet* tauTruthJet = tauTruthJetLink.isValid() ? tauTruthJetLink.cachedElement() : nullptr;
 
-        tauTruthJetLabelDecorHandle(*tau) = tauTruthJet ? truthLabelLinkedJet(*tauTruthJet) : -99;
+          tauTruthJetLabelDecorHandle(*tau) = tauTruthJet ? truthLabelLinkedJet(*tauTruthJet) : -99;
+        }
       }
     }
 

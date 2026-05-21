@@ -1,0 +1,5 @@
+include: [RunConfig-Monojet.yaml]
+
+do_CP_systematics: true
+systematics_regex: [".*(EG|EL|MUON|PH).*"]
+

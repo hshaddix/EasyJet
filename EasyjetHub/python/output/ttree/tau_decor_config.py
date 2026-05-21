@@ -50,6 +50,7 @@ def tau_decor_cfg(flags, **kwargs):
         CompFactory.Easyjet.TauDecoratorAlg(
             f"TauDecor_{taucoll}",
             isMC=flags.Input.isMC,
+            skipTruthJetMatching=flags.Analysis.Tau.do_TauLRT,  # skip truth jet matching for LRT taus to avoid issues with missing truth jet links
             tausIn=taucoll,
             **kwargs
         )

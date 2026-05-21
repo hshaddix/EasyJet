@@ -17,8 +17,12 @@
 #include <xAODJet/JetContainer.h>
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
 #include <xAODTau/TauJetContainer.h>
 #include <xAODMissingET/MissingETContainer.h>
+
+#include <xAODTruth/TruthParticleContainer.h>
+#include <xAODTruth/TruthParticle.h>
 
 namespace MONOJET
 {
@@ -53,6 +57,9 @@ private:
     CP::SysReadHandle<xAOD::ElectronContainer>
     m_electronHandle{ this, "electrons", "MonojetAnalysisElectrons_%SYS%",   "Electron container to read" };
 
+    CP::SysReadHandle<xAOD::PhotonContainer>
+    m_photonHandle{ this, "photons", "MonojetAnalysisPhotons_%SYS%",   "n container to read" };
+
     CP::SysReadHandle<xAOD::MuonContainer>
     m_muonHandle{ this, "muons", "MonojetAnalysisMuons_%SYS%",   "Muon container to read" };
 
@@ -61,6 +68,12 @@ private:
 
     CP::SysReadHandle<xAOD::MissingETContainer>
     m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
+
+    //truth
+    SG::ReadHandleKey<xAOD::TruthParticleContainer> m_bornLeptons{
+        this, "BornLeptons", "BornLeptons",
+        "the truth Standard Model particles container to run on"};
+
 
     CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };
@@ -71,6 +84,11 @@ private:
     Gaudi::Property<std::string> m_eleWPName
       { this, "eleWP", "","Electron ID + Iso working point" };
     CP::SysReadDecorHandle<float> m_ele_SF{"", this};
+
+
+    Gaudi::Property<std::string> m_phWPName
+      { this, "phWP", "","Photon ID + Iso working point" };
+    CP::SysReadDecorHandle<float> m_ph_SF{"", this};
 
     Gaudi::Property<std::string> m_muWPName
       { this, "muonWP", "","Muon ID + Iso working point" };
@@ -96,6 +114,7 @@ private:
     CP::SysReadDecorHandle<float> m_GN2Xv01_ptop{this, "ptop", "GN2Xv01_ptop", "GN2Xv01_ptop"};
 	
     CP::SysReadDecorHandle<char> m_TightCleanPass{this,"tightclean", "DFCommonJets_jetClean_TightBad","Jet passing tight cleaning flag"};
+//    CP::SysReadDecorHandle<unsigned int> m_TruthOrigin{this,"TruthOrigin", "classifierParticleOrigin","Origin of truth particle"};
 
     // jss
     std::vector<std::string> m_JSS_list = {"ECF1", "ECF2", "ECF3", "Split12", "Split23", "Tau1_wta", "Tau2_wta", "Tau3_wta", "Qw"};

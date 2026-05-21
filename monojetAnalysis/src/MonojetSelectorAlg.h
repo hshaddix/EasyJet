@@ -23,6 +23,7 @@
 #include <xAODJet/JetContainer.h>
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
 #include <xAODMissingET/MissingETContainer.h>
 #include <xAODTau/TauJetContainer.h>
 
@@ -59,6 +60,7 @@ namespace MONOJET
         "ELECTRON_VETO",
         "MUON_VETO",
         "TAU_VETO",
+        "PHOTON_VETO",
 	"TIGHT_LEADING_CUT",
         "ALL_CUTS"
       };
@@ -96,6 +98,9 @@ namespace MONOJET
 
       CP::SysReadHandle<xAOD::ElectronContainer>
       m_electronHandle{ this, "electrons", "MonojetAnalysisElectrons_%SYS%",   "Electron container to read" };
+
+      CP::SysReadHandle<xAOD::PhotonContainer>
+      m_photonHandle{ this, "photons", "MonojetAnalysisPhotons_%SYS%",   "Photon container to read" };
 
       CP::SysReadHandle<xAOD::MuonContainer>
       m_muonHandle{ this, "muons", "MonojetAnalysisMuons_%SYS%",   "Muon container to read" };
@@ -142,6 +147,8 @@ namespace MONOJET
         (const xAOD::MuonContainer& muons, CutManager& MonojetCuts);
       void evaluateTauVeto
         (const xAOD::TauJetContainer& taus, CutManager& MonojetCuts);
+      void evaluatePhotonVeto
+        (const xAOD::PhotonContainer& photons, CutManager& MonojetCuts);
 
       void evaluateMETCuts
         (const xAOD::MissingET* met, CutManager& MonojetCuts);

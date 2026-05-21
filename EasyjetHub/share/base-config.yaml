@@ -200,6 +200,7 @@ Tau:
   variables_int: ["charge", "nProng", "decayMode"]
   extra_wps: []
   antiTauScoreThreshold: 0
+  do_TauLRT : false
 
 Lepton:
   amount: 0

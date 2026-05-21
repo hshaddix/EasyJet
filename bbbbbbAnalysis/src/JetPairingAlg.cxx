@@ -39,6 +39,24 @@ namespace {
   }
 }  // namespace
 
+// For the semi-resolved regime
+namespace {
+
+  template <typename F>
+  void forEachUniqueFourJetPairing(F&& f) {
+
+    // (0,1)(2,3)
+    f(0,1,2,3);
+
+    // (0,2)(1,3)
+    f(0,2,1,3);
+
+    // (0,3)(1,2)
+    f(0,3,1,2);
+  }
+
+}
+
 namespace HHH6B
 {
   JetPairingAlg ::JetPairingAlg(const std::string &name,
@@ -53,8 +71,6 @@ namespace HHH6B
     ATH_CHECK(m_outJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_eventInfoKey.initialize());
     
-
-
     // Convert string to enum
     // Pairing strategy
     m_pairing_strategy = stringtoPairingStrategy(m_pairingStrategy);
@@ -83,182 +99,404 @@ namespace HHH6B
 
       // this assumes that container is pt sorted (use the JetSelectorAlg for
       // this) and checks if we have at least 6 jets otherwise exit this alg
-      if (m_pairing_strategy == HHH6B::PairingStrategy::minDeltaR && workContainer->size() >= 6)
+      if (m_pairing_strategy == HHH6B::PairingStrategy::minDeltaR)
       {
-        // Find the optimal pairing that minimizes Delta R within Higgs pairs
-        float best_deltaR_sum = std::numeric_limits<float>::max();
-        std::vector<size_t> best_pairing;
-        
-        // 15 unique partitions of 6 jets into 3 pairs (old 6-level loops counted each partition several times)
-        forEachUniqueSixJetPairing([&](size_t i1, size_t j1, size_t i2, size_t j2, size_t i3, size_t j3) {
-                    float dr_pair1 = xAOD::P4Helpers::deltaR((*workContainer)[i1], (*workContainer)[j1]);
-                    float dr_pair2 = xAOD::P4Helpers::deltaR((*workContainer)[i2], (*workContainer)[j2]);
-                    float dr_pair3 = xAOD::P4Helpers::deltaR((*workContainer)[i3], (*workContainer)[j3]);
-                    float total_deltaR = dr_pair1 + dr_pair2 + dr_pair3;
-                    if (total_deltaR < best_deltaR_sum) {
-                      best_deltaR_sum = total_deltaR;
-                      best_pairing = {i1, j1, i2, j2, i3, j3};
-                    }
-        });
-        
-        // Apply the best pairing: reorder the workContainer according to best_pairing
-        if (!best_pairing.empty()) {
-          // Get the three jet pairs from the best pairing  
-          std::vector<std::array<const xAOD::Jet*, 2>> all_candidates(3);
-          all_candidates[0] = {(*workContainer)[best_pairing[0]], (*workContainer)[best_pairing[1]]};
-          all_candidates[1] = {(*workContainer)[best_pairing[2]], (*workContainer)[best_pairing[3]]};
-          all_candidates[2] = {(*workContainer)[best_pairing[4]], (*workContainer)[best_pairing[5]]};
+        if (m_analysisRegion == "resolved" && workContainer->size() >= 6) {
+          // Find the optimal pairing that minimizes Delta R within Higgs pairs
+          float best_deltaR_sum = std::numeric_limits<float>::max();
+          std::vector<size_t> best_pairing;
           
-          // Order pairs by their combined pT (highest pT first)
-          std::vector<float> pair_pts(3);
-          for (int i = 0; i < 3; ++i) {
-            pair_pts[i] = (all_candidates[i][0]->p4() + all_candidates[i][1]->p4()).Pt();
-          }
-          
-          // Sort pairs by pT (descending)
-          std::vector<int> pair_order = {0, 1, 2};
-          std::sort(pair_order.begin(), pair_order.end(), 
-                   [&pair_pts](int a, int b) { return pair_pts[a] > pair_pts[b]; });
-          
-          // Apply the ordered pairing
-          (*workContainer)[0] = all_candidates[pair_order[0]][0]; // cand1 jet 1 (highest dijet pT)
-          (*workContainer)[1] = all_candidates[pair_order[0]][1]; // cand1 jet 2 (highest dijet pT)
-          (*workContainer)[2] = all_candidates[pair_order[1]][0]; // cand2 jet 1
-          (*workContainer)[3] = all_candidates[pair_order[1]][1]; // cand2 jet 2
-          (*workContainer)[4] = all_candidates[pair_order[2]][0]; // cand3 jet 1
-          (*workContainer)[5] = all_candidates[pair_order[2]][1]; // cand3 jet 2
-        }
-
-        // Store the best pairing indices as a decoration on the first jet
-        storeJetPairingIndices(best_pairing, (*workContainer)[0]);
-
-        // Keep 3 dijet candidates (6 jets total) in the container.
-        // Candidates are ordered by dijet pT (cand1 highest), with cand2/cand3
-        // optionally swapped below based on single-jet pT.
-        if ((*workContainer)[2]->pt() < (*workContainer)[4]->pt())
-        {
-          // no swap method on ConstDataVector, so by hand
-          const xAOD::Jet *temp2 = (*workContainer)[2];
-          const xAOD::Jet *temp3 = (*workContainer)[3];
-          (*workContainer)[2] = (*workContainer)[4];
-          (*workContainer)[3] = (*workContainer)[5];
-          (*workContainer)[4] = temp2;
-          (*workContainer)[5] = temp3;
-        }
-        
-        // Parent masks will be extracted directly in BaselineVarsResolvedAlg
-        
-        // keep only the higgs candidate ones to avoid confusion
-        workContainer->erase(workContainer->begin() + 6, workContainer->end());
-      }
-
-      // minTargetMass pairing strategy - minimizes |m_H1 - 120 GeV| + |m_H2 - 115 GeV| + |m_H3 - 110 GeV|
-      else if(m_pairing_strategy == HHH6B::PairingStrategy::minTargetMass && workContainer->size() >= 6)
-      {
-        // Target masses for each Higgs candidate
-        const float target_m1 = 120.0; // GeV
-        const float target_m2 = 115.0; // GeV  
-        const float target_m3 = 110.0; // GeV
-        
-        float best_score = std::numeric_limits<float>::max();
-        std::vector<size_t> best_pairing;
-        
-        forEachUniqueSixJetPairing([&](size_t i1, size_t j1, size_t i2, size_t j2, size_t i3, size_t j3) {
-                    xAOD::JetFourMom_t tlv_pair1 = (*workContainer)[i1]->jetP4() + (*workContainer)[j1]->jetP4();
-                    xAOD::JetFourMom_t tlv_pair2 = (*workContainer)[i2]->jetP4() + (*workContainer)[j2]->jetP4();
-                    xAOD::JetFourMom_t tlv_pair3 = (*workContainer)[i3]->jetP4() + (*workContainer)[j3]->jetP4();
-                    float mass_pair1 = tlv_pair1.M() / Athena::Units::GeV;  // Convert MeV to GeV 
-                    
-                    float mass_pair2 = tlv_pair2.M() / Athena::Units::GeV;
-                    float mass_pair3 = tlv_pair3.M() / Athena::Units::GeV;
-                    std::vector<float> masses = {mass_pair1, mass_pair2, mass_pair3};
-                    std::vector<float> targets = {target_m1, target_m2, target_m3};
-                    float local_best_score = 999999;
-                    std::vector<int> perm = {0, 1, 2};
-                    do {
-                      float perm_score = std::abs(masses[perm[0]] - targets[0]) +
-                                       std::abs(masses[perm[1]] - targets[1]) +
-                                       std::abs(masses[perm[2]] - targets[2]);
-                      if (perm_score < local_best_score) {
-                        local_best_score = perm_score;
+          // 15 unique partitions of 6 jets into 3 pairs (old 6-level loops counted each partition several times)
+          forEachUniqueSixJetPairing([&](size_t i1, size_t j1, size_t i2, size_t j2, size_t i3, size_t j3) {
+                      float dr_pair1 = xAOD::P4Helpers::deltaR((*workContainer)[i1], (*workContainer)[j1]);
+                      float dr_pair2 = xAOD::P4Helpers::deltaR((*workContainer)[i2], (*workContainer)[j2]);
+                      float dr_pair3 = xAOD::P4Helpers::deltaR((*workContainer)[i3], (*workContainer)[j3]);
+                      float total_deltaR = dr_pair1 + dr_pair2 + dr_pair3;
+                      if (total_deltaR < best_deltaR_sum) {
+                        best_deltaR_sum = total_deltaR;
+                        best_pairing = {i1, j1, i2, j2, i3, j3};
                       }
-                    } while (std::next_permutation(perm.begin(), perm.end()));
-                    if (local_best_score < best_score) {
-                      best_score = local_best_score;
-                      best_pairing = {i1, j1, i2, j2, i3, j3};
-                    }
-        });
-        
-        // Apply the best pairing: reorder the workContainer according to best_pairing
-        if (!best_pairing.empty()) {
-          // Get the three jet pairs from the best pairing  
-          std::vector<std::array<const xAOD::Jet*, 2>> all_candidates(3);
-          all_candidates[0] = {(*workContainer)[best_pairing[0]], (*workContainer)[best_pairing[1]]};
-          all_candidates[1] = {(*workContainer)[best_pairing[2]], (*workContainer)[best_pairing[3]]};
-          all_candidates[2] = {(*workContainer)[best_pairing[4]], (*workContainer)[best_pairing[5]]};
+          });
           
-          // Calculate masses for each Higgs candidate
-          std::vector<float> masses(3);
-          for (int i = 0; i < 3; ++i) {
-            TLorentzVector sum4mom = all_candidates[i][0]->p4() + all_candidates[i][1]->p4();
-            masses[i] = sum4mom.M() / Athena::Units::GeV;  // GeV
+          // Apply the best pairing: reorder the workContainer according to best_pairing
+          if (!best_pairing.empty()) {
+            // Get the three jet pairs from the best pairing  
+            std::vector<std::array<const xAOD::Jet*, 2>> all_candidates(3);
+            all_candidates[0] = {(*workContainer)[best_pairing[0]], (*workContainer)[best_pairing[1]]};
+            all_candidates[1] = {(*workContainer)[best_pairing[2]], (*workContainer)[best_pairing[3]]};
+            all_candidates[2] = {(*workContainer)[best_pairing[4]], (*workContainer)[best_pairing[5]]};
+            
+            // Order pairs by their combined pT (highest pT first)
+            std::vector<float> pair_pts(3);
+            for (int i = 0; i < 3; ++i) {
+              pair_pts[i] = (all_candidates[i][0]->p4() + all_candidates[i][1]->p4()).Pt();
+            }
+            
+            // Sort pairs by pT (descending)
+            std::vector<int> pair_order = {0, 1, 2};
+            std::sort(pair_order.begin(), pair_order.end(), 
+                    [&pair_pts](int a, int b) { return pair_pts[a] > pair_pts[b]; });
+            
+            // Apply the ordered pairing
+            (*workContainer)[0] = all_candidates[pair_order[0]][0]; // cand1 jet 1 (highest dijet pT)
+            (*workContainer)[1] = all_candidates[pair_order[0]][1]; // cand1 jet 2 (highest dijet pT)
+            (*workContainer)[2] = all_candidates[pair_order[1]][0]; // cand2 jet 1
+            (*workContainer)[3] = all_candidates[pair_order[1]][1]; // cand2 jet 2
+            (*workContainer)[4] = all_candidates[pair_order[2]][0]; // cand3 jet 1
+            (*workContainer)[5] = all_candidates[pair_order[2]][1]; // cand3 jet 2
+          }
+
+          // Store the best pairing indices as a decoration on the first jet
+          storeJetPairingIndices(best_pairing, (*workContainer)[0]);
+
+          // Keep 3 dijet candidates (6 jets total) in the container.
+          // Candidates are ordered by dijet pT (cand1 highest), with cand2/cand3
+          // optionally swapped below based on single-jet pT.
+          if ((*workContainer)[2]->pt() < (*workContainer)[4]->pt())
+          {
+            // no swap method on ConstDataVector, so by hand
+            const xAOD::Jet *temp2 = (*workContainer)[2];
+            const xAOD::Jet *temp3 = (*workContainer)[3];
+            (*workContainer)[2] = (*workContainer)[4];
+            (*workContainer)[3] = (*workContainer)[5];
+            (*workContainer)[4] = temp2;
+            (*workContainer)[5] = temp3;
           }
           
-          // Assign targets: H1->120 GeV, H2->115 GeV, H3->110 GeV
-          std::vector<float> targets = {120.0f, 115.0f, 110.0f};
+          // Parent masks will be extracted directly in BaselineVarsResolvedAlg
           
-          // Find the best assignment by minimizing total distance
-          std::vector<int> best_assignment = {0, 1, 2};  // default assignment
-          float best_total_distance = 999999;
+          // keep only the higgs candidate ones to avoid confusion
+          workContainer->erase(workContainer->begin() + 6, workContainer->end());
+
+        } else if (m_analysisRegion == "semiresolved"  && workContainer->size() >= 4) {
+          float best_deltaR_sum = std::numeric_limits<float>::max();
+          std::vector<size_t> best_pairing;
+
+          forEachUniqueFourJetPairing(
+              [&](size_t i1, size_t j1,
+                  size_t i2, size_t j2)
+          {
+              float dr1 =
+                  xAOD::P4Helpers::deltaR(
+                      (*workContainer)[i1],
+                      (*workContainer)[j1]);
+
+              float dr2 =
+                  xAOD::P4Helpers::deltaR(
+                      (*workContainer)[i2],
+                      (*workContainer)[j2]);
+
+              float total_dr = dr1 + dr2;
+
+              if (total_dr < best_deltaR_sum) {
+                  best_deltaR_sum = total_dr;
+                  best_pairing = {i1, j1, i2, j2};
+              }
+          });
+
+          if (!best_pairing.empty()) {
+
+              std::vector<std::array<const xAOD::Jet*,2>> all_candidates(2);
+
+              all_candidates[0] = {
+                  (*workContainer)[best_pairing[0]],
+                  (*workContainer)[best_pairing[1]]
+              };
+
+              all_candidates[1] = {
+                  (*workContainer)[best_pairing[2]],
+                  (*workContainer)[best_pairing[3]]
+              };
+
+              // order by dijet pT
+              std::vector<float> pair_pts(2);
+
+              for (int i = 0; i < 2; ++i) {
+                  pair_pts[i] =
+                      (all_candidates[i][0]->p4()
+                    + all_candidates[i][1]->p4()).Pt();
+              }
+
+              std::vector<int> order = {0,1};
+
+              std::sort(order.begin(), order.end(),
+                  [&](int a, int b) {
+                      return pair_pts[a] > pair_pts[b];
+                  });
+
+              (*workContainer)[0] =
+                  all_candidates[order[0]][0];
+
+              (*workContainer)[1] =
+                  all_candidates[order[0]][1];
+
+              (*workContainer)[2] =
+                  all_candidates[order[1]][0];
+
+              (*workContainer)[3] =
+                  all_candidates[order[1]][1];
+          }
+
+          storeJetPairingIndices(best_pairing,
+                                (*workContainer)[0]);
+
+          // keep only the paired jets
+          workContainer->erase(workContainer->begin() + 4,
+                              workContainer->end());
+        
+        }
+      } else if(m_pairing_strategy == HHH6B::PairingStrategy::minTargetMass)
+      {
+        if (m_analysisRegion == "resolved" && workContainer->size() >= 6) {
+          // Target masses for each Higgs candidate
+          const float target_m1 = 120.0; // GeV
+          const float target_m2 = 115.0; // GeV  
+          const float target_m3 = 110.0; // GeV
           
-          // Try all permutations of assignments
-          std::vector<int> assignment = {0, 1, 2};
-          do {
-            float total_distance = 0;
+          float best_score = std::numeric_limits<float>::max();
+          std::vector<size_t> best_pairing;
+          
+          forEachUniqueSixJetPairing([&](size_t i1, size_t j1, size_t i2, size_t j2, size_t i3, size_t j3) {
+                      xAOD::JetFourMom_t tlv_pair1 = (*workContainer)[i1]->jetP4() + (*workContainer)[j1]->jetP4();
+                      xAOD::JetFourMom_t tlv_pair2 = (*workContainer)[i2]->jetP4() + (*workContainer)[j2]->jetP4();
+                      xAOD::JetFourMom_t tlv_pair3 = (*workContainer)[i3]->jetP4() + (*workContainer)[j3]->jetP4();
+                      float mass_pair1 = tlv_pair1.M() / Athena::Units::GeV;  // Convert MeV to GeV 
+                      
+                      float mass_pair2 = tlv_pair2.M() / Athena::Units::GeV;
+                      float mass_pair3 = tlv_pair3.M() / Athena::Units::GeV;
+                      std::vector<float> masses = {mass_pair1, mass_pair2, mass_pair3};
+                      std::vector<float> targets = {target_m1, target_m2, target_m3};
+                      float local_best_score = 999999;
+                      std::vector<int> perm = {0, 1, 2};
+                      do {
+                        float perm_score = std::abs(masses[perm[0]] - targets[0]) +
+                                        std::abs(masses[perm[1]] - targets[1]) +
+                                        std::abs(masses[perm[2]] - targets[2]);
+                        if (perm_score < local_best_score) {
+                          local_best_score = perm_score;
+                        }
+                      } while (std::next_permutation(perm.begin(), perm.end()));
+                      if (local_best_score < best_score) {
+                        best_score = local_best_score;
+                        best_pairing = {i1, j1, i2, j2, i3, j3};
+                      }
+          });
+          
+          // Apply the best pairing: reorder the workContainer according to best_pairing
+          if (!best_pairing.empty()) {
+            // Get the three jet pairs from the best pairing  
+            std::vector<std::array<const xAOD::Jet*, 2>> all_candidates(3);
+            all_candidates[0] = {(*workContainer)[best_pairing[0]], (*workContainer)[best_pairing[1]]};
+            all_candidates[1] = {(*workContainer)[best_pairing[2]], (*workContainer)[best_pairing[3]]};
+            all_candidates[2] = {(*workContainer)[best_pairing[4]], (*workContainer)[best_pairing[5]]};
+            
+            // Calculate masses for each Higgs candidate
+            std::vector<float> masses(3);
             for (int i = 0; i < 3; ++i) {
-              total_distance += std::abs(masses[assignment[i]] - targets[i]);
+              TLorentzVector sum4mom = all_candidates[i][0]->p4() + all_candidates[i][1]->p4();
+              masses[i] = sum4mom.M() / Athena::Units::GeV;  // GeV
             }
-            if (total_distance < best_total_distance) {
-              best_total_distance = total_distance;
-              best_assignment = assignment;
+            
+            // Assign targets: H1->120 GeV, H2->115 GeV, H3->110 GeV
+            std::vector<float> targets = {120.0f, 115.0f, 110.0f};
+            
+            // Find the best assignment by minimizing total distance
+            std::vector<int> best_assignment = {0, 1, 2};  // default assignment
+            float best_total_distance = 999999;
+            
+            // Try all permutations of assignments
+            std::vector<int> assignment = {0, 1, 2};
+            do {
+              float total_distance = 0;
+              for (int i = 0; i < 3; ++i) {
+                total_distance += std::abs(masses[assignment[i]] - targets[i]);
+              }
+              if (total_distance < best_total_distance) {
+                best_total_distance = total_distance;
+                best_assignment = assignment;
+              }
+            } while (std::next_permutation(assignment.begin(), assignment.end()));
+            
+            // Apply the best assignment
+            (*workContainer)[0] = all_candidates[best_assignment[0]][0]; // H1 jet 1
+            (*workContainer)[1] = all_candidates[best_assignment[0]][1]; // H1 jet 2
+            (*workContainer)[2] = all_candidates[best_assignment[1]][0]; // H2 jet 1
+            (*workContainer)[3] = all_candidates[best_assignment[1]][1]; // H2 jet 2
+            (*workContainer)[4] = all_candidates[best_assignment[2]][0]; // H3 jet 1
+            (*workContainer)[5] = all_candidates[best_assignment[2]][1]; // H3 jet 2
+            
+            
+          }
+
+          // Store the best pairing indices as a decoration on the first jet
+          storeJetPairingIndices(best_pairing, (*workContainer)[0]);
+
+          // lets return the pairing of the leading (h1) and subleading (h2) Higgs
+          // candidates as four jets in the order:
+          // h1_leading_pt_jet
+          // h1_subleading_pt_jet
+          // h2_leading_pt_jet
+          // h2_subleading_pt_jet
+          if ((*workContainer)[2]->pt() < (*workContainer)[4]->pt())
+          {
+            // no swap method on ConstDataVector, so by hand
+            const xAOD::Jet *temp = (*workContainer)[2];
+            (*workContainer)[2] = (*workContainer)[4];
+            (*workContainer)[3] = temp;
+          }
+          
+          // Parent masks will be extracted directly in BaselineVarsResolvedAlg
+          
+          // Keep only the higgs candidate ones to avoid confusion
+          workContainer->erase(workContainer->begin() + 6, workContainer->end());
+
+        } else if (m_analysisRegion == "semiresolved" && workContainer->size() >= 4) {
+
+            // Target masses for the two Higgs candidates
+            const float target_m1 = 120.0; // GeV
+            const float target_m2 = 115.0; // GeV
+
+            float best_score = std::numeric_limits<float>::max();
+            std::vector<size_t> best_pairing;
+
+            forEachUniqueFourJetPairing(
+                [&](size_t i1, size_t j1,
+                    size_t i2, size_t j2)
+            {
+                xAOD::JetFourMom_t tlv_pair1 =
+                    (*workContainer)[i1]->jetP4()
+                  + (*workContainer)[j1]->jetP4();
+
+                xAOD::JetFourMom_t tlv_pair2 =
+                    (*workContainer)[i2]->jetP4()
+                  + (*workContainer)[j2]->jetP4();
+
+                float mass1 =
+                    tlv_pair1.M() / Athena::Units::GeV;
+
+                float mass2 =
+                    tlv_pair2.M() / Athena::Units::GeV;
+
+                // Two possible assignments:
+                //
+                // pair1 -> H1, pair2 -> H2
+                // OR
+                // pair1 -> H2, pair2 -> H1
+
+                float score_a =
+                    std::abs(mass1 - target_m1)
+                  + std::abs(mass2 - target_m2);
+
+                float score_b =
+                    std::abs(mass1 - target_m2)
+                  + std::abs(mass2 - target_m1);
+
+                float local_best =
+                    std::min(score_a, score_b);
+
+                if (local_best < best_score) {
+                    best_score = local_best;
+                    best_pairing = {i1, j1, i2, j2};
+                }
+            });
+
+            // Apply best pairing
+            if (!best_pairing.empty())
+            {
+                std::vector<std::array<const xAOD::Jet*,2>>
+                    all_candidates(2);
+
+                all_candidates[0] = {
+                    (*workContainer)[best_pairing[0]],
+                    (*workContainer)[best_pairing[1]]
+                };
+
+                all_candidates[1] = {
+                    (*workContainer)[best_pairing[2]],
+                    (*workContainer)[best_pairing[3]]
+                };
+
+                // Compute masses
+                std::vector<float> masses(2);
+
+                for (int i = 0; i < 2; ++i)
+                {
+                    TLorentzVector sum4mom =
+                        all_candidates[i][0]->p4()
+                      + all_candidates[i][1]->p4();
+
+                    masses[i] =
+                        sum4mom.M() / Athena::Units::GeV;
+                }
+
+                // Determine assignment
+                float score_a =
+                    std::abs(masses[0] - target_m1)
+                  + std::abs(masses[1] - target_m2);
+
+                float score_b =
+                    std::abs(masses[0] - target_m2)
+                  + std::abs(masses[1] - target_m1);
+
+                std::vector<int> assignment;
+
+                if (score_a <= score_b) {
+                    assignment = {0,1};
+                }
+                else {
+                    assignment = {1,0};
+                }
+
+                // Apply ordering
+                (*workContainer)[0] =
+                    all_candidates[assignment[0]][0];
+
+                (*workContainer)[1] =
+                    all_candidates[assignment[0]][1];
+
+                (*workContainer)[2] =
+                    all_candidates[assignment[1]][0];
+
+                (*workContainer)[3] =
+                    all_candidates[assignment[1]][1];
             }
-          } while (std::next_permutation(assignment.begin(), assignment.end()));
-          
-          // Apply the best assignment
-          (*workContainer)[0] = all_candidates[best_assignment[0]][0]; // H1 jet 1
-          (*workContainer)[1] = all_candidates[best_assignment[0]][1]; // H1 jet 2
-          (*workContainer)[2] = all_candidates[best_assignment[1]][0]; // H2 jet 1
-          (*workContainer)[3] = all_candidates[best_assignment[1]][1]; // H2 jet 2
-          (*workContainer)[4] = all_candidates[best_assignment[2]][0]; // H3 jet 1
-          (*workContainer)[5] = all_candidates[best_assignment[2]][1]; // H3 jet 2
-          
-          
-        }
 
-        // Store the best pairing indices as a decoration on the first jet
-        storeJetPairingIndices(best_pairing, (*workContainer)[0]);
+            // Store pairing indices
+            storeJetPairingIndices(best_pairing,
+                                  (*workContainer)[0]);
 
-        // lets return the pairing of the leading (h1) and subleading (h2) Higgs
-        // candidates as four jets in the order:
-        // h1_leading_pt_jet
-        // h1_subleading_pt_jet
-        // h2_leading_pt_jet
-        // h2_subleading_pt_jet
-        if ((*workContainer)[2]->pt() < (*workContainer)[4]->pt())
-        {
-          // no swap method on ConstDataVector, so by hand
-          const xAOD::Jet *temp = (*workContainer)[2];
-          (*workContainer)[2] = (*workContainer)[4];
-          (*workContainer)[3] = temp;
+            // Optional:
+            // Ensure H1 has higher dijet pT than H2
+
+            xAOD::JetFourMom_t h1 =
+                (*workContainer)[0]->jetP4()
+              + (*workContainer)[1]->jetP4();
+
+            xAOD::JetFourMom_t h2 =
+                (*workContainer)[2]->jetP4()
+              + (*workContainer)[3]->jetP4();
+
+            if (h2.Pt() > h1.Pt())
+            {
+                const xAOD::Jet* temp0 = (*workContainer)[0];
+                const xAOD::Jet* temp1 = (*workContainer)[1];
+
+                (*workContainer)[0] = (*workContainer)[2];
+                (*workContainer)[1] = (*workContainer)[3];
+
+                (*workContainer)[2] = temp0;
+                (*workContainer)[3] = temp1;
+            }
+
+            // Keep only 4 jets
+            workContainer->erase(
+              workContainer->begin() + 4,
+              workContainer->end());
+            
+          }
         }
-        
-        // Parent masks will be extracted directly in BaselineVarsResolvedAlg
-        
-        // Keep only the higgs candidate ones to avoid confusion
-        workContainer->erase(workContainer->begin() + 6, workContainer->end());
+        ATH_CHECK(m_outJetHandle.record(std::move(workContainer), sys));
       }
-      ATH_CHECK(m_outJetHandle.record(std::move(workContainer), sys));
-    }
     return StatusCode::SUCCESS;
   }
 
@@ -344,10 +582,15 @@ namespace HHH6B
     }
     jet_pairing_indices_dec(*firstJet) = pairing_indices;
     
-    ATH_MSG_DEBUG("Stored jet pairing indices: ["
-                 << pairing_indices[0] << ", " << pairing_indices[1] << ", "
-                 << pairing_indices[2] << ", " << pairing_indices[3] << ", "
-                 << pairing_indices[4] << ", " << pairing_indices[5] << "]");
+    if (m_analysisRegion == "resolved") {
+      ATH_MSG_DEBUG("Stored jet pairing indices: ["
+                  << pairing_indices[0] << ", " << pairing_indices[1] << ", "
+                  << pairing_indices[2] << ", " << pairing_indices[3] << ", "
+                  << pairing_indices[4] << ", " << pairing_indices[5] << "]");
+    } else if (m_analysisRegion == "semiresolved") {
+      ATH_MSG_DEBUG("Stored jet pairing indices: ["
+                  << pairing_indices[0] << ", " << pairing_indices[1] << ", "
+                  << pairing_indices[2] << ", " << pairing_indices[3] << "]");
+    }
   }
-
-}
+} // namespace HHH6B

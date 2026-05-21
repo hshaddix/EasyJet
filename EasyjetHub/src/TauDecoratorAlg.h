@@ -83,6 +83,11 @@ namespace Easyjet
       this, "tauTruthJetDecorName", "truthJetLink", "tau linked truth jet"
     };
     SG::ReadDecorHandleKey<xAOD::TauJetContainer> m_tauLinkedJetDecorKey;
+
+    Gaudi::Property<bool> m_skipTruthJetMatching
+    { this, "skipTruthJetMatching", false, "Skip truth jet matching" };
+
+
   };
 
 }

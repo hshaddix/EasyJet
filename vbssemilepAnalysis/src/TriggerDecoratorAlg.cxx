@@ -99,7 +99,7 @@ namespace VBSSEMILEP
 
       // check if trigger is fired or not
       checkSingleJetTrigger(event, sys);
-      
+
       for (auto& [channel, var] : m_trig_bools) {
         m_trig_branches.at(channel).set(*event, var, sys);
       }

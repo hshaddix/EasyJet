@@ -23,6 +23,7 @@ from EasyjetHub.algs.event_counter_config import event_counter_cfg
 from bbbbbbAnalysis.utils.option_validation_6b import validate_hhh6b_analysis_prerequisites
 from bbbbbbAnalysis.config.trihiggs import trihiggs_cfg
 from bbbbbbAnalysis.config.resolved import resolved_branches, resolved_trigger_SF_branches, resolved_trigger_bucket_branches
+from bbbbbbAnalysis.config.semiresolved import semiresolved_branches
 from bbbbbbAnalysis.config.semiboosted import semiboosted_branches
 from bbbbbbAnalysis.config.boosted import boosted_branches
 from bbbbbbAnalysis.config.trihiggs import pass_branches
@@ -82,6 +83,9 @@ def hhh6b_job_cfg():
     # For more sophistication this could be done using
     # custom BranchManagers
     bbbbbb_branches = []
+    if flags.Analysis.do_semiresolved_trihiggs:
+        bbbbbb_extra_branches, float_variable_names = semiresolved_branches(flags)
+        bbbbbb_branches += bbbbbb_extra_branches
     if flags.Analysis.do_semiboosted_trihiggs:
         bbbbbb_extra_branches, float_variable_names = semiboosted_branches(flags)
         bbbbbb_branches += bbbbbb_extra_branches

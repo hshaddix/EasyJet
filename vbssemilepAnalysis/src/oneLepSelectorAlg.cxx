@@ -112,7 +112,7 @@ namespace VBSSEMILEP{
 
       bool pass_preselection = m_bools.at(VBSSEMILEP::PASS_RES_BASELINE) || m_bools.at(VBSSEMILEP::PASS_MERG_BASELINE);
 
-      m_passallcuts.set(*event, true, sys);
+      m_passallcuts.set(*event, pass_preselection, sys);
 
       // do the CUTFLOW only with sys="" -> NOSYS
       if (sys.name()==""){

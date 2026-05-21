@@ -130,6 +130,9 @@ private:
         this, "pairingStrategy", "", "Pairing strategy."};
     // Declare the enum for jet pairing strategy
     PairingStrategy m_pairing_strategy {invalid};
+    
+    Gaudi::Property<std::string> m_analysisRegion {
+        this, "analysisRegion", "", "Analysis Region"};
   };
 }
 

@@ -156,7 +156,7 @@ namespace VBSSEMILEP{
         // selected leptons ;
         const xAOD::Electron* ele0 = n_electrons>=1 ? electrons->at(0) : nullptr;
         if (!ele0) {
-        ATH_MSG_WARNING("No valid muon found!");
+        ATH_MSG_WARNING("No valid electron found!");
         return StatusCode::SUCCESS;
         }
 
@@ -189,7 +189,7 @@ namespace VBSSEMILEP{
           m_Fbranches.at("Lepton_px").set(*event,  tlv.Px(), sys);
           m_Fbranches.at("Lepton_py").set(*event,  tlv.Py(), sys);
           m_Fbranches.at("Lepton_pz").set(*event,  tlv.Pz(), sys);
-          m_Fbranches.at("Lepton_y").set(*event,  tlv.Pz(), sys);
+          m_Fbranches.at("Lepton_y").set(*event,  tlv.Rapidity(), sys);
 
           m_Fbranches.at("dPhilMET").set(*event, tlv.DeltaPhi(metVec), sys);
 	        

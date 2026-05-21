@@ -40,7 +40,6 @@ def default_sequence_cfg(flags, seqname):
     cfg.merge(preselection_cfg(flags, seqname))
     cfg.merge(metadata_cfg(flags), seqname)
     cfg.merge(event_building_cfg(flags, seqname))
-
     return cfg
 
 

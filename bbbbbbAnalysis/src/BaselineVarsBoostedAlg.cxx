@@ -95,18 +95,18 @@ namespace HHH6B
         m_Fdecos.at("boosted_hhh_pt").set(*eventInfo, hhh_v4.Pt(), sys);
         
         // Geometric differences between Higgs candidates
-        m_Fdecos.at("boosted_h1h2_delta_eta").set(*eventInfo, h1_v4.Eta() - h2_v4.Eta(), sys);
-        m_Fdecos.at("boosted_h1h3_delta_eta").set(*eventInfo, h1_v4.Eta() - h3_v4.Eta(), sys);
-        m_Fdecos.at("boosted_h2h3_delta_eta").set(*eventInfo, h2_v4.Eta() - h3_v4.Eta(), sys);
-        m_Fdecos.at("boosted_h1h2_delta_phi").set(*eventInfo, h1_v4.DeltaPhi(h2_v4), sys);
-        m_Fdecos.at("boosted_h1h3_delta_phi").set(*eventInfo, h1_v4.DeltaPhi(h3_v4), sys);
-        m_Fdecos.at("boosted_h2h3_delta_phi").set(*eventInfo, h2_v4.DeltaPhi(h3_v4), sys);
+        m_Fdecos.at("boosted_h1h2_delta_eta").set(*eventInfo, std::abs(h1_v4.Eta() - h2_v4.Eta()), sys);
+        m_Fdecos.at("boosted_h1h3_delta_eta").set(*eventInfo, std::abs(h1_v4.Eta() - h3_v4.Eta()), sys);
+        m_Fdecos.at("boosted_h2h3_delta_eta").set(*eventInfo, std::abs(h2_v4.Eta() - h3_v4.Eta()), sys);
+        m_Fdecos.at("boosted_h1h2_delta_phi").set(*eventInfo, std::abs(h1_v4.DeltaPhi(h2_v4)), sys);
+        m_Fdecos.at("boosted_h1h3_delta_phi").set(*eventInfo, std::abs(h1_v4.DeltaPhi(h3_v4)), sys);
+        m_Fdecos.at("boosted_h2h3_delta_phi").set(*eventInfo, std::abs(h2_v4.DeltaPhi(h3_v4)), sys);
 
 
         // Mass differences between Higgs canditates
-        m_Fdecos.at("boosted_h1h2_MassDiff").set(*eventInfo, h1_v4.M() - h2_v4.M(), sys);
-        m_Fdecos.at("boosted_h1h3_MassDiff").set(*eventInfo, h1_v4.M() - h3_v4.M(), sys);
-        m_Fdecos.at("boosted_h2h3_MassDiff").set(*eventInfo, h2_v4.M() - h3_v4.M(), sys);
+        m_Fdecos.at("boosted_h1h2_MassDiff").set(*eventInfo, std::abs(h1_v4.M() - h2_v4.M()), sys);
+        m_Fdecos.at("boosted_h1h3_MassDiff").set(*eventInfo, std::abs(h1_v4.M() - h3_v4.M()), sys);
+        m_Fdecos.at("boosted_h2h3_MassDiff").set(*eventInfo, std::abs(h2_v4.M() - h3_v4.M()), sys);
 
         // Topology variables
         std::vector<TLorentzVector> jetMomenta;

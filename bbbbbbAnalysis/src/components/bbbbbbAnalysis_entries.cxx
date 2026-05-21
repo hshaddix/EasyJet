@@ -1,4 +1,5 @@
 #include "../BaselineVarsResolvedAlg.h"
+#include "../BaselineVarsSemiResolvedAlg.h"
 #include "../BaselineVarsSemiBoostedAlg.h"
 #include "../BaselineVarsBoostedAlg.h"
 #include "../bbbbbbSelectorAlg.h"
@@ -9,6 +10,7 @@
 using namespace HHH6B;
 
 DECLARE_COMPONENT(BaselineVarsResolvedAlg)
+DECLARE_COMPONENT(BaselineVarsSemiResolvedAlg)
 DECLARE_COMPONENT(BaselineVarsSemiBoostedAlg)
 DECLARE_COMPONENT(BaselineVarsBoostedAlg)
 DECLARE_COMPONENT(bbbbbbSelectorAlg)
