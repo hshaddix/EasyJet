@@ -72,6 +72,7 @@ def output_analysis_sequence(
     configSeq.setOptionValue('.treeName', treename)
     configSeq.setOptionValue('.streamName', streamname)
     configSeq.setOptionValue('.postfix', streamname)
+    configSeq.setOptionValue('.nonContainers', ['EventInfo'])
 
     return configSeq
 

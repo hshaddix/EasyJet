@@ -68,11 +68,6 @@ def jet_sequence(
             False
         )
 
-    # Needs to be added manually for now
-    configSeq += makeConfig('Jets.Uncertainties')
-    configSeq.setOptionValue('.containerName', output_name)
-    configSeq.setOptionValue('.jetInput',
-                             "EMTopo" if jet_type == "reco4EMTopoJet" else "EMPflow")
     # JES/JER scheme
     configSeq.setOptionValue(".systematicsModelJES", jet_flags.systModelJES)
     configSeq.setOptionValue(".systematicsModelJER", jet_flags.systModelJER)
@@ -251,10 +246,6 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq.setOptionValue('.minMass', jet_flags.min_mass)
     configSeq.setOptionValue('.maxMass', jet_flags.max_mass)
 
-    # Needs to be added manually for now
-    configSeq += makeConfig('Jets.Uncertainties')
-    configSeq.setOptionValue('.containerName', output_name)
-    configSeq.setOptionValue('.jetInput', "UFO")
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
         jsonCalibFile = find_datafile(tagger_cfg['file'])
 
