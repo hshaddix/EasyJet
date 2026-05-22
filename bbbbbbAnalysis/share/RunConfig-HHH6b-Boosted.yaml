@@ -14,25 +14,27 @@ do_met: true
 Small_R_jet:
   min_pT: 1.e+4
   max_eta: 4.5
-  btag_wp: "GN2v01_FixedCutBEff_85"
+  btag_wp: "GN2v01_FixedCutBEff_90"
   btag_extra_wps:
     - GN2v01_FixedCutBEff_70
     - GN2v01_FixedCutBEff_77
+    - GN2v01_FixedCutBEff_85
   doL1Matching: false
   doHLTMatching: false
-  saveTriggerInfo: false
+  saveTriggerInfo: true
 
 Large_R_jet:
   min_pT: 200.e+3
   max_pT: 3000.e+3
-  max_eta: 4.5
+  max_eta: 2.0
   runMuonJetPtCorr: true
   amount_leadingjet: 3
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml]
+    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml, EasyjetHub/xbb-taggers/GN2Xv01_ftop0p0_hbb.yaml]
 
+pairingStrategy: "minTargetMass"
 
-Muon:
+Muon: 
   ID: "Loose"
   Iso: "PflowLoose_VarRad"
 

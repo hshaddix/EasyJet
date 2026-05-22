@@ -1,4 +1,3 @@
-# `include` must be a list (combineConfigFiles / TextConfig)
 include: [bbbbbbAnalysis/RunConfig-bbbbbb-base.yaml]
 
 # Which analysis to consider
@@ -7,57 +6,41 @@ include: [bbbbbbAnalysis/RunConfig-bbbbbb-base.yaml]
 do_resolved_trihiggs: true
 
 do_resolved_trigger_SF: true
-# Option to switch stored level of trigger SF: detail, simple, both
-triggerSFBranchSaveStrategy: "simple"
-
-# Ntuple/TriggerDecorator only run when at least one of Small_R_jet doL1Matching / doHLTMatching is true
+triggerSFBranchSaveStrategy: "simple" # detail, simple, both
 do_resolved_trigger_bucket: true
 
-pairingStrategy: "minDeltaR"
-# pairingStrategy: "minTargetMass"
+pairingStrategy: "minTargetMass"
 
 # Toggles for object types
 do_small_R_jets: true
 do_large_R_UFO_jets: true
 do_muons: true
-do_photons: false  # Disabled - PhotonOriginCorrectionAlg requires '::m' variable that doesn't exist
+do_met: true
 
 Small_R_jet:
-  min_pT: 1.e+3
+  min_pT: 10.e+3
   max_eta: 4.5
-  btag_wp: "GN2v01_FixedCutBEff_77"
+  btag_wp: "GN2v01_FixedCutBEff_90"
   btag_extra_wps:
     - GN2v01_FixedCutBEff_70
-    # - GN2v01_FixedCutBEff_77
-  doL1Matching: true
-  doHLTMatching: true
+    - GN2v01_FixedCutBEff_77
+    - GN2v01_FixedCutBEff_85
+  doL1Matching: false
+  doHLTMatching: false
   saveTriggerInfo: true
 
 Large_R_jet:
   min_pT: 200.e+3
+  max_pT: 3000.e+3
   max_eta: 2.0
   runMuonJetPtCorr: true
-  do_thinning: true
-  GN2X_hbb_wps:
-    - "FlatMassQCDEff_0p25"
-    - "FlatMassQCDEff_0p3"
-    - "FlatMassQCDEff_0p37"
-    - "FlatMassQCDEff_0p46"
-    - "FlatMassQCDEff_0p58"
-    - "FlatMassQCDEff_0p74"
-    - "FlatMassQCDEff_0p94"
-    - "FlatMassQCDEff_1p25"
-    - "FlatMassQCDEff_1p55"
+  amount_leadingjet: 3
+  flat_mass_selections:
+    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml, EasyjetHub/xbb-taggers/GN2Xv01_ftop0p0_hbb.yaml]
 
 Muon:
   ID: "Loose"
   Iso: "PflowLoose_VarRad"
-
-# photon ID and isolation requirements
-Photon:
-  ID: "Tight" # Loose, Tight
-  Iso: "FixedCutLoose"
-
 
 # list of triggers per year to consider
 Trigger:
@@ -70,14 +53,14 @@ save_cutflow: true
 selection_name: "preselection"
 CutList:
   - PASS_TRIGGER
-  # - AT_LEAST_SIX_JETS
+  - AT_LEAST_SIX_JETS
   # - AT_LEAST_FOUR_BJETS
   # - AT_LEAST_SIX_BJETS
   # - AT_LEAST_FOUR_JETS_OR_TWO_LRJETS
   # - AT_LEAST_SIX_JETS_OR_THREE_LRJETS
   # - AT_LEAST_SIX_JETS_TWO_BJETS
 
-do_overlap_removal: true
+do_overlap_removal: false
 
 do_CP_systematics: false
 systematics_regex: [".*"]
@@ -88,7 +71,6 @@ GRL:
   years:
     include: [EasyjetHub/bjet_grl_years.yaml]
 
-# Alternative PRW configuration
 PileupReweighting:
   extra_prw:
     - postfix: "bjet"
@@ -103,7 +85,7 @@ ttree_output:
   reco_outputs:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
-    # photons: removed - do_photons=false
+    met: 'container_names.output.met'
   collection_options:
     small_R_jets:
       truth_parent_info: true
@@ -113,18 +95,12 @@ ttree_output:
       btag_details: true
       gn3_scores: false
     large_R_jets:
-      truth_parent_info: true
-      btag_info: true
-      JVT_details: true
+      truth_labels: true
+      substructure_info: true
       no_bjet_calib_p4: true
-      btag_details: true
-      gn3_scores: false
-      extra_variables:
-        - [GN2v01_pb, float]
-        - [GN2v01_pc, float]
-        - [GN2v01_ptau, float]
-        - [GN2v01_pu, float]
-    # photons: removed - do_photons=false
+      run_selection: true
+      bjet_regression: true
+
   truth_outputs:
     small_R_jets: 'container_names.input.truth4Jet'
     large_R_jets: 'container_names.input.truth10SoftDropJet'
