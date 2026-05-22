@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsZtautauCalibAlg.h"
@@ -8,7 +8,7 @@ namespace XBBCALIB
 {
   BaselineVarsZtautauCalibAlg::BaselineVarsZtautauCalibAlg(const std::string &name,
                                            ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator)
+      : AthHistogramAlgorithm(name, pSvcLocator)
   { }
 
   StatusCode BaselineVarsZtautauCalibAlg::initialize()
@@ -18,9 +18,8 @@ namespace XBBCALIB
     ATH_CHECK (m_photonHandle.initialize(m_systematicsList));
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
 
-    ATH_CHECK (m_eventInfoKey.initialize());
-    m_yearKey = "EventInfo.dataTakingYear";
-    ATH_CHECK(m_yearKey.initialize());
+    ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
+
     ATH_CHECK (m_matchingTool.retrieve());
 
     // Intialise syst-aware output decorators
@@ -42,7 +41,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZtautauCalibAlg::execute(const EventContext& ctx) const
+  StatusCode BaselineVarsZtautauCalibAlg::execute()
   {
     //Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -70,10 +69,8 @@ namespace XBBCALIB
       }
 
       // look up for triggers
-      SG::ReadHandle<xAOD::EventInfo> eventInfo(m_eventInfoKey,ctx);
-      SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> year_handle (m_yearKey, ctx);
-      ATH_CHECK (eventInfo.isValid());
-      int year = year_handle(*eventInfo);
+      int year = m_year.get(*event, sys);
+
       // TODO: __TauTauCalib__ LargeR jet trigger match information is not stored yet
       // see:  https://its.cern.ch/jira/browse/ATR-26050
       // std::vector<std::string> large_r_jet_triggers;

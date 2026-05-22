@@ -85,8 +85,6 @@ namespace HHBBTT
       ATH_CHECK (m_tauTruthJetLabel.initialize(m_systematicsList, m_bbttTauHandle));
     }
 
-    ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
-
     for (const std::string &var : m_floatVariables){
       ATH_MSG_DEBUG("initializing float variable: " << var);
       CP::SysWriteDecorHandle<float> whandle{var+"_%SYS%", this};

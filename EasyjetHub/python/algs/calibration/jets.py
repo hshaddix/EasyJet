@@ -1,4 +1,4 @@
-# Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+# Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 from AnalysisAlgorithmsConfig.ConfigSequence import ConfigSequence
 from AnalysisAlgorithmsConfig.ConfigFactory import ConfigFactory
@@ -37,10 +37,7 @@ def jet_sequence(
     configSeq.setOptionValue(".jetCollection", jetColl)
     # don't run JVT only for EMTopo jets
     configSeq.setOptionValue(".runNNJvtUpdate", jet_type != "reco4EMTopoJet")
-    configSeq.setOptionValue(".runJvtSelection", jet_type != "reco4EMTopoJet")
-    # Forward JVT
-    configSeq.setOptionValue(".runFJvtSelection", jet_flags.useFJvt)
-    configSeq.setOptionValue(".runFJvtEfficiency", jet_flags.useFJvt)
+    configSeq.setOptionValue(".runJvtSelection", False)
 
     # Set options for calibration tool if given
     if jet_flags.calibToolConfigFile and jet_flags.calibToolCalibArea:
@@ -68,11 +65,6 @@ def jet_sequence(
             False
         )
 
-    # Needs to be added manually for now
-    configSeq += makeConfig('Jets.Uncertainties')
-    configSeq.setOptionValue('.containerName', output_name)
-    configSeq.setOptionValue('.jetInput',
-                             "EMTopo" if jet_type == "reco4EMTopoJet" else "EMPflow")
     # JES/JER scheme
     configSeq.setOptionValue(".systematicsModelJES", jet_flags.systModelJES)
     configSeq.setOptionValue(".systematicsModelJER", jet_flags.systModelJER)
@@ -93,10 +85,20 @@ def jet_sequence(
             jet_flags.uncertToolMCType
         )
 
+    
     if jet_type != "reco4EMTopoJet":
-        configSeq += makeConfig('Jets.JVT')
-        configSeq.setOptionValue('.containerName', output_name)
-        configSeq.setOptionValue('.enableFJvt', jet_flags.useFJvt)
+        configSeq += config.makeConfig('Jets.JVTWorkingPoint')
+        configSeq.setOptionValue ('.containerName', output_name)
+        configSeq.setOptionValue ('.selectionName', 'baselineJvt')
+        configSeq.setOptionValue ('.jvtWP', 'FixedEffPt')
+        configSeq.setOptionValue ('.useSuffix', False)
+
+        if jet_flags.useFJvt:
+            configSeq += makeConfig('Jets.FJVTWorkingPoint')
+            configSeq.setOptionValue ('.containerName', output_name)
+            configSeq.setOptionValue ('.selectionName', 'baselineFJvt')
+            configSeq.setOptionValue ('.fjvtWP', "Loose")
+            configSeq.setOptionValue ('.useSuffix', False)
 
         btag_wps = []
         if jet_flags.btag_wp != "":
@@ -251,10 +253,6 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq.setOptionValue('.minMass', jet_flags.min_mass)
     configSeq.setOptionValue('.maxMass', jet_flags.max_mass)
 
-    # Needs to be added manually for now
-    configSeq += makeConfig('Jets.Uncertainties')
-    configSeq.setOptionValue('.containerName', output_name)
-    configSeq.setOptionValue('.jetInput', "UFO")
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
         jsonCalibFile = find_datafile(tagger_cfg['file'])
 

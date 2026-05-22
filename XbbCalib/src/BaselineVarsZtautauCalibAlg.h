@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -27,7 +27,7 @@ namespace XBBCALIB
 {
 
   /// \brief An algorithm for counting containers
-  class BaselineVarsZtautauCalibAlg final : public AthReentrantAlgorithm
+  class BaselineVarsZtautauCalibAlg final : public AthHistogramAlgorithm
   {
     /// \brief The standard constructor
 public:
@@ -37,7 +37,7 @@ public:
     /// configs
     StatusCode initialize() override;
     /// \brief Execute method, for actions to be taken in the event loop
-    StatusCode execute(const EventContext& ctx) const override;
+    StatusCode execute() override;
     /// We use default finalize() -- this is for cleanup, and we don't do any
 
     
@@ -75,8 +75,7 @@ private:
 
 
     ToolHandle<Trig::IMatchingTool> m_matchingTool { this, "trigMatchingTool", "", "Trigger matching tool"};
-    SG::ReadHandleKey<xAOD::EventInfo> m_eventInfoKey { this, "event", "EventInfo", "EventInfo to read" };
-    SG::ReadDecorHandleKey<xAOD::EventInfo> m_yearKey;
+    CP::SysReadDecorHandle<unsigned int> m_year{this, "year", "dataTakingYear", ""};
   
     /// \brief Setup sys-aware output decorations
     std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;

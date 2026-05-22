@@ -168,11 +168,11 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
 
         # jvt is effSF is now centrally calculated by CP tools
         eventinfo_branches.variables += [
-            ("jvt_effSF_%SYS%", None)
+            ("jvt_effSF_%SYS%", "float")
         ]
         if flags.Analysis.Small_R_jet.useFJvt:
             eventinfo_branches.variables += [
-                ("fjvt_effSF_%SYS%", None)
+                ("fjvt_effSF_%SYS%", "float")
             ]
 
     if tree_flags.truth_outputs.higgs_particle and flags.Input.isMC:
