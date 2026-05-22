@@ -122,18 +122,26 @@ Categories :
   - IS_me
 
 TruthCutList :
-      - EXACTLY_TWO_LEPTONS_TRUTH
-      - SAME_CHARGE_LEPTONS_TRUTH
-      - DILEPTON_MASS_TRUTH
-      - MET_TRUTH
-      - TWO_JETS_TRUTH
-      - DIJET_MASS_TRUTH
-      - DIJET_RAPIDITY_TRUTH
+  - EXACTLY_TWO_LEPTONS_TRUTH
+  - SAME_CHARGE_LEPTONS_TRUTH
+  - DILEPTON_MASS_TRUTH
+  - MET_TRUTH
+  - TWO_JETS_TRUTH
+  - DIJET_MASS_TRUTH
+  - DIJET_RAPIDITY_TRUTH
 
 TruthCategories :
-      - IS_ee_TRUTH
-      - IS_mm_TRUTH
-      - IS_em_TRUTH
+  - IS_ee_TRUTH
+  - IS_mm_TRUTH
+  - IS_em_TRUTH
+
+truth_neutrino_container: TruthNeutrinos
+
+truth_w_vars_dsid_samples:
+  - 545684
+  - 545685
+  - 545686
+  - 561757
 
 # Include the TTree configuration and update details
 ttree_output:

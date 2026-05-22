@@ -64,8 +64,8 @@ namespace ssWWVBS
       SG::ReadHandleKey<xAOD::JetContainer>
       m_truthjetsInKey{ this, "truthSmallJetInContainer", "", "Truth jet container to read" };
 
-      // SG::ReadHandleKey<xAOD::MissingETContainer>
-      // m_truthmetInKey{ this, "truthMetInContainer", "", "Truth met container to read" };
+      SG::ReadHandleKey<xAOD::MissingETContainer>
+      m_truthmetInKey{ this, "truthMetInContainer", "", "Truth MET container to read" };
 
       SG::ReadHandleKey<xAOD::EventInfo>
       m_eventInKey{ this, "event", "EventInfo", "EventInfo container to read" };
@@ -111,12 +111,10 @@ namespace ssWWVBS
       std::unordered_map<std::string, SG::WriteDecorHandleKey<xAOD::EventInfo>>
         m_FbranchesKeys;
 
-      std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>> m_Fbranches;
-
       void truthOverlapRemoval(const xAOD::JetContainer& truthJets, ConstDataVector<xAOD::TruthParticleContainer>& truthElectrons, ConstDataVector<xAOD::TruthParticleContainer>& truthMuons, ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
-      void evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, CutManager& ssWWTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection);
+      void evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, CutManager& ssWWTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection, std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>>& fbranches);
       void evaluateTruthJetCuts(const ConstDataVector<xAOD::JetContainer>& truthjets, CutManager& ssWWTruthCuts);
-      // void evaluateTruthMetCuts(const ConstDataVector<xAOD::MissingETContainer>& truthmet, CutManager& ssWWTruthCuts);
+      void evaluateTruthMetCuts(const xAOD::MissingET* truthmet, CutManager& ssWWTruthCuts);
       void setThresholds(const xAOD::EventInfo* event);
       StatusCode initialiseCutflow(); 
   };
