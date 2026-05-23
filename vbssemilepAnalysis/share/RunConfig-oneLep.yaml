@@ -1,0 +1,69 @@
+include: vbssemilepAnalysis/RunConfig-common.yaml 
+
+# Which analysis to consider
+channels: ["oneLep"]
+
+# Toggles for object types
+do_muons: true
+do_electrons: true
+do_met : true
+
+
+Electron:
+  ID: "LooseBLayerLH"
+  Iso: "Loose_VarRad"
+  amount: 1
+  extra_wps:
+    - ["MediumLH", "Loose_VarRad"]
+    - ["MediumLH", "Tight_VarRad"]
+    - ["MediumLH", "TightTrackOnly_VarRad"]
+    - ["MediumLH", "TightTrackOnly_FixedRad"]
+
+    - ["TightLH", "Loose_VarRad"]
+    - ["TightLH", "Tight_VarRad"]
+    - ["TightLH", "TightTrackOnly_VarRad"]
+    - ["TightLH", "TightTrackOnly_FixedRad"]
+
+    - ["LooseDNNElectron", "Loose_VarRad"]
+    - ["LooseDNNElectron", "Tight_VarRad"]
+    - ["LooseDNNElectron", "TightTrackOnly_VarRad"]
+    - ["LooseDNNElectron", "TightTrackOnly_FixedRad"]
+
+    - ["MediumDNNElectron", "Loose_VarRad"]
+    - ["MediumDNNElectron", "Tight_VarRad"]
+    - ["MediumDNNElectron", "TightTrackOnly_VarRad"]
+    - ["MediumDNNElectron", "TightTrackOnly_FixedRad"]
+
+    - ["TightDNNElectron", "Loose_VarRad"]
+    - ["TightDNNElectron", "Tight_VarRad"]
+    - ["TightDNNElectron", "TightTrackOnly_VarRad"]
+    - ["TightDNNElectron", "TightTrackOnly_FixedRad"]
+Muon:
+  ID: "Loose"
+  Iso: "PflowLoose_VarRad"
+  amount: 1
+  extra_wps:
+    - ["Medium", "PflowLoose_VarRad"]
+    - ["Medium", "PflowTight_VarRad"]
+
+    - ["Tight", "PflowLoose_VarRad"]
+    - ["Tight", "PflowTight_VarRad"]
+
+
+Lepton:
+  amount: 1
+  variables_int: ["isPrompt","truthOrigin", "truthType", "ele_ECIDS"]
+
+# list of triggers per year to consider
+Trigger:
+  include: vbssemilepAnalysis/trigger-lep.yaml
+
+CutList :
+      - PASS_TRIGGER 
+      - PASS_ONE_LEPTON
+      - PASS_MET
+      - PASS_TWO_SIGNAL_JETS
+      - PASS_VBS_BASELINE
+      - PASS_RESOLVED_BASELINE
+      - PASS_B_VETO
+      - PASS_B_TAGGED

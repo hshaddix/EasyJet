@@ -96,7 +96,7 @@ namespace VBSSEMILEP
       setThresholds(event, runBoolDecos, sys);
       evaluateTriggerCuts(event, runBoolDecos, electrons, muons, sys);
       
-      
+
       // check if trigger is fired or not
       checkSingleJetTrigger(event, sys);
 
