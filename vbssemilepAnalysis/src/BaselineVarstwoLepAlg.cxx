@@ -255,7 +255,7 @@ namespace VBSSEMILEP{
           m_Fbranches.at(prefix+"_px").set(*event,  tlv.Px(), sys);
           m_Fbranches.at(prefix+"_py").set(*event,  tlv.Py(), sys);
           m_Fbranches.at(prefix+"_pz").set(*event,  tlv.Pz(), sys);
-          m_Fbranches.at(prefix+"_y").set(*event,  tlv.Pz(), sys);
+          m_Fbranches.at(prefix+"_y").set(*event,  tlv.Rapidity(), sys);
 
           float SF = 1.;
           if(std::abs(lep_pdgid)==11){
