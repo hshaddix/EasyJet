@@ -5,6 +5,7 @@
 #include "../twoLepSelectorAlg.h"
 #include "../TriggerDecoratorAlg.h"
 #include "../TruthVBSQuarksInfoAlg.h"
+
 using namespace VBSSEMILEP;
 
 DECLARE_COMPONENT(VBSJetsSelectorAlg)

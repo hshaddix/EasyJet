@@ -1,8 +1,86 @@
 include: [vbshiggsAnalysis/RunConfig-common.yaml ]
 
+# setting this to warning until the team decides they want to be using
+# expert mode
+expert_mode_warning_level: default
+
 # Which analysis to consider
 channels: ["FullHad"]
 
+do_resolved: true
+UseVBFRNN : false
+VerVBFRNN : "VBFRNNv2p3p0"
+save_cutflow: true
+
+
 Small_R_jet:
-  amount: 4
+    # btagging working points 
+  btag_wp: "GN2v01_FixedCutBEff_90"
+  amount: 0
+  useFJvt: true
+  # to use multiple btagging WPs
+  btag_extra_wps:
+    - GN2v01_Continuous
+  do_MCMC_dsid_fix: true
+  MCMC_dsid_map: 
+    Sherpa2214: [700077, 700078, 700079]
+
+
+Large_R_jet:
+  min_pT: 200.e+3
+  maxEta: 2.0
+  runMuonJetPtCorr: false
+  amount: 1
+  flat_mass_selections:
+    include: 
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
+  wtag_type: "ANN" # ANN, DNN
+  wtag_wp: "50"
+  wtag_extra_wps: ["50","60","80","90"]
+
+  # GN2X_hbb_wps:
+  #   - "FlatMassQCDEff_1p55"
+
+OverlapRemoval:
+#   # Enable overlap removal between large-R jets and objects for which 
+#   # large-R jet OR removal is implemented in Athena
+  do_large_R_jets: true
+  do_small_R_jet_large_R_jet: false
+
+
+Trigger:
+  include: [vbshiggsAnalysis/trigger-had.yaml]
+  writeOutput: true
+
+
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  # Our overrides. All defaults are off
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+  truth_outputs:
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+  collection_options:
+    small_R_jets:
+      run_selection: true
+      truth_parent_info: true
+      btag_info: true
+    large_R_jets:
+      run_selection: true
+      btag_details: true
+      substructure_info: true
+      truth_labels: true
+      bjet_regression: true
+      WTransformer_details: true
+
+
+CutList : 
+  - PASS_TRIGGER
+  - PASS_LEPTON_VETO
+  - PASS_EXACTLY_TWO_SMALL_JETS
+  - PASS_EXACTLY_TWO_LARGE_JETS
+  - PASS_MORE_THAN_TWO_LARGE_JETS
+  # - PASS_THREE_LARGE_JETS
 

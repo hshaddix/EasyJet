@@ -8,6 +8,7 @@
 #include "../FullHadSelectorAlg.h"
 #include "../TriggerDecoratorAlg.h"
 #include "../TruthVBSQuarksInfoAlg.h"
+#include "../HadTriggerDecoratorAlg.h"
 
 using namespace VBSHIGGS;
 
@@ -21,3 +22,4 @@ DECLARE_COMPONENT(FullLepSelectorAlg)
 DECLARE_COMPONENT(SemiLepSelectorAlg)
 DECLARE_COMPONENT(FullHadSelectorAlg)
 DECLARE_COMPONENT(TruthVBSQuarksInfoAlg)
+DECLARE_COMPONENT(HadTriggerDecoratorAlg)

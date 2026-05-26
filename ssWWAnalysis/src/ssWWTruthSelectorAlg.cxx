@@ -31,7 +31,7 @@ namespace ssWWVBS
     ATH_CHECK (m_truthjetsInKey.initialize());
     ATH_CHECK (m_truthelectronInKey.initialize());
     ATH_CHECK (m_truthmuonInKey.initialize());
-    // ATH_CHECK (m_truthmetInKey.initialize());
+    ATH_CHECK (m_truthmetInKey.initialize());
     ATH_CHECK (m_eventInKey.initialize());   
     ATH_CHECK (m_passTruthCutsKey.initialize());
     SG::AuxTypeRegistry::instance().getAuxID<bool>("PassTruthCuts");
@@ -65,22 +65,31 @@ namespace ssWWVBS
 
     SG::ReadHandle<xAOD::EventInfo> truthEvents(m_eventInKey);
     SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);
-    // SG::ReadHandle<xAOD::MissingETContainer> truthMet(m_truthmetInKey);
+    SG::ReadHandle<xAOD::MissingETContainer> truthMet(m_truthmetInKey);
     SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);
     SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);
 
     auto jets_after_overlap = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
     auto truthjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
-    auto truthmet = std::make_unique<ConstDataVector<xAOD::MissingETContainer>>(SG::VIEW_ELEMENTS);
     
-    for (auto [var, key] : m_FbranchesKeys){
-      m_Fbranches.emplace(var, key);
+    const xAOD::EventInfo* truthevent = truthEvents.get();
+    const xAOD::MissingET* truthmet = (*truthMet)["NonInt"];
+    if (!truthmet) {
+      ATH_MSG_ERROR("Could not retrieve NonInt from " << m_truthmetInKey.key());
+      return StatusCode::FAILURE;
     }
 
-    const xAOD::EventInfo* truthevent = truthEvents.get();
+    std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>> fbranches;
+    for (auto [var, key] : m_FbranchesKeys){
+      fbranches.emplace(var, key);
+    }
+
+    auto writeFloat = [&fbranches, truthevent](const std::string& var, float value) {
+      fbranches.at(var)(*truthevent) = value;
+    };
 
     for (const std::string &string_var: m_floatVariables) {
-        m_Fbranches.at(string_var)(*truthevent) = -99.;
+        writeFloat(string_var, -99.);
     }
 
     auto muons_after_selection = std::make_unique<ConstDataVector<xAOD::TruthParticleContainer>>(SG::VIEW_ELEMENTS);
@@ -99,7 +108,7 @@ namespace ssWWVBS
     m_bools.at(ssWWVBS::DIJET_MASS_TRUTH) = false;
     m_bools.at(ssWWVBS::DIJET_RAPIDITY_TRUTH) = false;
 
-    evaluateTruthLeptonCuts(*truthevent, *truthElectrons, *truthMuons, m_ssWWTruthCuts, *electrons_after_selection, *muons_after_selection);
+    evaluateTruthLeptonCuts(*truthevent, *truthElectrons, *truthMuons, m_ssWWTruthCuts, *electrons_after_selection, *muons_after_selection, fbranches);
     truthOverlapRemoval(*truthJets, *electrons_after_selection, *muons_after_selection, *jets_after_overlap);
 
     for (const xAOD::Jet *jet : *jets_after_overlap){
@@ -109,10 +118,10 @@ namespace ssWWVBS
     int n_jets = jets_after_overlap->size();
     for (int i=0; i<std::min(n_jets, 2); ++i) {
       std::string prefix = "TruthJet_"+std::to_string(i+1);
-      m_Fbranches.at(prefix+"_pt")(*truthevent) = jets_after_overlap->at(i)->pt();
-      m_Fbranches.at(prefix+"_eta")(*truthevent) = jets_after_overlap->at(i)->eta();
-      m_Fbranches.at(prefix+"_phi")(*truthevent) = jets_after_overlap->at(i)->phi();
-      m_Fbranches.at(prefix+"_E")(*truthevent) = jets_after_overlap->at(i)->e();
+      writeFloat(prefix+"_pt", jets_after_overlap->at(i)->pt());
+      writeFloat(prefix+"_eta", jets_after_overlap->at(i)->eta());
+      writeFloat(prefix+"_phi", jets_after_overlap->at(i)->phi());
+      writeFloat(prefix+"_E", jets_after_overlap->at(i)->e());
     }
 
     // Leptons
@@ -159,20 +168,18 @@ namespace ssWWVBS
     int n_leptons = leptons.size();
     for (int i = 0; i < std::min(n_leptons, 2); ++i){
       std::string prefix = "TruthLepton_"+std::to_string(i+1);
-      m_Fbranches.at(prefix+"_pt")(*truthevent) = dressedLeptonPt(*leptons.at(i));
-      m_Fbranches.at(prefix+"_eta")(*truthevent) = dressedLeptonEta(*leptons.at(i));
-      m_Fbranches.at(prefix+"_phi")(*truthevent) = dressedLeptonPhi(*leptons.at(i));
-      m_Fbranches.at(prefix+"_E")(*truthevent) = dressedLeptonE(*leptons.at(i));
-      m_Fbranches.at(prefix+"_m")(*truthevent) = leptonM(*leptons.at(i));
+      writeFloat(prefix+"_pt", dressedLeptonPt(*leptons.at(i)));
+      writeFloat(prefix+"_eta", dressedLeptonEta(*leptons.at(i)));
+      writeFloat(prefix+"_phi", dressedLeptonPhi(*leptons.at(i)));
+      writeFloat(prefix+"_E", dressedLeptonE(*leptons.at(i)));
+      writeFloat(prefix+"_m", leptonM(*leptons.at(i)));
     }
 
     evaluateTruthJetCuts(*truthjets, m_ssWWTruthCuts);
 
-
-    // for (const xAOD::MissingET *met : *truthMet){
-    //     truthmet->push_back(met);
-    // }
-    // evaluateTruthMetCuts(*truthmet, m_ssWWTruthCuts);
+    writeFloat("TruthMET_met", truthmet->met());
+    writeFloat("TruthMET_phi", truthmet->phi());
+    evaluateTruthMetCuts(truthmet, m_ssWWTruthCuts);
 
     bool pass_truth_baseline=true;
     for (const auto& [key, value] : m_boolnames) {
@@ -275,7 +282,7 @@ namespace ssWWVBS
 
   }
 
-  void ssWWTruthSelectorAlg::evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthelectrons, const xAOD::TruthParticleContainer& truthmuons, CutManager& ssWWTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection)
+  void ssWWTruthSelectorAlg::evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthelectrons, const xAOD::TruthParticleContainer& truthmuons, CutManager& ssWWTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection, std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>>& fbranches)
   {
   
     TLorentzVector ll;
@@ -356,12 +363,16 @@ namespace ssWWVBS
     
     mll = ll.M();
 
+    auto writeFloat = [&fbranches, &truthevent](const std::string& var, float value) {
+      fbranches.at(var)(truthevent) = value;
+    };
+
     std::string prefix = "Truth_ll";
-    m_Fbranches.at(prefix+"_pt")(truthevent) = ll.Pt();
-    m_Fbranches.at(prefix+"_eta")(truthevent) = ll.Eta();
-    m_Fbranches.at(prefix+"_phi")(truthevent) = ll.Phi();
-    m_Fbranches.at(prefix+"_E")(truthevent) = ll.E();
-    m_Fbranches.at(prefix+"_m")(truthevent) = mll;
+    writeFloat(prefix+"_pt", ll.Pt());
+    writeFloat(prefix+"_eta", ll.Eta());
+    writeFloat(prefix+"_phi", ll.Phi());
+    writeFloat(prefix+"_E", ll.E());
+    writeFloat(prefix+"_m", mll);
 
 
     if(ssWWTruthCuts.exists("SAME_CHARGE_LEPTONS_TRUTH")) m_bools.at(ssWWVBS::SAME_CHARGE_LEPTONS_TRUTH) = SAME_CHARGE_LEPTONS_TRUTH;
@@ -381,14 +392,13 @@ namespace ssWWVBS
     }
   }  
 
-  // void ssWWTruthSelectorAlg::evaluateTruthMetCuts
-  // (const ConstDataVector<xAOD::MissingETContainer>& truthmet, CutManager& ssWWTruthCuts)
-  // { 
-  //   if ((truthmet.size() && ssWWTruthCuts.exists("MET_TRUTH"))){
-  //       m_bools.at(ssWWVBS::MET_TRUTH) = true;
-  //   }
-
-  // }
+  void ssWWTruthSelectorAlg::evaluateTruthMetCuts
+  (const xAOD::MissingET* truthmet, CutManager& ssWWTruthCuts)
+  {
+    if (ssWWTruthCuts.exists("MET_TRUTH")) {
+      m_bools.at(ssWWVBS::MET_TRUTH) = truthmet->met() >= 30 * Athena::Units::GeV;
+    }
+  }
   
   StatusCode ssWWTruthSelectorAlg::initialiseCutflow(){
 

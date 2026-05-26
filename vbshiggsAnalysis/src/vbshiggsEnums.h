@@ -13,6 +13,7 @@ namespace VBSHIGGS
   enum TriggerChannel
   {
     SLT,
+    JET,
   };
 
   enum Var_Trigger 
@@ -53,6 +54,12 @@ namespace VBSHIGGS
     PASS_VBS_BASELINE,
     PASS_RES_BASELINE,
     PASS_MERG_BASELINE,
+    PASS_EXACTLY_TWO_SMALL_JETS,
+    PASS_MORE_THAN_TWO_LARGE_JETS,
+    PASS_LEPTON_VETO,
+    PASS_EXACTLY_TWO_LARGE_JETS,
+    PASS_EXACTLY_ONE_LARGE_JET,
+    PASS_ALL_CUTS
   };
 }
 

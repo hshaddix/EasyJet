@@ -1,55 +1,82 @@
-/*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
-*/
+#ifndef VBSHIGGSANALYSIS_BASELINEVARSFULLHADALG_H
+#define VBSHIGGSANALYSIS_BASELINEVARSFULLHADALG_H
 
-
-#ifndef VBSHIGGSANALYSIS_BASELINEVARFULLHADALG_H
-#define VBSHIGGSANALYSIS_BASELINEVARFULLHADALG_H
+#include <AthenaBaseComps/AthHistogramAlgorithm.h>
 #include <SystematicsHandles/SysReadHandle.h>
-#include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
-
-#include <AthContainers/ConstDataVector.h>
+#include <SystematicsHandles/SysListHandle.h>
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
+#include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
 
-namespace VBSHIGGS{
-    /// \brief An algorithm for counting containers
-    class BaselineVarsFullHadAlg final : public AthHistogramAlgorithm {
-        /// \brief The standard constructor
-        public: 
-            BaselineVarsFullHadAlg(const std::string &name, ISvcLocator *pSvcLocator);
+#include <unordered_map>
+#include <vector>
+#include <string>
 
-            /// \brief Initialisation method, for setting up tools and other persistent
-            /// configs
-            StatusCode initialize() override;
-            /// \brief Execute method, for actions to be taken in the event loop
-            StatusCode execute() override;
-            /// We use default finalize() -- this is for cleanup, and we don't do any
+namespace VBSHIGGS {
 
-        private:
-        /// \brief Setup syst-aware input container handles
-        CP::SysListHandle m_systematicsList {this};
+class BaselineVarsFullHadAlg final : public AthHistogramAlgorithm {
 
-        CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
+public:
+  BaselineVarsFullHadAlg(const std::string&, ISvcLocator*);
+  StatusCode initialize() override;
+  StatusCode execute() override;
 
-        CP::SysReadHandle<xAOD::JetContainer> m_jetHandle{ this, "jets", "vbshiggsAnalysisJets_%SYS%", "Jet container to read" };
+private:
+  CP::SysListHandle m_systematicsList{this};
 
-        CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
+  CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
+    this, "event", "EventInfo", ""};
 
-        Gaudi::Property<bool> m_isMC { this, "isMC", false, "Is this simulation?" };
-        
-        Gaudi::Property<std::vector<std::string>> m_floatVariables {this, "floatVariableList", {}, "Name list of floating variables"};
+  Gaudi::Property<bool> m_isMC { this, "isMC", false, "Is this simulation?" };
+  CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
 
-        Gaudi::Property<std::vector<std::string>> m_intVariables {this, "intVariableList", {}, "Name list of integer variables"};
+  CP::SysReadDecorHandle<int> m_PCBT {this, "PCBTDecorName", "", "Name of pseudo-continuous b-tagging decorator"};
 
-        /// \brief Setup sys-aware output decorations
-        std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
+  CP::SysReadDecorHandle<int> m_truthFlav { this, "truthFlav", "HadronConeExclTruthLabelID", "Jet truth flavor" };
 
-        std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
-        
-    };
+ 
+  CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{ this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", ""};
+
+  CP::SysReadHandle<xAOD::JetContainer> m_vbsJetHandle{ this, "vbsJets", "",   "VBS Jet container to read" };
+
+
+
+  CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{ this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", ""};
+
+    
+  CP::SysReadHandle<xAOD::JetContainer> m_RNNjetBoostedHandle{ this, "RNNJets_boosted", "RNNJets_boostedCategory_%SYS%", "input RNN jets container for boosted 20 GeV" };
+
+  CP::SysReadHandle<xAOD::JetContainer> m_RNNjetResolvedHandle{ this, "RNNJets_resolved", "RNNJets_resolvedCategory_%SYS%", "input RNN jets container for resolved 20 GeV" };
+  
+  
+  CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{
+    this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", ""};
+
+
+
+  Gaudi::Property<bool> m_doResolved{this, "do_resolved", false};
+
+    // W-tagger
+    Gaudi::Property<std::string> m_WTag_Type { this, "wtag_type", "", "WTagger type"};
+    Gaudi::Property<std::string> m_WTag_WP { this, "wtag_wp", "", "WTagger wp"};
+    CP::SysReadDecorHandle<float> m_WTag_score{"", this};
+    CP::SysReadDecorHandle<char> m_Pass_WTag{"", this};
+
+  Gaudi::Property<std::vector<std::string>> m_floatVariables{
+    this, "floatVariableList", {}};
+
+  Gaudi::Property<std::vector<std::string>> m_intVariables{
+    this, "intVariableList", {}};
+
+  std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
+  std::unordered_map<std::string, CP::SysWriteDecorHandle<int>>   m_Ibranches;
+  Gaudi::Property<bool> m_UseVBFRNN { this, "UseVBFRNN", false, "Not use VBS tagging jets or yes (i.e. use VBF-RNN jets or not)" };
+};
+
 }
+
 #endif

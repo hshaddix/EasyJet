@@ -13,16 +13,46 @@ def fullHad_cfg(flags, float_variables=None, int_variables=None):
         int_variables = []
 
     cfg = ComponentAccumulator()
+
+    # set jets container labels
+    if flags.Analysis.UseVBFRNN:
+        # vbs tagging jets no more
+        VBSJetsLabel = ""
+        # use full small-R jets pool to select signal jets
+        SignalJetsLabel = "vbshiggsAnalysisJets_%SYS%"
+    else:
+        # use vbs tagging jets
+        VBSJetsLabel = "vbshiggsAnalysisVBSJets_%SYS%"
+        # use the small-R jets after selecting tagging jets
+        SignalJetsLabel = "vbshiggsAnalysisSignalJets_%SYS%"
+        
     # Selection
-    cfg.addEventAlgo(CompFactory.VBSHIGGS.FullHadSelectorAlg())
+    cfg.addEventAlgo(CompFactory.VBSHIGGS.FullHadSelectorAlg(
+            "FullHadSelectorAlg",
+            signaljets=SignalJetsLabel,
+            UseVBFRNN=flags.Analysis.UseVBFRNN,
+            bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
+            eventDecisionOutputDecoration="vbshiggs_pass_sr_%SYS%",
+            cutList=flags.Analysis.CutList,
+            saveCutFlow=flags.Analysis.save_cutflow,
+            bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
+                    else False),
+            # do_resolved=flags.Analysis.do_resolved
+    ))
 
     # calculate final vbshiggs vars
     cfg.addEventAlgo(
         CompFactory.VBSHIGGS.BaselineVarsFullHadAlg(
             "FinalVarsFullHadAlg",
+            signaljets=SignalJetsLabel,
+            UseVBFRNN=flags.Analysis.UseVBFRNN,
+            vbsJets=VBSJetsLabel,
             isMC=flags.Input.isMC,
+            do_resolved=flags.Analysis.do_resolved,
             bTagWPDecorName="ftag_select_"
                             + flags.Analysis.Small_R_jet.btag_wp,
+            wtag_type=flags.Analysis.Large_R_jet.wtag_type,
+            wtag_wp=flags.Analysis.Large_R_jet.wtag_wp, 
             floatVariableList=float_variables,
             intVariableList=int_variables
         )
@@ -34,7 +64,48 @@ def get_BaselineVarsFullHadAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
 
-    int_variable_names += ["nJets", "nBJets", "nCentralJets"]
+    int_variable_names += ["nJets", "nBJets", "nCentralJets", "nForwardJets", "nLargeJets"]
+    
+    # obj = "LargeJet1"
+    wtag_type = flags.Analysis.Large_R_jet.wtag_type
+    wtag_wp = flags.Analysis.Large_R_jet.wtag_wp
+    for obj in ["LargeJet1", "LargeJet2", "LargeJet3"]:
+        for var in ["m", "pt", "eta", "phi", "GN2X"]:
+            float_variable_names.append(f"{obj}_{var}")
+        for var in ["phbb", "pqcd", "phcc", "ptop"]:
+            float_variable_names.append(f"{obj}_GN2X_{var}")
+
+        float_variable_names += [obj + "_" + wtag_type + wtag_wp + "Tagger_Score"]
+        int_variable_names += [obj + "_Pass_" + wtag_type
+                                   + wtag_wp]
+
+    if flags.Analysis.do_resolved:
+        for i in [1, 2]:
+            for var in ["m", "pt", "eta", "phi", "E"]:
+                float_variable_names.append(f"Jet_Higgs_candidate{i}_{var}")
+                float_variable_names.append(f"resolvedWCandidate{i}_{var}")
+                float_variable_names.append(f"resolvedZCandidate{i}_{var}")
+                float_variable_names.append(f"fullyresolved_WCandidate{i}_{var}")
+                float_variable_names.append(f"fullyresolved_ZCandidate{i}_{var}")
+        float_variable_names += [
+            "Hdijet_m", "Hdijet_pt", "Hdijet_eta", "Hdijet_phi",
+            "dRHjj", "dPhiHjj", "dEtaHjj"
+        ]
+
+    if not flags.Analysis.UseVBFRNN:
+        for jet in ["VBSJ1", "VBSJ2", "VBSdijet"]:
+            for var in ["m", "pt", "eta", "phi"]:
+                float_variable_names.append(f"{jet}_{var}")
+        float_variable_names += ["dRVBSjj", "dEtaVBSjj", "dPhiVBSjj"]
+    else:
+        regions = ["boostedCategory"]
+        if flags.Analysis.do_resolved:
+            regions.append("resolvedCategory")
+        for reg in regions:
+            for jet in ["Jet1", "Jet2"]:
+                for var in ["m", "pt", "eta", "phi"]:
+                    float_variable_names.append(f"RNNJets_{reg}_{jet}_{var}")
+
     return float_variable_names, int_variable_names
 
 
@@ -76,5 +147,26 @@ def fullHad_branches(flags):
     int_variable_names += object_level_int_variables
 
     branches += object_level_branches
+    
+    cutList = flags.Analysis.CutList
+    for cut in cutList:
+        branches += [f"EventInfo.{cut}_%SYS% -> {cut}_%SYS%"]
+
+    # truth info
+    if flags.Input.isMC and flags.Analysis.AddTruthVBSQuarks:
+        branches += ['EventInfo.nVBSQuarks -> nVBSQuarks']
+        for var in ['pT', 'eta', 'phi', 'E']:
+            branches += [f'EventInfo.VBSQuark1_{var} -> VBSQuark1_{var}']
+            branches += [f'EventInfo.VBSQuark2_{var} -> VBSQuark2_{var}']
+
+    # VBF tagger
+    if flags.Analysis.UseVBFRNN:
+        vars = ['RNNScore', 'nRNNJets']
+        regs = ['boostedCategory']
+        if flags.Analysis.do_resolved:
+            regs += ['resolvedCategory']
+        for var in vars:
+            for reg in regs:
+                branches += [f'EventInfo.{var}_{reg}_%SYS% -> {var}_{reg}_%SYS%']
 
     return branches, float_variable_names, int_variable_names

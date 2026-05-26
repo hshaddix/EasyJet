@@ -47,16 +47,17 @@ do_small_R_jets: true
 do_large_R_UFO_jets: true
 
 Electron:
-  ID: "MediumLH"
+  ID: "LooseBLayerLH"
   Iso: "Loose_VarRad"
   amount: 0
   ## Only correlation scheme supported
   correlationModelId: "TOTAL"
 
 Muon:
-  ID: "Medium"
+  ID: "Loose"
   Iso: "PflowLoose_VarRad"
   amount: 0
+
 
 Lepton:
   amount: 0
@@ -87,9 +88,9 @@ ttree_output:
   reco_outputs:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
-    muons: 'container_names.output.muons'
-    electrons: 'container_names.output.electrons'
-    met : 'container_names.output.met'
+    # muons: 'container_names.output.muons'
+    # electrons: 'container_names.output.electrons'
+    # met : 'container_names.output.met'
   collection_options:
     small_R_jets:
       btag_info: true

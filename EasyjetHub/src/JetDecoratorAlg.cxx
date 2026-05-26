@@ -232,6 +232,20 @@ namespace Easyjet
                       << legInfo.type() << " " << legInfo.signature
                       << " " << legInfo.threshold);
 
+                int legThreshold = legInfo.threshold;
+                if (legInfo.legName().find("gsc") != std::string::npos)
+                {
+                  for (auto part : legInfo.legParts)
+                  {
+                    if (part.find("gsc") != std::string::npos)
+                    {
+                      legThreshold = std::stoi(part.substr(3));
+                      ATH_MSG_DEBUG("GSC leg found. Using threshold " << legThreshold);
+                      break;
+                    }
+                  }
+                }
+
                 if (!m_useEmulationTool) {
                   frd.setRestrictRequestToLeg(ileg);
 
@@ -281,14 +295,14 @@ namespace Easyjet
 
                     if (bestHLT && isSameJet(bestHLT, hlt_jet))
                     {
-                      HLTThresholds.insert(legInfo.threshold);
+                      HLTThresholds.insert(legThreshold);
                     }
                     else if (dR < minDRHLT)
                     {
                       minDRHLT = dR;
                       bestHLT = hlt_jet;
                       HLTThresholds.clear();
-                      HLTThresholds.insert(legInfo.threshold);
+                      HLTThresholds.insert(legThreshold);
                     }
                   }
                 }
@@ -307,14 +321,14 @@ namespace Easyjet
 
                     if (bestHLT && isSameJet(bestHLT, hlt_jet))
                     {
-                      HLTThresholds.insert(legInfo.threshold);
+                      HLTThresholds.insert(legThreshold);
                     }
                     else if (dR < minDRHLT)
                     {
                       minDRHLT = dR;
                       bestHLT = hlt_jet;
                       HLTThresholds.clear();
-                      HLTThresholds.insert(legInfo.threshold);
+                      HLTThresholds.insert(legThreshold);
                     }
                   }
                     
