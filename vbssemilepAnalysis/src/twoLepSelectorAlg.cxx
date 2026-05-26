@@ -231,7 +231,7 @@ namespace VBSSEMILEP{
 
     if (mu0 && mu1) {
      // if((mu0->p4() + mu1->p4()).M() > 40*Athena::Units::GeV){
-      if (mu0->charge() * mu1->charge() > 1)
+      if (mu0->charge() * mu1->charge() > 0)
         m_bools.at(VBSSEMILEP::PASS_TWO_SS_CHARGE_LEPTONS) = true;
       else
         m_bools.at(VBSSEMILEP::PASS_TWO_OS_CHARGE_LEPTONS) = true;
