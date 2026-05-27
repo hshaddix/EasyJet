@@ -49,8 +49,6 @@ def oneLep_cfg(flags, muonkey, electronkey,
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorName="ftag_quantile_"
                           + flags.Analysis.Small_R_jet.btag_extra_wps[0],
-            wtag_type=flags.Analysis.Large_R_jet.wtag_type,
-            wtag_wp=flags.Analysis.Large_R_jet.wtag_wp,
             floatVariableList=float_variables,
             intVariableList=int_variables
         )
