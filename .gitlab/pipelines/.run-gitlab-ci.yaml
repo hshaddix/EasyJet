@@ -121,6 +121,12 @@ variables:
       changes: ["vbshiggsAnalysis/**/*"]
     - <<: *rule_core_pkgs
 
+.changes_vbssemilep: &changes_vbssemilep
+  rules:
+    - if: *if_to_central
+      changes: ["vbssemilepAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 .changes_VBSVV4q: &changes_VBSVV4q
   rules:
     - if: *if_to_central
@@ -278,6 +284,18 @@ ntupler_vbshiggs_semilep_mc20:
   <<: *changes_vbshiggs
   script:
     - easyjet-test vbshiggs-semilep-mc20
+
+ntupler_vbssemilep_onelep_mc20:
+  extends: .ntupler
+  <<: *changes_vbssemilep
+  script:
+    - easyjet-test vbssemilep-onelep-mc20
+
+ntupler_vbssemilep_twolep_mc20:
+  extends: .ntupler
+  <<: *changes_vbssemilep
+  script:
+    - easyjet-test vbssemilep-twolep-mc20
 
 ntupler_VBSVV4q_mc20:
   extends: .ntupler
