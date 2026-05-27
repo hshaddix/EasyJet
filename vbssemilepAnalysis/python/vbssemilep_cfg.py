@@ -60,16 +60,17 @@ def vbssemilep_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
             )
         )
 
-    if flags.Analysis.do_resolved:
-        # set jets container labels
-        if not flags.Analysis.UseVBFRNN:
-            SignalJetsLabel = "vbssemilepAnalysisSignalJets_%SYS%"
-            VBSJetsLabel = "vbssemilepAnalysisVBSJets_%SYS%"
-        else:
-            vbftagger = CompFactory.VBFTagger("VBFTaggerTool", modelTag="VBFRNNv1p1p0")
-            # use full small-R jets pool to select signal jets
-            SignalJetsLabel = "vbssemilepAnalysisJets_%SYS%"
-            cfg.addEventAlgo(
+    if "twoLep" in flags.Analysis.channels:
+        if flags.Analysis.do_resolved:
+            # set jets container labels
+            if not flags.Analysis.UseVBFRNN:
+                SignalJetsLabel = "vbssemilepAnalysisSignalJets_%SYS%"
+                VBSJetsLabel = "vbssemilepAnalysisVBSJets_%SYS%"
+            else:
+                vbftagger = CompFactory.VBFTagger("VBFTaggerTool", modelTag="VBFRNNv1p1p0")
+                # use full small-R jets pool to select signal jets
+                SignalJetsLabel = "vbssemilepAnalysisJets_%SYS%"
+                cfg.addEventAlgo(
                     CompFactory.VBFTaggerAlgSys(
                         "VBFTaggerAlg_resolved",
                         VBFTagger=vbftagger,
