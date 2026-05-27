@@ -217,7 +217,7 @@ namespace VBSSEMILEP{
         */
         if (muons->empty() && electrons->empty()) {
         ATH_MSG_WARNING("No valid lepton found!");
-        return StatusCode::SUCCESS;
+        continue;
         }
         
         std::vector<std::pair<const xAOD::IParticle*, int>> leptons;
@@ -235,7 +235,7 @@ namespace VBSSEMILEP{
         if (nLeptons <= 1) {
             // If the event somehow slipped through without 2 leptons, safely skip it
             ATH_MSG_WARNING("less than 2 leptons");
-            return StatusCode::SUCCESS; 
+            continue; 
         }
 
         std::sort(leptons.begin(), leptons.end(),

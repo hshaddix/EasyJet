@@ -238,6 +238,14 @@ namespace VBSSEMILEP{
       //}
     }
 
+    if (ele0 && mu0) {
+      // One electron and one muon
+      if (ele0->charge() * mu0->charge() > 0)
+        m_bools.at(VBSSEMILEP::PASS_TWO_SS_CHARGE_LEPTONS) = true;
+      else
+        m_bools.at(VBSSEMILEP::PASS_TWO_OS_CHARGE_LEPTONS) = true;
+        }
+
     if (n_leptons == 2)
       m_bools.at(VBSSEMILEP::PASS_TWO_LEPTONS) = true;
 
