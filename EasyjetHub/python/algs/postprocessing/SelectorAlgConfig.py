@@ -9,15 +9,23 @@ def MuonSelectorAlgCfg(flags, name="MuonSelectorAlg", **kwargs):
     muon_WPs = [f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}']
     consider_extra_wp = any(len(wp) == 4 for wp in flags.Analysis.Muon.extra_wps)
 
+    extra_iso_suffixes = list(flags.Analysis.Muon.extra_iso_suffixes or [])
+    muon_WPs += [f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}_{s}'
+                 for s in extra_iso_suffixes]
+
     for wp in flags.Analysis.Muon.extra_wps:
         if len(wp) == 4:
             muon_WPs += [f'{wp[0]}_{wp[1]}_{wp[2]}_{wp[3]}'.replace('.', 'p')]
+            muon_WPs += [f'{wp[0]}_{wp[1]}_{s}_{wp[2]}_{wp[3]}'.replace('.', 'p')
+                         for s in extra_iso_suffixes]
         elif consider_extra_wp:
-            wp_str = f"{wp[0]}_{wp[1]}_{flags.Analysis.Muon.maxD0Significance}"
-            + f"_{flags.Analysis.Muon.maxDeltaZ0SinTheta}"
-            muon_WPs += [wp_str.replace('.', 'p')]
+            d0 = flags.Analysis.Muon.maxD0Significance
+            z0 = flags.Analysis.Muon.maxDeltaZ0SinTheta
+            muon_WPs += [f'{wp[0]}_{wp[1]}_{d0}_{z0}'.replace('.', 'p')]
+            muon_WPs += [f'{wp[0]}_{wp[1]}_{s}_{d0}_{z0}'.replace('.', 'p') for s in extra_iso_suffixes]
         else:
             muon_WPs += [f'{wp[0]}_{wp[1]}']
+            muon_WPs += [f'{wp[0]}_{wp[1]}_{s}' for s in extra_iso_suffixes]
     kwargs.setdefault("muonWPs", muon_WPs)
     kwargs.setdefault("muonAmount", flags.Analysis.Muon.amount)
 

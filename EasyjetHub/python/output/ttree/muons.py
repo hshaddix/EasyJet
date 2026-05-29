@@ -24,17 +24,26 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
         ("charge", None)
     ]
 
+    extra_iso_suffixes = list(flags.Analysis.Muon.extra_iso_suffixes or [])
+
     if mu_output_flags.iso_variables:
-        muon_branches.variables += [
-            ("neflowisol20", None),
-            ("neflowisol20_CloseByCorr", None),
-            ("topoetcone20", None),
-            ("topoetcone20_CloseByCorr", None)
+        isolation_variables = [
+            "neflowisol20",
+            "topoetcone20",
+            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt500",
+            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt1000",
         ]
-        muon_branches.variables += [
-            (f"ptvarcone30_Nonprompt_All_MaxWeightTTVA_{suff}", None)
-            for suff in ["pt500", "pt500_CloseByCorr", "pt1000", "pt1000_CloseByCorr"]
-        ]
+        muon_branches.variables += [(name, None) for name in isolation_variables]
+
+        all_suffixes = []
+        if flags.Analysis.Muon.IsoDecSuffix:
+            all_suffixes.append(flags.Analysis.Muon.IsoDecSuffix)
+        all_suffixes += extra_iso_suffixes
+
+        for suffix in all_suffixes:
+            muon_branches.variables += [
+                (f"{name}_{suffix}", None) for name in isolation_variables
+            ]
 
     if flags.Analysis.do_overlap_removal:
         muon_branches.variables += [
@@ -78,28 +87,28 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
                 for var in ["nNextToIBL", "nPIX_split", "nTRT"]
             ]
 
-    id_wps = [f'{flags.Analysis.Muon.ID}_{flags.Analysis.Muon.Iso}']
     consider_extra_wp = any(len(wp) == 4 for wp in flags.Analysis.Muon.extra_wps)
 
+    all_wps = [(flags.Analysis.Muon.ID, flags.Analysis.Muon.Iso)]
     if 'extra_wps' in flags.Analysis.Muon:
-        for wp in flags.Analysis.Muon.extra_wps:
-            if len(wp) == 4:
-                id_wps.append(
-                    (
-                        wp[0] + "_" + wp[1] + "_"
-                        + str(wp[2]) + "_" + str(wp[3])
-                    ).replace('.', 'p')
-                )
-            elif consider_extra_wp:
-                id_wps.append(
-                    (
-                        wp[0] + "_" + wp[1] + "_"
-                        + str(flags.Analysis.Muon.maxD0Significance) + "_"
-                        + str(flags.Analysis.Muon.maxDeltaZ0SinTheta)
-                    ).replace('.', 'p')
-                )
+        all_wps += [(wp[0], wp[1]) for wp in flags.Analysis.Muon.extra_wps]
+
+    id_wps = []
+    for wp_idx, (id_, iso_) in enumerate(all_wps):
+        id_iso_wp = id_ + "_" + iso_
+        if wp_idx == 0 or not consider_extra_wp:
+            ip_suffix = ""
+        else:
+            extra = flags.Analysis.Muon.extra_wps[wp_idx - 1]
+            if len(extra) == 4:
+                d0, z0 = extra[2], extra[3]
             else:
-                id_wps.append(wp[0] + "_" + wp[1])
+                d0 = flags.Analysis.Muon.maxD0Significance
+                z0 = flags.Analysis.Muon.maxDeltaZ0SinTheta
+            ip_suffix = ("_" + str(d0) + "_" + str(z0)).replace('.', 'p')
+        id_wps.append(f"{id_iso_wp}{ip_suffix}")
+        for s in extra_iso_suffixes:
+            id_wps.append(f"{id_iso_wp}_{s}{ip_suffix}")
 
     muon_branches.variables += [
         (f"baselineSelection_{id_wp}_%SYS%", None)

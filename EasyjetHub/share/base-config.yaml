@@ -187,6 +187,7 @@ Muon:
   variables: ["pt", "eta", "phi", "E", "effSF"]
   variables_int: []
   extra_wps: []
+  extra_iso_suffixes: []
   runTrackBiasing: false
 
 Tau:
