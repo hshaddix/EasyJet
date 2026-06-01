@@ -60,6 +60,8 @@ def update_metadata(path):
         cached = all_cached.get(f)
         if cached:
             md.metadata.update(cached["metadata"])
+            if "itemList" in md.metadata:
+                md.metadata["itemList"] = [tuple(t) for t in md.metadata["itemList"]]
             md.filename = f
             md.currentAccessLevel = cached["level"]
 
