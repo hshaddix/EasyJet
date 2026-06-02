@@ -54,12 +54,13 @@ def muon_sequence(flags, configAcc):
     configSeq.setOptionValue('.writeTrackD0Z0', True)
     configSeq.setOptionValue('.decorateTruth', True)
 
+    extra_iso_suffixes = list(flags.Analysis.Muon.extra_iso_suffixes or [])
+
     # PID configuration
     doBaseline = True
     for (id, iso), (maxD0Significance, maxDeltaZ0SinTheta) in zip(wps, impact_params):
-        configSeq += makeConfig('Muons.WorkingPoint')
-        configSeq.setOptionValue('.containerName', output_name)
-        selectionName = id + '_' + iso
+        id_iso_wp = id + '_' + iso
+        ip_suffix = ""
         if extra_params_concern:
             if doBaseline:
                 doBaseline = False
@@ -67,24 +68,32 @@ def muon_sequence(flags, configAcc):
                 impact_params_name = (str(maxD0Significance) + '_'
                                       + str(maxDeltaZ0SinTheta))
                 impact_params_name = impact_params_name.replace('.', 'p')
-                selectionName += '_' + impact_params_name
-        configSeq.setOptionValue('.selectionName', selectionName)
+                ip_suffix = '_' + impact_params_name
 
-        if "nottva" in id:
-            configSeq.setOptionValue('.trackSelection', False)
-        else:
-            configSeq.setOptionValue('.trackSelection', True)
+        iso_suffix_configs = [(id_iso_wp + ip_suffix,
+                               flags.Analysis.Muon.IsoDecSuffix)]
+        for s in extra_iso_suffixes:
+            iso_suffix_configs.append(
+                (id_iso_wp + '_' + s + ip_suffix, s)
+            )
+
         quality = id.replace("_nottva", "")
-        configSeq.setOptionValue('.quality', quality)
-        configSeq.setOptionValue('.isolation', iso)
-        configSeq.setOptionValue('.isoDecSuffix', flags.Analysis.Muon.IsoDecSuffix)
-        configSeq.setOptionValue('.maxD0Significance',
-                                 maxD0Significance)
-        configSeq.setOptionValue('.maxDeltaZ0SinTheta',
-                                 maxDeltaZ0SinTheta)
-        configSeq.setOptionValue('.saveCombinedSF', True)
-        if flags.Analysis.Muon.MergeLRT:
-            configSeq.setOptionValue('.useLRT', True)
+        for selectionName, iso_suffix in iso_suffix_configs:
+            configSeq += makeConfig('Muons.WorkingPoint')
+            configSeq.setOptionValue('.containerName', output_name)
+            configSeq.setOptionValue('.selectionName', selectionName)
+            if "nottva" in id:
+                configSeq.setOptionValue('.trackSelection', False)
+            else:
+                configSeq.setOptionValue('.trackSelection', True)
+            configSeq.setOptionValue('.quality', quality)
+            configSeq.setOptionValue('.isolation', iso)
+            configSeq.setOptionValue('.isoDecSuffix', iso_suffix)
+            configSeq.setOptionValue('.maxD0Significance',  maxD0Significance)
+            configSeq.setOptionValue('.maxDeltaZ0SinTheta', maxDeltaZ0SinTheta)
+            configSeq.setOptionValue('.saveCombinedSF', True)
+            if flags.Analysis.Muon.MergeLRT:
+                configSeq.setOptionValue('.useLRT', True)
 
     if flags.Analysis.Small_R_jet.runBJetPtCalib or \
        flags.Analysis.Large_R_jet.runMuonJetPtCorr:
