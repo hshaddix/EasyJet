@@ -26,3 +26,4 @@ def run_config_arg(rawpath):
                     f"looking for {str(err.args[0])}")
 
     raise ArgumentTypeError(f"Couldn't find config: {fpath}")
+    #  No newline at end of file

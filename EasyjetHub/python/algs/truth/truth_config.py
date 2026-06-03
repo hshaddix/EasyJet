@@ -154,3 +154,14 @@ def bbyy_filter_ggHBjets_cfg(flags):
     )
 
     return cfg
+
+def multilepton_filter_ggHBjets_cfg(flags):
+    cfg = ComponentAccumulator()
+
+    cfg.addEventAlgo(
+        CompFactory.MULTILEPTON.MultileptonFilterggHBjetsAlg(
+            "MultileptonFilterggHBjetsAlg",
+        ),
+    )
+
+    return cfg
