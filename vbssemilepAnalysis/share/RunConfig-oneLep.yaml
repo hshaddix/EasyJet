@@ -1,13 +1,13 @@
 include: vbssemilepAnalysis/RunConfig-common.yaml 
 
+expert_mode_warning_level: default
 # Which analysis to consider
 channels: ["oneLep"]
-expert_mode_warning_level: default
 # Toggles for object types
 do_muons: true
 do_electrons: true
 do_met : true
-
+do_large_R_UFO_jets: true
 
 Electron:
   ID: "LooseBLayerLH"

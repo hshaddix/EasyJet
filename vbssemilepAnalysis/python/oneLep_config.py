@@ -126,8 +126,8 @@ def oneLep_branches(flags):
     # in the object configs.
     object_level_branches, object_level_float_variables, object_level_int_variables \
         = get_selected_objects_branches_variables(flags, "oneLep")
-    float_variable_names += object_level_float_variables
-    int_variable_names += object_level_int_variables
+    #float_variable_names += object_level_float_variables
+    #int_variable_names += object_level_int_variables
 
     branches += object_level_branches
     branches += ["EventInfo.vbssemilep_pass_sr_%SYS% -> pass_SR_%SYS%"]
@@ -142,5 +142,5 @@ def oneLep_branches(flags):
             [f"EventInfo.pass_trigger_{cat}_%SYS% -> pass_trigger_{cat}"
              + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
-    branches = [branch for branch in branches if "NOSYS" not in branch]
+    #branches = [branch for branch in branches if "NOSYS" not in branch]
     return branches, float_variable_names, int_variable_names
