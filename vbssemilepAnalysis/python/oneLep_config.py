@@ -104,7 +104,7 @@ def oneLep_branches(flags):
     # stored using the flag
     # flags.Analysis.store_high_level_variables
     baseline_float_variables, baseline_int_variables \
-        = get_BaselineVarsoneLepAlg_variables(flags)
+        = get_BaselineVarstwoLepAlg_variables(flags)
     float_variable_names += baseline_float_variables
     int_variable_names += baseline_int_variables
 
@@ -124,7 +124,8 @@ def oneLep_branches(flags):
     # selected by the analysis
     # This is tunable with the flags amount and variables
     # in the object configs.
-    object_level_branches, object_level_float_variables, object_level_int_variables \
+    object_level_branches, object_level_float_variables, \
+        object_level_int_variables \
         = get_selected_objects_branches_variables(flags, "oneLep")
     #float_variable_names += object_level_float_variables
     #int_variable_names += object_level_int_variables

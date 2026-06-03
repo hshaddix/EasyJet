@@ -10,7 +10,6 @@
 #include <SystematicsHandles/SysWriteDecorHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
 #include <SystematicsHandles/SysFilterReporterParams.h>
-#include "PathResolver/PathResolver.h"
 #include <AthContainers/ConstDataVector.h>
 
 #include <xAODEventInfo/EventInfo.h>
@@ -20,9 +19,6 @@
 #include <xAODMissingET/MissingETContainer.h>
 #include "TLorentzVector.h"
 
-#include <map>
-#include <vector>
-#include <string>
 
 namespace VBSSEMILEP{
     /// \brief An algorithm for counting containers
