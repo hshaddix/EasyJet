@@ -67,3 +67,7 @@ CutList :
       - PASS_RESOLVED_BASELINE
       - PASS_B_VETO
       - PASS_B_TAGGED
+      - PASS_RES_Z_WINDOW
+      - PASS_DELTA_R_SS
+      - PASS_MERG_BASELINE
+      - PASS_ONE_LARGE_JET
