@@ -91,12 +91,10 @@ namespace VBSSEMILEP{
         
 
         Gaudi::Property<std::vector<std::string>> m_floatVariables {this, "floatVariableList", {}, "Name list of floating variables"};
-
         Gaudi::Property<std::vector<std::string>> m_intVariables {this, "intVariableList", {}, "Name list of integer variables"};
 
         /// \brief Setup sys-aware output decorations
         std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
-
         std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
         
         // Helper functions

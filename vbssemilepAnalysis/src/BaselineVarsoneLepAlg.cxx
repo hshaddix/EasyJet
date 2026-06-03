@@ -6,7 +6,8 @@
 #include "BaselineVarsoneLepAlg.h"
 #include "AthContainers/AuxElement.h"
 #include "TLorentzVector.h"
-#include <AthContainers/ConstDataVector.h>
+
+#include <AthenaKernel/Units.h>
 
 namespace VBSSEMILEP{
     BaselineVarsoneLepAlg::BaselineVarsoneLepAlg(const std::string &name,
