@@ -101,7 +101,7 @@ namespace VBSSEMILEP{
       if ( signaljets->size() >= 2) m_bools.at(VBSSEMILEP::PASS_TWO_SIGNAL_JETS) = true;
       if ( largeJets->size() >= 1 )  m_bools.at(VBSSEMILEP::PASS_ONE_LARGE_JET) = true;
       
-      if (m_passTriggerSLT.get(*event, sys)) {
+      if (!m_passTriggerSLT.empty() and static_cast<bool>(m_passTriggerSLT.get(*event, sys)) ) {
         m_bools.at(VBSSEMILEP::PASS_TRIGGER) = true;
       }
 

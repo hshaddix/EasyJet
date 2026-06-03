@@ -81,7 +81,7 @@ namespace VBSSEMILEP{
 
       CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
 
-      CP::SysReadDecorHandle<bool> m_passTriggerSLT {this, "passTriggerSLT", "pass_trigger_SLT_%SYS%", "events pass any singlep triggers"};
+      CP::SysReadDecorHandle<char> m_passTriggerSLT {this, "passTriggerSLT", "pass_trigger_SLT_%SYS%", "events pass any singlep triggers"};
       
       CP::SysFilterReporterParams m_filterParams {this, "vbssemilep selection"};
 
