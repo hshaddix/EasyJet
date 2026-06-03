@@ -104,7 +104,7 @@ def oneLep_branches(flags):
     # stored using the flag
     # flags.Analysis.store_high_level_variables
     baseline_float_variables, baseline_int_variables \
-        = get_BaselineVarstwoLepAlg_variables(flags)
+        = get_BaselineVarsoneLepAlg_variables(flags)
     float_variable_names += baseline_float_variables
     int_variable_names += baseline_int_variables
 
