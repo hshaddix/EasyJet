@@ -64,7 +64,7 @@ CutList :
       - PASS_MET
       - PASS_TWO_SIGNAL_JETS
       - PASS_VBS_BASELINE
-      - PASS_RESOLVED_BASELINE
+      - PASS_RES_BASELINE
       - PASS_B_VETO
       - PASS_B_TAGGED
       - PASS_RES_Z_WINDOW
