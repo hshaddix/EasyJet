@@ -157,6 +157,12 @@ variables:
       changes: ["ZQGAnalysis/**/*"]
     - <<: *rule_core_pkgs
 
+.changes_HZy: &changes_HZy
+  rules:
+    - if: *if_to_central
+      changes: ["HZyAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 # Data
 
 ntupler_fast_data18:
@@ -558,6 +564,12 @@ ntupler_ZQG_mc23:
   <<: *changes_ZQG
   script:
     - easyjet-test ZQG-mc23
+
+ntupler_HZy_mc23:
+  extends: .ntupler
+  <<: *changes_HZy
+  script:
+    - easyjet-test HZy-mc23
 
 # systematics enabled
 

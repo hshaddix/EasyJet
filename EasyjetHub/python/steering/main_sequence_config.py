@@ -113,6 +113,13 @@ def preselection_cfg(flags, seqname):
             cfg.merge(bbyy_filter_ggHBjets_cfg(flags), seqname)
             cfg.merge(sumofweightsalg_cfg(flags), seqname)
 
+    if flags.Analysis.do_multilepton_ggHbjetFilter and flags.Input.isMC:
+        from EasyjetHub.algs.truth.truth_config import (
+            is_ggHInclusive, multilepton_filter_ggHBjets_cfg, sumofweightsalg_cfg)
+        if is_ggHInclusive(flags):
+            cfg.merge(multilepton_filter_ggHBjets_cfg(flags), seqname)
+            cfg.merge(sumofweightsalg_cfg(flags), seqname)
+
     if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HSTP_samples:
         cfg.addEventAlgo(
             CompFactory.Easyjet.DijetHSTPFilter(),

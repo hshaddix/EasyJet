@@ -10,6 +10,7 @@ do_hhml_analysis: true
 save_extrabb4l_vars: false
 do_KinematicFit: false
 extra_KinematicFit_variables: false
+do_multilepton_ggHbjetFilter: false
 
 # CutBookKeeper histPattern
 cbkHistPattern: "CutBookkeeper_%RUN%_%SYS%"

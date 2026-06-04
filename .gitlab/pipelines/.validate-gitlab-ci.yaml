@@ -139,6 +139,12 @@ variables:
       changes: ["ZQGAnalysis/**/*"]
     - <<: *rule_core_pkgs
 
+.changes_HZy: &changes_HZy
+  rules:
+    - if: *if_to_central
+      changes: ["HZyAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+
 .ntuple_validation:
   variables:
     GIT_STRATEGY: none
@@ -810,3 +816,13 @@ validator_ZQG_mc23:
       artifacts: false
   script:
     - easyjet-validate ZQG-mc23
+
+validator_HZy_mc23:
+  extends: .ntuple_validation
+  <<: *changes_HZy
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_HZy_mc23
+      artifacts: false
+  script:
+    - easyjet-validate HZy-mc23

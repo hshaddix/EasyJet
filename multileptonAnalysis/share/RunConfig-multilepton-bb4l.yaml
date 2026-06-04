@@ -3,6 +3,7 @@ include: [multileptonAnalysis/RunConfig-multilepton.yaml]
 save_extrabb4l_vars: true
 do_KinematicFit: true
 extra_KinematicFit_variables: true #Save kinematics of both KF iterations
+do_multilepton_ggHbjetFilter: true
 
 Truth:
   decayModes: ["bbZZ"]

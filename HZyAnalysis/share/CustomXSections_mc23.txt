@@ -1,0 +1,21 @@
+dataset_number/I:physics_short/C:crossSection_pb/D:kFactor/D:genFiltEff/D:relUncertUP/D:relUncertDOWN/D:generator_name/C:etag/C
+602893   PhPy8EG_PDF4LHC21_ZH125J_Zincl_MINLO_Zllgamma		0.83982		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+602896   PhPy8EG_PDF4LHC21_ggZH125_Zincl_Zllgamma		0.059848		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+602899   PhPy8EG_PDF4LHC21_4FS_A14NNPDF_bbH_Zllgamma		0.51696		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+602902   PhPy8EG_PDF4LHC21_WpH125J_Wincl_MINLO_Zllgamma		0.91565		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+602905   PhPy8EG_PDF4LHC21_VBFH125_MINLO_Zllgamma		4.2331		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+602908   PhPy8EG_PDF4LHC21_WmH125J_Wincl_MINLO_Zllgamma		0.57662		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+602911   PhPy8EG_PDF4LHC21_ttH125_tincl_Zllgamma		0.55913		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+603798   PhPy8EG_PDF4LHC21_ggH_NNLOPS_Zllgamma		30.863000000000003		1.000000E+00		1.0		0.0		0.0		Powheg(v.06-03)+Pythia8(v.310)		e8559
+604412   PhH7EG_PDF4LHC21_VBFH125_Zllgamma		4.2324		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604413   PhH7EG_PDF4LHC21_WmH125J_Wincl_MINLO_Zllgamma		0.5764900000000001		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604414   PhH7EG_PDF4LHC21_WpH125J_Wincl_MINLO_Zllgamma		0.91533		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604415   PhH7EG_PDF4LHC21_ZH125J_Zincl_MINLO_Zllgamma		0.83944		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604416   PhH7EG_PDF4LHC21_4FS_A14NNPDF_bbH_Zllgamma		0.51693		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604417   PhH7EG_PDF4LHC21_ggH_NNLOPS_Zllgamma		30.852		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604418   PhH7EG_PDF4LHC21_ggZH125_Zincl_Zllgamma		0.059845		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+604419   PhH7EG_PDF4LHC21_ttH125_tincl_Zllgamma		0.5590499999999999		1.000000E+00		1.0		0.0		0.0		Powheg(v.07-05)+Herwig7(v.7.2.3p2)		e8588
+700945   Sh_eegamma_pty7_mZy_95_175		7.026400000000001		1.000000E+00		1.0		0.0		0.0		Sherpa(v.2.2.14p1)		e8577
+700946   Sh_mumugamma_pty7_mZy_90_175		7.1526000000000005		1.000000E+00		1.0		0.0		0.0		Sherpa(v.2.2.14p1)		e8577
+521382   MGPy8EG_EW_eegammajj		0.057472		1.000000E+00		1.0		0.0		0.0		MadGraph(v.3.5.5.atlas11)+Pythia8(v.312.atlas2)+EvtGen(v.2.2.1)		e8589
+521383   MGPy8EG_EW_mumugammajj		0.057472		1.000000E+00		1.0		0.0		0.0		MadGraph(v.3.5.5.atlas11)+Pythia8(v.312.atlas2)+EvtGen(v.2.2.1)		e8589
