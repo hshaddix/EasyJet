@@ -1,0 +1,122 @@
+include: EasyjetHub/base-config.yaml
+
+# which analysis to consider
+do_HZy_analysis: true
+
+# Whether to activate CP alg systematic variations
+do_CP_systematics: false
+systematics_regex: []
+
+do_small_R_jets: true
+do_photons: true
+do_electrons: true
+do_muons: true
+do_met: true
+
+# Toggles for reconstructed objects decorations
+Small_R_jet:
+  min_pT: 20.e+3
+  max_eta: 4.5
+  useFJvt: true
+  # btagging nominal working point
+  btag_wp: "GN2v01_FixedCutBEff_85"
+  # to use multiple btagging WPs
+  btag_extra_wps:
+    - GN2v01_Continuous
+
+Photon:
+  min_pT: 10.e+3
+  ID: "Loose"
+  Iso: "NonIso"
+  variables_int: ["isEMTight"]
+  extra_wps:
+    - ["Tight", "NonIso"] 
+    - ["Tight", "FixedCutLoose"]
+  do_truth_matching: true
+  do_conversion_decoration: true
+
+Electron:
+  min_pT: 10.e+3
+  ID: "LooseBLayerLH"
+  Iso: "NonIso"
+  correlationModelId: "TOTAL"
+  extra_wps:
+    - ["MediumLH", "NonIso"]
+    - ["LooseBLayerLH", "Loose_VarRad"]
+
+Muon:
+  min_pT: 5.e+3
+  max_eta: 2.5
+  ID: "Medium"
+  Iso: "NonIso"
+  extra_wps:
+    - ["Medium", "Loose_VarRad"]
+
+Lepton:
+  amount: -1
+
+Met:
+  saveSignificance: true
+
+# apply trigger lists to filter events
+do_trigger_filtering: false
+
+# flag for event cleaning
+do_event_cleaning: false
+
+# Require the events pass the global multi-leg trigger matching, using the
+# TrigGlobalEfficiencyCorrection tool/alg. Only for electron/muon/photon triggers
+do_trigger_match_filtering: false
+# list of triggers per year to consider
+Trigger:
+  include: HZyAnalysis/trigger.yaml
+  writeOutput: true
+  scale_factor:
+    doSF: true
+    Electron:
+      # Medium_Loose_VarRad trigger SF not available in
+      # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2018/rel21.2/Precision_Summer2020_v1/map4.txt
+      # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2025/rel22.2/2025_Run3_Consolidated_Recommendation_v4/map2.txt
+      # Tight_Tight_VarRad only combination in common between Run 2 + Run 3
+      ID_Run3: "LooseBLayer"
+      Iso_Run3: "Loose_VarRad"
+    Muon:
+      ID: "Medium"
+    # Enable the electron/muon/photon multi-leg trigger-matching using
+    # the TrigGlobalEfficiencyCorrection tool/alg
+    do_trigger_match: false
+
+# write objects with overlap removal applied
+# turning this on you have to decide on one large R jet collection
+do_overlap_removal: false
+
+# Store high level variables by default
+# when the config file set the high level variables
+store_high_level_variables: true
+
+# flag that toggles run-through mode in SelectorAlg
+bypass: false
+
+# Enable cutflow
+save_cutflow: true
+
+# name that will go in the tree HZy_pass_<selection_name>_%SYS%
+selection_name: "allcuts"
+
+# Use a common GRL for HZy due to lepton triggers
+GRL:
+  years:
+    include: HZyAnalysis/Zy_grl_years.yaml
+  files:
+    include: HZyAnalysis/Zy_grl.yaml
+
+PileupReweighting:
+  lumicalc_files:
+    include: HZyAnalysis/lumicalc_lepton.yaml
+  prw_files:
+    include: HZyAnalysis/prw_lepton.yaml
+  extra_prw:
+    - postfix: "lepton"
+
+ttree_output:
+  include: HZyAnalysis/HZy-base-output.yaml

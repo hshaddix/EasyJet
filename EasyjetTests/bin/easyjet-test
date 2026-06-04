@@ -103,6 +103,7 @@ declare -A DATAFILES=(
     [monojet-mc23]=${PHYS_TTBAR_MC23}
     [ssWW-mc23]=${PHYS_TTBAR_MC23}
     [ZQG-mc23]=${PHYS_TTBAR_MC23}
+    [HZy-mc23]=${PHYS_TTBAR_MC23}
     # systematics enabled
     [syst-mc23]=${PHYS_TTBAR_MC23}
     # non-ntupler workflows
@@ -208,6 +209,7 @@ declare -A TESTS=(
     [monojet-mc23]="simple monojet-ntupler"
     [ssWW-mc23]="simple ssWW-ntupler"
     [ZQG-mc23]="simple ZQG-ntupler"
+    [HZy-mc23]="simple HZy-ntupler"
     # non-ntupler
     [aod-fast-bbbb-mc23]="aod-fast bbbb-ntupler bbbb-hists \
     bbbbAnalysis/RunConfig-HH4b-Resolved.yaml"
@@ -291,6 +293,7 @@ declare -A CONFIGS=(
     [monojet-mc23]=monojetAnalysis/RunConfig-Monojet-bypass.yaml
     [ssWW-mc23]=ssWWAnalysis/RunConfig-Signal-ssWW-bypass.yaml
     [ZQG-mc23]=ZQGAnalysis/RunConfig-ZQG-bypass.yaml
+    [HZy-mc23]=HZyAnalysis/RunConfig-HZy-bypass.yaml
     # MC23 AF3
     [SHbbyy-mc23af3]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
     # non-ntupler
