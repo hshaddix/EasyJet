@@ -28,10 +28,13 @@ namespace HZY
     ATH_CHECK(m_filterParams.initialize(m_systematicsList));
 
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_photonHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_electronHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_muonHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyPhotonHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyElectronHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
+
+    ATH_CHECK(m_electronLIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyElectronHandle));
+    ATH_CHECK(m_muonMIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyMuonHandle));
 
     ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is17_periodB5_B8.initialize(m_systematicsList, m_eventHandle));
@@ -61,6 +64,15 @@ namespace HZY
                                                        m_eventHandle));
     }
 
+    // Setup read decorations for Z candidate dilepton variables (float and int)
+    for (const std::string &string_var : m_intVariables_leptons)
+    {
+      CP::SysReadDecorHandle<int> var{string_var + "_%SYS%", this};
+      m_Ibranches_leptons.emplace(string_var, var);
+      ATH_CHECK(m_Ibranches_leptons.at(string_var)
+                    .initialize(m_systematicsList, m_eventHandle));
+    }
+
     // special flag for all cuts
     ATH_CHECK(m_passallcuts.initialize(m_systematicsList, m_eventHandle));
 
@@ -85,14 +97,14 @@ namespace HZY
       const xAOD::EventInfo *event = nullptr;
       ANA_CHECK(m_eventHandle.retrieve(event, sys));
 
-      const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK(m_photonHandle.retrieve(photons, sys));
+      const xAOD::PhotonContainer *HZyPhotons = nullptr;
+      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys));
 
-      const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
+      const xAOD::ElectronContainer *HZyElectrons = nullptr;
+      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys));
 
-      const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK(m_muonHandle.retrieve(muons, sys));
+      const xAOD::MuonContainer *HZyMuons = nullptr;
+      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
 
       // Reset all cut flags to default=false
       for (const auto &[key, value] : m_bools)
@@ -102,10 +114,13 @@ namespace HZY
 
       // Set trigger thresholds and evaluate trigger cuts
       setThresholds(event, sys);
-      evaluateTriggerCuts(event, electrons, muons, m_HZyCuts, sys);
+      evaluateTriggerCuts(event, HZyElectrons, HZyMuons, m_HZyCuts, sys);
+
+      // Dilepton ID/Iso and dilepton+loose photon selections
+      evaluateLeptonCuts(event, HZyElectrons, HZyMuons, HZyPhotons, m_HZyCuts, sys);
 
       // Check the trigger matching cuts after selected leptons for Z
-      evaluateTriggerMatchingCuts(electrons, muons, m_HZyCuts);
+      evaluateTriggerMatchingCuts(HZyElectrons, HZyMuons, m_HZyCuts);
 
       bool passedall = true;
       for (const auto &cut : m_inputCutKeys)
@@ -230,6 +245,64 @@ namespace HZY
 
     if (passSLT || passDLT) {
       m_bools.at(HZY::PASS_TRIGGER) = true;
+    }
+  }
+
+  void HZySelectorAlg::evaluateLeptonCuts(
+      const xAOD::EventInfo* event,
+      const xAOD::ElectronContainer* electrons,
+      const xAOD::MuonContainer* muons,
+      const xAOD::PhotonContainer *photons,
+      CutManager& HZyCuts,
+      const CP::SystematicSet& sys)
+  {
+    int nEleLooseID = 0;
+    int nEleLooseIDLooseIso = 0;
+    int nMuMediumID = 0;
+    int nMuMediumIDLooseIso = 0;
+
+    for (const xAOD::Electron* ele : *electrons) {
+      if (!ele) {
+        continue;
+      }
+      ++nEleLooseID;
+
+      if (m_electronLIdLIsoDecorHandle.get(*ele, sys)) {
+        ++nEleLooseIDLooseIso;
+      }
+    }
+
+    for (const xAOD::Muon* mu : *muons) {
+      if (!mu) {
+        continue;
+      }
+      ++nMuMediumID;
+
+      if (m_muonMIdLIsoDecorHandle.get(*mu, sys)) {
+        ++nMuMediumIDLooseIso;
+      }
+    }
+
+    const bool passLeptonID = nEleLooseID >= 2 || nMuMediumID >= 2;
+    const bool passLeptonISO = nEleLooseIDLooseIso >= 2 || nMuMediumIDLooseIso >= 2;
+
+    if (HZyCuts.exists("PASS_LEPTON_ID")) {
+      m_bools.at(HZY::PASS_LEPTON_ID) = passLeptonID;
+    }
+
+    if (HZyCuts.exists("PASS_LEPTON_ISO")) {
+      m_bools.at(HZY::PASS_LEPTON_ISO) = passLeptonISO;
+    }
+
+        // Z-candidate size
+    const int nZCandidates = m_Ibranches_leptons.at("LepLepZ_Size").get(*event, sys);
+    if (HZyCuts.exists("SIZE_ZCANDIDATE") && nZCandidates > 0) {
+      m_bools.at(HZY::SIZE_ZCANDIDATE) = true;
+    }
+
+    // Z + loose photon size
+    if (HZyCuts.exists("SIZE_Z_LOOSEPHOTON") && passLeptonISO && !photons->empty()) {
+      m_bools.at(HZY::SIZE_Z_LOOSEPHOTON) = true;
     }
   }
 

@@ -86,9 +86,32 @@ Trigger:
     # the TrigGlobalEfficiencyCorrection tool/alg
     do_trigger_match: false
 
-# write objects with overlap removal applied
-# turning this on you have to decide on one large R jet collection
-do_overlap_removal: false
+# specific overlap removal settings for HZy analysis, 
+# which are different from the default ones in Athena
+HZy_OR:
+  # Leptons overlap removal settings (electrons and muons)
+  do_lepton_overlap_removal: true
+  lep_thr:
+    dEta_ElEl: 0.075
+    dPhi_ElEl: 0.125
+    dR_El_StacoMu: 0.02
+    dR_StacoMu_StacoMu: 0.0
+    dR_CaloMu_StacoMu: 0.1
+    dR_CaloMu_Electron: 0.2
+  # Photons and jets between leptons overlap removal settings
+  do_photonjet_overlap_removal: true
+  phjet_thr:
+    dR_Ph_El: 0.3
+    dR_Ph_CaloMu: 0.3
+    dR_Ph_StacoMu: 0.3
+    dR_Jet_El: 0.2
+    dR_Jet_Ph: 0.2
+    dR_Jet_CaloMu: 0.2
+    dR_Jet_StacoMu: 0.2
+
+# Use constrained Z mass to select the best candidate (if false, use raw mass). 
+# Constrained mass will be set to raw mass if fit fails.
+useConstrainedZMass: true
 
 # Store high level variables by default
 # when the config file set the high level variables
