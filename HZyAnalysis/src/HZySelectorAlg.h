@@ -35,13 +35,13 @@ class CutManager;
 
 namespace HZY
 {
-  enum TriggerChannel
+  enum TriggerChannel : uint8_t
   {
     SLT,
     DLT,
   };
 
-  enum Var
+  enum Var : uint8_t
   {
     ele = 0,
     mu = 1,
@@ -53,7 +53,7 @@ namespace HZY
     asysubleadingmu = 7,
   };
 
-  enum Booleans
+  enum Booleans : uint8_t
   {
     pass_trigger_SLT,
     pass_trigger_DLT,
@@ -111,6 +111,11 @@ private:
 
     StatusCode initialiseCutflow();
 
+    /// \brief Setup sys-aware read decorations photons
+    Gaudi::Property<std::vector<std::string>> m_intVariables_leptons{
+        this, "intVariables_leptons", {}, "Name list of int variables for Z candidate"};
+    std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Ibranches_leptons;
+
     /// \brief Setup syst-aware input container handles
     CutManager m_HZyCuts;
     Gaudi::Property<std::vector<std::string>> m_inputCutList{
@@ -126,15 +131,23 @@ private:
     CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
         this, "event", "EventInfo", "EventInfo container to read"};
 
-    CP::SysReadHandle<xAOD::PhotonContainer> m_photonHandle{
+    CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonHandle{
         this, "HZyPhotons", "HZyAnalysisPhotons_%SYS%", "HZy Photons container to read"};
 
-    CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{
+    CP::SysReadHandle<xAOD::ElectronContainer> m_HZyElectronHandle{
         this, "HZyElectrons", "HZyAnalysisElectrons_%SYS%", "HZy Electron container to read"};
 
-    CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{
+    CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonHandle{
         this, "HZyMuons", "HZyAnalysisMuons_%SYS%", "HZy Muon container to read"};
 
+    // Electrons with various ID and isolation WPs: preselection
+    CP::SysReadDecorHandle<char> m_electronLIdLIsoDecorHandle{
+        this, "ElectronLIdLIsoDecor", "baselineSelection_LooseBLayerLH_Loose_VarRad_%SYS%", "Electron loose ID + loose Iso selection"};
+
+    // Muons with various ID and isolation WPs: preselection
+    CP::SysReadDecorHandle<char> m_muonMIdLIsoDecorHandle{
+        this, "MuonMIdLIsoDecor", "baselineSelection_Medium_Loose_VarRad_%SYS%", "Muon medium ID + loose Iso selection"};
+    
     CP::SysReadDecorHandle<char> m_is17_periodB5_B8{this, "is2017_periodB5_B8", "is2017_periodB5_B8", ""};
     CP::SysReadDecorHandle<char> m_is22_75bunches{this, "is2022_75bunches", "is2022_75bunches", ""};
     CP::SysReadDecorHandle<char> m_is23_75bunches{this, "is2023_75bunches", "is2023_75bunches", ""};

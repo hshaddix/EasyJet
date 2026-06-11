@@ -3,10 +3,10 @@ include: HZyAnalysis/RunConfig-HZy-base.yaml
 CutList:
       - "PASS_TRIGGER"
       # - "TWO_LEPTONS" # HZyCore uses noIDnoISO, but EJ only ID_noISO
-      # - "PASS_LEPTON_ID"
-      # - "PASS_LEPTON_ISO"
-      # - "SIZE_ZCANDIDATE"
-      # - "SIZE_Z_LOOSEPHOTON"
+      - "PASS_LEPTON_ID"
+      - "PASS_LEPTON_ISO"
+      - "SIZE_ZCANDIDATE"
+      - "SIZE_Z_LOOSEPHOTON"
       - "PASS_TRIGGER_MATCHING"
       # - "PHOTONS_JETS_OR_LEPTONS"
       # - "DILEPTON_MASS_AVOID_HMM"  

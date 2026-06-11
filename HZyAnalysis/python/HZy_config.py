@@ -54,6 +54,61 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
     # selection algorithm added by "addEventAlgo"
     selection_name = flags.Analysis.selection_name
 
+    # HZy: lepton overlap removal algorithm before Z reconstruction
+    if flags.Analysis.HZy_OR.do_lepton_overlap_removal:
+        cfg.addEventAlgo(
+            CompFactory.HZY.HZyLeptonsORAlg(
+                "HZyLeptonsORAlg",
+                dEta_ElEl=flags.Analysis.HZy_OR.lep_thr.dEta_ElEl,
+                dPhi_ElEl=flags.Analysis.HZy_OR.lep_thr.dPhi_ElEl,
+                dR_El_StacoMu=flags.Analysis.HZy_OR.lep_thr.dR_El_StacoMu,
+                dR_StacoMu_StacoMu=flags.Analysis.HZy_OR.lep_thr.dR_StacoMu_StacoMu,
+                dR_CaloMu_StacoMu=flags.Analysis.HZy_OR.lep_thr.dR_CaloMu_StacoMu,
+                dR_CaloMu_Electron=flags.Analysis.HZy_OR.lep_thr.dR_CaloMu_Electron,
+                doSystematics=flags.Analysis.do_CP_systematics,
+            )
+        )
+
+    # Egamma Calibration Tool for FSRCorrectionTool and ZMassConstraintTool
+    egCalibTool = CompFactory.CP.EgammaCalibrationAndSmearingTool(
+        "CP::EgammaCalibrationAndSmearingTool",
+        useFastSim=0,
+        decorrelationModel="1NP_v1",
+        ESModel="es2024_Run3_v0",
+    )
+    cfg.addPublicTool(egCalibTool)
+
+    # Muon Calibration Tool for ZMassConstraintTool
+    muonCalibTool = CompFactory.CP.MuonCalibTool(
+        "MuonCalibTool",
+        IsRun3Geo=True,
+        release="Recs2024_05_06_Run2Run3",
+        calibMode=3 if flags.Input.isMC else 0
+    )
+    cfg.addPublicTool(muonCalibTool)
+
+    # FSR Tool needing the Egamma Calibration Tool
+    # to recalibrate the electrons as photons
+    fsrTool = CompFactory.FSR.FsrPhotonTool(
+        "FsrPhotonTool",
+        egCalibToolName=egCalibTool.name,
+    )
+    cfg.addPublicTool(fsrTool)
+
+    cfg.addEventAlgo(
+        CompFactory.HZY.LeptonVarsHZyAlg(
+            "LeptonVarsHZyAlg",
+            isMC=flags.Input.isMC,
+            FsrPhotonTool=fsrTool,
+            EgammaCalibTool=egCalibTool,
+            MuonCalibTool=muonCalibTool,
+            useConstrainedZMass=flags.Analysis.useConstrainedZMass,
+            floatVariableList=float_variables['leptons'],
+            intVariableList=int_variables['leptons'],
+            doSystematics=flags.Analysis.do_CP_systematics,
+        )
+    )
+
     cfg.addEventAlgo(
         CompFactory.HZY.HZySelectorAlg(
             "HZySelectorAlg",
@@ -63,6 +118,7 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             isMC=flags.Input.isMC,
             triggerLists=flags.Analysis.TriggerChains,
             trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
+            intVariables_leptons=int_variables['leptons'],
             bypass=flags.Analysis.bypass
         )
     )
@@ -73,14 +129,6 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             isMC=flags.Input.isMC,
             floatVariableList=float_variables['photons'],
             intVariableList=int_variables['photons'],
-            doSystematics=flags.Analysis.do_CP_systematics,
-        )
-    )
-
-    cfg.addEventAlgo(
-        CompFactory.HZY.LeptonVarsHZyAlg(
-            "LeptonVarsHZyAlg",
-            intVariableList=int_variables['leptons'],
             doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
@@ -106,38 +154,40 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
 
 
 def get_PhotonVarsHZyAlg_variables(flags):
-    float_variable_names = []
-    int_variable_names = []
-
-    float_variable_names += [
+    float_variable_names = [
         "Photon_effSF", "Ph_Pt_Raw", "Ph_Eta_Raw", "Ph_Phi_Raw",
     ]
-    int_variable_names += ["nPhotons", "Ph_ConvType", "Ph_isEMTight"]
+    int_variable_names = ["nPhotons", "Ph_ConvType", "Ph_isEMTight"]
     return float_variable_names, int_variable_names
 
 
 def get_LeptonVarsHZyAlg_variables(flags):
-    float_variable_names = []
-    int_variable_names = []
+    float_variable_names = [
+        "LepLead_effSF", "LepSub_effSF", "Muon_Fsr_dR", "LepLepZ_M_Fsr",
+    ]
+    for suffix in ["Raw", "Cstr"]:
+        for obj in ["LepLepZ", "LepLead", "LepSub"]:
+            for var in ["M", "Pt", "Eta", "Phi"]:
+                float_variable_names.append(f"{obj}_{var}_{suffix}")
 
-    int_variable_names += ["nLeptons", "nElectrons", "nMuons"]
+    int_variable_names = [
+        "Lep_Channel", "LepLepZ_Size", "Muon_hasFsr", "Muon_Index_Fsr",
+        "nLeptons", "nElectrons", "nMuons"
+    ]
+
     return float_variable_names, int_variable_names
 
 
 def get_JetVarsHZyAlg_variables(flags):
-    float_variable_names = []
-    int_variable_names = []
+    float_variable_names = ["Mjj"]
+    int_variable_names = ["nJets"]
 
-    float_variable_names += ["Mjj"]
-    int_variable_names += ["nJets"]
     return float_variable_names, int_variable_names
 
 
 def get_BaselineVarsHZyAlg_variables(flags):
-    float_variable_names = []
+    float_variable_names = ["BeamSpotWeight", "MC_Weight"]
     int_variable_names = []
-
-    float_variable_names += ["BeamSpotWeight", "MC_Weight"]
 
     return float_variable_names, int_variable_names
 
