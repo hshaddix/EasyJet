@@ -6,6 +6,7 @@ dir_samples="../easyjet/bbbbAnalysis/datasets/HH4b/"
 mc_list=(
     "$dir_samples/mc23_DAOD_PHYS_HH4b_nonres_2024.txt"
     "$dir_samples/mc23_DAOD_PHYS_HH4b_background_2024.txt"
+    "$dir_samples/mc23_DAOD_PHYS_HH4b_validation_2024.txt"
 )
 
 #data
