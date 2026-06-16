@@ -15,7 +15,7 @@ default:
   interruptible: true
 
 # get an ath analysis image
-image: gitlab-registry.cern.ch/atlas/athena/athanalysis:25.2.96
+image: gitlab-registry.cern.ch/atlas/athena/athanalysis:25.2.97
 
 stages:
   - linting
