@@ -1,0 +1,17 @@
+## Common pileup reweighting files for MC campaigns
+# Run-2
+'mc20a' : 'PileupReweighting/mc20_common/mc20a.284500.physlite.prw.v1.root'
+'mc20d' : 'PileupReweighting/mc20_common/mc20d.300000.physlite.prw.v1.root'
+'mc20e' : 'PileupReweighting/mc20_common/mc20e.310000.physlite.prw.v1.root'
+# Run-3
+'mc23a' : 'PileupReweighting/mc23_common/mc23a.410000.physlite.prw.v2.root'
+'mc23d' : 'PileupReweighting/mc23_common/mc23d.450000.physlite.prw.v1.root'
+'mc23e' : 'PileupReweighting/mc23_common/mc23e.470000.physlite.prw.v1.root'
+## Actual mu distributions for each year
+# Run-2
+'2017': 'GoodRunsLists/data17_13TeV/20180619/physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root'
+'2018': 'GoodRunsLists/data18_13TeV/20190318/physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root'
+# Run-3
+'2022': 'GoodRunsLists/data22_13p6TeV/20250321/purw.actualMu.ignore_TRIGLAR.root'
+'2023': 'GoodRunsLists/data23_13p6TeV/20250321/purw.actualMu.ignoreTRIGJETCTPIN.root'
+'2024': 'GoodRunsLists/data24_13p6TeV/20241118/purw.actualMu.root'

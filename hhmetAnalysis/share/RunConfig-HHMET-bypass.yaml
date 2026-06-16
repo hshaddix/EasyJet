@@ -1,0 +1,7 @@
+include: [hhmetAnalysis/RunConfig-HHMET-base.yaml]
+
+bypass: true
+do_trigger_filtering: false
+
+do_CP_systematics: false
+systematics_regex: []

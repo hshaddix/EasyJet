@@ -1,0 +1,128 @@
+include: [hhmetAnalysis/RunConfig-HHMET-base.yaml]
+
+# with all syst on
+do_resolved_dihiggs: true
+do_boosted_dihiggs: true
+
+splitOutputTree: false
+
+#==========================================
+# Sort out basic event recording (Triggers, GRL, PRW)
+#==========================================
+
+Trigger:
+  include: hhmetAnalysis/triggers_MET.yaml
+GRL:
+  store_decoration: false
+  years:
+    include: grl_years.yaml
+  files:
+    include: grl_files.yaml
+lumicalc_files:
+  include: lumicalc_files.yaml
+prw_files:
+  include: prw_files.yaml
+
+#==========================================
+# Object reconstruction & selection
+#==========================================
+# TODO ADD ALL THE ARGS PROPERLY
+
+# Toggles for object types
+do_small_R_jets: true
+do_large_R_UFO_jets: true
+do_muons: true
+do_electrons: true
+do_met: true
+
+# calibrate & select large-R jets
+Large_R_jet:
+  min_pT: 200.e+3
+  max_pT: -1
+  max_eta: 2.0
+  runMuonJetPtCorr: true
+  flat_mass_selections: 
+    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml]
+    GN2X: 
+      file: EasyjetHub/Xbb_GN2Xv01.json
+      wps: []
+  do_parent_decoration: true
+  amount: 0
+  amount_leadingjet: 0
+  variables: []
+  variables_int: []
+  wtag_type: ""
+  wtag_wp: ""
+  wtag_extra_wps: []
+
+# overlap removal
+do_overlap_removal: true
+OverlapRemoval:
+  do_small_R_jet_large_R_jet: false
+  do_large_R_jets: false
+
+
+#==========================================
+# Event cleaning & selections
+#==========================================
+
+do_event_cleaning: true
+add_BadBatman_jet_cleaning: false
+do_trigger_filtering: true
+save_cutflow: true
+bypass: false # what does this do????
+selection_name: "preselection"
+#TODO SPLIT UP CUTS MORE FINELY
+
+
+#==========================================
+# Systematics set up
+#==========================================
+
+do_CP_systematics: false
+systematics_regex: [".*"]
+systematics_suffix_separator: "_"
+
+
+#==========================================
+# TTree output setup
+#==========================================
+
+# Include the TTree configuration and update details
+ttree_output:
+  include: EasyjetHub/AnalysisMiniTree-config.yaml
+  slim_variables_with_syst: true
+  # Our overrides. All defaults are off
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+    met: 'container_names.output.met'
+    #muons: 'container_names.output.muons'
+    #electrons: 'container_names.output.electrons'
+  collection_options:
+    small_R_jets:
+      truth_parent_info: true
+      btag_info: true
+      JVT_details: true
+      no_bjet_calib_p4: true
+      btag_details: true
+#      gn3_scores: false
+    large_R_jets:
+      truth_labels: true
+      substructure_info: true
+      no_bjet_calib_p4: true
+      run_selection: true
+      bjet_regression: true
+#    electrons:
+#      id_variables: false
+#      iso_variables: false
+#      run_selection: true
+#      truth_parent_info: true
+#    muons:
+#      iso_variables: false
+#      run_selection: true
+#      truth_parent_info: true
+  truth_outputs:
+    small_R_jets: 'container_names.input.truth4Jet'
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+    higgs_particle: 'container_names.output.truthHHParticles'

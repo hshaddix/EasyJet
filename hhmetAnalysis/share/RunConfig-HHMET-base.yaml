@@ -1,0 +1,208 @@
+include: EasyjetHub/base-config.yaml
+
+# with all syst on
+do_resolved_dihiggs: true
+do_boosted_dihiggs: false
+
+splitOutputTree: false
+
+#==========================================
+# Sort out basic event recording (Triggers, GRL, PRW)
+#==========================================
+
+Trigger:
+  include: hhmetAnalysis/triggers_MET.yaml
+GRL:
+  store_decoration: false
+  years:
+    include: grl_years.yaml
+  files:
+    include: grl_files.yaml
+lumicalc_files:
+  include: lumicalc_files.yaml
+prw_files:
+  include: prw_files.yaml
+
+#==========================================
+# Object reconstruction & selection
+#==========================================
+# TODO ADD ALL THE ARGS PROPERLY
+
+# Toggles for object types
+do_small_R_jets: true
+do_large_R_UFO_jets: false
+do_muons: true
+do_electrons: true
+do_met: true
+
+# calibrate & select small-R jets
+Small_R_jet:
+  min_pT: 20.e+3
+  max_eta: 4.5
+  useFJvt: false
+  btag_egReductionB: "Medium"
+  btag_egReductionC: "Medium"
+  btag_egReductionLight: "Medium"
+  saveTriggerInfo: false
+  btag_wp: "GN2v01_FixedCutBEff_77"
+  #btag_extra_wps:
+  #  - GN2v01_FixedCutBEff_65
+  #  - GN2v01_FixedCutBEff_70
+  #  - GN2v01_FixedCutBEff_85
+  runBJetPtCalib: true
+  doL1Matching: False
+  doHLTMatching: False
+  # select jet type
+  jet_type: 'reco4PFlowJet'
+  # calib tool options
+  calibToolCalibArea: ""
+  calibToolConfigFile: ""
+  calibToolCalibSeq: ""
+  # uncertainties tool options
+  uncertToolCalibArea: ""
+  uncertToolConfigPath: ""
+  uncertToolMCType: ""
+  do_parent_decoration: true
+  do_thinning: true
+  save_all_jets: false
+  amount: 0
+  amount_bjet: 0
+  amount_cjet: 0
+  amount_ljet: 0
+  amount_leadingjet: 0
+  systModelJES: "Category"
+  systModelJER: "Full"
+  variables_bjets: ["pt", "eta", "phi", "E"]
+  variables_cjets: ["pt", "eta", "phi", "E"]
+  variables_ljets: ["pt", "eta", "phi", "E"]
+  variables_allJets: ["pt", "eta", "phi", "E"]
+  variables_int_bjets: []
+  variables_int_cjets: []
+  variables_int_ljets: []
+  variables_int_allJets: []
+
+# calibrate & select muons
+Muon:
+  min_pT: 8.0e+3
+  max_eta: 2.7
+  ID: "Loose"
+  Iso: "PflowLoose_VarRad"
+  maxD0Significance: 3
+  maxDeltaZ0SinTheta: 0.5
+  do_thinning: true
+  IsoDecSuffix: ""
+  MergeLRT: false
+  do_parent_decoration: false
+  do_track_decoration: false
+  do_IFF_decoration: false
+  do_reco_decoration: false
+  amount: 0
+  variables: ["pt", "eta", "phi", "E", "effSF"]
+  variables_int: []
+  extra_wps: []
+
+# calibrate & select electrons
+Electron:
+  min_pT: 8.0e+3
+  max_eta: 2.47
+  crackVeto: true
+  ID: "LooseBLayerLH"
+  Iso: "Loose_VarRad"
+  correlationModelId: "TOTAL"
+  maxD0Significance: 5.
+  maxDeltaZ0SinTheta: 0.5
+  chargeIDSelectionRun2: false
+  do_thinning: true
+  MergeLRT: false
+  do_parent_decoration: false
+  do_track_decoration: false
+  do_IFF_decoration: false
+  do_reco_decoration: false
+  amount: 0
+  variables: ["pt", "eta", "phi", "E", "effSF"]
+  variables_int: []
+  correlationModelScale: "1NP_v1"
+  correlationModelIso: "TOTAL"
+  correlationModelReco: "TOTAL"
+  extra_wps: []
+  forceFullSimConfig: false
+
+# calibrate & select met
+Met:
+  metWP: "Tight"
+  treatPUJets: false
+  setMuonJetEMScale: true
+  saveSignificance: true
+  addExtraSignificanceVars: true
+
+# overlap removal
+do_overlap_removal: true
+OverlapRemoval:
+  do_small_R_jet_large_R_jet: false
+  do_large_R_jets: false
+
+# Decay mode considered for truth decoration
+Truth:
+  decayModes: ["bbbb"]
+  do_STXS: false
+
+#==========================================
+# Event cleaning & selections
+#==========================================
+
+do_event_cleaning: true
+add_BadBatman_jet_cleaning: false
+do_trigger_filtering: true
+save_cutflow: true
+bypass: false # what does this do????
+selection_name: "preselection"
+CutList:
+  - PASS_TRIGGER
+  - AT_LEAST_FOUR_JETS_THREE_BJETS_OR_AT_LEAST_TWO_JETS_ONE_LRJET
+  - ZERO_LEPTONS
+#TODO SPLIT UP CUTS MORE FINELY
+
+
+#==========================================
+# Systematics set up
+#==========================================
+
+do_CP_systematics: false
+systematics_regex: [".*"]
+systematics_suffix_separator: "_"
+
+
+#==========================================
+# TTree output setup
+#==========================================
+
+# Include the TTree configuration and update details
+ttree_output:
+  include: EasyjetHub/AnalysisMiniTree-config.yaml
+  slim_variables_with_syst: true
+  # Our overrides. All defaults are off
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    met: 'container_names.output.met'
+    #muons: 'container_names.output.muons'
+    #electrons: 'container_names.output.electrons'
+  collection_options:
+    small_R_jets:
+      truth_parent_info: true
+      btag_info: true
+      JVT_details: true
+      no_bjet_calib_p4: true
+      btag_details: true
+#      gn3_scores: false
+#    electrons:
+#      id_variables: false
+#      iso_variables: false
+#      run_selection: true
+#      truth_parent_info: true
+#    muons:
+#      iso_variables: false
+#      run_selection: true
+#      truth_parent_info: true
+  truth_outputs:
+    small_R_jets: 'container_names.input.truth4Jet'
+    higgs_particle: 'container_names.output.truthHHParticles'

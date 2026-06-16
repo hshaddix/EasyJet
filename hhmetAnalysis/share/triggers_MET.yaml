@@ -1,0 +1,47 @@
+selection:
+  chains:
+    '2015':
+      # period C2-C4, D3-D6, E-J
+    - 'HLT_xe70_mht'
+    '2016':
+    - 'HLT_noalg_L1J400'
+      # period A-C
+    - 'HLT_xe90_mht_L1XE50'
+      # period D+
+    - 'HLT_xe110_mht_L1XE50'
+    '2017':
+      # period D-K
+    - 'HLT_xe110_pufit_L1XE55'
+      # period C
+    - 'HLT_xe100_pufit_L1XE55'
+      # period B
+    - 'HLT_xe90_pufit_L1XE50'
+    '2018':
+      # period B, C-J
+    - 'HLT_xe110_pufit_xe70_L1XE50'
+    - 'HLT_xe120_pufit_L1XE50'
+      # period K- (also the xe70 one above)
+    - 'HLT_xe110_pufit_xe65_L1XE50'
+    '2022':
+      # from 75 bunches
+    - 'HLT_xe65_cell_xe90_pfopufit_L1XE50'
+    - 'HLT_xe80_cell_xe115_tcpufit_L1XE50'
+    '2023':
+      # from 400 bunches
+    #- 'HLT_xe55_cell_xe70_tcpufit_xe90_pfsum_vssk_L1XE50'
+    #- 'HLT_xe55_cell_xe70_tcpufit_xe95_pfsum_cssk_L1XE50'
+    #- 'HLT_xe60_cell_xe95_pfsum_cssk_L1XE50'
+    - 'HLT_xe65_cell_xe100_mhtpufit_pf_L1XE50'
+    #- 'HLT_xe65_cell_xe105_mhtpufit_em_L1XE50'
+    #- 'HLT_xe75_cell_xe65_tcpufit_xe90_trkmht_L1XE50'
+    - 'HLT_xe65_cell_xe90_pfopufit_L1XE50'
+    - 'HLT_xe80_cell_xe115_tcpufit_L1XE50'
+    '2024':
+      # from 400 bunches, up to run 476730
+    - 'HLT_xe65_cell_xe90_pfopufit_L1XE50'
+    - 'HLT_xe65_cell_xe105_nn_L1XE50'
+    - 'HLT_xe80_cell_xe115_tcpufit_L1XE50'
+      # from 400 bunches, from run 476730
+    - 'HLT_xe65_cell_xe105_nn_L1jXE100'
+    - 'HLT_xe65_cell_xe90_pfopufit_L1jXE100'
+    - 'HLT_xe80_cell_xe115_tcpufit_L1jXE100'
