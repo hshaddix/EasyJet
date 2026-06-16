@@ -1,14 +1,47 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
 from itertools import chain
+from AthenaConfiguration.Enums import LHCPeriod
 
-from EasyjetHub.algs.postprocessing.trigger_matching import TriggerMatchingToolCfg
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     ElectronSelectorAlgCfg, MuonSelectorAlgCfg, LeptonOrderingAlgCfg,
     JetSelectorAlgCfg, PhotonSelectorAlgCfg)
 
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_obj_branches_variables)
+
+
+def HZy_TriggerSFCfg(flags):
+    from AnalysisAlgorithmsConfig.ConfigAccumulator import ConfigAccumulator
+    from EasyjetHub.algs.calibration.triggerSF import triggerSF_sequence
+    from EasyjetHub.steering.utils.name_helper import drop_sys
+
+    cfg = ComponentAccumulator()
+    configAccumulator = ConfigAccumulator(
+        algSeq=CompFactory.AthSequencer("HZyTriggerSFSequence"),
+        flags=flags,
+    )
+    trigSeq = triggerSF_sequence(flags)
+
+    electron_container_sys = flags.Analysis.Trigger.scale_factor.Electron.container
+    muon_container_sys = flags.Analysis.Trigger.scale_factor.Muon.container
+
+    electron_container = drop_sys(electron_container_sys)
+    muon_container = drop_sys(muon_container_sys)
+
+    # The TriggerSF ConfigBlock is configured in a fresh ConfigAccumulator.
+    # Therefore it does not know the HZy Z-candidate containers unless we
+    # register them explicitly.
+    configAccumulator.setSourceName(electron_container, electron_container_sys)
+    configAccumulator.setSourceName(muon_container, muon_container_sys)
+    # Override the default EasyJet selected lepton containers with the
+    # HZy selected Z-candidate lepton containers.
+    trigSeq.setOptionValue('.electrons', electron_container)
+    trigSeq.setOptionValue('.muons', muon_container)
+
+    trigSeq.fullConfigure(configAccumulator)
+    cfg.merge(configAccumulator.CA)
+    return cfg
 
 
 def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
@@ -70,20 +103,22 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
         )
 
     # Egamma Calibration Tool for FSRCorrectionTool and ZMassConstraintTool
+    is_run3 = flags.GeoModel.Run is LHCPeriod.Run3
+    egamma_es_model = "es2024_Run3_v0" if is_run3 else "es2023_R22_Run2_v1"
     egCalibTool = CompFactory.CP.EgammaCalibrationAndSmearingTool(
         "CP::EgammaCalibrationAndSmearingTool",
         useFastSim=0,
         decorrelationModel="1NP_v1",
-        ESModel="es2024_Run3_v0",
+        ESModel=egamma_es_model,
     )
     cfg.addPublicTool(egCalibTool)
 
     # Muon Calibration Tool for ZMassConstraintTool
     muonCalibTool = CompFactory.CP.MuonCalibTool(
         "MuonCalibTool",
-        IsRun3Geo=True,
-        release="Recs2024_05_06_Run2Run3",
-        calibMode=3 if flags.Input.isMC else 0
+        IsRun3Geo=is_run3,
+        release="Recs2025_12_11_Run2Run3",
+        calibMode=3 if flags.Input.isMC else 0,
     )
     cfg.addPublicTool(muonCalibTool)
 
@@ -102,9 +137,35 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             FsrPhotonTool=fsrTool,
             EgammaCalibTool=egCalibTool,
             MuonCalibTool=muonCalibTool,
+            mllWindowInfsr=flags.Analysis.fsr_selections.mll_window_infsr,
+            mllFsrThreshold=flags.Analysis.fsr_selections.mll_fsr_threshold,
             useConstrainedZMass=flags.Analysis.useConstrainedZMass,
             floatVariableList=float_variables['leptons'],
             intVariableList=int_variables['leptons'],
+            doSystematics=flags.Analysis.do_CP_systematics,
+        )
+    )
+
+    # Trigger matching / trigger SF using the selected Z-candidate leptons.
+    # This must run after LeptonVarsHZyAlg creates:
+    #   HZyElectronsOR_ZCand_%SYS% and HZyMuonsOR_ZCand_%SYS%
+    # and before HZySelectorAlg reads:
+    #   globalTriggerMatch_%SYS%
+    cfg.merge(HZy_TriggerSFCfg(flags))
+
+    cfg.addEventAlgo(
+        CompFactory.HZY.PhotonVarsHZyAlg(
+            "PhotonVarsHZyAlg",
+            isMC=flags.Input.isMC,
+            dR_Ph_El=flags.Analysis.HZy_OR.phjet_thr.dR_Ph_El,
+            dR_Ph_CaloMu=flags.Analysis.HZy_OR.phjet_thr.dR_Ph_CaloMu,
+            dR_Ph_StacoMu=flags.Analysis.HZy_OR.phjet_thr.dR_Ph_StacoMu,
+            dR_Jet_Ph=flags.Analysis.HZy_OR.phjet_thr.dR_Jet_Ph,
+            dR_Jet_El=flags.Analysis.HZy_OR.phjet_thr.dR_Jet_El,
+            dR_Jet_CaloMu=flags.Analysis.HZy_OR.phjet_thr.dR_Jet_CaloMu,
+            dR_Jet_StacoMu=flags.Analysis.HZy_OR.phjet_thr.dR_Jet_StacoMu,
+            floatVariableList=float_variables['photons'],
+            intVariableList=int_variables['photons'],
             doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
@@ -117,19 +178,13 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             saveCutFlow=flags.Analysis.save_cutflow,
             isMC=flags.Input.isMC,
             triggerLists=flags.Analysis.TriggerChains,
-            trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
-            intVariables_leptons=int_variables['leptons'],
+            max_mll_veto_hmumu=flags.Analysis.mass_relpt_cuts.max_mll_veto_hmumu,
+            mll_cstr_window=flags.Analysis.mass_relpt_cuts.mll_cstr_window,
+            mllg_cstr_window=flags.Analysis.mass_relpt_cuts.mllg_cstr_window,
+            photon_relpt_min=flags.Analysis.mass_relpt_cuts.photon_relpt_min,
+            floatVariableList_leptons=float_variables['leptons'],
+            intVariableList_leptons=int_variables['leptons'],
             bypass=flags.Analysis.bypass
-        )
-    )
-
-    cfg.addEventAlgo(
-        CompFactory.HZY.PhotonVarsHZyAlg(
-            "PhotonVarsHZyAlg",
-            isMC=flags.Input.isMC,
-            floatVariableList=float_variables['photons'],
-            intVariableList=int_variables['photons'],
-            doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
 

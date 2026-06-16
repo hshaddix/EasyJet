@@ -102,6 +102,8 @@ private:
     ToolHandle<FSR::FsrPhotonTool> m_fsrTool{
         this, "FsrPhotonTool", "FSR::FsrPhotonTool/FsrPhotonTool", "FSR Photon correction tool"};
     std::unique_ptr<ZMassConstraint::ConstraintFit> m_ZMassConstraint;
+    Gaudi::Property<std::vector<double>> m_mllWindow{this, "mllWindowInfsr", {66.0, 89.0}, "Allowed mll window [GeV] for FSR correction"};
+    Gaudi::Property<double> m_mllFsrThre{this, "mllFsrThreshold", 100.0, "Allowed FSR mll window [GeV]"};
     
     // Used for FSR correction tool
     CP::SysReadHandle<xAOD::ElectronContainer> m_electronsSTEP3Handle{

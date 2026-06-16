@@ -18,13 +18,14 @@ Analysis Package for Full Run3 $H\rightarrow Z \gamma$ analyis
 - `src/`: C++ code
   The main algorithms called in [HZy_config.py](python/HZy_config.py) are excuted in the following order:
   - `HZyLeptonORAlg`: Perform the lepton overlap removal before Z selection;
-  - `HZyZCandAlg`: Find the Z(ll)y candidate ([FSRCorrectionTool](https://gitlab.cern.ch/atlas/athena/-/tree/main/PhysicsAnalysis/AnalysisCommon/FsrUtils) and [ZMassConstrainTool](https://gitlab.cern.ch/atlas/athena/-/tree/main/PhysicsAnalysis/HiggsPhys/Run2/HZZ/Tools/ZMassConstraint)) in the event, and compute the associated variables (masses, pT, etc...); 
-  - `HZyPhotonJetORAlg`: Perform the photon-jet overlap removal after the Z(ll)y selection;
+  - `LeptonVarsHZyAlg`: Compute the lepton-related variables; Find the Z(ll)y candidate ([FSRCorrectionTool](https://gitlab.cern.ch/atlas/athena/-/tree/main/PhysicsAnalysis/AnalysisCommon/FsrUtils) and [ZMassConstrainTool](https://gitlab.cern.ch/atlas/athena/-/tree/main/PhysicsAnalysis/HiggsPhys/Run2/HZZ/Tools/ZMassConstraint)) in the event, and compute the associated variables (masses, pT, etc...); 
+  - `PhotonVarsHZyAlg`: Compute the photon-related variables; Perform the photon-jet overlap removal after the Z(ll)y selection;
   - `HZySelectorAlg`: Apply the event selections following the configuration in the `RunConfig-HZy.yaml` file, and save the cutflow;
-  - `PhotonVarsHZyAlg`: Compute the photon-related variables;
-  - `LeptonVarsHZyAlg`: Compute the lepton-related variables;
   - `JetVarsHZyAlg`: Compute the small-R jet variables.
   - `BaselineVarsHZyAlg`: Compute the baseline variables.
+
+*Note:* The HZy-specific algorithms run on `HZyAnalysis*` containers, for example `HZyAnalysisElectrons`, which are produced by [`EasyjetHub`](easyjet/EasyjetHub/src) from the corresponding `Analysis*` containers.
+For DAOD_PHYSLITE inputs, the `Analysis*` containers are already available and can be processed directly by `EasyjetHub`. For DAOD_PHYS inputs, the original DAOD containers, such as `Electrons`/`ElectronsAuxDyn`, are first processed by the CP algorithms in [`PhysicsAnalysis/Algorithms`](https://gitlab.cern.ch/atlas/athena/-/blob/main/PhysicsAnalysis/Algorithms) to produce the `Analysis*` containers. These are then used by `EasyjetHub` to create the `HZyAnalysis*` containers.
 
 # How to Run
 

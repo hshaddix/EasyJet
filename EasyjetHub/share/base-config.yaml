@@ -282,6 +282,7 @@ Trigger:
     # Enable the electron/muon/photon multi-leg trigger-matching using
     # the TrigGlobalEfficiencyCorrection tool/alg
     do_trigger_match: false
+    use_analysis_objects: false
 
   # Enable writing trigger flags in AnalysisMiniTree
   writeOutput: True

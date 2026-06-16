@@ -13,9 +13,13 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #include <SystematicsHandles/SysReadDecorHandle.h>
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
+#include <SystematicsHandles/SysWriteHandle.h>
 
-#include <xAODEgamma/PhotonContainer.h>
 #include <xAODEventInfo/EventInfo.h>
+#include <xAODEgamma/PhotonContainer.h>
+#include <xAODJet/JetContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
+#include <xAODMuon/MuonContainer.h>
 
 namespace HZY
 {
@@ -40,18 +44,38 @@ private:
         this, "event", "EventInfo", "EventInfo container to read"};
 
     CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonHandle{
-        this, "HZyPhotons", "HZyAnalysisPhotons_%SYS%",
-        "HZy Photon container to read"};
+        this, "HZyPhotons", "HZyAnalysisPhotons_%SYS%", "HZy Photon container to read"};
 
-    CP::SysReadDecorHandle<char> m_photonTIWPDecorHandle{
-        this, "photonTIWPDecor", "baselineSelection_Tight_FixedCutLoose_%SYS%",
-        "Photon tight ID + Iso selection"};
+    CP::SysReadHandle<xAOD::JetContainer> m_HZyJetHandle{
+        this, "HZyJets", "HZyAnalysisJets_%SYS%", "HZy Jet container to read"};
+
+    // Read the leptons from HZy electrons with OR and selected Z candidate (Input from from LeptonVarsAlg.cxx tool)
+    CP::SysReadHandle<xAOD::ElectronContainer> m_ZCandElectronsHandle{
+        this, "HZyElectronsOR_ZCand", "HZyElectronsOR_ZCand_%SYS%", "Input Electrons forming ZCand (from LLgCand tool)"};
+    CP::SysReadHandle<xAOD::MuonContainer> m_ZCandMuonsHandle{
+        this, "HZyMuonsOR_ZCand", "HZyMuonsOR_ZCand_%SYS%", "Input Muons forming ZCand (from LLgCand tool)"};
+
+    CP::SysWriteHandle<ConstDataVector<xAOD::PhotonContainer>> m_HZyPhotonORHandle{
+        this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photons passing OR with leptons and jets"};
+
+    CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_HZyJetORHandle{
+        this, "HZyJetsOR", "HZyJetsOR_%SYS%", "HZy Jets passing OR with leptons and photons"};
 
     Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
-    CP::SysReadDecorHandle<unsigned int> m_isEMTight{"DFCommonPhotonsIsEMTightIsEMValue", this};
+    Gaudi::Property<double> m_dR_Ph_El{this, "dR_Ph_El", 0.3, "deltaR cut for Photon/Electron OR"};
+    Gaudi::Property<double> m_dR_Ph_CaloMu{this, "dR_Ph_CaloMu", 0.3, "deltaR cut for Photon/CaloMuon OR"};
+    Gaudi::Property<double> m_dR_Ph_StacoMu{this, "dR_Ph_StacoMu", 0.3, "deltaR cut for Photon/StacoMuon OR"};
+    Gaudi::Property<double> m_dR_Jet_Ph{this, "dR_Jet_Ph", 0.2, "deltaR cut for Jet/Photon OR"};
+    Gaudi::Property<double> m_dR_Jet_El{this, "dR_Jet_El", 0.2, "deltaR cut for Jet/Electron OR"};
+    Gaudi::Property<double> m_dR_Jet_CaloMu{this, "dR_Jet_CaloMu", 0.2, "deltaR cut for Jet/CaloMuon OR"};
+    Gaudi::Property<double> m_dR_Jet_StacoMu{this, "dR_Jet_StacoMu", 0.2, "deltaR cut for Jet/StacoMuon OR"};
+    
+    CP::SysReadDecorHandle<char> m_photonTIdLIsoDecorHandle{
+        this, "photonTIdLIsoDecor", "baselineSelection_Tight_FixedCutLoose_%SYS%",
+        "Photon tight ID + loose Iso selection"};
 
-    CP::SysReadDecorHandle<float> m_photon_SF{
-        "effSF_Tight_FixedCutLoose_%SYS%", this};
+    CP::SysReadDecorHandle<unsigned int> m_isEMTight{"DFCommonPhotonsIsEMTightIsEMValue", this};
+    CP::SysReadDecorHandle<float> m_ph_SF{"effSF_Tight_FixedCutLoose_%SYS%", this};
 
     Gaudi::Property<std::vector<std::string>> m_floatVariables{
         this, "floatVariableList", {}, "Name list of floating variables"};

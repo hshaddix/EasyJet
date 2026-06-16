@@ -35,30 +35,10 @@ class CutManager;
 
 namespace HZY
 {
-  enum TriggerChannel : uint8_t
-  {
-    SLT,
-    DLT,
-  };
-
-  enum Var : uint8_t
-  {
-    ele = 0,
-    mu = 1,
-    leadingele = 2,
-    leadingmu = 3,
-    subleadingele = 4,
-    subleadingmu = 5,
-    asyleadingmu = 6,
-    asysubleadingmu = 7,
-  };
-
   enum Booleans : uint8_t
   {
     pass_trigger_SLT,
     pass_trigger_DLT,
-    pass_matching_trigger_SLT,
-    pass_matching_trigger_DLT,
     PASS_TRIGGER,
     PASS_LEPTON_ID,
     PASS_LEPTON_ISO,
@@ -94,33 +74,24 @@ public:
     finalize() override; /// I added this to write the cutflow histogram.
 
 private:
-    void setThresholds(const xAOD::EventInfo *event,
-                       const CP::SystematicSet &sys);
-    void evaluateTriggerCuts(const xAOD::EventInfo *event,
-                             const xAOD::ElectronContainer *electrons,
-                             const xAOD::MuonContainer *muons, CutManager &HZyCuts,
-                             const CP::SystematicSet &sys);
-    void evaluateLeptonCuts(const xAOD::EventInfo *event,
-                            const xAOD::ElectronContainer *electrons,
-                            const xAOD::MuonContainer *muons,
-                            const xAOD::PhotonContainer *photons, CutManager &HZyCuts,
-                            const CP::SystematicSet &sys);
-    void evaluateTriggerMatchingCuts(const xAOD::ElectronContainer *ZCandElectrons,
-                                     const xAOD::MuonContainer *ZCandMuons,
-                                     CutManager &HZyCuts);
-
+    void evaluateTriggerCuts(
+        const xAOD::EventInfo *event,
+        const xAOD::ElectronContainer *electrons,
+        const xAOD::MuonContainer *muons, CutManager &HZyCuts,
+        const CP::SystematicSet &sys);
+    void evaluateLeptonAndTrigMatchingCuts(
+        const xAOD::EventInfo *event, const xAOD::ElectronContainer *electrons,
+        const xAOD::MuonContainer *muons, const xAOD::PhotonContainer *photons,
+        CutManager &HZyCuts, const CP::SystematicSet &sys);
+    void evaluatePhotonAndZGammaCandCuts(
+        const xAOD::EventInfo *event,
+        const xAOD::PhotonContainer *photons, CutManager &HZyCuts,
+        const CP::SystematicSet &sys);
+        
     StatusCode initialiseCutflow();
-
-    /// \brief Setup sys-aware read decorations photons
-    Gaudi::Property<std::vector<std::string>> m_intVariables_leptons{
-        this, "intVariables_leptons", {}, "Name list of int variables for Z candidate"};
-    std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Ibranches_leptons;
 
     /// \brief Setup syst-aware input container handles
     CutManager m_HZyCuts;
-    Gaudi::Property<std::vector<std::string>> m_inputCutList{
-        this, "cutList", {}};
-    Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
 
     long long int m_total_events{0};
     double m_total_mcEventWeight{0.0};
@@ -140,6 +111,9 @@ private:
     CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonHandle{
         this, "HZyMuons", "HZyAnalysisMuons_%SYS%", "HZy Muon container to read"};
 
+    CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonORHandle{
+        this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photon container with LooseIDnonISO after photons and jets OR"};
+    
     // Electrons with various ID and isolation WPs: preselection
     CP::SysReadDecorHandle<char> m_electronLIdLIsoDecorHandle{
         this, "ElectronLIdLIsoDecor", "baselineSelection_LooseBLayerLH_Loose_VarRad_%SYS%", "Electron loose ID + loose Iso selection"};
@@ -147,33 +121,44 @@ private:
     // Muons with various ID and isolation WPs: preselection
     CP::SysReadDecorHandle<char> m_muonMIdLIsoDecorHandle{
         this, "MuonMIdLIsoDecor", "baselineSelection_Medium_Loose_VarRad_%SYS%", "Muon medium ID + loose Iso selection"};
-    
-    CP::SysReadDecorHandle<char> m_is17_periodB5_B8{this, "is2017_periodB5_B8", "is2017_periodB5_B8", ""};
-    CP::SysReadDecorHandle<char> m_is22_75bunches{this, "is2022_75bunches", "is2022_75bunches", ""};
-    CP::SysReadDecorHandle<char> m_is23_75bunches{this, "is2023_75bunches", "is2023_75bunches", ""};
-    CP::SysReadDecorHandle<char> m_is23_400bunches{this, "is2023_400bunches", "is2023_400bunches", ""};
 
-    CP::SysReadDecorHandle<unsigned int> m_year{
-        this, "year", "dataTakingYear", ""};
+    CP::SysReadDecorHandle<char> m_photonTIdNonIsoDecorHandle{
+        this, "PhotonTIdNonIsoPDecor", "baselineSelection_Tight_NonIso_%SYS%", "Photon tight ID + non Iso selection"};
+    CP::SysReadDecorHandle<char> m_photonTIdLIsoDecorHandle{
+        this, "PhotonTIdLIsoDecor", "baselineSelection_Tight_FixedCutLoose_%SYS%", "Photon tight ID + loose Iso selection"};
+    
     CP::SysReadDecorHandle<float> m_generatorWeight{
         this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights"};
+    CP::SysReadDecorHandle<char> m_globalTriggerMatch{
+        this, "globalTriggerMatch", "globalTriggerMatch_%SYS%", "Global trigger matching"};
 
     CP::SysFilterReporterParams m_filterParams{this, "HZy selection"};
+    CP::SysWriteDecorHandle<bool> m_passallcuts{"PassAllCuts_%SYS%", this};
 
     // Set the Gaudi properties that are transferred from the inputs
     Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
     Gaudi::Property<bool> m_bypass{this, "bypass", false, "Run the selector algorithm in run-through mode (DEBUG)"};
     Gaudi::Property<std::vector<std::string>> m_leptonTriggers{this, "triggerLists", {}, "Name list of triggers"};
+    Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
+    Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
+
+    Gaudi::Property<double> m_mllRawMax_HmumuVeto{this, "max_mll_veto_hmumu", 101.0, "Upper raw mll threshold [GeV] for the Hmumu veto"};
+    Gaudi::Property<std::vector<double>> m_mllCstrWindow{this, "mll_cstr_window", {81.18, 101.18}, "Allowed constrained mll window [GeV]"};
+    Gaudi::Property<std::vector<double>> m_mllgCstrWindow{this, "mllg_cstr_window", {115.0, 170.0}, "Allowed constrained mllgamma window [GeV]"};
+    Gaudi::Property<double> m_relPtMin{this, "photon_relpt_min", 0.09, "Minimum photon relative pT, pTgamma / mllgamma"};
+
+    /// \brief Setup sys-aware read decorations photons
+    Gaudi::Property<std::vector<std::string>> m_floatVariables_leptons{this, "floatVariableList_leptons", {}, "Name list of float variables for Z candidate"};
+    Gaudi::Property<std::vector<std::string>> m_intVariables_leptons{this, "intVariableList_leptons", {}, "Name list of int variables for Z candidate"};
+    std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_Fbranches_leptons;
+    std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Ibranches_leptons;
 
     std::unordered_map<std::string, CP::SysReadDecorHandle<bool>> m_triggerdecos;
-    std::unordered_map<HZY::TriggerChannel, std::unordered_map<HZY::Var, float>> m_pt_threshold;
     std::unordered_map<HZY::Booleans, CP::SysWriteDecorHandle<bool>> m_Bbranches;
     std::unordered_map<HZY::Booleans, bool> m_bools;
     std::unordered_map<HZY::Booleans, std::string> m_boolnames{
         {HZY::pass_trigger_SLT, "pass_trigger_SLT"},
         {HZY::pass_trigger_DLT, "pass_trigger_DLT"},
-        {HZY::pass_matching_trigger_SLT, "pass_matching_trigger_SLT"},
-        {HZY::pass_matching_trigger_DLT, "pass_matching_trigger_DLT"},
         {HZY::PASS_TRIGGER, "PASS_TRIGGER"},
         {HZY::PASS_LEPTON_ID, "PASS_LEPTON_ID"},
         {HZY::PASS_LEPTON_ISO, "PASS_LEPTON_ISO"},
@@ -190,9 +175,6 @@ private:
         // {HZY::PASS_RELPT_HIGH, "PASS_RELPT_HIGH"},
     };
 
-    CP::SysWriteDecorHandle<bool> m_passallcuts{"PassAllCuts_%SYS%", this};
-    ToolHandle<Trig::IMatchingTool> m_matchingTool{
-        this, "trigMatchingTool", "", "Trigger matching tool"};
   };
 } // namespace HZY
 

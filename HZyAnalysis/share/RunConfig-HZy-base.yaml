@@ -71,20 +71,6 @@ do_trigger_match_filtering: false
 Trigger:
   include: HZyAnalysis/trigger.yaml
   writeOutput: true
-  scale_factor:
-    doSF: true
-    Electron:
-      # Medium_Loose_VarRad trigger SF not available in
-      # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2018/rel21.2/Precision_Summer2020_v1/map4.txt
-      # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2025/rel22.2/2025_Run3_Consolidated_Recommendation_v4/map2.txt
-      # Tight_Tight_VarRad only combination in common between Run 2 + Run 3
-      ID_Run3: "LooseBLayer"
-      Iso_Run3: "Loose_VarRad"
-    Muon:
-      ID: "Medium"
-    # Enable the electron/muon/photon multi-leg trigger-matching using
-    # the TrigGlobalEfficiencyCorrection tool/alg
-    do_trigger_match: false
 
 # specific overlap removal settings for HZy analysis, 
 # which are different from the default ones in Athena
@@ -104,10 +90,22 @@ HZy_OR:
     dR_Ph_El: 0.3
     dR_Ph_CaloMu: 0.3
     dR_Ph_StacoMu: 0.3
-    dR_Jet_El: 0.2
     dR_Jet_Ph: 0.2
+    dR_Jet_El: 0.2
     dR_Jet_CaloMu: 0.2
     dR_Jet_StacoMu: 0.2
+
+# Selections for FSR correction
+fsr_selections:
+  mll_window_infsr: [66.0, 89.0]
+  mll_fsr_threshold: 100.0
+
+# Selections on dilepton and photon kinematics
+mass_relpt_cuts:
+  max_mll_veto_hmumu: 101.0
+  mll_cstr_window: [81.18, 101.18]
+  mllg_cstr_window: [115.0, 170.0]
+  photon_relpt_min: 0.09
 
 # Use constrained Z mass to select the best candidate (if false, use raw mass). 
 # Constrained mass will be set to raw mass if fit fails.

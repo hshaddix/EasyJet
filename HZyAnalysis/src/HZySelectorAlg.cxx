@@ -32,45 +32,46 @@ namespace HZY
     ATH_CHECK(m_HZyElectronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_globalTriggerMatch.initialize(m_systematicsList, m_eventHandle));
 
     ATH_CHECK(m_electronLIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyElectronHandle));
     ATH_CHECK(m_muonMIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyMuonHandle));
+    ATH_CHECK(m_photonTIdNonIsoDecorHandle.initialize(m_systematicsList, m_HZyPhotonHandle));
+    ATH_CHECK(m_photonTIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyPhotonHandle));
 
-    ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_is17_periodB5_B8.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_is22_75bunches.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_is23_75bunches.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_is23_400bunches.initialize(m_systematicsList, m_eventHandle));
-
-    ATH_CHECK(m_matchingTool.retrieve());
+    ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
 
     for (auto &[key, value] : m_boolnames)
     {
       m_bools.emplace(key, false);
       CP::SysWriteDecorHandle<bool> whandle{value + "_%SYS%", this};
       m_Bbranches.emplace(key, whandle);
-      ATH_CHECK(
-          m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     }
+
+
 
     // Initialise trigger decoration handles
     for (auto trig : m_leptonTriggers)
     {
       std::string trigName = "trigPassed_" + trig;
-      CP::SysReadDecorHandle<bool> deco{this, trigName, trigName,
-                                        "Name of triggers"};
+      CP::SysReadDecorHandle<bool> deco{this, trigName, trigName, "Name of triggers"};
       m_triggerdecos.emplace(trigName, deco);
-      ATH_CHECK(m_triggerdecos.at(trigName).initialize(m_systematicsList,
-                                                       m_eventHandle));
+      ATH_CHECK(m_triggerdecos.at(trigName).initialize(m_systematicsList, m_eventHandle));
     }
 
     // Setup read decorations for Z candidate dilepton variables (float and int)
+    for (const std::string &string_var : m_floatVariables_leptons)
+    {
+      CP::SysReadDecorHandle<float> var{string_var + "_%SYS%", this};
+      m_Fbranches_leptons.emplace(string_var, var);
+      ATH_CHECK(m_Fbranches_leptons.at(string_var).initialize(m_systematicsList, m_eventHandle));
+    }
     for (const std::string &string_var : m_intVariables_leptons)
     {
       CP::SysReadDecorHandle<int> var{string_var + "_%SYS%", this};
       m_Ibranches_leptons.emplace(string_var, var);
-      ATH_CHECK(m_Ibranches_leptons.at(string_var)
-                    .initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_Ibranches_leptons.at(string_var).initialize(m_systematicsList, m_eventHandle));
     }
 
     // special flag for all cuts
@@ -106,21 +107,25 @@ namespace HZY
       const xAOD::MuonContainer *HZyMuons = nullptr;
       ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
 
+      const xAOD::PhotonContainer *HZyPhotonOR = nullptr;
+      ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys));
+
       // Reset all cut flags to default=false
       for (const auto &[key, value] : m_bools)
       {
         m_bools.at(key) = false;
       }
 
-      // Set trigger thresholds and evaluate trigger cuts
-      setThresholds(event, sys);
+      // Evaluate trigger passing cuts
       evaluateTriggerCuts(event, HZyElectrons, HZyMuons, m_HZyCuts, sys);
 
       // Dilepton ID/Iso and dilepton+loose photon selections
-      evaluateLeptonCuts(event, HZyElectrons, HZyMuons, HZyPhotons, m_HZyCuts, sys);
+      // Check the trigger matching cuts after selected leptons for Z candidate
+      evaluateLeptonAndTrigMatchingCuts(event, HZyElectrons, HZyMuons, HZyPhotons, m_HZyCuts, sys);
 
-      // Check the trigger matching cuts after selected leptons for Z
-      evaluateTriggerMatchingCuts(HZyElectrons, HZyMuons, m_HZyCuts);
+      // Photon ID and Isolation selections
+      // Hmumu and Zgamma selections
+      evaluatePhotonAndZGammaCandCuts(event, HZyPhotonOR, m_HZyCuts, sys);
 
       bool passedall = true;
       for (const auto &cut : m_inputCutKeys)
@@ -248,7 +253,7 @@ namespace HZY
     }
   }
 
-  void HZySelectorAlg::evaluateLeptonCuts(
+  void HZySelectorAlg::evaluateLeptonAndTrigMatchingCuts(
       const xAOD::EventInfo* event,
       const xAOD::ElectronContainer* electrons,
       const xAOD::MuonContainer* muons,
@@ -286,147 +291,118 @@ namespace HZY
     const bool passLeptonID = nEleLooseID >= 2 || nMuMediumID >= 2;
     const bool passLeptonISO = nEleLooseIDLooseIso >= 2 || nMuMediumIDLooseIso >= 2;
 
-    if (HZyCuts.exists("PASS_LEPTON_ID")) {
-      m_bools.at(HZY::PASS_LEPTON_ID) = passLeptonID;
+    if (!HZyCuts.exists("PASS_LEPTON_ID")) return;
+    if (passLeptonID) {
+      m_bools.at(HZY::PASS_LEPTON_ID) = true;
     }
 
-    if (HZyCuts.exists("PASS_LEPTON_ISO")) {
-      m_bools.at(HZY::PASS_LEPTON_ISO) = passLeptonISO;
+    if (!HZyCuts.exists("PASS_LEPTON_ISO")) return;
+    if (passLeptonISO) {
+      m_bools.at(HZY::PASS_LEPTON_ISO) = true;
     }
 
         // Z-candidate size
     const int nZCandidates = m_Ibranches_leptons.at("LepLepZ_Size").get(*event, sys);
-    if (HZyCuts.exists("SIZE_ZCANDIDATE") && nZCandidates > 0) {
+    if (!HZyCuts.exists("SIZE_ZCANDIDATE")) return;
+    if (nZCandidates > 0) {
       m_bools.at(HZY::SIZE_ZCANDIDATE) = true;
     }
 
     // Z + loose photon size
-    if (HZyCuts.exists("SIZE_Z_LOOSEPHOTON") && passLeptonISO && !photons->empty()) {
+    if (!HZyCuts.exists("SIZE_Z_LOOSEPHOTON")) return;
+    if (passLeptonISO && !photons->empty()) {
       m_bools.at(HZY::SIZE_Z_LOOSEPHOTON) = true;
     }
-  }
 
-  void HZySelectorAlg::evaluateTriggerMatchingCuts(
-      const xAOD::ElectronContainer* ZCandElectrons,
-      const xAOD::MuonContainer* ZCandMuons,
-      CutManager& HZyCuts)
-  {
+    // Trigger matching using the orginal leptons from selected Z candidate
     if (!HZyCuts.exists("PASS_TRIGGER_MATCHING")) return;
-
-    const std::size_t nElectrons = ZCandElectrons ? ZCandElectrons->size() : 0;
-    const std::size_t nMuons = ZCandMuons ? ZCandMuons->size() : 0;
-    if (nElectrons < 2 && nMuons < 2) return;
-
-    bool passSET = false, passSMT = false;
-    bool passDET = false, passDMT = false;
-
-    for (const auto& trig : m_leptonTriggers) {
-      // single-electron trigger
-      if (!passSET && ZCandElectrons &&
-          trig.starts_with("HLT_e") && !trig.starts_with("HLT_2e")) {
-        for (const auto* ele : *ZCandElectrons) {
-          if (ele && ele->pt() > m_pt_threshold[HZY::SLT][HZY::ele] &&
-              m_matchingTool->match(*ele, trig, 0.07)) {
-            passSET = true;
-            break;
-          }
-        }
-      }
-
-      // single-muon trigger
-      if (!passSMT && ZCandMuons && trig.starts_with("HLT_mu") && trig != "HLT_mu22_mu8noL1_L1MU14FCH") {
-        for (const auto* mu : *ZCandMuons) {
-          if (mu && mu->pt() > m_pt_threshold[HZY::SLT][HZY::mu] &&
-              m_matchingTool->match(*mu, trig)) {
-            passSMT = true;
-            break;
-          }
-        }
-      }
-
-      // double-electron trigger
-      if (!passDET && ZCandElectrons && trig.starts_with("HLT_2e")) {
-        for (const auto* e0 : *ZCandElectrons) {
-          for (const auto* e1 : *ZCandElectrons) {
-            if (!e0 || !e1 || e0 == e1) continue;
-
-            const bool passPt =
-                (e0->pt() > m_pt_threshold[HZY::DLT][HZY::leadingele] && e1->pt() > m_pt_threshold[HZY::DLT][HZY::subleadingele]) ||
-                (e1->pt() > m_pt_threshold[HZY::DLT][HZY::leadingele] && e0->pt() > m_pt_threshold[HZY::DLT][HZY::subleadingele]);
-
-            if (passPt && m_matchingTool->match({e0, e1}, trig, 0.07)) {
-              passDET = true;
-              break;
-            }
-          }
-          if (passDET) break;
-        }
-      }
-
-      // double-muon trigger
-      if (!passDMT && ZCandMuons && (trig.starts_with("HLT_2mu") || trig == "HLT_mu22_mu8noL1_L1MU14FCH")) {
-        for (const auto* m0 : *ZCandMuons) {
-          for (const auto* m1 : *ZCandMuons) {
-            if (!m0 || !m1 || m0 == m1) continue;
-
-            const bool passPt =
-                (m0->pt() > m_pt_threshold[HZY::DLT][HZY::leadingmu] && m1->pt() > m_pt_threshold[HZY::DLT][HZY::subleadingmu]) ||
-                (m1->pt() > m_pt_threshold[HZY::DLT][HZY::leadingmu] && m0->pt() > m_pt_threshold[HZY::DLT][HZY::subleadingmu]);
-
-            if (passPt && m_matchingTool->match({m0, m1}, trig)) {
-              passDMT = true;
-              break;
-            }
-          }
-          if (passDMT) break;
-        }
-      }
-    }
-
-    m_bools.at(HZY::pass_matching_trigger_SLT) |= (passSET || passSMT);
-    m_bools.at(HZY::pass_matching_trigger_DLT) |= (passDET || passDMT);
-
-    if (m_bools.at(HZY::pass_matching_trigger_SLT) ||
-        m_bools.at(HZY::pass_matching_trigger_DLT)) {
+    if (m_globalTriggerMatch.get(*event, sys)) {
       m_bools.at(HZY::PASS_TRIGGER_MATCHING) = true;
     }
-
-    ATH_MSG_DEBUG("Trigger matching: " << "SET=" << passSET << ", SMT=" << passSMT << ", DET=" << passDET << ", DMT=" << passDMT);
   }
 
-  void HZySelectorAlg::setThresholds(const xAOD::EventInfo* event,
-                                    const CP::SystematicSet& sys)
+  void HZySelectorAlg::evaluatePhotonAndZGammaCandCuts(
+      const xAOD::EventInfo *event, 
+      const xAOD::PhotonContainer *photons,
+      CutManager &HZyCuts,
+      const CP::SystematicSet &sys)
   {
-    const int year = m_year.get(*event, sys);
-    const bool isRun3 = (year >= 2022);
-    constexpr float GeV = Athena::Units::GeV;
+    const xAOD::Photon *selHZyLoosePhoton =
+        (photons && !photons->empty()) ? photons->at(0) : nullptr;
 
-    // Single-lepton triggers
-    m_pt_threshold[HZY::SLT][HZY::ele] =
-        m_is22_75bunches.get(*event, sys) ? 18. * GeV : 27. * GeV;
-
-    m_pt_threshold[HZY::SLT][HZY::mu] =
-        isRun3 ? 25. * GeV : 27. * GeV;
-
-    // Di-electron triggers
-    const float diele_pt = isRun3 ? 18. * GeV : 25. * GeV;
-    m_pt_threshold[HZY::DLT][HZY::leadingele] = diele_pt;
-    m_pt_threshold[HZY::DLT][HZY::subleadingele] = diele_pt;
-
-    // Di-muon triggers
-    if (isRun3) {
-      m_pt_threshold[HZY::DLT][HZY::leadingmu] = 15. * GeV;
-      m_pt_threshold[HZY::DLT][HZY::subleadingmu] = 15. * GeV;
-
-      m_pt_threshold[HZY::DLT][HZY::asyleadingmu] = 23. * GeV;
-      m_pt_threshold[HZY::DLT][HZY::asysubleadingmu] = 9. * GeV;
-    } else {
-      m_pt_threshold[HZY::DLT][HZY::leadingmu] = 24. * GeV;
-      m_pt_threshold[HZY::DLT][HZY::subleadingmu] = 10. * GeV;
+    if (!selHZyLoosePhoton) {
+      ATH_MSG_DEBUG("Skipping photon/Zgamma cuts: no cleaned photon.");
+      return;
+    }
+    
+    if (!HZyCuts.exists("PHOTONS_JETS_OR_LEPTONS")) return;
+    if (selHZyLoosePhoton) {
+      m_bools.at(HZY::PHOTONS_JETS_OR_LEPTONS) = true;
     }
 
-    if (year < 2015 || (year > 2018 && year < 2022)) {
-      ATH_MSG_WARNING("Using default trigger thresholds for unsupported year: " << year);
+    const float mllRaw = m_Fbranches_leptons.at("LepLepZ_M_Raw").get(*event, sys);
+    const float mllCstr = m_Fbranches_leptons.at("LepLepZ_M_Cstr").get(*event, sys);
+    const int channel = m_Ibranches_leptons.at("Lep_Channel").get(*event, sys);
+
+    // Hmumu veto
+    if (!HZyCuts.exists("DILEPTON_MASS_VETO_HMM")) return;
+    if (!(channel == 2 && mllRaw > m_mllRawMax_HmumuVeto * Athena::Units::GeV)) {
+      m_bools.at(HZY::DILEPTON_MASS_VETO_HMM) = true;
+    }
+
+    // Constrained dilepton mass window
+    const auto &mllWindow = m_mllCstrWindow.value();
+    if (!HZyCuts.exists("DILEPTON_MASS_CLOSEZ")) return;
+    if (mllCstr >= mllWindow.at(0) * Athena::Units::GeV && mllCstr <= mllWindow.at(1) * Athena::Units::GeV)
+    {
+      m_bools.at(HZY::DILEPTON_MASS_CLOSEZ) = true;
+    }
+
+    // Build constrained ll p4
+    if (!(channel == 1 || channel == 2))
+    {
+      ATH_MSG_DEBUG("Skipping Zgamma candidate cuts: no valid Z candidate.");
+      return;
+    }
+
+    TLorentzVector llCstrP4;
+    llCstrP4.SetPtEtaPhiM(
+        m_Fbranches_leptons.at("LepLepZ_Pt_Cstr").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_Eta_Cstr").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_Phi_Cstr").get(*event, sys),
+        mllCstr);
+
+    const TLorentzVector llgCstrP4 = llCstrP4 + selHZyLoosePhoton->p4();
+    const double mllgCstr = llgCstrP4.M();
+
+    if (mllgCstr <= 0.)
+      return;
+
+    // Relative photon pT
+    if (!HZyCuts.exists("PASS_RELPT_LOW")) return;
+    const double photon_relPt = (selHZyLoosePhoton->pt()) / mllgCstr;
+    if (photon_relPt > m_relPtMin)
+    {
+      m_bools.at(HZY::PASS_RELPT_LOW) = true;
+    }
+
+    // Photon ID and Isolation selections on the selected Zgamma candidate photon
+    if (!HZyCuts.exists("PHOTON_TIGHT_ID")) return;
+    if (m_photonTIdNonIsoDecorHandle.get(*selHZyLoosePhoton, sys) >= 1) {
+      m_bools.at(HZY::PHOTON_TIGHT_ID) = true;
+    }
+
+    if (!HZyCuts.exists("PHOTON_ISOLATION")) return;
+    if (m_photonTIdLIsoDecorHandle.get(*selHZyLoosePhoton, sys) >= 1) {
+      m_bools.at(HZY::PHOTON_ISOLATION) = true;
+    }
+
+    // Constrained mllgamma mass window
+    const auto &mllgWindow = m_mllgCstrWindow.value();
+    if (!HZyCuts.exists("MASS_DILEPTON_PHOTON")) return;
+    if (mllgCstr >= mllgWindow.at(0) * Athena::Units::GeV && mllgCstr <= mllgWindow.at(1) * Athena::Units::GeV)
+    {
+      m_bools.at(HZY::MASS_DILEPTON_PHOTON) = true;
     }
   }
 
@@ -455,8 +431,7 @@ namespace HZY
 
     for (unsigned int index = 0; index < inputWasFound.size(); index++)
     {
-      if (inputWasFound.at(index))
-        continue;
+      if (inputWasFound.at(index)) continue;
       ATH_MSG_ERROR("Doubled or falsely spelled cuts in CutList (see config file)." + m_inputCutList[index]);
     }
 
@@ -468,9 +443,7 @@ namespace HZY
     if (m_saveCutFlow)
     {
       // After filling the CutManager, book your histograms.
-      const unsigned int nbins =
-          m_HZyCuts.size() +
-          1; //  need an extra bin for the total num of events.
+      const unsigned int nbins = m_HZyCuts.size() + 1; //  need an extra bin for the total num of events.
       ANA_CHECK(book(TEfficiency("AbsoluteEfficiency", "Absolute Efficiency of H->Z(ll)y cuts.Needs rescaling to total events.;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));
       ANA_CHECK(book(TEfficiency("RelativeEfficiency", "Relative Efficiency of H->Z(ll)y cuts.Needs rescaling to total events.;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));
       ANA_CHECK(book(TEfficiency("StandardCutFlow", "StandardCutFlow of H->Z(ll)y cuts.Needs rescaling to total events.;Cuts;#epsilon", nbins, 0.5, nbins + 0.5)));

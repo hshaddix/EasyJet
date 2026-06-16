@@ -155,7 +155,8 @@ def cpalgs_cfg(flags):
 
     if not flags.Analysis.disable_calib and \
             ((flags.Input.isMC and flags.Analysis.Trigger.scale_factor.doSF)
-                or flags.Analysis.Trigger.scale_factor.do_trigger_match):
+                or flags.Analysis.Trigger.scale_factor.do_trigger_match) and \
+                    (not flags.Analysis.Trigger.scale_factor.use_analysis_objects):
         configSeq += triggerSF_sequence(flags)
 
     configSeq += thinning_sequence(flags)

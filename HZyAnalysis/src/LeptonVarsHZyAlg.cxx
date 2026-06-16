@@ -159,7 +159,7 @@ namespace HZY
             continue;
           }
 
-          const float mll_raw = (e1->p4() + e2->p4()).M() / Athena::Units::GeV;
+          const float mll_raw = (e1->p4() + e2->p4()).M();
           LLCandidate cand{mll_raw, -99.f, 
             1, e1, e2, {}, {}, 
             false, -1, -99.f, {}, {}};
@@ -181,7 +181,7 @@ namespace HZY
             continue;
           }
 
-          const float mll_raw = (m1->p4() + m2->p4()).M() / Athena::Units::GeV;
+          const float mll_raw = (m1->p4() + m2->p4()).M();
           LLCandidate cand{mll_raw, -99.f, 
             2, m1, m2, {}, {}, 
             false, -1, -99.f, {}, {}};
@@ -202,7 +202,7 @@ namespace HZY
       m_Ibranches.at("LepLepZ_Size").set(*event, static_cast<int>(ll_candidates.size()), sys);
 
       // Select best candidate based on Z mass proximity (using constrained mass if FSR applied, otherwise raw mass)
-      const double Z_MASS = 91.1876; // PDG Z mass in GeV
+      const double Z_MASS = 91187.6; // PDG Z mass in GeV
       const LLCandidate *bestCand = nullptr;
       double minDiff = std::numeric_limits<double>::max();
       for (const auto &cand : ll_candidates)
@@ -235,7 +235,7 @@ namespace HZY
 
         // Decorate event with best candidate info
         m_Fbranches.at("LepLepZ_M_Raw").set(*event, bestCand->mll_raw, sys);
-        m_Fbranches.at("LepLepZ_Pt_Raw").set(*event, ll_raw.Pt() / Athena::Units::GeV, sys);
+        m_Fbranches.at("LepLepZ_Pt_Raw").set(*event, ll_raw.Pt(), sys);
         m_Fbranches.at("LepLepZ_Eta_Raw").set(*event, ll_raw.Eta(), sys);
         m_Fbranches.at("LepLepZ_Phi_Raw").set(*event, ll_raw.Phi(), sys);
         m_Fbranches.at("LepLead_Pt_Raw").set(*event, l1->pt(), sys);
@@ -287,7 +287,7 @@ namespace HZY
 
           if (bestCand->hasFSR){
             m_Fbranches.at("LepLepZ_M_Fsr").set(*event, 
-              (bestCand->l1->p4() + bestCand->l2->p4() + bestCand->fsrP4).M() / Athena::Units::GeV, sys);
+              (bestCand->l1->p4() + bestCand->l2->p4() + bestCand->fsrP4).M(), sys);
           }
           else{
             m_Fbranches.at("LepLepZ_M_Fsr").set(*event, bestCand->mll_raw, sys);
@@ -295,7 +295,7 @@ namespace HZY
         }
 
         m_Fbranches.at("LepLepZ_M_Cstr").set(*event, bestCand->mll_constrained, sys);
-        m_Fbranches.at("LepLepZ_Pt_Cstr").set(*event, ll_constrained.Pt() / Athena::Units::GeV, sys);
+        m_Fbranches.at("LepLepZ_Pt_Cstr").set(*event, ll_constrained.Pt(), sys);
         m_Fbranches.at("LepLepZ_Eta_Cstr").set(*event, ll_constrained.Eta(), sys);
         m_Fbranches.at("LepLepZ_Phi_Cstr").set(*event, ll_constrained.Phi(), sys);
         m_Fbranches.at("LepLead_Pt_Cstr").set(*event, c1.Pt(), sys);
@@ -337,14 +337,14 @@ namespace HZY
   {
     fsrP4_out.SetPtEtaPhiM(0, 0, 0, 0);
     fsrMuonIndex_out = -1;
-    dR_fsr_out = -999.0f;
+    dR_fsr_out = -99.0f;
 
     const TLorentzVector p1 = mu1->p4();
     const TLorentzVector p2 = mu2->p4();
-    const double mll = (p1 + p2).M() / Athena::Units::GeV;
+    const double mll = (p1 + p2).M();
 
     bool hasBest = false;
-    double highestEt = -999.;
+    double highestEt = -99.;
 
     FSR::FsrCandidate bestCand;
     TLorentzVector bestP4;
@@ -373,9 +373,12 @@ namespace HZY
       return false;
     }
 
-    const double mll_fsr = ((p1 + p2) + bestP4).M() / Athena::Units::GeV;
+    const double mll_fsr = ((p1 + p2) + bestP4).M();
+    const auto &mllWindow_infsr = m_mllWindow.value();
     ANA_MSG_DEBUG("applyFSRCorrection: dilepton with FSR mass required in [66, 89] and < 100 GeV");
-    if ((mll > 66.0 && mll < 89.0) && mll_fsr < 100.0){
+    if ((mll > mllWindow_infsr.at(0) * Athena::Units::GeV &&
+         mll < mllWindow_infsr.at(1) * Athena::Units::GeV) &&
+        mll_fsr < m_mllFsrThre * Athena::Units::GeV){
       fsrP4_out = bestP4;
       fsrCand_out = bestCand;
       return true;
@@ -383,7 +386,7 @@ namespace HZY
 
     // Candidate found but failed FSR mass-window requirement.
     fsrMuonIndex_out = -1;
-    dR_fsr_out = -999.f;
+    dR_fsr_out = -99.0f;
     fsrP4_out.SetPtEtaPhiM(0., 0., 0., 0.);
 
     return false;
@@ -499,9 +502,8 @@ namespace HZY
     float mErrUnc = fitter.getMassError(input);
     float mErrCon = fitter.getMassError(result);
     ATH_MSG_DEBUG("ZMassConstraint: mass error (before/after) = "
-                  << mErrUnc / Athena::Units::GeV << " / "
-                  << mErrCon / Athena::Units::GeV);
-    double mll_constrained = (c1_out+c2_out).M() / Athena::Units::GeV;
+                  << mErrUnc << " / " << mErrCon);
+    double mll_constrained = (c1_out+c2_out).M();
     ATH_MSG_DEBUG("ZMassConstraint: constrained mass = " << mll_constrained); 
     return mll_constrained;
   }
