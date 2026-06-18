@@ -71,10 +71,6 @@ def cpalgs_cfg(flags):
     if flags.Analysis.do_electrons:
         cfg.merge(electron_decor_config(flags))
 
-    if flags.Analysis.do_muons:
-        if flags.Analysis.Muon.do_track_decoration:
-            cfg.merge(muon_track_decor_config(flags))
-
     if flags.Analysis.do_photons:
         cfg.merge(photon_decor_config(flags))
 
@@ -165,5 +161,9 @@ def cpalgs_cfg(flags):
     configSeq.fullConfigure(configAccumulator)
 
     cfg.merge(configAccumulator.CA)
+
+    if flags.Analysis.do_muons:
+        if flags.Analysis.Muon.do_track_decoration:
+            cfg.merge(muon_track_decor_config(flags))
 
     return cfg
