@@ -6,17 +6,20 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #ifndef HZYANALYSIS_BASELINEVARSHZYALG
 #define HZYANALYSIS_BASELINEVARSHZYALG
 
+#include <AthContainers/ConstDataVector.h>
 #include <AthenaBaseComps/AthHistogramAlgorithm.h>
 
 #include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysReadHandle.h>
+#include <SystematicsHandles/SysReadDecorHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
 
-#include <xAODEgamma/ElectronContainer.h>
-#include <xAODEgamma/PhotonContainer.h>
 #include <xAODEventInfo/EventInfo.h>
-#include <xAODJet/JetContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
+#include <xAODJet/JetContainer.h>
+#include <xAODBase/IParticleContainer.h>
 
 namespace HZY
 {
@@ -52,6 +55,16 @@ private:
     CP::SysReadHandle<xAOD::JetContainer> m_HZyJetHandle{
         this, "HZyJets", "HZyAnalysisJets_%SYS%", "HZy Jet container to read"};
 
+    CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonORHandle{
+        this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photon container with LooseIDnonISO after photons and jets OR"};
+
+    CP::SysReadHandle<xAOD::IParticleContainer> m_FsrObjectHandle{
+        this, "HZyFsrObject", "HZyFsrObject_%SYS%", "Selected FSR object view container"};
+    
+    /// \brief Setup sys-aware output decorations
+    Gaudi::Property<std::vector<std::string>> m_floatVariables_leptons{this, "floatVariableList_leptons", {}, "Name list of float variables for Z candidate"};
+    std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_Fbranches_leptons;
+    
     Gaudi::Property<std::vector<std::string>> m_floatVariables{
         this, "floatVariableList", {}, "Name list of floating variables"};
 

@@ -34,13 +34,6 @@ namespace HZY
     ATH_CHECK(m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_globalTriggerMatch.initialize(m_systematicsList, m_eventHandle));
 
-    ATH_CHECK(m_electronLIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyElectronHandle));
-    ATH_CHECK(m_muonMIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyMuonHandle));
-    ATH_CHECK(m_photonTIdNonIsoDecorHandle.initialize(m_systematicsList, m_HZyPhotonHandle));
-    ATH_CHECK(m_photonTIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyPhotonHandle));
-
-    ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
-
     for (auto &[key, value] : m_boolnames)
     {
       m_bools.emplace(key, false);
@@ -48,8 +41,6 @@ namespace HZY
       m_Bbranches.emplace(key, whandle);
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     }
-
-
 
     // Initialise trigger decoration handles
     for (auto trig : m_leptonTriggers)
@@ -72,6 +63,18 @@ namespace HZY
       CP::SysReadDecorHandle<int> var{string_var + "_%SYS%", this};
       m_Ibranches_leptons.emplace(string_var, var);
       ATH_CHECK(m_Ibranches_leptons.at(string_var).initialize(m_systematicsList, m_eventHandle));
+    }
+    for (const std::string &string_var : m_intVariables_photons)
+    {
+      CP::SysReadDecorHandle<int> var{string_var + "_%SYS%", this};
+      m_Ibranches_photons.emplace(string_var, var);
+      ATH_CHECK(m_Ibranches_photons.at(string_var).initialize(m_systematicsList, m_eventHandle));
+    }
+    for (const std::string &string_var : m_floatVariables_baseline)
+    {
+      CP::SysReadDecorHandle<float> var{string_var + "_%SYS%", this};
+      m_Fbranches_baseline.emplace(string_var, var);
+      ATH_CHECK(m_Fbranches_baseline.at(string_var).initialize(m_systematicsList, m_eventHandle));
     }
 
     // special flag for all cuts
@@ -107,9 +110,6 @@ namespace HZY
       const xAOD::MuonContainer *HZyMuons = nullptr;
       ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
 
-      const xAOD::PhotonContainer *HZyPhotonOR = nullptr;
-      ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys));
-
       // Reset all cut flags to default=false
       for (const auto &[key, value] : m_bools)
       {
@@ -121,16 +121,14 @@ namespace HZY
 
       // Dilepton ID/Iso and dilepton+loose photon selections
       // Check the trigger matching cuts after selected leptons for Z candidate
-      evaluateLeptonAndTrigMatchingCuts(event, HZyElectrons, HZyMuons, HZyPhotons, m_HZyCuts, sys);
-
-      // Photon ID and Isolation selections
       // Hmumu and Zgamma selections
-      evaluatePhotonAndZGammaCandCuts(event, HZyPhotonOR, m_HZyCuts, sys);
+      // Photon ID and Isolation selections
+      evaluateEventSelections(event, m_HZyCuts, sys);
 
-      bool passedall = true;
+      bool passedall = !m_inputCutKeys.empty();
       for (const auto &cut : m_inputCutKeys)
       {
-        passedall &= m_bools.at(cut);
+        passedall = passedall && m_bools.at(cut);
       }
       m_passallcuts.set(*event, passedall, sys);
 
@@ -253,43 +251,17 @@ namespace HZY
     }
   }
 
-  void HZySelectorAlg::evaluateLeptonAndTrigMatchingCuts(
+  void HZySelectorAlg::evaluateEventSelections(
       const xAOD::EventInfo* event,
-      const xAOD::ElectronContainer* electrons,
-      const xAOD::MuonContainer* muons,
-      const xAOD::PhotonContainer *photons,
       CutManager& HZyCuts,
       const CP::SystematicSet& sys)
   {
-    int nEleLooseID = 0;
-    int nEleLooseIDLooseIso = 0;
-    int nMuMediumID = 0;
-    int nMuMediumIDLooseIso = 0;
-
-    for (const xAOD::Electron* ele : *electrons) {
-      if (!ele) {
-        continue;
-      }
-      ++nEleLooseID;
-
-      if (m_electronLIdLIsoDecorHandle.get(*ele, sys)) {
-        ++nEleLooseIDLooseIso;
-      }
-    }
-
-    for (const xAOD::Muon* mu : *muons) {
-      if (!mu) {
-        continue;
-      }
-      ++nMuMediumID;
-
-      if (m_muonMIdLIsoDecorHandle.get(*mu, sys)) {
-        ++nMuMediumIDLooseIso;
-      }
-    }
-
-    const bool passLeptonID = nEleLooseID >= 2 || nMuMediumID >= 2;
-    const bool passLeptonISO = nEleLooseIDLooseIso >= 2 || nMuMediumIDLooseIso >= 2;
+    const bool passLeptonID =
+        m_Ibranches_leptons.at("nElectrons_LIdNIso").get(*event, sys) >= 2 ||
+        m_Ibranches_leptons.at("nMuons_MIdNIso").get(*event, sys) >= 2;
+    const bool passLeptonISO =
+        m_Ibranches_leptons.at("nElectrons_LIdLIso").get(*event, sys) >= 2 ||
+        m_Ibranches_leptons.at("nMuons_MIdLIso").get(*event, sys) >= 2;
 
     if (!HZyCuts.exists("PASS_LEPTON_ID")) return;
     if (passLeptonID) {
@@ -310,7 +282,7 @@ namespace HZY
 
     // Z + loose photon size
     if (!HZyCuts.exists("SIZE_Z_LOOSEPHOTON")) return;
-    if (passLeptonISO && !photons->empty()) {
+    if (passLeptonISO && m_Ibranches_photons.at("nPhotons_LIdNIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::SIZE_Z_LOOSEPHOTON) = true;
     }
 
@@ -319,24 +291,10 @@ namespace HZY
     if (m_globalTriggerMatch.get(*event, sys)) {
       m_bools.at(HZY::PASS_TRIGGER_MATCHING) = true;
     }
-  }
 
-  void HZySelectorAlg::evaluatePhotonAndZGammaCandCuts(
-      const xAOD::EventInfo *event, 
-      const xAOD::PhotonContainer *photons,
-      CutManager &HZyCuts,
-      const CP::SystematicSet &sys)
-  {
-    const xAOD::Photon *selHZyLoosePhoton =
-        (photons && !photons->empty()) ? photons->at(0) : nullptr;
-
-    if (!selHZyLoosePhoton) {
-      ATH_MSG_DEBUG("Skipping photon/Zgamma cuts: no cleaned photon.");
-      return;
-    }
-    
+    // Photon OR lepton or jet selections on the selected Zgamma candidate photon
     if (!HZyCuts.exists("PHOTONS_JETS_OR_LEPTONS")) return;
-    if (selHZyLoosePhoton) {
+    if (m_Ibranches_photons.at("nPhotons_OR_LIdNIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::PHOTONS_JETS_OR_LEPTONS) = true;
     }
 
@@ -353,34 +311,13 @@ namespace HZY
     // Constrained dilepton mass window
     const auto &mllWindow = m_mllCstrWindow.value();
     if (!HZyCuts.exists("DILEPTON_MASS_CLOSEZ")) return;
-    if (mllCstr >= mllWindow.at(0) * Athena::Units::GeV && mllCstr <= mllWindow.at(1) * Athena::Units::GeV)
-    {
+    if (mllCstr >= mllWindow.at(0) * Athena::Units::GeV && mllCstr <= mllWindow.at(1) * Athena::Units::GeV) {
       m_bools.at(HZY::DILEPTON_MASS_CLOSEZ) = true;
     }
 
-    // Build constrained ll p4
-    if (!(channel == 1 || channel == 2))
-    {
-      ATH_MSG_DEBUG("Skipping Zgamma candidate cuts: no valid Z candidate.");
-      return;
-    }
-
-    TLorentzVector llCstrP4;
-    llCstrP4.SetPtEtaPhiM(
-        m_Fbranches_leptons.at("LepLepZ_Pt_Cstr").get(*event, sys),
-        m_Fbranches_leptons.at("LepLepZ_Eta_Cstr").get(*event, sys),
-        m_Fbranches_leptons.at("LepLepZ_Phi_Cstr").get(*event, sys),
-        mllCstr);
-
-    const TLorentzVector llgCstrP4 = llCstrP4 + selHZyLoosePhoton->p4();
-    const double mllgCstr = llgCstrP4.M();
-
-    if (mllgCstr <= 0.)
-      return;
-
     // Relative photon pT
+    const float photon_relPt = m_Fbranches_baseline.at("LLGam_RelPhpT_Cstr").get(*event, sys);
     if (!HZyCuts.exists("PASS_RELPT_LOW")) return;
-    const double photon_relPt = (selHZyLoosePhoton->pt()) / mllgCstr;
     if (photon_relPt > m_relPtMin)
     {
       m_bools.at(HZY::PASS_RELPT_LOW) = true;
@@ -388,16 +325,17 @@ namespace HZY
 
     // Photon ID and Isolation selections on the selected Zgamma candidate photon
     if (!HZyCuts.exists("PHOTON_TIGHT_ID")) return;
-    if (m_photonTIdNonIsoDecorHandle.get(*selHZyLoosePhoton, sys) >= 1) {
+    if (m_Ibranches_photons.at("nPhotons_OR_TIdNIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::PHOTON_TIGHT_ID) = true;
     }
 
     if (!HZyCuts.exists("PHOTON_ISOLATION")) return;
-    if (m_photonTIdLIsoDecorHandle.get(*selHZyLoosePhoton, sys) >= 1) {
+    if (m_Ibranches_photons.at("nPhotons_OR_TIdLIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::PHOTON_ISOLATION) = true;
     }
 
     // Constrained mllgamma mass window
+    const float mllgCstr = m_Fbranches_baseline.at("LLGam_M_Cstr").get(*event, sys);
     const auto &mllgWindow = m_mllgCstrWindow.value();
     if (!HZyCuts.exists("MASS_DILEPTON_PHOTON")) return;
     if (mllgCstr >= mllgWindow.at(0) * Athena::Units::GeV && mllgCstr <= mllgWindow.at(1) * Athena::Units::GeV)

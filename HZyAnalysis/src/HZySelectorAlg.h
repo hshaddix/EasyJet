@@ -14,18 +14,13 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #include <SystematicsHandles/SysReadDecorHandle.h>
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
-#include <SystematicsHandles/SysWriteHandle.h>
 
 // Load the relevant xAOD classes
-#include <AsgDataHandles/ReadDecorHandle.h>
-#include <AsgDataHandles/WriteDecorHandle.h>
-#include <AthContainers/ConstDataVector.h>
-#include <TriggerMatchingTool/IMatchingTool.h>
-#include <xAODEgamma/ElectronContainer.h>
-#include <xAODEgamma/PhotonContainer.h>
 #include <xAODEventInfo/EventInfo.h>
-#include <xAODJet/JetContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
+#include <xAODJet/JetContainer.h>
 
 #include <string>
 #include <unordered_map>
@@ -79,14 +74,9 @@ private:
         const xAOD::ElectronContainer *electrons,
         const xAOD::MuonContainer *muons, CutManager &HZyCuts,
         const CP::SystematicSet &sys);
-    void evaluateLeptonAndTrigMatchingCuts(
-        const xAOD::EventInfo *event, const xAOD::ElectronContainer *electrons,
-        const xAOD::MuonContainer *muons, const xAOD::PhotonContainer *photons,
+    void evaluateEventSelections(
+        const xAOD::EventInfo *event, 
         CutManager &HZyCuts, const CP::SystematicSet &sys);
-    void evaluatePhotonAndZGammaCandCuts(
-        const xAOD::EventInfo *event,
-        const xAOD::PhotonContainer *photons, CutManager &HZyCuts,
-        const CP::SystematicSet &sys);
         
     StatusCode initialiseCutflow();
 
@@ -111,29 +101,13 @@ private:
     CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonHandle{
         this, "HZyMuons", "HZyAnalysisMuons_%SYS%", "HZy Muon container to read"};
 
-    CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonORHandle{
-        this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photon container with LooseIDnonISO after photons and jets OR"};
-    
-    // Electrons with various ID and isolation WPs: preselection
-    CP::SysReadDecorHandle<char> m_electronLIdLIsoDecorHandle{
-        this, "ElectronLIdLIsoDecor", "baselineSelection_LooseBLayerLH_Loose_VarRad_%SYS%", "Electron loose ID + loose Iso selection"};
-
-    // Muons with various ID and isolation WPs: preselection
-    CP::SysReadDecorHandle<char> m_muonMIdLIsoDecorHandle{
-        this, "MuonMIdLIsoDecor", "baselineSelection_Medium_Loose_VarRad_%SYS%", "Muon medium ID + loose Iso selection"};
-
-    CP::SysReadDecorHandle<char> m_photonTIdNonIsoDecorHandle{
-        this, "PhotonTIdNonIsoPDecor", "baselineSelection_Tight_NonIso_%SYS%", "Photon tight ID + non Iso selection"};
-    CP::SysReadDecorHandle<char> m_photonTIdLIsoDecorHandle{
-        this, "PhotonTIdLIsoDecor", "baselineSelection_Tight_FixedCutLoose_%SYS%", "Photon tight ID + loose Iso selection"};
-    
     CP::SysReadDecorHandle<float> m_generatorWeight{
         this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights"};
     CP::SysReadDecorHandle<char> m_globalTriggerMatch{
         this, "globalTriggerMatch", "globalTriggerMatch_%SYS%", "Global trigger matching"};
 
     CP::SysFilterReporterParams m_filterParams{this, "HZy selection"};
-    CP::SysWriteDecorHandle<bool> m_passallcuts{"PassAllCuts_%SYS%", this};
+    CP::SysWriteDecorHandle<bool> m_passallcuts{"Pass_allcuts_%SYS%", this};
 
     // Set the Gaudi properties that are transferred from the inputs
     Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
@@ -147,11 +121,15 @@ private:
     Gaudi::Property<std::vector<double>> m_mllgCstrWindow{this, "mllg_cstr_window", {115.0, 170.0}, "Allowed constrained mllgamma window [GeV]"};
     Gaudi::Property<double> m_relPtMin{this, "photon_relpt_min", 0.09, "Minimum photon relative pT, pTgamma / mllgamma"};
 
-    /// \brief Setup sys-aware read decorations photons
+    /// \brief Setup sys-aware read decorations leptons and photons
     Gaudi::Property<std::vector<std::string>> m_floatVariables_leptons{this, "floatVariableList_leptons", {}, "Name list of float variables for Z candidate"};
     Gaudi::Property<std::vector<std::string>> m_intVariables_leptons{this, "intVariableList_leptons", {}, "Name list of int variables for Z candidate"};
+    Gaudi::Property<std::vector<std::string>> m_intVariables_photons{this, "intVariableList_photons", {}, "Name list of int variables for photons OR"};
+    Gaudi::Property<std::vector<std::string>> m_floatVariables_baseline{this, "floatVariableList_baseline", {}, "Name list of float variables for Zy system"};
     std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_Fbranches_leptons;
     std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Ibranches_leptons;
+    std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Ibranches_photons;
+    std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_Fbranches_baseline;
 
     std::unordered_map<std::string, CP::SysReadDecorHandle<bool>> m_triggerdecos;
     std::unordered_map<HZY::Booleans, CP::SysWriteDecorHandle<bool>> m_Bbranches;

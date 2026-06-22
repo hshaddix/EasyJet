@@ -24,6 +24,17 @@ namespace HZY
     ATH_CHECK(m_HZyElectronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
 
+    ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_FsrObjectHandle.initialize(m_systematicsList));
+
+    // Setup read decorations for Z candidate dilepton variables (float)
+    for (const std::string &string_var : m_floatVariables_leptons)
+    {
+      CP::SysReadDecorHandle<float> var{string_var + "_%SYS%", this};
+      m_Fbranches_leptons.emplace(string_var, var);
+      ATH_CHECK(m_Fbranches_leptons.at(string_var).initialize(m_systematicsList, m_eventHandle));
+    }
+
     // Intialise syst-aware output decorators
     for (const std::string &var : m_floatVariables)
     {
@@ -70,6 +81,12 @@ namespace HZY
       const xAOD::JetContainer *HZyJets = nullptr;
       ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys));
 
+      const xAOD::PhotonContainer *HZyPhotonOR = nullptr;
+      ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys));
+
+      const xAOD::IParticleContainer* fsrObject = nullptr;
+      ANA_CHECK(m_FsrObjectHandle.retrieve(fsrObject, sys));
+
       // Reset all decorations to default values at the start of each systematics loop
       for (const std::string &string_var : m_floatVariables)
       {
@@ -84,8 +101,50 @@ namespace HZY
       const auto &w = event->mcEventWeights();
       size_t i = event->mcChannelNumber() == 603798 ? 88u : 0u;
       m_Fbranches.at("MC_Weight").set(*event, w.size() > i ? w[i] : (w.empty() ? 1.0f : w[0]), sys);
-
       m_Fbranches.at("BeamSpotWeight").set(*event, event->beamSpotWeight(), sys);
+
+      // Reconstruct dilepton and photon final state
+      TLorentzVector llRawP4;
+      llRawP4.SetPtEtaPhiM(
+        m_Fbranches_leptons.at("LepLepZ_Pt_Raw").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_Eta_Raw").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_Phi_Raw").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_M_Raw").get(*event, sys));
+      TLorentzVector llCstrP4;
+      llCstrP4.SetPtEtaPhiM(
+        m_Fbranches_leptons.at("LepLepZ_Pt_Cstr").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_Eta_Cstr").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_Phi_Cstr").get(*event, sys),
+        m_Fbranches_leptons.at("LepLepZ_M_Cstr").get(*event, sys));
+
+      const xAOD::Photon* selHZyLoosePhoton =
+        (HZyPhotonOR && !HZyPhotonOR->empty()) ? HZyPhotonOR->at(0) : nullptr;
+      if (selHZyLoosePhoton){
+        const TLorentzVector llgRawP4 = llRawP4 + selHZyLoosePhoton->p4();
+        m_Fbranches.at("LLGam_M_Raw").set(*event, llgRawP4.M(), sys);
+        m_Fbranches.at("LLGam_Pt_Raw").set(*event, llgRawP4.Pt(), sys);
+        m_Fbranches.at("LLGam_Eta_Raw").set(*event, llgRawP4.Eta(), sys);
+        m_Fbranches.at("LLGam_Phi_Raw").set(*event, llgRawP4.Phi(), sys);
+
+        const xAOD::IParticle *fsr =
+            (fsrObject && !fsrObject->empty()) ? fsrObject->at(0) : nullptr;
+        TLorentzVector fsrP4;
+        if (fsr){
+          fsrP4 = fsr->p4();
+        }
+        const TLorentzVector llgFsrP4 = llRawP4 + fsrP4 + selHZyLoosePhoton->p4();
+        m_Fbranches.at("LLGam_M_Fsr").set(*event, llgFsrP4.M(), sys);
+
+        const TLorentzVector llgCstrP4 = llCstrP4 + selHZyLoosePhoton->p4();
+        m_Fbranches.at("LLGam_M_Cstr").set(*event, llgCstrP4.M(), sys);
+        m_Fbranches.at("LLGam_Pt_Cstr").set(*event, llgCstrP4.Pt(), sys);
+        m_Fbranches.at("LLGam_Eta_Cstr").set(*event, llgCstrP4.Eta(), sys);
+        m_Fbranches.at("LLGam_Phi_Cstr").set(*event, llgCstrP4.Phi(), sys);
+        m_Fbranches.at("LLGam_RelPhpT_Cstr").set(*event, selHZyLoosePhoton->pt() / llgCstrP4.M(), sys);
+      }
+      else {
+        ATH_MSG_DEBUG("No cleaned photon found, skipping photon variables.");
+      }
     }
 
     return StatusCode::SUCCESS;

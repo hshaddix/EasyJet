@@ -33,9 +33,6 @@ public:
 private:
     CP::SysListHandle m_systematicsList{this};
 
-    CP::SysReadHandle<xAOD::EventInfo> m_eventHandle{
-        this, "event", "EventInfo", "EventInfo container to read"};
-
     CP::SysReadHandle<xAOD::ElectronContainer> m_HZyElectronHandle{
         this, "HZyElectrons", "HZyAnalysisElectrons_%SYS%", "HZy Electrons container to read"};
     
@@ -50,7 +47,7 @@ private:
 
     CP::SysReadDecorHandle<char> m_electronLIdLIsoDecorHandle{
         this, "ElectronLIdLIsoDecor", "baselineSelection_LooseBLayerLH_Loose_VarRad_%SYS%",
-          "Name of input decorator for selected electrons"};
+        "Name of input decorator for selected electrons"};
 
     CP::SysReadDecorHandle<char> m_muonMIdLIsoDecorHandle{
         this, "MuonMIdLIsoDecor", "baselineSelection_Medium_Loose_VarRad_%SYS%",

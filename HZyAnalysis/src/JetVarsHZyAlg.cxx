@@ -21,6 +21,7 @@ namespace HZY
 
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyJetHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyJetORHandle.initialize(m_systematicsList));
 
     // Intialise syst-aware output decorators
     for (const std::string &string_var : m_floatVariables)
@@ -57,6 +58,9 @@ namespace HZY
       const xAOD::JetContainer *HZyJets = nullptr;
       ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys));
 
+      const xAOD::JetContainer *HZyJetsOR = nullptr;
+      ANA_CHECK(m_HZyJetORHandle.retrieve(HZyJetsOR, sys));
+
       for (const std::string &string_var : m_floatVariables)
       {
         m_Fbranches.at(string_var).set(*event, -99., sys);
@@ -67,15 +71,13 @@ namespace HZY
         m_Ibranches.at(var).set(*event, -99, sys);
       }
 
-      float HZy_Mjj = -99.0;
-      if (HZyJets->size() >= 2)
+      if (HZyJetsOR->size() >= 2)
       {
-        TLorentzVector jet_pair = HZyJets->at(0)->p4() + HZyJets->at(1)->p4();
-        HZy_Mjj = jet_pair.M();
+        TLorentzVector jet_pair = HZyJetsOR->at(0)->p4() + HZyJetsOR->at(1)->p4();
+        m_Fbranches.at("Mjj").set(*event, jet_pair.M(), sys);
+        m_Ibranches.at("nJets").set(*event, HZyJetsOR->size(), sys);
       }
-
-      m_Fbranches.at("Mjj").set(*event, HZy_Mjj / Athena::Units::GeV, sys);
-      m_Ibranches.at("nJets").set(*event, HZyJets->size(), sys);
+      
     }
 
     return StatusCode::SUCCESS;

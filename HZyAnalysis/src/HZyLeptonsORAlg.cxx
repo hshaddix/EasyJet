@@ -28,7 +28,6 @@ namespace HZY
     ATH_MSG_INFO("         HZyLeptonsORAlg          \n");
     ATH_MSG_INFO("*********************************\n");
 
-    ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyElectronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronLIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyElectronHandle));
@@ -50,9 +49,6 @@ namespace HZY
     {
       // In case of special Higgs sample, run only on NOSYS
       if (!m_doSystematics && sys.name() != "") continue;
-
-      const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
 
       const xAOD::ElectronContainer *HZyElectrons = nullptr;
       ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys));

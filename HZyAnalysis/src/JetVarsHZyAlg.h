@@ -37,6 +37,9 @@ private:
     CP::SysReadHandle<xAOD::JetContainer> m_HZyJetHandle{
         this, "HZyJets", "HZyAnalysisJets_%SYS%", "HZy Jet container to read"};
 
+    CP::SysReadHandle<xAOD::JetContainer> m_HZyJetORHandle{
+        this, "HZyJetsOR", "HZyJetsOR_%SYS%", "HZy Jet container after jets and photons/leptons OR"};
+
     Gaudi::Property<std::vector<std::string>> m_floatVariables
     {this, "floatVariableList", {}, "Name list of floating variables"};
 

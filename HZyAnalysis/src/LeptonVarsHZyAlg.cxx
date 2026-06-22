@@ -26,9 +26,12 @@ namespace HZY
     ATH_CHECK(m_HZyElectronORHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuonORHandle.initialize(m_systematicsList));
 
+    ATH_CHECK(m_electronLIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyElectronHandle));
+    ATH_CHECK(m_muonMIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyMuonHandle));
     ATH_CHECK(m_ele_SF.initialize(m_systematicsList, m_HZyElectronHandle));
     ATH_CHECK(m_mu_SF.initialize(m_systematicsList, m_HZyMuonHandle));
 
+    ATH_CHECK(m_FsrObjectHandle.initialize(m_systematicsList));
     ATH_CHECK(m_electronsSTEP3Handle.initialize(m_systematicsList));
     ATH_CHECK(m_photonsSTEP4Handle.initialize(m_systematicsList));
 
@@ -215,6 +218,7 @@ namespace HZY
         }
       }
 
+      auto fsrView = std::make_unique<ConstDataVector<xAOD::IParticleContainer>>(SG::VIEW_ELEMENTS);
       auto electrons_ZCand = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
       auto muons_ZCand = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
       if (bestCand){
@@ -288,6 +292,7 @@ namespace HZY
           if (bestCand->hasFSR){
             m_Fbranches.at("LepLepZ_M_Fsr").set(*event, 
               (bestCand->l1->p4() + bestCand->l2->p4() + bestCand->fsrP4).M(), sys);
+            if (bestCand->fsrCand.particle) fsrView->push_back(bestCand->fsrCand.particle);
           }
           else{
             m_Fbranches.at("LepLepZ_M_Fsr").set(*event, bestCand->mll_raw, sys);
@@ -312,18 +317,28 @@ namespace HZY
       }
       // Record both containers for every event.
       // One or both may be empty, but the StoreGate object will exist.
+      ATH_CHECK(m_FsrObjectHandle.record(std::move(fsrView), sys));
       ANA_CHECK(m_ZCandElectronsHandle.record(std::move(electrons_ZCand), sys));
       ANA_CHECK(m_ZCandMuonsHandle.record(std::move(muons_ZCand), sys));
 
-      // Count electrons and muons
-      int n_HZyEle = 0;
-      int n_HZyMu = 0;
-      n_HZyEle = HZyElectrons->size();
-      n_HZyMu = HZyMuons->size();
-      m_Ibranches.at("nElectrons").set(*event, n_HZyEle, sys);
-      m_Ibranches.at("nMuons").set(*event, n_HZyMu, sys);
-      m_Ibranches.at("nLeptons")
-          .set(*event, HZyElectrons->size() + HZyMuons->size(), sys);
+      // Count electrons and muons with ID and ISO requirements
+      const int nElectrons_LIdLIso =
+          std::count_if(HZyElectrons->begin(), HZyElectrons->end(),
+                        [&](const xAOD::Electron* el) {
+                          return m_electronLIdLIsoDecorHandle.get(*el, sys);
+                        });
+
+      const int nMuons_MIdLIso =
+          std::count_if(HZyMuons->begin(), HZyMuons->end(),
+                        [&](const xAOD::Muon* mu) {
+                          return m_muonMIdLIsoDecorHandle.get(*mu, sys);
+                        });
+
+      m_Ibranches.at("nElectrons_LIdNIso").set(*event, HZyElectrons->size(), sys);
+      m_Ibranches.at("nMuons_MIdNIso").set(*event, HZyMuons->size(), sys);
+      m_Ibranches.at("nElectrons_LIdLIso").set(*event, nElectrons_LIdLIso, sys);
+      m_Ibranches.at("nMuons_MIdLIso").set(*event, nMuons_MIdLIso, sys);
+
     }
 
     return StatusCode::SUCCESS;

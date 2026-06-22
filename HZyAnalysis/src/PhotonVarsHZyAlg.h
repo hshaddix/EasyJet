@@ -16,10 +16,10 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #include <SystematicsHandles/SysWriteHandle.h>
 
 #include <xAODEventInfo/EventInfo.h>
-#include <xAODEgamma/PhotonContainer.h>
-#include <xAODJet/JetContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
+#include <xAODJet/JetContainer.h>
 
 namespace HZY
 {
@@ -69,6 +69,9 @@ private:
     Gaudi::Property<double> m_dR_Jet_El{this, "dR_Jet_El", 0.2, "deltaR cut for Jet/Electron OR"};
     Gaudi::Property<double> m_dR_Jet_CaloMu{this, "dR_Jet_CaloMu", 0.2, "deltaR cut for Jet/CaloMuon OR"};
     Gaudi::Property<double> m_dR_Jet_StacoMu{this, "dR_Jet_StacoMu", 0.2, "deltaR cut for Jet/StacoMuon OR"};
+
+    CP::SysReadDecorHandle<char> m_photonTIdNonIsoDecorHandle{
+        this, "PhotonTIdNonIsoPDecor", "baselineSelection_Tight_NonIso_%SYS%", "Photon tight ID + non Iso selection"};
     
     CP::SysReadDecorHandle<char> m_photonTIdLIsoDecorHandle{
         this, "photonTIdLIsoDecor", "baselineSelection_Tight_FixedCutLoose_%SYS%",

@@ -17,8 +17,9 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODEgamma/ElectronContainer.h>
-#include <xAODEgamma/PhotonContainer.h>
 #include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
+#include <xAODBase/IParticleContainer.h>
 
 #include <AsgTools/AnaToolHandle.h>
 #include <AsgTools/ToolHandle.h>
@@ -76,6 +77,14 @@ private:
         this, "HZyMuons", "HZyAnalysisMuons_%SYS%",
         "HZy Muons container to read"};
 
+    // Electrons with various ID and isolation WPs: preselection
+    CP::SysReadDecorHandle<char> m_electronLIdLIsoDecorHandle{
+        this, "ElectronLIdLIsoDecor", "baselineSelection_LooseBLayerLH_Loose_VarRad_%SYS%", "Electron loose ID + loose Iso selection"};
+
+    // Muons with various ID and isolation WPs: preselection
+    CP::SysReadDecorHandle<char> m_muonMIdLIsoDecorHandle{
+        this, "MuonMIdLIsoDecor", "baselineSelection_Medium_Loose_VarRad_%SYS%", "Muon medium ID + loose Iso selection"};
+
     CP::SysReadDecorHandle<float> m_ele_SF{"effSF_LooseBLayerLH_Loose_VarRad_%SYS%", this};
     CP::SysReadDecorHandle<float> m_mu_SF{"effSF_Medium_Loose_VarRad_%SYS%", this};
 
@@ -102,8 +111,9 @@ private:
     ToolHandle<FSR::FsrPhotonTool> m_fsrTool{
         this, "FsrPhotonTool", "FSR::FsrPhotonTool/FsrPhotonTool", "FSR Photon correction tool"};
     std::unique_ptr<ZMassConstraint::ConstraintFit> m_ZMassConstraint;
-    Gaudi::Property<std::vector<double>> m_mllWindow{this, "mllWindowInfsr", {66.0, 89.0}, "Allowed mll window [GeV] for FSR correction"};
-    Gaudi::Property<double> m_mllFsrThre{this, "mllFsrThreshold", 100.0, "Allowed FSR mll window [GeV]"};
+
+    CP::SysWriteHandle<ConstDataVector<xAOD::IParticleContainer>> m_FsrObjectHandle{
+        this,"HZyFsrObject", "HZyFsrObject_%SYS%", "Selected FSR object view container"};
     
     // Used for FSR correction tool
     CP::SysReadHandle<xAOD::ElectronContainer> m_electronsSTEP3Handle{
@@ -124,10 +134,12 @@ private:
                             TLorentzVector &fsrP4_out, int &fsrMuonIndex_out,
                             float &dR_fsr_out, FSR::FsrCandidate &fsrCand_out);
 
-    Gaudi::Property<bool> m_useConstrainedZMass
-    {this, "useConstrainedZMass", true,
-          "Use constrained Z mass to select the best candidate (if false, use raw mass)." 
+    Gaudi::Property<bool> m_useConstrainedZMass {
+        this, "useConstrainedZMass", true, "Use constrained Z mass to select the best candidate (if false, use raw mass)." 
           "Constrained mass will be set to raw mass if fit fails."};
+    Gaudi::Property<std::vector<double>> m_mllWindow{
+        this, "mllWindowInfsr", {66.0, 89.0}, "Allowed mll window [GeV] for FSR correction"};
+    Gaudi::Property<double> m_mllFsrThre{this, "mllFsrThreshold", 100.0, "Allowed FSR mll window [GeV]"};
     
     Gaudi::Property<std::vector<std::string>> m_floatVariables
     {this, "floatVariableList", {}, "Name list of floating variables"};

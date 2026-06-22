@@ -137,9 +137,9 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             FsrPhotonTool=fsrTool,
             EgammaCalibTool=egCalibTool,
             MuonCalibTool=muonCalibTool,
+            useConstrainedZMass=flags.Analysis.useConstrainedZMass,
             mllWindowInfsr=flags.Analysis.fsr_selections.mll_window_infsr,
             mllFsrThreshold=flags.Analysis.fsr_selections.mll_fsr_threshold,
-            useConstrainedZMass=flags.Analysis.useConstrainedZMass,
             floatVariableList=float_variables['leptons'],
             intVariableList=int_variables['leptons'],
             doSystematics=flags.Analysis.do_CP_systematics,
@@ -171,6 +171,15 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
     )
 
     cfg.addEventAlgo(
+        CompFactory.HZY.BaselineVarsHZyAlg(
+            "BaselineVarsHZyAlg",
+            floatVariableList=float_variables['baseline'],
+            floatVariableList_leptons=float_variables['leptons'],
+            doSystematics=flags.Analysis.do_CP_systematics,
+        )
+    )
+
+    cfg.addEventAlgo(
         CompFactory.HZY.HZySelectorAlg(
             "HZySelectorAlg",
             eventDecisionOutputDecoration=f"HZy_pass_{selection_name}_%SYS%",
@@ -184,6 +193,8 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             photon_relpt_min=flags.Analysis.mass_relpt_cuts.photon_relpt_min,
             floatVariableList_leptons=float_variables['leptons'],
             intVariableList_leptons=int_variables['leptons'],
+            intVariableList_photons=int_variables['photons'],
+            floatVariableList_baseline=float_variables['baseline'],
             bypass=flags.Analysis.bypass
         )
     )
@@ -197,14 +208,6 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
         )
     )
 
-    cfg.addEventAlgo(
-        CompFactory.HZY.BaselineVarsHZyAlg(
-            "BaselineVarsHZyAlg",
-            floatVariableList=float_variables['baseline'],
-            doSystematics=flags.Analysis.do_CP_systematics,
-        )
-    )
-
     return cfg
 
 
@@ -212,7 +215,10 @@ def get_PhotonVarsHZyAlg_variables(flags):
     float_variable_names = [
         "Photon_effSF", "Ph_Pt_Raw", "Ph_Eta_Raw", "Ph_Phi_Raw",
     ]
-    int_variable_names = ["nPhotons", "Ph_ConvType", "Ph_isEMTight"]
+    int_variable_names = [
+        "nPhotons_LIdNIso", "nPhotons_OR_LIdNIso", "nPhotons_OR_TIdNIso", 
+        "nPhotons_OR_TIdLIso", "Ph_ConvType", "Ph_isEMTight"]
+
     return float_variable_names, int_variable_names
 
 
@@ -227,8 +233,8 @@ def get_LeptonVarsHZyAlg_variables(flags):
 
     int_variable_names = [
         "Lep_Channel", "LepLepZ_Size", "Muon_hasFsr", "Muon_Index_Fsr",
-        "nLeptons", "nElectrons", "nMuons"
-    ]
+        "nElectrons_LIdNIso", "nMuons_MIdNIso", 
+        "nElectrons_LIdLIso", "nMuons_MIdLIso"]
 
     return float_variable_names, int_variable_names
 
@@ -241,7 +247,20 @@ def get_JetVarsHZyAlg_variables(flags):
 
 
 def get_BaselineVarsHZyAlg_variables(flags):
-    float_variable_names = ["BeamSpotWeight", "MC_Weight"]
+    float_variable_names = [
+        "BeamSpotWeight",
+        "MC_Weight",
+        "LLGam_M_Fsr",
+    ]
+
+    for obj in ["LLGam"]:
+        for suffix in ["Raw", "Cstr"]:
+            for var in ["M", "Pt", "Eta", "Phi"]:
+                float_variable_names.append(f"{obj}_{var}_{suffix}")
+
+    float_variable_names += [
+        "LLGam_RelPhpT_Cstr",
+    ]
     int_variable_names = []
 
     return float_variable_names, int_variable_names
@@ -329,7 +348,7 @@ def HZy_branches(flags):
     branches += object_level_branches["jets"]
 
     s_name = flags.Analysis.selection_name
-    branches += [f"EventInfo.HZy_pass_{s_name}_{sys_suffix} -> HZy_pass_{s_name}"
+    branches += [f"EventInfo.Pass_{s_name}_{sys_suffix} -> HZy_pass_{s_name}"
                  + flags.Analysis.systematics_suffix_separator + sys_suffix]
 
     # ---------------------------------------------------------
