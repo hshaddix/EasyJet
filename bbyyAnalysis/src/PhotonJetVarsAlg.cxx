@@ -38,7 +38,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode PhotonJetVarsAlg::execute()
+  StatusCode PhotonJetVarsAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

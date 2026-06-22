@@ -73,7 +73,7 @@ namespace MONOJET
   }
 
 
-  StatusCode MonojetSelectorAlg::execute()
+  StatusCode MonojetSelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner(m_filterParams, false);

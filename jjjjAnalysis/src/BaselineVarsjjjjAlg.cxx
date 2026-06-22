@@ -47,7 +47,7 @@ namespace jjjj
 
   }
 
-  StatusCode BaselineVarsjjjjAlg ::execute()
+  StatusCode BaselineVarsjjjjAlg ::execute(const EventContext& /*ctx*/)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()){
       const xAOD::EventInfo *event = nullptr;

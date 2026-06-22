@@ -48,11 +48,11 @@ namespace HH4B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetPairingAlg ::execute()
+  StatusCode JetPairingAlg ::execute(const EventContext& ctx)
   {
     // event info container used for selecting xml file to read for BDT pairing
     SG::ReadHandle<xAOD::EventInfo> evtInfoContainer(
-        m_eventInfoKey);
+        m_eventInfoKey, ctx);
     ATH_CHECK(evtInfoContainer.isValid());
     uint64_t event_number = evtInfoContainer->eventNumber();
     // Loop over all systs

@@ -59,7 +59,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BJetsVarsbbllAlg::execute()
+  StatusCode BJetsVarsbbllAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

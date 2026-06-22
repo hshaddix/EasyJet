@@ -18,7 +18,7 @@ class EventInfoDecorLockAlg final : public AthAlgorithm {
 public:
     using AthAlgorithm::AthAlgorithm;
     StatusCode initialize() override;
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
 
 private:
     SG::ReadHandleKey<xAOD::EventInfo> m_eventInfoKey{

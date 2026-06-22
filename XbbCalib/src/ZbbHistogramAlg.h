@@ -38,7 +38,7 @@ public:
   ZbbHistogramAlg(const std::string& name, ISvcLocator* pSvcLocator);
   ~ZbbHistogramAlg();
   StatusCode initialize() override;
-  StatusCode execute() override;
+  StatusCode execute(const EventContext& ctx) override;
   StatusCode finalize() override;
 
 private:

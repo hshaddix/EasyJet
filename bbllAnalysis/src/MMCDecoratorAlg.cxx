@@ -53,7 +53,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MMCDecoratorAlg ::execute()
+  StatusCode MMCDecoratorAlg ::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

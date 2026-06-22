@@ -36,7 +36,7 @@ namespace VBSSEMILEP
       TriggerDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
 
       StatusCode initialize() override;
-      StatusCode execute() override;
+      StatusCode execute(const EventContext& ctx) override;
       CP::SysListHandle m_systematicsList {this};
 
       std::unordered_map<VBSSEMILEP::TriggerChannel, std::unordered_map<VBSSEMILEP::Var_Trigger, float>> m_pt_threshold;

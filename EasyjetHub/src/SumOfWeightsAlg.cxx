@@ -50,12 +50,11 @@ namespace Easyjet
   }
 
 
-  StatusCode SumOfWeightsAlg::execute()
+  StatusCode SumOfWeightsAlg::execute(const EventContext& ctx)
   {
 
     // Retrive inputs
-    SG::ReadHandle<xAOD::EventInfo> event(m_eventInfoKey);
-    ATH_CHECK (event.isValid());
+    SG::ReadHandle<xAOD::EventInfo> event(m_eventInfoKey, ctx);    ATH_CHECK (event.isValid());
 
     for (size_t iSyst{0}; const auto& sys : m_systematicsList.systematicsVector())
     {

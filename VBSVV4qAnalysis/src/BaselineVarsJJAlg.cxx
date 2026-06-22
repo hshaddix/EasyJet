@@ -71,7 +71,7 @@ namespace VBSVV4q{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarsJJAlg::execute(){
+    StatusCode BaselineVarsJJAlg::execute(const EventContext& /*ctx*/){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs

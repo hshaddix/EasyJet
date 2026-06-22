@@ -63,7 +63,7 @@ namespace VBSSEMILEP{
     return StatusCode::SUCCESS;
   }
   
-  StatusCode twoLepSelectorAlg::execute(){
+  StatusCode twoLepSelectorAlg::execute(const EventContext& /*ctx*/){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 

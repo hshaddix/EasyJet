@@ -62,7 +62,7 @@ namespace VBSHIGGS {
       return StatusCode::SUCCESS;
   }
 
-  StatusCode FullHadSelectorAlg::execute() {
+  StatusCode FullHadSelectorAlg::execute(const EventContext& /*ctx*/) {
       for (const auto& sys : m_systematicsList.systematicsVector()) {
 
           const xAOD::EventInfo* event = nullptr;

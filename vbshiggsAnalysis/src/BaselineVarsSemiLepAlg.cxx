@@ -84,7 +84,7 @@ namespace VBSHIGGS{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarsSemiLepAlg::execute(){
+    StatusCode BaselineVarsSemiLepAlg::execute(const EventContext& /*ctx*/){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs

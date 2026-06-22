@@ -24,11 +24,10 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode WTaggingDecoratorAlg ::execute() 
+  StatusCode WTaggingDecoratorAlg ::execute(const EventContext& ctx) 
   {
 
-    SG::ReadHandle<xAOD::JetContainer> LRjets(m_jetsInKey);
-    ATH_CHECK (LRjets.isValid());
+    SG::ReadHandle<xAOD::JetContainer> LRjets(m_jetsInKey, ctx);    ATH_CHECK (LRjets.isValid());
     ATH_MSG_DEBUG("Number of LR jets: " << LRjets->size());
     ATH_CHECK( m_Wtagger->decorate( *LRjets ));
     return StatusCode::SUCCESS;

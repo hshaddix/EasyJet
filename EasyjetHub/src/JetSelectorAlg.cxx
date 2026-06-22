@@ -111,7 +111,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetSelectorAlg ::execute()
+  StatusCode JetSelectorAlg ::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {

@@ -30,7 +30,7 @@ namespace XBBCALIB{
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ZcandSelectorAlg::execute(){
+  StatusCode ZcandSelectorAlg::execute(const EventContext& /*ctx*/){
     /*
        Z candidate selection algorithm
        1) First select large-R jets pt>200GeV, m>40GeV (should be already done by the jet selector)

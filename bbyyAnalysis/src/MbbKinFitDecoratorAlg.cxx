@@ -42,7 +42,7 @@ namespace HHBBYY{
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MbbKinFitDecoratorAlg::execute() {
+  StatusCode MbbKinFitDecoratorAlg::execute(const EventContext& /*ctx*/) {
     
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

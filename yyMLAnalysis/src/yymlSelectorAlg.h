@@ -57,7 +57,7 @@ public:
     /// configs
     StatusCode initialize() override;
     /// \brief Execute method, for actions to be taken in the event loop
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
     /// \brief This is the mirror of initialize() and is called after all
     /// events are processed.
     StatusCode
@@ -139,7 +139,7 @@ private:
     StatusCode initialiseCutflow();
 
     void evaluateTriggerCuts(const xAOD::EventInfo& eventInfo,
-        const std::vector<std::string> &photonTriggers);
+        const std::vector<std::string> &photonTriggers, const EventContext& ctx);
 
     void evaluateTriggerMatchingCuts(const std::vector<std::string> &photonTriggers,
         const xAOD::PhotonContainer* photons);

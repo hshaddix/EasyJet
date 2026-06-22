@@ -77,7 +77,7 @@ namespace VBSSEMILEP{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarsoneLepAlg::execute(){
+    StatusCode BaselineVarsoneLepAlg::execute(const EventContext& /*ctx*/){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs

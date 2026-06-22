@@ -30,7 +30,7 @@ namespace VBSHIGGS
       HadTriggerDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
 
       StatusCode initialize() override;
-      StatusCode execute() override;
+      StatusCode execute(const EventContext& ctx) override;
       CP::SysListHandle m_systematicsList {this};
 
       std::unordered_map<VBSHIGGS::TriggerChannel, std::unordered_map<VBSHIGGS::Var_Trigger, float>> m_pt_threshold;

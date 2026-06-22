@@ -170,7 +170,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ResonantPNNbbllAlg::execute()
+  StatusCode ResonantPNNbbllAlg::execute(const EventContext& /*ctx*/)
   {  
     for (const auto& sys : m_systematicsList.systematicsVector())
     {

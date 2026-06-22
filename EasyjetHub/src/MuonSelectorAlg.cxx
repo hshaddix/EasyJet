@@ -53,7 +53,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MuonSelectorAlg::execute()
+  StatusCode MuonSelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {

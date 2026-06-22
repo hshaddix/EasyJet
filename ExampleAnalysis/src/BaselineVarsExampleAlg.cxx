@@ -38,7 +38,7 @@ namespace EXANA
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsExampleAlg::execute()
+  StatusCode EXANA::BaselineVarsExampleAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

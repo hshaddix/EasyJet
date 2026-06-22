@@ -64,20 +64,13 @@ namespace ZQG
 
     // FilterReporter filter(m_filterParams, false);
 
-    SG::ReadHandle<xAOD::TruthEventContainer> truthEvents(m_eventInKey);
-    SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);
-    SG::ReadHandle<xAOD::JetContainer> truthLargeJets(m_truthlargejetInKey);
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);
-    SG::ReadDecorHandle<xAOD::JetContainer, int> truthFlavour(m_jetTruthFlavourKey);
-
+    SG::ReadHandle<xAOD::TruthEventContainer> truthEvents(m_eventInKey);    SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);    SG::ReadHandle<xAOD::JetContainer> truthLargeJets(m_truthlargejetInKey);    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);    SG::ReadDecorHandle<xAOD::JetContainer, int> truthFlavour(m_jetTruthFlavourKey);
     auto jets_after_overlap = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
     auto truthbjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
     auto truthcjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
 
     for (auto [var, key] : m_FbranchesKeys){
-      SG::WriteDecorHandle<xAOD::TruthEventContainer, float> floatDecorator(key);
-      m_Fbranches.insert_or_assign(var, std::move(floatDecorator));
+      SG::WriteDecorHandle<xAOD::TruthEventContainer, float> floatDecorator(key);      m_Fbranches.insert_or_assign(var, std::move(floatDecorator));
     }
 
     const xAOD::TruthEvent* truthevent = truthEvents->at(0);
@@ -191,12 +184,10 @@ namespace ZQG
     }
 
     ATH_MSG_VERBOSE("pass_truth_baseline = " << pass_truth_baseline);
-    SG::WriteDecorHandle<xAOD::TruthEventContainer, char> passTruthCutsHandle(m_passTruthCutsKey);
-    passTruthCutsHandle(*truthevent) = pass_truth_baseline;
+    SG::WriteDecorHandle<xAOD::TruthEventContainer, char> passTruthCutsHandle(m_passTruthCutsKey);    passTruthCutsHandle(*truthevent) = pass_truth_baseline;
 
     for (auto& [key, handleKey] : m_BbranchKeys) {
-      SG::WriteDecorHandle<xAOD::TruthEventContainer, char> handle(handleKey);
-      handle(*truthevent) = m_bools.at(key);
+      SG::WriteDecorHandle<xAOD::TruthEventContainer, char> handle(handleKey);      handle(*truthevent) = m_bools.at(key);
     }
 
   return StatusCode::SUCCESS;

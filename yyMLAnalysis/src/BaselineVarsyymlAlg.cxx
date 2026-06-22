@@ -70,7 +70,7 @@ namespace HHYYML
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsyymlAlg::execute()
+  StatusCode BaselineVarsyymlAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systematics
     for (const auto& sys : m_systematicsList.systematicsVector()){

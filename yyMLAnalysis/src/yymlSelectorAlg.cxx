@@ -67,7 +67,7 @@ namespace HHYYML
   }
 
 
-  StatusCode yymlSelectorAlg::execute() {
+  StatusCode yymlSelectorAlg::execute(const EventContext& ctx) {
 
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -114,7 +114,7 @@ namespace HHYYML
       // apply baseline selection for objects
       // internally use m_bools to keep track of decisions
       if (!m_photonTriggers.empty()) {
-        evaluateTriggerCuts(*event, m_photonTriggers);
+        evaluateTriggerCuts(*event, m_photonTriggers, ctx);
         evaluateTriggerMatchingCuts(m_photonTriggers, photons);
       }
       applyChannelSelection(*electrons, *muons, *taus);
@@ -198,15 +198,14 @@ namespace HHYYML
   }
 
   void yymlSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event,
-    const std::vector<std::string> &photonTriggers) {
+    const std::vector<std::string> &photonTriggers, const EventContext& ctx) {
 
     bool pass_trigger_diphoton = false;
 
     for (const std::string &trigger : photonTriggers) {
 
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
-      SG::ReadDecorHandle<xAOD::EventInfo, bool> triggerDecorHandle(triggerDecorKey);
-
+      SG::ReadDecorHandle<xAOD::EventInfo, bool> triggerDecorHandle(triggerDecorKey, ctx);
       pass_trigger_diphoton = triggerDecorHandle(event);
 
     }

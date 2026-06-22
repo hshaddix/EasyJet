@@ -37,7 +37,7 @@ namespace HH4B
       /// configs
       StatusCode initialize() override;
       /// \brief Execute method, for actions to be taken in the event loop
-      StatusCode execute() override;
+      StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
       StatusCode finalize() override; ///I added this to write the cutflow histogram.
 
@@ -53,7 +53,7 @@ namespace HH4B
       };
 
       void evaluateTriggerCuts(const xAOD::EventInfo& event, 
-                          const std::vector<std::string> &Triggers, CutManager& bbbbCuts);
+                          const std::vector<std::string> &Triggers, CutManager& bbbbCuts, const EventContext& ctx);
       void evaluateJetCuts(const int nBoostedJets, const int nResolvedJets, const int nBJets, CutManager& bbbbCuts);
 
       StatusCode initialiseCutflow();

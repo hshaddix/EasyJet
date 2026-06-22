@@ -41,7 +41,7 @@ namespace HHMET
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsResolvedAlg ::execute()
+  StatusCode BaselineVarsResolvedAlg ::execute(const EventContext& /*ctx*/)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       const xAOD::EventInfo *eventInfo = nullptr;

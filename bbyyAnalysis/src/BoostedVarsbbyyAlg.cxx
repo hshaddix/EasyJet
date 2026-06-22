@@ -49,7 +49,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BoostedVarsbbyyAlg::execute()
+  StatusCode BoostedVarsbbyyAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

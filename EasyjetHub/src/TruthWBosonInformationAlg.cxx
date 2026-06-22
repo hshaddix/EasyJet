@@ -39,13 +39,12 @@ namespace Easyjet
   }
 
 
-  StatusCode TruthWBosonInformationAlg ::execute(){
+  StatusCode TruthWBosonInformationAlg ::execute(const EventContext& ctx){
 
-    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey);
-    ATH_CHECK(eventInfo.isValid());
+    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey, ctx);    ATH_CHECK(eventInfo.isValid());
 
     SG::ReadHandle<xAOD::TruthParticleContainer> truthBosonParticleContainer(
-        m_truthBosonParticleInKey);
+        m_truthBosonParticleInKey, ctx);
     ATH_CHECK(truthBosonParticleContainer.isValid());
 
     int nWLep = 0; //number of leptonic W decays in event
@@ -70,8 +69,7 @@ namespace Easyjet
       }
     }
     // Update the user-defined variable in EventInfo
-    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> nWLepDecorHandle(m_nWLepKey);
-    nWLepDecorHandle(*eventInfo) = nWLep;
+    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> nWLepDecorHandle(m_nWLepKey, ctx);    nWLepDecorHandle(*eventInfo) = nWLep;
 
     return StatusCode::SUCCESS;
 

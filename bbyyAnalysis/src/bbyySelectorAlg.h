@@ -58,7 +58,7 @@ namespace HHBBYY
       /// configs
       StatusCode initialize() override;
       /// \brief Execute method, for actions to be taken in the event loop
-      StatusCode execute() override;
+      StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
       StatusCode finalize() override; ///I added this to write the cutflow histogram.
 
@@ -87,9 +87,9 @@ namespace HHBBYY
 
       void evaluateEventCleaningCuts(const xAOD::EventInfo& event, 
         const bool do_eventCleaning_BadBatman,
-        CutManager& bbyyCuts);
+        CutManager& bbyyCuts, const EventContext& ctx);
       void evaluateTriggerCuts(const xAOD::EventInfo& eventInfo, 
-                          const std::vector<std::string> &photonTriggers, CutManager& bbyyCuts);
+                          const std::vector<std::string> &photonTriggers, CutManager& bbyyCuts, const EventContext& ctx);
       void evaluateTriggerMatchingCuts(const std::vector<std::string> &photonTriggers, 
                                         const xAOD::PhotonContainer* photons, CutManager& bbyyCuts);
       void evaluatePhotonCuts(const std::vector<const xAOD::Photon*>& photons, int n_TightID_NonIso_photons, int n_Loose_Iso_photons, int n_TightID_Iso_photons, CutManager& bbyyCuts);

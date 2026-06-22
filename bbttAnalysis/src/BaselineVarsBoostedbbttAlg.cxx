@@ -39,7 +39,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsBoostedbbttAlg ::execute()
+  StatusCode BaselineVarsBoostedbbttAlg ::execute(const EventContext& /*ctx*/)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in

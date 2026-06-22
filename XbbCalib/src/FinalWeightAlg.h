@@ -21,7 +21,7 @@ class FinalWeightAlg final : public AthAlgorithm {
 public:
   FinalWeightAlg(const std::string& name, ISvcLocator* sl);
   StatusCode initialize() override;
-  StatusCode execute() override;
+  StatusCode execute(const EventContext& ctx) override;
 
 private:
   CP::SysListHandle m_systematicsList{this};

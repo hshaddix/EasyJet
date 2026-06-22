@@ -49,12 +49,12 @@ public:
     /// configs
     StatusCode initialize() override;
     /// \brief Execute method, for actions to be taken in the event loop
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
     /// We use default finalize() -- this is for cleanup, and we don't do any
 
 private:
 
-    std::tuple<int,int,float,int,int,int,int> STXSInfo(const xAOD::EventInfo &eventInfo) const;
+    std::tuple<int,int,float,int,int,int,int> STXSInfo(const xAOD::EventInfo& eventInfo, const EventContext& ctx) const;
 
     std::vector<float> STXSWeights(const xAOD::EventInfo &eventInfo, int HTXS_Njets30, int HTXS_Stage1, float HTXS_pTH, int HTXS_Stage1p2, int HTXS_Stage1p2Fine);
 

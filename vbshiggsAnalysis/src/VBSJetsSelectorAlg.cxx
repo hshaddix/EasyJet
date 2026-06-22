@@ -34,7 +34,7 @@ namespace VBSHIGGS{
     }
 
     
-    StatusCode VBSJetsSelectorAlg::execute(){
+    StatusCode VBSJetsSelectorAlg::execute(const EventContext& /*ctx*/){
 
         /*
             1) First select back-to-back jets

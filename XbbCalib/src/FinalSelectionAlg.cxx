@@ -76,7 +76,7 @@ StatusCode FinalSelectionAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode FinalSelectionAlg::execute() {
+StatusCode FinalSelectionAlg::execute(const EventContext& /*ctx*/) {
   for (const auto& sys : m_systematicsList.systematicsVector()) {
     const xAOD::EventInfo* event = nullptr;
     ANA_CHECK(m_eventHandle.retrieve(event, sys));

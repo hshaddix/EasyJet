@@ -48,7 +48,7 @@ namespace HH4B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsBoostedAlg ::execute()
+  StatusCode BaselineVarsBoostedAlg ::execute(const EventContext& /*ctx*/)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in

@@ -42,18 +42,14 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode EventInfoGlobalAlg::execute() {
+  StatusCode EventInfoGlobalAlg::execute(const EventContext& ctx) {
 
-    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey);
-    ATH_CHECK(eventInfo.isValid());
+    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey, ctx);    ATH_CHECK(eventInfo.isValid());
 
-    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> runNumberHandle(m_runNumberKey);
-    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> rdmRunNumberHandle(m_rdmRunNumberKey);
-    unsigned int runNumber = m_isMC ? rdmRunNumberHandle(*eventInfo) : runNumberHandle(*eventInfo);
+    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> runNumberHandle(m_runNumberKey, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> rdmRunNumberHandle(m_rdmRunNumberKey, ctx);    unsigned int runNumber = m_isMC ? rdmRunNumberHandle(*eventInfo) : runNumberHandle(*eventInfo);
 
     // Save Year of Data taking per event
-    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> yearDecorHandle(m_yearDecorKey);
-
+    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> yearDecorHandle(m_yearDecorKey, ctx);
     int year = 0;
     if (m_years.size() == 1) year = m_years[0];
     // Get single run year per event in case of MC20a which corresponds
@@ -71,32 +67,25 @@ namespace Easyjet
     yearDecorHandle(*eventInfo) = year;
 
     for(unsigned int i=0; i<m_runPeriods.size(); i++){
-      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(m_runPeriodsDecor_keys[i]);
-      handle(*eventInfo) = std::get<1>(m_runPeriods[i]) <= runNumber &&
+      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(m_runPeriodsDecor_keys[i], ctx);      handle(*eventInfo) = std::get<1>(m_runPeriods[i]) <= runNumber &&
         runNumber <= std::get<2>(m_runPeriods[i]);
     }
 
-    SG::WriteDecorHandle<xAOD::EventInfo, char> l1TopoDisabled(m_L1TopoDisabledDecorKey);
-    l1TopoDisabled(*eventInfo) =
+    SG::WriteDecorHandle<xAOD::EventInfo, char> l1TopoDisabled(m_L1TopoDisabledDecorKey, ctx);    l1TopoDisabled(*eventInfo) =
       (runNumber == 336506) || (runNumber == 336548) || (runNumber == 336567);
 
     // Save number of primary vertices
-    SG::ReadHandle<xAOD::VertexContainer> vertexContainer(m_vertexContainerKey);
-    ATH_CHECK(vertexContainer.isValid());
+    SG::ReadHandle<xAOD::VertexContainer> vertexContainer(m_vertexContainerKey, ctx);    ATH_CHECK(vertexContainer.isValid());
 
-    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> nVertexDecorHandle(m_nVertexDecorKey);
-    nVertexDecorHandle(*eventInfo) = vertexContainer->size();
+    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> nVertexDecorHandle(m_nVertexDecorKey, ctx);    nVertexDecorHandle(*eventInfo) = vertexContainer->size();
     
     // Save the highest SumPt2 primary vertex postion
     if (m_doRetrievePV) {
-      SG::WriteDecorHandle<xAOD::EventInfo, float> PVxDecorHandle(m_PVxDecorKey);
-      PVxDecorHandle(*eventInfo) = vertexContainer->at(0)->x();
+      SG::WriteDecorHandle<xAOD::EventInfo, float> PVxDecorHandle(m_PVxDecorKey, ctx);      PVxDecorHandle(*eventInfo) = vertexContainer->at(0)->x();
       
-      SG::WriteDecorHandle<xAOD::EventInfo, float> PVyDecorHandle(m_PVyDecorKey);
-      PVyDecorHandle(*eventInfo) = vertexContainer->at(0)->y();
+      SG::WriteDecorHandle<xAOD::EventInfo, float> PVyDecorHandle(m_PVyDecorKey, ctx);      PVyDecorHandle(*eventInfo) = vertexContainer->at(0)->y();
       
-      SG::WriteDecorHandle<xAOD::EventInfo, float> PVzDecorHandle(m_PVzDecorKey);
-      PVzDecorHandle(*eventInfo) = vertexContainer->at(0)->z();
+      SG::WriteDecorHandle<xAOD::EventInfo, float> PVzDecorHandle(m_PVzDecorKey, ctx);      PVzDecorHandle(*eventInfo) = vertexContainer->at(0)->z();
     }
 
     return StatusCode::SUCCESS;

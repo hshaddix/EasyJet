@@ -90,7 +90,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HllttSelectorAlg ::execute()
+  StatusCode HllttSelectorAlg ::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);

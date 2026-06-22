@@ -30,12 +30,11 @@ namespace HHBBYY
   }
 
 
-  StatusCode bbyyFilterggHBjetsAlg::execute()
+  StatusCode bbyyFilterggHBjetsAlg::execute(const EventContext& ctx)
   {
     FilterReporter filter (m_filterParams, false);
   
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthBottom(m_truthBottomInKey);
-    ATH_CHECK(truthBottom.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthBottom(m_truthBottomInKey, ctx);    ATH_CHECK(truthBottom.isValid());
 
     if (truthBottom->empty()){
       filter.setPassed(true);

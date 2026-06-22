@@ -91,7 +91,7 @@ namespace ZQG
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZQGAlg::execute()
+  StatusCode BaselineVarsZQGAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

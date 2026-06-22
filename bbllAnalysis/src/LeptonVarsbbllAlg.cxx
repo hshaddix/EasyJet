@@ -53,7 +53,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonVarsbbllAlg::execute()
+  StatusCode LeptonVarsbbllAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

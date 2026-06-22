@@ -84,7 +84,7 @@ namespace ZCC
   }
 
 
-  StatusCode ZCharmSelectorAlg::execute()
+  StatusCode ZCharmSelectorAlg::execute(const EventContext& ctx)
   {
     
     // Global filter originally false
@@ -103,8 +103,7 @@ namespace ZCC
       char pass_truth_baseline = false;
       if (m_isMC){
         // Find truth decision
-        SG::ReadDecorHandle<xAOD::EventInfo, char> m_passTruthCuts(m_passTruthCutsKey);
-        // Retrieve the truth decision
+        SG::ReadDecorHandle<xAOD::EventInfo, char> m_passTruthCuts(m_passTruthCutsKey, ctx);        // Retrieve the truth decision
         if (!m_passTruthCuts.isPresent()) {
           ATH_MSG_ERROR("PassTruthCuts decision is empty or not found!");
           return StatusCode::FAILURE;

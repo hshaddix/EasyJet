@@ -53,7 +53,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TriggerSFAlg::execute()
+  StatusCode HLLTT::TriggerSFAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

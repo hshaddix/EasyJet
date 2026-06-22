@@ -101,7 +101,7 @@ namespace HHH6B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode SmallRJetTriggerSFAlg::execute()
+  StatusCode SmallRJetTriggerSFAlg::execute(const EventContext& ctx)
   {
     if (!m_loadedTriggerSFs)
     {
@@ -202,10 +202,7 @@ namespace HHH6B
     for (auto &trig : m_triggers)
     {
       jetThresholds.emplace(trig, m_ThresholdsDecorKey.at(trig));
-      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSF(m_eventSFKey.at(trig));
-      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFStatsUp(m_eventSFStatsUpKey.at(trig));
-      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFSystUp(m_eventSFSystUpKey.at(trig));
-      eventSF.emplace(trig, wdh_eventSF);
+      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSF(m_eventSFKey.at(trig), ctx);      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFStatsUp(m_eventSFStatsUpKey.at(trig), ctx);      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFSystUp(m_eventSFSystUpKey.at(trig), ctx);      eventSF.emplace(trig, wdh_eventSF);
       eventSFStatsUp.emplace(trig, wdh_eventSFStatsUp);
       eventSFSystUp.emplace(trig, wdh_eventSFSystUp);
     }

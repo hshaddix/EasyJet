@@ -57,7 +57,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode NeutrinoWeightingAlg ::execute()
+  StatusCode NeutrinoWeightingAlg ::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

@@ -38,7 +38,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonOrderingAlg::execute()
+  StatusCode LeptonOrderingAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {

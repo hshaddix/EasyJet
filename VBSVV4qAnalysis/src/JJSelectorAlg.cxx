@@ -50,7 +50,7 @@ namespace VBSVV4q{
     return StatusCode::SUCCESS;
   }
   
-  StatusCode JJSelectorAlg::execute(){
+  StatusCode JJSelectorAlg::execute(const EventContext& /*ctx*/){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 

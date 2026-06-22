@@ -88,7 +88,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsttCalibAlg::execute()
+  StatusCode BaselineVarsttCalibAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())

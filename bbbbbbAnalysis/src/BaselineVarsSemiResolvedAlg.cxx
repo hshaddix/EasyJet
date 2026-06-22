@@ -49,7 +49,7 @@ namespace HHH6B
 
   }
 
-  StatusCode BaselineVarsSemiResolvedAlg ::execute()
+  StatusCode BaselineVarsSemiResolvedAlg ::execute(const EventContext& /*ctx*/)
   {
     ATH_MSG_DEBUG("BaselineVarsSemiResolvedAlg::execute() called");
     for (const auto& sys : m_systematicsList.systematicsVector()) {

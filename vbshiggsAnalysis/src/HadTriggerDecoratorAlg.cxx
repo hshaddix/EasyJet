@@ -47,7 +47,7 @@ namespace VBSHIGGS
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HadTriggerDecoratorAlg::execute()
+  StatusCode HadTriggerDecoratorAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()){

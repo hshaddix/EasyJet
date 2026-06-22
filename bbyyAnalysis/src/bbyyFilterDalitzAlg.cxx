@@ -32,14 +32,12 @@ namespace HHBBYY
   }
 
 
-  StatusCode bbyyFilterDalitzAlg::execute()
+  StatusCode bbyyFilterDalitzAlg::execute(const EventContext& ctx)
   {
     FilterReporter filter (m_filterParams, false);
   
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthSMParticles(m_truthParticleSMInKey);
-    ATH_CHECK(truthSMParticles.isValid());
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthBSMParticles(m_truthParticleBSMInKey);
-    ATH_CHECK(truthBSMParticles.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthSMParticles(m_truthParticleSMInKey, ctx);    ATH_CHECK(truthSMParticles.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthBSMParticles(m_truthParticleBSMInKey, ctx);    ATH_CHECK(truthBSMParticles.isValid());
 
     auto truthParticlesContainer =
       !(*truthBSMParticles).empty() ? (*truthBSMParticles) : (*truthSMParticles);

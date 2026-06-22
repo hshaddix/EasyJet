@@ -35,14 +35,10 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TruthLeptonOrderingAlg::execute()
+  StatusCode TruthLeptonOrderingAlg::execute(const EventContext& ctx)
   {
     // Retrieve inputs
-    SG::ReadHandle<xAOD::TruthParticleContainer> inTruthElectronContainer(m_inTruthElectronHandleKey);
-    SG::ReadHandle<xAOD::TruthParticleContainer> inTruthMuonContainer(m_inTruthMuonHandleKey);
-    SG::ReadDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedElectron(m_isSelectedElectronKey);
-    SG::ReadDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedMuon(m_isSelectedMuonKey);  
-
+    SG::ReadHandle<xAOD::TruthParticleContainer> inTruthElectronContainer(m_inTruthElectronHandleKey, ctx);    SG::ReadHandle<xAOD::TruthParticleContainer> inTruthMuonContainer(m_inTruthMuonHandleKey, ctx);    SG::ReadDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedElectron(m_isSelectedElectronKey, ctx);    SG::ReadDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedMuon(m_isSelectedMuonKey, ctx);
     std::vector<std::pair<const xAOD::TruthParticle*, int>> leptons;
 
       // electron
@@ -71,11 +67,9 @@ namespace Easyjet
     int nLepton = 0;
     for (auto lepton : leptons) {
         if (std::abs(lepton.second) == 11){ //ele
-            SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> eledecor(m_leadBranchesEleKey.at(nLepton));
-            eledecor(*lepton.first) = true;
+            SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> eledecor(m_leadBranchesEleKey.at(nLepton), ctx);            eledecor(*lepton.first) = true;
         } else if (std::abs(lepton.second) == 13) { //mu
-            SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> mudecor(m_leadBranchesMuKey.at(nLepton));
-            mudecor(*lepton.first) = true;
+            SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> mudecor(m_leadBranchesMuKey.at(nLepton), ctx);            mudecor(*lepton.first) = true;
         }
         nLepton++;
         if ( nLepton == m_leptonAmount ) break;

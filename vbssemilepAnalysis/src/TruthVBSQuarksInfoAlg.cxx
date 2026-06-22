@@ -49,13 +49,11 @@ namespace VBSSEMILEP
   }
 
 
-  StatusCode TruthVBSQuarksInfoAlg ::execute(){
+  StatusCode TruthVBSQuarksInfoAlg ::execute(const EventContext& ctx){
 
-    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey);
-    ATH_CHECK(eventInfo.isValid());
+    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey, ctx);    ATH_CHECK(eventInfo.isValid());
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthParticleContainer(m_truthParticleInKey);
-    ATH_CHECK(truthParticleContainer.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthParticleContainer(m_truthParticleInKey, ctx);    ATH_CHECK(truthParticleContainer.isValid());
 
     int nVBSQuarks (0); 
     const xAOD::TruthParticle *quark1 = nullptr;
@@ -81,18 +79,9 @@ namespace VBSSEMILEP
     if(quark1 && quark2 && quark1->pt()<quark2->pt()) std::swap(quark1, quark2);
     
     // Update the user-defined variable in EventInfo
-    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> nVBSQuarksDecorHandle(m_nVBSQuarksKey);
-    nVBSQuarksDecorHandle(*eventInfo) = nVBSQuarks;
+    SG::WriteDecorHandle<xAOD::EventInfo, unsigned int> nVBSQuarksDecorHandle(m_nVBSQuarksKey, ctx);    nVBSQuarksDecorHandle(*eventInfo) = nVBSQuarks;
 
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1pTDecorHandle(m_VBSQuark1pTKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1etaDecorHandle(m_VBSQuark1etaKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1phiDecorHandle(m_VBSQuark1phiKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1EDecorHandle(m_VBSQuark1EKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2pTDecorHandle(m_VBSQuark2pTKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2etaDecorHandle(m_VBSQuark2etaKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2phiDecorHandle(m_VBSQuark2phiKey);
-    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2EDecorHandle(m_VBSQuark2EKey);
-
+    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1pTDecorHandle(m_VBSQuark1pTKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1etaDecorHandle(m_VBSQuark1etaKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1phiDecorHandle(m_VBSQuark1phiKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark1EDecorHandle(m_VBSQuark1EKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2pTDecorHandle(m_VBSQuark2pTKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2etaDecorHandle(m_VBSQuark2etaKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2phiDecorHandle(m_VBSQuark2phiKey, ctx);    SG::WriteDecorHandle<xAOD::EventInfo, float> VBSQuark2EDecorHandle(m_VBSQuark2EKey, ctx);
     VBSQuark1pTDecorHandle(*eventInfo) = quark1 ? quark1 -> pt() : -99.;
     VBSQuark1etaDecorHandle(*eventInfo) = quark1 ? quark1 -> eta() : -99.;
     VBSQuark1phiDecorHandle(*eventInfo) = quark1 ? quark1 -> phi() : -99.;
@@ -109,8 +98,7 @@ namespace VBSSEMILEP
     if(quark1) VBSQuarks -> push_back(quark1);
     if(quark2) VBSQuarks -> push_back(quark2);
 
-    SG::WriteHandle<ConstDataVector<xAOD::TruthParticleContainer>> writeHandle(m_VBSQuarksKey);
-    ATH_CHECK(writeHandle.record(std::move(VBSQuarks)));
+    SG::WriteHandle<ConstDataVector<xAOD::TruthParticleContainer>> writeHandle(m_VBSQuarksKey, ctx);    ATH_CHECK(writeHandle.record(std::move(VBSQuarks)));
 
     return StatusCode::SUCCESS;
 

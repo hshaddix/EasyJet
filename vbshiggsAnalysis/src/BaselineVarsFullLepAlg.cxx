@@ -99,7 +99,7 @@ namespace VBSHIGGS{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarsFullLepAlg::execute(){
+    StatusCode BaselineVarsFullLepAlg::execute(const EventContext& /*ctx*/){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs

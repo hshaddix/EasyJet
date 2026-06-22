@@ -23,7 +23,7 @@ class BaselineVarsFullHadAlg final : public AthHistogramAlgorithm {
 public:
   BaselineVarsFullHadAlg(const std::string&, ISvcLocator*);
   StatusCode initialize() override;
-  StatusCode execute() override;
+  StatusCode execute(const EventContext& ctx) override;
 
 private:
   CP::SysListHandle m_systematicsList{this};

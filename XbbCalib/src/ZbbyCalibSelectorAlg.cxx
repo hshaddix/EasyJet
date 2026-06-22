@@ -37,7 +37,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZbbyCalibSelectorAlg::execute()
+  StatusCode ZbbyCalibSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Global filter originally false

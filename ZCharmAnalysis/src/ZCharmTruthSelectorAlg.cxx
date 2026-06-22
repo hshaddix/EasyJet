@@ -72,18 +72,12 @@ namespace ZCC
 
     // FilterReporter filter(m_filterParams, false);
 
-    SG::ReadHandle<xAOD::EventInfo> truthEvents(m_eventInKey);
-    SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);
-    SG::ReadDecorHandle<xAOD::JetContainer, int> truthFlavour(m_jetTruthFlavourKey);
-
+    SG::ReadHandle<xAOD::EventInfo> truthEvents(m_eventInKey);    SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);    SG::ReadDecorHandle<xAOD::JetContainer, int> truthFlavour(m_jetTruthFlavourKey);
     auto jets_after_overlap = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
     auto truthcjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
 
     for (auto [var, key] : m_FbranchesKeys){
-      SG::WriteDecorHandle<xAOD::EventInfo, float> floatDecorator(key);
-      m_Fbranches.insert_or_assign(var, std::move(floatDecorator));
+      SG::WriteDecorHandle<xAOD::EventInfo, float> floatDecorator(key);      m_Fbranches.insert_or_assign(var, std::move(floatDecorator));
     }
 
     const xAOD::EventInfo* truthevent = truthEvents.get();
@@ -208,12 +202,10 @@ namespace ZCC
       m_ZCharmTruthCuts[i].relativeCounter+=1;
     }
 
-    SG::WriteDecorHandle<xAOD::EventInfo, char> passTruthCutsHandle(m_passTruthCutsKey);
-    passTruthCutsHandle(*truthevent) = pass_truth_baseline && jets_after_overlap->size()>=1;
+    SG::WriteDecorHandle<xAOD::EventInfo, char> passTruthCutsHandle(m_passTruthCutsKey);    passTruthCutsHandle(*truthevent) = pass_truth_baseline && jets_after_overlap->size()>=1;
 
     for (auto& [key, handleKey] : m_BbranchKeys) {
-      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(handleKey);
-      handle(*truthevent) = m_bools.at(key);
+      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(handleKey);      handle(*truthevent) = m_bools.at(key);
     }
 
     return StatusCode::SUCCESS;

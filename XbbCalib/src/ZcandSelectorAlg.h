@@ -29,7 +29,7 @@ namespace XBBCALIB{
     /// configs
     StatusCode initialize() override;
     /// \brief Execute method, for actions to be taken in the event loop
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
 
   private:
     /// \brief Setup syst-aware input container handles

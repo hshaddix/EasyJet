@@ -40,7 +40,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonVarsbbyyAlg::execute()
+  StatusCode LeptonVarsbbyyAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

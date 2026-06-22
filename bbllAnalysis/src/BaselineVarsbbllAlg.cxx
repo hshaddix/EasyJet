@@ -67,7 +67,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsbbllAlg::execute()
+  StatusCode BaselineVarsbbllAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

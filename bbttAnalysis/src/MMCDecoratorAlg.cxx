@@ -81,7 +81,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MMCDecoratorAlg ::execute()
+  StatusCode MMCDecoratorAlg ::execute(const EventContext& /*ctx*/)
   {
 
     MMCResult result_NOSYS;

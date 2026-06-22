@@ -31,7 +31,7 @@ namespace VBSHIGGS{
         return StatusCode::SUCCESS;
     }
 
-    StatusCode HiggsSelectorAlg::execute(){
+    StatusCode HiggsSelectorAlg::execute(const EventContext& /*ctx*/){
         /*
             Higgs selection algorithm
             1) First select leading 2 b-jets

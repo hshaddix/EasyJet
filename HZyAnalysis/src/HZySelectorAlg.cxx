@@ -87,7 +87,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HZySelectorAlg::execute()
+  StatusCode HZySelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner(m_filterParams, false);

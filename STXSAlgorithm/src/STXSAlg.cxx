@@ -75,10 +75,9 @@ namespace Easyjet
   }
 
 
-  StatusCode STXSAlg ::execute()
+  StatusCode STXSAlg ::execute(const EventContext& ctx)
   {
-    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey);
-    ATH_CHECK(eventInfo.isValid());
+    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey, ctx);    ATH_CHECK(eventInfo.isValid());
 
     float HTXS_pTH = -999;
     int HTXS_Stage1_pTjet30 = -999;
@@ -90,17 +89,17 @@ namespace Easyjet
 
     if (m_has_STXS) {
       std::tie(HTXS_pTH,HTXS_Njets_pTjet30,HTXS_Stage1_pTjet30,HTXS_Stage1p2_pTjet30,HTXS_Stage1p2Fine_pTjet30,
-        HTXS_Stage1p2_pTjet25,HTXS_Stage1p2Fine_pTjet25) = STXSInfo(*eventInfo);
+        HTXS_Stage1p2_pTjet25,HTXS_Stage1p2Fine_pTjet25) = STXSInfo(*eventInfo, ctx);
     }
     
     SG::WriteDecorHandle<xAOD::EventInfo, int> HTXSBin30DecorHandle
-        (m_HTXSBin_pTjet30_DecorKey);
+        (m_HTXSBin_pTjet30_DecorKey, ctx);
     SG::WriteDecorHandle<xAOD::EventInfo, int> HTXSBinFine30DecorHandle
-        (m_HTXSFineBin_pTjet30_DecorKey);
+        (m_HTXSFineBin_pTjet30_DecorKey, ctx);
     SG::WriteDecorHandle<xAOD::EventInfo, int> HTXSBin25DecorHandle
-        (m_HTXSBin_pTjet25_DecorKey);
+        (m_HTXSBin_pTjet25_DecorKey, ctx);
     SG::WriteDecorHandle<xAOD::EventInfo, int> HTXSBinFine25DecorHandle
-        (m_HTXSFineBin_pTjet25_DecorKey);
+        (m_HTXSFineBin_pTjet25_DecorKey, ctx);
     HTXSBin30DecorHandle(*eventInfo) = HTXS_Stage1p2_pTjet30;
     HTXSBinFine30DecorHandle(*eventInfo) = HTXS_Stage1p2Fine_pTjet30;
     HTXSBin25DecorHandle(*eventInfo) = HTXS_Stage1p2_pTjet25;
@@ -111,7 +110,7 @@ namespace Easyjet
           HTXS_Stage1p2_pTjet30,HTXS_Stage1p2Fine_pTjet30);
 
         SG::WriteDecorHandle <xAOD::EventInfo, std::vector<float>> HTXSWeightsDecorHandle
-            (m_HTXSWeightsDecorKey);
+            (m_HTXSWeightsDecorKey, ctx);
         HTXSWeightsDecorHandle(*eventInfo) = HTXS_w;
     }
 
@@ -119,17 +118,10 @@ namespace Easyjet
   }
 
 
-  std::tuple<int,int,float,int,int,int,int> STXSAlg::STXSInfo(
-    const xAOD::EventInfo &eventInfo) const
+  std::tuple<int, int, float, int, int, int, int> STXSAlg::STXSInfo(
+    const xAOD::EventInfo& eventInfo, const EventContext& ctx) const
   {
-    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Njets30(m_HTXS_Njets_pTjet30_Key);
-    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1(m_HTXS_Stage1_pTjet30_Key);
-    SG::ReadDecorHandle<xAOD::EventInfo, float> HTXS_pTH(m_HTXS_pTH_Key);
-    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2(m_HTXS_Stage1p2_pTjet30_Key);
-    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2Fine(m_HTXS_Stage1p2Fine_pTjet30_Key);
-    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2_25(m_HTXS_Stage1p2_pTjet25_Key);
-    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2Fine_25(m_HTXS_Stage1p2Fine_pTjet25_Key);
-
+    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Njets30(m_HTXS_Njets_pTjet30_Key, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1(m_HTXS_Stage1_pTjet30_Key, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, float> HTXS_pTH(m_HTXS_pTH_Key, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2(m_HTXS_Stage1p2_pTjet30_Key, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2Fine(m_HTXS_Stage1p2Fine_pTjet30_Key, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2_25(m_HTXS_Stage1p2_pTjet25_Key, ctx);    SG::ReadDecorHandle<xAOD::EventInfo, int> HTXS_Stage1p2Fine_25(m_HTXS_Stage1p2Fine_pTjet25_Key, ctx);
     ATH_MSG_DEBUG("++++ found HTXS_pTH (MeV) " << HTXS_pTH << " and bin " << HTXS_Stage1p2);
     return {HTXS_pTH(eventInfo), HTXS_Njets30(eventInfo), HTXS_Stage1(eventInfo), 
       HTXS_Stage1p2(eventInfo), HTXS_Stage1p2Fine(eventInfo),HTXS_Stage1p2_25(eventInfo), HTXS_Stage1p2Fine_25(eventInfo)};

@@ -70,7 +70,7 @@ namespace HHMET
   }
 
 
-  StatusCode hhmetSelectorAlg::execute()
+  StatusCode hhmetSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -89,7 +89,7 @@ namespace HHMET
         m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
       }
     
-      evaluateTriggerCuts(*event, m_Triggers, m_hhmetCuts);
+      evaluateTriggerCuts(*event, m_Triggers, m_hhmetCuts, ctx);
       
       // Get number of jets
       int n_boosted_jets = 0;
@@ -200,7 +200,7 @@ namespace HHMET
   }
 
   void hhmetSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event, const std::vector<std::string> &Triggers, 
-                                            CutManager& hhmetCuts) {
+                                            CutManager& hhmetCuts, const EventContext& ctx) {
     if (!hhmetCuts.exists("PASS_TRIGGER"))
         return;
     
@@ -209,8 +209,7 @@ namespace HHMET
     for (const std::string &trigger : Triggers)
     {
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
-      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey);
-    // OR between triggers
+      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey, ctx);    // OR between triggers
       pass_trigger |= m_triggerDecorHandle(event);     
     }
     hhmetCuts("PASS_TRIGGER").passed = pass_trigger;

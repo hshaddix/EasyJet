@@ -20,7 +20,7 @@ StatusCode EventCounterAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode EventCounterAlg::execute() {
+StatusCode EventCounterAlg::execute(const EventContext& /*ctx*/) {
   m_n_events++;
   return StatusCode::SUCCESS;
 }

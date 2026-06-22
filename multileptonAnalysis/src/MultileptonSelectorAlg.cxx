@@ -74,7 +74,7 @@ namespace MULTILEPTON
   }
 
 
-  StatusCode MultileptonSelectorAlg::execute()
+  StatusCode MultileptonSelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);

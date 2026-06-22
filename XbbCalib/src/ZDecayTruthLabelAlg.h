@@ -22,7 +22,7 @@ class ZDecayTruthLabelAlg final : public AthAlgorithm {
 public:
   ZDecayTruthLabelAlg(const std::string& name, ISvcLocator* sl);
   StatusCode initialize() override;
-  StatusCode execute() override;
+  StatusCode execute(const EventContext& ctx) override;
 
 private:
   SG::ReadHandleKey<xAOD::EventInfo> m_eventKey{

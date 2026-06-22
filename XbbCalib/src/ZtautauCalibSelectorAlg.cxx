@@ -32,7 +32,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZtautauCalibSelectorAlg::execute()
+  StatusCode ZtautauCalibSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Global filter originally false

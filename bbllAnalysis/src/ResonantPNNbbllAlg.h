@@ -40,7 +40,7 @@ namespace HHBBLL
     /// configs
     StatusCode initialize() override;
     /// \brief Execute method, for actions to be taken in the event loop
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
     /// We use default finalize() -- this is for cleanup, and we don't do any
     void LoadPDNN_prepare(size_t total_inputs, const xAOD::EventInfo& event, const xAOD::ElectronContainer& electrons, const xAOD::MuonContainer& muons, const ConstDataVector<xAOD::JetContainer>& bjets, const xAOD::MissingET& met,const CP::SystematicSet& sys);
 

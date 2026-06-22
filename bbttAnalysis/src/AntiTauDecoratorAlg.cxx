@@ -81,7 +81,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode AntiTauDecoratorAlg ::execute()
+  StatusCode AntiTauDecoratorAlg ::execute(const EventContext& /*ctx*/)
   {
 
     const static SG::AuxElement::Decorator<int> categoryDecorator("antiTauEventCategory");

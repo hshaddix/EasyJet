@@ -35,16 +35,15 @@ namespace Easyjet
   }
 
 
-  StatusCode DijetHSTPFilter ::execute(){
+  StatusCode DijetHSTPFilter ::execute(const EventContext& ctx){
 
-    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey);
-    ATH_CHECK(eventInfo.isValid());
+    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_EventInfoKey, ctx);    ATH_CHECK(eventInfo.isValid());
 
     SG::ReadHandle<xAOD::JetContainer> truthHS_jets(
-        m_TruthHSJetKey);
+        m_TruthHSJetKey, ctx);
     ATH_CHECK(truthHS_jets.isValid());
     SG::ReadHandle<xAOD::JetContainer> truthPU_jets(
-        m_TruthPUJetKey);
+        m_TruthPUJetKey, ctx);
     ATH_CHECK(truthPU_jets.isValid());
 
     bool pass_HSTP_filter = true;
@@ -59,8 +58,7 @@ namespace Easyjet
     pass_HSTP_filter = pT_j1_truthHS > pT_j1_truthPU;
 
     // Update the user-defined variable in EventInfo
-    SG::WriteDecorHandle<xAOD::EventInfo, char> HSTPFilterDecorHandle(m_PassHSTPKey);
-    HSTPFilterDecorHandle(*eventInfo) = pass_HSTP_filter;
+    SG::WriteDecorHandle<xAOD::EventInfo, char> HSTPFilterDecorHandle(m_PassHSTPKey, ctx);    HSTPFilterDecorHandle(*eventInfo) = pass_HSTP_filter;
 
     return StatusCode::SUCCESS;
 

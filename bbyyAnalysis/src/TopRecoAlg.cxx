@@ -123,7 +123,7 @@ namespace HHBBYY
   }
 
 
-  StatusCode TopRecoAlg::execute()
+  StatusCode TopRecoAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {

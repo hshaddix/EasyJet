@@ -387,20 +387,20 @@ public:
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TruthParticleInformationAlg ::execute()
+  StatusCode TruthParticleInformationAlg ::execute(const EventContext& ctx)
   {
     ATH_MSG_DEBUG("Executing " << name());
 
     SG::ReadHandle<xAOD::EventInfo> 
-      eventInfo(m_EventInfoKey);
+      eventInfo(m_EventInfoKey, ctx);
     ATH_CHECK(eventInfo.isValid());
     
     SG::ReadHandle<xAOD::TruthParticleContainer> 
-      truthSMParticles(m_truthParticleSMInKey);
+      truthSMParticles(m_truthParticleSMInKey, ctx);
     ATH_CHECK(truthSMParticles.isValid());
 
     SG::ReadHandle<xAOD::TruthParticleContainer> 
-      truthBSMParticles(m_truthParticleBSMInKey);
+      truthBSMParticles(m_truthParticleBSMInKey, ctx);
     ATH_CHECK(truthBSMParticles.isValid());
 
     ATH_CHECK(recordTruthParticleInformation(*truthBSMParticles,

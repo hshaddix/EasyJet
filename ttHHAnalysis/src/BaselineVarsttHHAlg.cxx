@@ -114,7 +114,7 @@ namespace ttHH
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsttHHAlg::execute()
+  StatusCode BaselineVarsttHHAlg::execute(const EventContext& ctx)
   {
     //Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -161,11 +161,9 @@ namespace ttHH
 
       if (m_isSignal)
       {
-        SG::ReadHandle<xAOD::TruthParticleContainer> truthBosonsParticleContainer(m_truthBosonsWithDecayParticlesContainer);
-        ATH_CHECK(truthBosonsParticleContainer.isValid());
+        SG::ReadHandle<xAOD::TruthParticleContainer> truthBosonsParticleContainer(m_truthBosonsWithDecayParticlesContainer, ctx);        ATH_CHECK(truthBosonsParticleContainer.isValid());
 
-        SG::ReadHandle<xAOD::TruthParticleContainer> truthTopParticleContainer(m_truthTopContainer);
-        ATH_CHECK(truthTopParticleContainer.isValid());
+        SG::ReadHandle<xAOD::TruthParticleContainer> truthTopParticleContainer(m_truthTopContainer, ctx);        ATH_CHECK(truthTopParticleContainer.isValid());
 
         auto [truth_ttHH_p4, truth_HH_p4, truth_ttbar_p4] = get_ttHH_HH_ttbar_p4(*truthBosonsParticleContainer, *truthTopParticleContainer, true);
         ATH_CHECK(getEFTShapeWeights(truth_ttHH_p4, truth_HH_p4, truth_ttbar_p4));

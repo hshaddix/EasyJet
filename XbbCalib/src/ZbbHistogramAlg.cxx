@@ -147,7 +147,7 @@ StatusCode ZbbHistogramAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode ZbbHistogramAlg::execute() {
+StatusCode ZbbHistogramAlg::execute(const EventContext& /*ctx*/) {
   for (const auto& [si, sys] : m_sysPairs) {
     const xAOD::EventInfo* event = nullptr;
     ATH_CHECK(m_eventHandle.retrieve(event, sys));

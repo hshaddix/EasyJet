@@ -44,7 +44,7 @@ namespace VBSVV4q
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TriggerDecoratorAlg::execute()
+  StatusCode TriggerDecoratorAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()){

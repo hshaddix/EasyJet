@@ -43,7 +43,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ttCalibSelectorAlg::execute()
+  StatusCode ttCalibSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Global filter originally false

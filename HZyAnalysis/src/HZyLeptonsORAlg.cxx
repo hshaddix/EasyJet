@@ -42,7 +42,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HZyLeptonsORAlg::execute()
+  StatusCode HZyLeptonsORAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systematics
     for (const auto &sys : m_systematicsList.systematicsVector())

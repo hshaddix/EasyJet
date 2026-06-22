@@ -8,9 +8,8 @@ StatusCode Easyjet::EventInfoDecorLockAlg::initialize() {
     return StatusCode::SUCCESS;
 }
 
-StatusCode Easyjet::EventInfoDecorLockAlg::execute() {
-    SG::ReadHandle<xAOD::EventInfo> ei(m_eventInfoKey);
-    if (!ei.isValid()) {
+StatusCode Easyjet::EventInfoDecorLockAlg::execute(const EventContext& ctx) {
+    SG::ReadHandle<xAOD::EventInfo> ei(m_eventInfoKey, ctx);    if (!ei.isValid()) {
         ATH_MSG_ERROR("Failed to retrieve EventInfo with key "
                       << m_eventInfoKey.key());
         return StatusCode::FAILURE;

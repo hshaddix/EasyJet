@@ -29,13 +29,11 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TruthMuonSelectorAlg::execute()
+  StatusCode TruthMuonSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Retrieve inputs
-    SG::ReadHandle<xAOD::TruthParticleContainer> inContainer(m_inHandleKey);
-    SG::ReadHandle<xAOD::TruthEventContainer> events(m_eventHandleKey);
-
+    SG::ReadHandle<xAOD::TruthParticleContainer> inContainer(m_inHandleKey, ctx);    SG::ReadHandle<xAOD::TruthEventContainer> events(m_eventHandleKey, ctx);
     ATH_CHECK(events.isValid());
     ATH_CHECK(inContainer.isValid());
 
@@ -45,9 +43,7 @@ namespace Easyjet
         SG::VIEW_ELEMENTS);
 
         
-    SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedMuon(m_isSelectedMuonKey);
-    SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey);
-    SG::ConstAccessor<float> dressedMuonPt("pt_dressed");
+    SG::WriteDecorHandle<xAOD::TruthParticleContainer, char> m_isSelectedMuon(m_isSelectedMuonKey, ctx);    SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey, ctx);    SG::ConstAccessor<float> dressedMuonPt("pt_dressed");
     SG::ConstAccessor<float> dressedMuonEta("eta_dressed");
 
 
@@ -103,8 +99,7 @@ namespace Easyjet
     }
     
     // Write to eventstore
-    SG::WriteHandle<ConstDataVector<xAOD::TruthParticleContainer>> m_outHandle(m_outHandleKey);
-    ATH_CHECK(m_outHandle.record(std::move(workContainer)));   
+    SG::WriteHandle<ConstDataVector<xAOD::TruthParticleContainer>> m_outHandle(m_outHandleKey, ctx);    ATH_CHECK(m_outHandle.record(std::move(workContainer)));   
     
     return StatusCode::SUCCESS;
   }

@@ -69,7 +69,7 @@ namespace SHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ResonantPNNbbyyAlg::execute()
+  StatusCode ResonantPNNbbyyAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

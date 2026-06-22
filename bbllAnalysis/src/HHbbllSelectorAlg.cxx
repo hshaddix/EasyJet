@@ -85,7 +85,7 @@ namespace HHBBLL
   }
 
 
-  StatusCode HHbbllSelectorAlg::execute()
+  StatusCode HHbbllSelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);

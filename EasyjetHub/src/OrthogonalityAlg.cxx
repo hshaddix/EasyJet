@@ -39,7 +39,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode OrthogonalityAlg::execute()
+  StatusCode OrthogonalityAlg::execute(const EventContext& /*ctx*/)
   {
     int N_HHPhotons = -1, N_HHBjets = -1;
       

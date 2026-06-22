@@ -26,13 +26,13 @@ StatusCode SecVtxFilterAlg ::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode SecVtxFilterAlg ::execute() {
+StatusCode SecVtxFilterAlg ::execute(const EventContext& ctx) {
   // Filter
   FilterReporter filter(m_filterParams, false);
 
   // Input handles
   SG::ReadHandle<ConstDataVector<xAOD::VertexContainer>> vertexIn(
-      m_vertexInKey);
+      m_vertexInKey, ctx);
   ATH_CHECK(vertexIn.isValid());
 
   // Vertex container

@@ -68,7 +68,7 @@ namespace HHH6B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsResolvedAlg ::execute()
+  StatusCode BaselineVarsResolvedAlg ::execute(const EventContext& /*ctx*/)
   {
     ATH_MSG_DEBUG("BaselineVarsResolvedAlg::execute() called");
     for (const auto& sys : m_systematicsList.systematicsVector()) {

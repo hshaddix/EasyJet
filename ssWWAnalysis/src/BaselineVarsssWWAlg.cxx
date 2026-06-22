@@ -103,7 +103,7 @@ namespace ssWWVBS
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsssWWAlg::execute()
+  StatusCode BaselineVarsssWWAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

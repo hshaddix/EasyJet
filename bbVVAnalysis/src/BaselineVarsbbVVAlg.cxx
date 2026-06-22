@@ -124,7 +124,7 @@ namespace HHBBVV
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsbbVVAlg::execute()
+  StatusCode BaselineVarsbbVVAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

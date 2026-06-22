@@ -80,7 +80,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TriggerSFAlg::execute()
+  StatusCode TriggerSFAlg::execute(const EventContext& /*ctx*/)
   {
 
     runBoolReadDecoMap runBoolDecos;

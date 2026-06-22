@@ -58,7 +58,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TauSelectorAlg::execute()
+  StatusCode TauSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

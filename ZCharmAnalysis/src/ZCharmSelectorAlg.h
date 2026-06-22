@@ -42,7 +42,7 @@ namespace ZCC
       /// configs
       StatusCode initialize() override;
       /// \brief Execute method, for actions to be taken in the event loop
-      StatusCode execute() override;
+      StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
       StatusCode finalize() override; ///I added this to write the cutflow histogram.
 

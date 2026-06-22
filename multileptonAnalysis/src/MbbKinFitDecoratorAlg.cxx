@@ -42,7 +42,7 @@ namespace MULTILEPTON
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MbbKinFitDecoratorAlg::execute()
+  StatusCode MbbKinFitDecoratorAlg::execute(const EventContext& /*ctx*/)
   {
 
     for (const auto &sys : m_systematicsList.systematicsVector())

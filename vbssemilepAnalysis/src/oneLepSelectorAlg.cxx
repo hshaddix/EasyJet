@@ -53,7 +53,7 @@ namespace VBSSEMILEP{
     if(m_saveCutFlow) ATH_CHECK (initialiseCutflow());
     return StatusCode::SUCCESS;
   }
-  StatusCode oneLepSelectorAlg::execute(){
+  StatusCode oneLepSelectorAlg::execute(const EventContext& /*ctx*/){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 

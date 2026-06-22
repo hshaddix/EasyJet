@@ -57,7 +57,7 @@ namespace HZALLYY {
     return StatusCode::SUCCESS;
   }
   
-  StatusCode LeptonVarsAlg::execute() {
+  StatusCode LeptonVarsAlg::execute(const EventContext& /*ctx*/) {
     
     // Loop over all systs
     for (const auto & sys: m_systematicsList.systematicsVector()) {

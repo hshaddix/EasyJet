@@ -74,7 +74,7 @@ namespace ttHH
   }
 
 
-  StatusCode ttHHSelectorAlg::execute()
+  StatusCode ttHHSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Global filter originally false

@@ -28,11 +28,10 @@ namespace VBSVV4q{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BosonTaggerAlg::execute(){
+    StatusCode BosonTaggerAlg::execute(const EventContext& ctx){
               
       // Retrieve inputs
-      SG::ReadHandle<xAOD::JetContainer> LargeRJets(m_LargeRJetsHandle);
-
+      SG::ReadHandle<xAOD::JetContainer> LargeRJets(m_LargeRJetsHandle, ctx);
       // boson tagger
       ATH_CHECK( m_MLTagger->GetImageScore( *LargeRJets ));
       ATH_CHECK( m_MLTagger->GetHLScore( *LargeRJets ));

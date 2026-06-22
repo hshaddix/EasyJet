@@ -79,7 +79,7 @@ namespace HHH6B
   }
 
 
-  StatusCode bbbbbbSelectorAlg::execute()
+  StatusCode bbbbbbSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -98,7 +98,7 @@ namespace HHH6B
         m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
       }
     
-      evaluateTriggerCuts(*event, m_Triggers, m_bbbbbbCuts);
+      evaluateTriggerCuts(*event, m_Triggers, m_bbbbbbCuts, ctx);
       
       // Get number of truth jets (for cutflow)
       int n_truth_jets = 0;
@@ -348,7 +348,7 @@ namespace HHH6B
   }
 
   void bbbbbbSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event, const std::vector<std::string> &Triggers, 
-                                            CutManager& bbbbbbCuts) {
+                                            CutManager& bbbbbbCuts, const EventContext& ctx) {
     if (!bbbbbbCuts.exists("PASS_TRIGGER"))
         return;
     
@@ -357,8 +357,7 @@ namespace HHH6B
     for (const std::string &trigger : Triggers)
     {
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
-      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey);
-    // OR between triggers
+      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey, ctx);    // OR between triggers
       pass_trigger |= m_triggerDecorHandle(event);     
     }
     bbbbbbCuts("PASS_TRIGGER").passed = pass_trigger;

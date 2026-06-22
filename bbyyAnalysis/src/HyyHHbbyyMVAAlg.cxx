@@ -80,7 +80,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HyyHHbbyyMVAAlg::execute()
+  StatusCode HyyHHbbyyMVAAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector()) {

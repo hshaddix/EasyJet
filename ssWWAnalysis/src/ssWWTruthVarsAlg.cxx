@@ -182,28 +182,21 @@ namespace ssWWVBS
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ssWWTruthVarsAlg::execute()
+  StatusCode ssWWTruthVarsAlg::execute(const EventContext& ctx)
   {
-    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_eventInKey);
-    ATH_CHECK(eventInfo.isValid());
+    SG::ReadHandle<xAOD::EventInfo> eventInfo(m_eventInKey, ctx);    ATH_CHECK(eventInfo.isValid());
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthBosons(m_truthBosonInKey);
-    ATH_CHECK(truthBosons.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthBosons(m_truthBosonInKey, ctx);    ATH_CHECK(truthBosons.isValid());
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthNeutrinos(m_truthNeutrinoInKey);
-    ATH_CHECK(truthNeutrinos.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthNeutrinos(m_truthNeutrinoInKey, ctx);    ATH_CHECK(truthNeutrinos.isValid());
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthElectronInKey);
-    ATH_CHECK(truthElectrons.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthElectronInKey, ctx);    ATH_CHECK(truthElectrons.isValid());
 
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthMuonInKey);
-    ATH_CHECK(truthMuons.isValid());
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthMuonInKey, ctx);    ATH_CHECK(truthMuons.isValid());
 
-    SG::ReadHandle<xAOD::ElectronContainer> recoElectrons(m_recoElectronInKey);
-    ATH_CHECK(recoElectrons.isValid());
+    SG::ReadHandle<xAOD::ElectronContainer> recoElectrons(m_recoElectronInKey, ctx);    ATH_CHECK(recoElectrons.isValid());
 
-    SG::ReadHandle<xAOD::MuonContainer> recoMuons(m_recoMuonInKey);
-    ATH_CHECK(recoMuons.isValid());
+    SG::ReadHandle<xAOD::MuonContainer> recoMuons(m_recoMuonInKey, ctx);    ATH_CHECK(recoMuons.isValid());
 
     std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>>
       fbranches;
@@ -308,9 +301,9 @@ namespace ssWWVBS
               });
 
     SG::ReadDecorHandle<xAOD::ElectronContainer, char> electronSelected(
-      m_recoElectronSelectedKey);
+      m_recoElectronSelectedKey, ctx);
     SG::ReadDecorHandle<xAOD::MuonContainer, char> muonSelected(
-      m_recoMuonSelectedKey);
+      m_recoMuonSelectedKey, ctx);
 
     std::vector<RecoLeptonInfo> recoLeptons;
     recoLeptons.reserve(recoElectrons->size() + recoMuons->size());

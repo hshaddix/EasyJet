@@ -78,7 +78,7 @@ namespace MONOJET
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsMonojetAlg::execute()
+  StatusCode BaselineVarsMonojetAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -201,8 +201,7 @@ namespace MONOJET
     TLorentzVector vV(0, 0, 0, 0);
 
     if (m_isMC and !m_bornLeptons.empty()){
-        SG::ReadHandle<xAOD::TruthParticleContainer> bornLeptons(m_bornLeptons);
-        ATH_CHECK(bornLeptons.isValid());
+        SG::ReadHandle<xAOD::TruthParticleContainer> bornLeptons(m_bornLeptons, ctx);        ATH_CHECK(bornLeptons.isValid());
 
         
 	for (const xAOD::TruthParticle *tp : (*bornLeptons)){

@@ -80,10 +80,9 @@ namespace HHH6B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetPairingAlg ::execute()
+  StatusCode JetPairingAlg ::execute(const EventContext& /*ctx*/)
   {
-    // SG::ReadHandle<xAOD::EventInfo> evtInfoContainer(m_eventInfoKey);
-    // ATH_CHECK(evtInfoContainer.isValid()); 
+    // SG::ReadHandle<xAOD::EventInfo> evtInfoContainer(m_eventInfoKey, ctx);    // ATH_CHECK(evtInfoContainer.isValid()); 
     // [[maybe_unused]] uint64_t event_number = evtInfoContainer->eventNumber();
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())

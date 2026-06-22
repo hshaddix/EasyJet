@@ -45,7 +45,7 @@ namespace HZALLYY {
     return StatusCode::SUCCESS;
   }
   
-  StatusCode PhotonVarsAlg::execute() {
+  StatusCode PhotonVarsAlg::execute(const EventContext& /*ctx*/) {
     
     // Loop over all systs
     for (const auto & sys: m_systematicsList.systematicsVector()) {

@@ -29,11 +29,10 @@ namespace HHHBBBBTT
         return StatusCode::SUCCESS;
     }
 
-    StatusCode ttbarRewVarsAlg::execute()
+    StatusCode ttbarRewVarsAlg::execute(const EventContext& ctx)
     {
 
-        SG::ReadHandle<xAOD::EventInfo> evtInfo(m_EventHandleKey);
-        ATH_CHECK(evtInfo.isValid());
+        SG::ReadHandle<xAOD::EventInfo> evtInfo(m_EventHandleKey, ctx);        ATH_CHECK(evtInfo.isValid());
 
         const xAOD::TruthParticleContainer* truthTopContainer = nullptr;
         if (!evtStore()->retrieve(truthTopContainer, "TruthTop")) {
@@ -76,11 +75,7 @@ namespace HHHBBBBTT
             M_ttbar = (top+antitop).M();
         }
 
-        SG::WriteDecorHandle<xAOD::EventInfo,float> d_pt_top(m_Pt_top_decor);
-        SG::WriteDecorHandle<xAOD::EventInfo,float> d_pt_antitop(m_Pt_antitop_decor);
-        SG::WriteDecorHandle<xAOD::EventInfo,float> d_pt_ttbar(m_Pt_ttbar_decor);
-        SG::WriteDecorHandle<xAOD::EventInfo,float> d_m_ttbar(m_M_ttbar_decor);
-
+        SG::WriteDecorHandle<xAOD::EventInfo,float> d_pt_top(m_Pt_top_decor, ctx);        SG::WriteDecorHandle<xAOD::EventInfo,float> d_pt_antitop(m_Pt_antitop_decor, ctx);        SG::WriteDecorHandle<xAOD::EventInfo,float> d_pt_ttbar(m_Pt_ttbar_decor, ctx);        SG::WriteDecorHandle<xAOD::EventInfo,float> d_m_ttbar(m_M_ttbar_decor, ctx);
         d_pt_top(*evtInfo) = Pt_top;
         d_pt_antitop(*evtInfo) = Pt_antitop;
         d_pt_ttbar(*evtInfo) = Pt_ttbar;

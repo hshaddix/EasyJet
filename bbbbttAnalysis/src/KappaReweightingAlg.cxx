@@ -37,15 +37,14 @@ namespace HHHBBBBTT
         return StatusCode::SUCCESS;
     }
 
-    StatusCode KappaReweightingAlg::execute()
+    StatusCode KappaReweightingAlg::execute(const EventContext& ctx)
     {
 
-        SG::ReadHandle<xAOD::EventInfo> event(m_EventHandleKey);
-        ATH_CHECK(event.isValid());
+        SG::ReadHandle<xAOD::EventInfo> event(m_EventHandleKey, ctx);        ATH_CHECK(event.isValid());
 
         for (const std::string &var : m_reweightVars){
             SG::WriteDecorHandle<xAOD::EventInfo, float> 
-                whandle(m_Fbranches.at(var));
+                whandle(m_Fbranches.at(var), ctx);
             whandle(*event) = m_wgtHandle->getWeight(event.cptr(), var);
         };
 

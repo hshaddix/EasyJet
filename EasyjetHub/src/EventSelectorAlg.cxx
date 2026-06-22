@@ -31,7 +31,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode EventSelectorAlg::execute()
+  StatusCode EventSelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);

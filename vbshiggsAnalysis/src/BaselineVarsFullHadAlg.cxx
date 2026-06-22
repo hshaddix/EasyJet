@@ -128,7 +128,7 @@ namespace VBSHIGGS {
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsFullHadAlg::execute() {
+  StatusCode BaselineVarsFullHadAlg::execute(const EventContext& /*ctx*/) {
 
     for (const auto& sys : m_systematicsList.systematicsVector()) {
 

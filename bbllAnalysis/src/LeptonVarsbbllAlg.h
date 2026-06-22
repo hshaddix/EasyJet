@@ -29,7 +29,7 @@ namespace HHBBLL
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
     StatusCode initialize() override;
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
   private:
     CP::SysListHandle m_systematicsList {this};
 

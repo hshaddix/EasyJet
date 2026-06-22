@@ -34,7 +34,7 @@ namespace VBSVV4q{
         return StatusCode::SUCCESS;
     }
 
-    StatusCode SignalJetsSelectorAlg::execute(){
+    StatusCode SignalJetsSelectorAlg::execute(const EventContext& /*ctx*/){
         /*
             signal jets selection algorithm
                 - two leading pT large-R jets with m > 40 GeV (pT/eta cuts already applied)

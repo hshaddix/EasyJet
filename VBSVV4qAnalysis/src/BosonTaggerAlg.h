@@ -33,7 +33,7 @@ namespace VBSVV4q{
             /// configs
             StatusCode initialize() override;
             /// \brief Execute method, for actions to be taken in the event loop
-            StatusCode execute() override;
+            StatusCode execute(const EventContext& ctx) override;
             /// We use default finalize() -- this is for cleanup, and we don't do any
 
         private:

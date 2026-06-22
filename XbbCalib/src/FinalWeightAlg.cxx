@@ -29,7 +29,7 @@ StatusCode FinalWeightAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode FinalWeightAlg::execute() {
+StatusCode FinalWeightAlg::execute(const EventContext& /*ctx*/) {
   for (const auto& sys : m_systematicsList.systematicsVector()) {
     const xAOD::EventInfo* event = nullptr;
     ANA_CHECK(m_eventHandle.retrieve(event, sys));

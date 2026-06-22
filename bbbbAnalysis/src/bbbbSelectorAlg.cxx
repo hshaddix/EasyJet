@@ -62,7 +62,7 @@ namespace HH4B
   }
 
 
-  StatusCode bbbbSelectorAlg::execute()
+  StatusCode bbbbSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -81,7 +81,7 @@ namespace HH4B
         m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
       }
     
-      evaluateTriggerCuts(*event, m_Triggers, m_bbbbCuts);
+      evaluateTriggerCuts(*event, m_Triggers, m_bbbbCuts, ctx);
       
       // Get number of jets
       int n_boosted_jets = 0;
@@ -176,7 +176,7 @@ namespace HH4B
   }
 
   void bbbbSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event, const std::vector<std::string> &Triggers, 
-                                            CutManager& bbbbCuts) {
+                                            CutManager& bbbbCuts, const EventContext& ctx) {
     if (!bbbbCuts.exists("PASS_TRIGGER"))
         return;
     
@@ -185,8 +185,7 @@ namespace HH4B
     for (const std::string &trigger : Triggers)
     {
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
-      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey);
-    // OR between triggers
+      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey, ctx);    // OR between triggers
       pass_trigger |= m_triggerDecorHandle(event);     
     }
     bbbbCuts("PASS_TRIGGER").passed = pass_trigger;

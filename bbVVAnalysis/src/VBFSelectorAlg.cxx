@@ -118,7 +118,7 @@ namespace HHBBVV
     return StatusCode::SUCCESS;
   }
 
-  StatusCode VBFSelectorAlg::execute()
+  StatusCode VBFSelectorAlg::execute(const EventContext& /*ctx*/)
   {
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 

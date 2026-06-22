@@ -36,7 +36,7 @@ namespace Easyjet {
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MetadataHistAlg::execute()
+  StatusCode MetadataHistAlg::execute(const EventContext& /*ctx*/)
   {
     return StatusCode::SUCCESS;
   }

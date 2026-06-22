@@ -47,7 +47,7 @@ namespace ttHH
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetPairingAlgttHH ::execute()
+  StatusCode JetPairingAlgttHH ::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

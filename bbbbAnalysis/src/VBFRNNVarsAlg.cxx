@@ -58,7 +58,7 @@ namespace HH4B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode VBFRNNVarsAlg ::execute()
+  StatusCode VBFRNNVarsAlg ::execute(const EventContext& /*ctx*/)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in

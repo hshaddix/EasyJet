@@ -77,7 +77,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonVarsHZyAlg::execute()
+  StatusCode LeptonVarsHZyAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())

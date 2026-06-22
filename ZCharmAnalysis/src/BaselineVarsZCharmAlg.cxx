@@ -77,7 +77,7 @@ namespace ZCC
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZCharmAlg::execute()
+  StatusCode BaselineVarsZCharmAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

@@ -20,10 +20,8 @@ namespace Easyjet {
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetNeutrinoDecoratorAlg::execute() {
-    SG::ReadHandle<xAOD::JetContainer> jets(m_jetsInKey);
-    SG::ReadHandle<xAOD::TruthParticleContainer> truthParticles(m_truthParticlesInKey);
-
+  StatusCode JetNeutrinoDecoratorAlg::execute(const EventContext& ctx) {
+    SG::ReadHandle<xAOD::JetContainer> jets(m_jetsInKey, ctx);    SG::ReadHandle<xAOD::TruthParticleContainer> truthParticles(m_truthParticlesInKey, ctx);
     // Check validity
     if (!jets.isValid() || !truthParticles.isValid()) {
       ATH_MSG_ERROR("Could not retrieve Jets or TruthParticles");
@@ -31,8 +29,7 @@ namespace Easyjet {
     }
 
     // Initialization
-    SG::WriteDecorHandle<xAOD::JetContainer, float> neutrinoPtDecor(m_neutrinoPtDecorKey);
-
+    SG::WriteDecorHandle<xAOD::JetContainer, float> neutrinoPtDecor(m_neutrinoPtDecorKey, ctx);
     for (const xAOD::Jet* jet : *jets) { // Loop over jets
       
       float sum_nu_pt = 0.0;

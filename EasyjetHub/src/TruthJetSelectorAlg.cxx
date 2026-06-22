@@ -46,22 +46,16 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TruthJetSelectorAlg ::execute()
+  StatusCode TruthJetSelectorAlg ::execute(const EventContext& ctx)
   {
         // Retrieve inputs
 
-    SG::ReadHandle<xAOD::JetContainer> inContainer(m_inHandleKey);
-    SG::ReadHandle<xAOD::TruthEventContainer> eventContainer(m_eventHandleKey);
-    SG::WriteDecorHandle<xAOD::JetContainer, char> m_isSelectedJet(m_isSelectedJetKey);
-    SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey);
-    SG::WriteHandle<ConstDataVector<xAOD::JetContainer>> m_outHandle(m_outHandleKey);
-
+    SG::ReadHandle<xAOD::JetContainer> inContainer(m_inHandleKey, ctx);    SG::ReadHandle<xAOD::TruthEventContainer> eventContainer(m_eventHandleKey, ctx);    SG::WriteDecorHandle<xAOD::JetContainer, char> m_isSelectedJet(m_isSelectedJetKey, ctx);    SG::WriteDecorHandle<xAOD::TruthEventContainer, int> m_nSelPart(m_nSelPartKey, ctx);    SG::WriteHandle<ConstDataVector<xAOD::JetContainer>> m_outHandle(m_outHandleKey, ctx);
     
     // // Only construct and use m_truthLabel if the container has a truth label decoration
     std::unique_ptr<SG::ReadDecorHandle<xAOD::JetContainer, int>> m_truthLabel;
     if (m_hasTruthLabel) {
-        m_truthLabel = std::make_unique<SG::ReadDecorHandle<xAOD::JetContainer, int>>(m_truthLabelDecorKey);
-    }
+        m_truthLabel = std::make_unique<SG::ReadDecorHandle<xAOD::JetContainer, int>>(m_truthLabelDecorKey, ctx);    }
 
     const xAOD::TruthEvent *event= eventContainer->at(0);
 
@@ -126,8 +120,7 @@ namespace Easyjet
       for (const xAOD::Jet *jet : *workContainer) {
         int truthLabel = (*m_truthLabel)(*jet);
         if (truthLabel == 5 && (m_useRapidity ? std::abs(jet->rapidity())<2.5 : std::abs(jet->eta())<2.5)){
-          SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_bleadBranchesKeys.at(njet));
-          handle(*jet) = true;
+          SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_bleadBranchesKeys.at(njet), ctx);          handle(*jet) = true;
           njet++;
         }
         if ( njet == m_bjetAmount ) break;
@@ -140,8 +133,7 @@ namespace Easyjet
       for (const xAOD::Jet *jet : *workContainer) {
         int truthLabel = (*m_truthLabel)(*jet);
         if (truthLabel == 4 && (m_useRapidity ? std::abs(jet->rapidity())<2.5 : std::abs(jet->eta())<2.5)){
-          SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_cleadBranchesKeys.at(njet));
-          handle(*jet) = true;
+          SG::WriteDecorHandle<xAOD::JetContainer, char> handle(m_cleadBranchesKeys.at(njet), ctx);          handle(*jet) = true;
           njet++;
         }
         if ( njet == m_cjetAmount ) break;

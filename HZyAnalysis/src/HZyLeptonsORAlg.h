@@ -28,7 +28,7 @@ public:
     /// \brief Initialisation method
     StatusCode initialize() override;
     /// \brief Execute method
-    StatusCode execute() override;
+    StatusCode execute(const EventContext& ctx) override;
 
 private:
     CP::SysListHandle m_systematicsList{this};

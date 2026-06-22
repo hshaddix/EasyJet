@@ -35,7 +35,7 @@ namespace VBSVV4q{
     }
 
     
-    StatusCode VBSJetsSelectorAlg::execute(){
+    StatusCode VBSJetsSelectorAlg::execute(const EventContext& /*ctx*/){
 
         /*
             -) HighestMjjForwardJets : small-R jets pair after overlap, forward no btag and opposite eta, with the highest mjj

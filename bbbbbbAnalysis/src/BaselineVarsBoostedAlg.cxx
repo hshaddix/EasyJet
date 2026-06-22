@@ -43,7 +43,7 @@ namespace HHH6B
 
   }
 
-  StatusCode BaselineVarsBoostedAlg ::execute()
+  StatusCode BaselineVarsBoostedAlg ::execute(const EventContext& /*ctx*/)
   {
     ATH_MSG_DEBUG("BaselineVarsBoostedAlg::execute() called");
     for (const auto& sys : m_systematicsList.systematicsVector()) {

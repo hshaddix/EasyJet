@@ -26,7 +26,7 @@ namespace EXANA
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MjjExampleAlg::execute()
+  StatusCode EXANA::MjjExampleAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())

@@ -61,7 +61,7 @@ namespace MULTILEPTON
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsMultileptonAlg::execute()
+  StatusCode BaselineVarsMultileptonAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systematics
     for (const auto& sys : m_systematicsList.systematicsVector()){

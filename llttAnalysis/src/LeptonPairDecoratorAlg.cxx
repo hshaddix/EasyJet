@@ -78,7 +78,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonPairDecoratorAlg ::execute()
+  StatusCode LeptonPairDecoratorAlg ::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

@@ -36,7 +36,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZlljCalibSelectorAlg::execute()
+  StatusCode ZlljCalibSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Global filter originally false

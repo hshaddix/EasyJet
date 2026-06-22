@@ -109,7 +109,7 @@ namespace HHBBYY
   }
 
 
-  StatusCode bbyySelectorAlg::execute()
+  StatusCode bbyySelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -155,7 +155,7 @@ namespace HHBBYY
       }
       // Evaluate event cleaning cuts
       if (m_dump_eventCleaning_flags) {
-        evaluateEventCleaningCuts(*event, m_eventCleaning_BadBatman, m_bbyyCuts);
+        evaluateEventCleaningCuts(*event, m_eventCleaning_BadBatman, m_bbyyCuts, ctx);
       } else {
         // If we don't have the event cleaning information, set flag to true
         // We have the number of PV in the output anyway that we can check
@@ -163,7 +163,7 @@ namespace HHBBYY
       }
 
       if (!m_photonTriggers.empty()) {
-        evaluateTriggerCuts(*event, m_photonTriggers, m_bbyyCuts);
+        evaluateTriggerCuts(*event, m_photonTriggers, m_bbyyCuts, ctx);
         evaluateTriggerMatchingCuts(m_photonTriggers, photons, m_bbyyCuts);
       }
       if (m_saveTriggerInfo){
@@ -320,7 +320,7 @@ namespace HHBBYY
 
   void bbyySelectorAlg::evaluateEventCleaningCuts(const xAOD::EventInfo& event, 
     const bool do_eventCleaning_BadBatman,
-    CutManager& bbyyCuts) {
+    CutManager& bbyyCuts, const EventContext& ctx) {
 
     if (!bbyyCuts.exists("PASS_CLEANING"))
         return;
@@ -330,16 +330,13 @@ namespace HHBBYY
 
     // Prepare the DecorHandles for the event cleaning flags
     // Always check LooseBad
-    SG::ReadDecorHandle<xAOD::EventInfo, char> eventCleaning_LooseBad_DecorHandle(m_eventCleaningDecorKeys.at("LooseBad"));
-    pass_event_cleaning = eventCleaning_LooseBad_DecorHandle(event);
+    SG::ReadDecorHandle<xAOD::EventInfo, char> eventCleaning_LooseBad_DecorHandle(m_eventCleaningDecorKeys.at("LooseBad"), ctx);    pass_event_cleaning = eventCleaning_LooseBad_DecorHandle(event);
     if (do_eventCleaning_BadBatman) {
-      SG::ReadDecorHandle<xAOD::EventInfo, char> eventCleaning_isBadBatman_DecorHandle(m_eventCleaningDecorKeys.at("BadBatman"));
-      pass_event_cleaning = pass_event_cleaning && !eventCleaning_isBadBatman_DecorHandle(event);
+      SG::ReadDecorHandle<xAOD::EventInfo, char> eventCleaning_isBadBatman_DecorHandle(m_eventCleaningDecorKeys.at("BadBatman"), ctx);      pass_event_cleaning = pass_event_cleaning && !eventCleaning_isBadBatman_DecorHandle(event);
     }
 
     // Also check that we have at least one primary vertex
-    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> nPVDecorHandle(m_nPVDecorKey);
-    bool has_primary_vertex = (nPVDecorHandle(event) > 0);
+    SG::ReadDecorHandle<xAOD::EventInfo, unsigned int> nPVDecorHandle(m_nPVDecorKey, ctx);    bool has_primary_vertex = (nPVDecorHandle(event) > 0);
 
     // Save the flag in the CutManager
     bbyyCuts("PASS_CLEANING").passed = pass_event_cleaning && has_primary_vertex;
@@ -347,7 +344,7 @@ namespace HHBBYY
   }
 
   void bbyySelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event, const std::vector<std::string> &photonTriggers, 
-                                                  CutManager& bbyyCuts) {
+                                                  CutManager& bbyyCuts, const EventContext& ctx) {
 
     if (!bbyyCuts.exists("PASS_TRIGGER"))
         return;
@@ -360,8 +357,7 @@ namespace HHBBYY
     {
       
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
-      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey);
-
+      SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey, ctx);
       if (m_triggerMap.at(trigger) == "single_photon")
       {
         if (!m_bools.at(HHBBYY::is15) && trigger == "HLT_g120_loose")

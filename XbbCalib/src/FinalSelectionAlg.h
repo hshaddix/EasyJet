@@ -25,7 +25,7 @@ public:
   FinalSelectionAlg(const std::string& name, ISvcLocator* sl);
   ~FinalSelectionAlg();
   StatusCode initialize() override;
-  StatusCode execute() override;
+  StatusCode execute(const EventContext& ctx) override;
 
 private:
   CP::SysListHandle m_systematicsList{this};

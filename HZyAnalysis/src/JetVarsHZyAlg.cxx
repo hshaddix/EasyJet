@@ -44,7 +44,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetVarsHZyAlg::execute()
+  StatusCode JetVarsHZyAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())

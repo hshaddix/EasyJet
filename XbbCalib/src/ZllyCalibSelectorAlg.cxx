@@ -53,7 +53,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZllyCalibSelectorAlg::execute()
+  StatusCode ZllyCalibSelectorAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Global filter originally false

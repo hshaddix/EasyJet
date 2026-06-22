@@ -49,7 +49,7 @@ namespace VBSHIGGS{
     if(m_saveCutFlow) ATH_CHECK (initialiseCutflow());
     return StatusCode::SUCCESS;
   }
-  StatusCode SemiLepSelectorAlg::execute(){
+  StatusCode SemiLepSelectorAlg::execute(const EventContext& /*ctx*/){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 

@@ -58,7 +58,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsHZyAlg::execute()
+  StatusCode BaselineVarsHZyAlg::execute(const EventContext& /*ctx*/)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())

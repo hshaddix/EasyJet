@@ -88,7 +88,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsllttAlg::execute()
+  StatusCode HLLTT::BaselineVarsllttAlg::execute(const EventContext& /*ctx*/)
   {
 
     // Loop over all systs

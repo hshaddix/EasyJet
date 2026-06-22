@@ -19,8 +19,7 @@ StatusCode ZDecayTruthLabelAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode ZDecayTruthLabelAlg::execute() {
-  const auto& ctx = getContext();
+StatusCode ZDecayTruthLabelAlg::execute(const EventContext& ctx) {
 
   // Classify Z decay from truth: any charm quark (|pdgId|==4) means Z->cc.
   SG::ReadHandle<xAOD::TruthParticleContainer> truth(m_truthKey, ctx);

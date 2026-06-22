@@ -68,7 +68,7 @@ namespace HZALLYY
   }
   
   
-  StatusCode HZAllyySelectorAlg::execute()
+  StatusCode HZAllyySelectorAlg::execute(const EventContext& /*ctx*/)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
