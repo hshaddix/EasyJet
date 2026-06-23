@@ -7,6 +7,7 @@ selection:
     - 'HLT_g35_medium_g25_medium_L12eEM24L'
     '2024':
     - 'HLT_g35_medium_g25_medium_L12eEM24L'
+    - 'HLT_g45_medium_g20_medium_L1eEM40L_2eEM18L'
 
 scale_factor:
   doSF: false

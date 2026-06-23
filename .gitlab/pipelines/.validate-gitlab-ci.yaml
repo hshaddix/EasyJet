@@ -753,6 +753,16 @@ validator_yyml_mc23_lite:
   script:
     - easyjet-validate yyml-mc23-lite
 
+validator_yyml_mc23_resonant:
+  extends: .ntuple_validation
+  <<: *changes_yyML
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_yyml_mc23_resonant
+      artifacts: false
+  script:
+    - easyjet-validate yyml-mc23-resonant
+
 validator_bbyy_mc23_lite:
   extends: .ntuple_validation
   <<: *changes_bbyy

@@ -553,6 +553,12 @@ ntupler_yyml_mc23_lite:
   script:
     - easyjet-test yyml-mc23-lite
 
+ntupler_yyml_mc23_resonant:
+  extends: .ntupler
+  <<: *changes_yyML
+  script:
+    - easyjet-test yyml-mc23-resonant
+
 ntupler_bbbbtt_mc23:
   extends: .ntupler
   <<: *changes_bbbbtt

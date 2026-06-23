@@ -1,9 +1,9 @@
 ptag_mc=p6697
-ptag_data=p6700
-campaign=v2
+#ptag_data=p6700
+campaign=v3
 
 dir_samples="../easyjet/yyMLAnalysis/datasets/PHYS/"
-yaml="RunConfig-yyml.yaml"
+yaml="RunConfig-yyml-resonant.yaml"
 mc_campaign_signal="mc23d"
 mc_campaign="${mc_campaign_signal}_p6"
 mc_list_sample_names=(

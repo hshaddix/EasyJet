@@ -81,7 +81,8 @@ def get_tau_branches(flags, tree_flags, input_container, output_prefix):
         tau_branches.variables += [
             (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
-            if not ("GNTau" in id_wp)
+            #if not ("GNTau" in id_wp)
+            if not ("GNTau" in id_wp or "noEffSF" in id_wp)
         ]
 
     # Requires TauSelectorAlg to be run

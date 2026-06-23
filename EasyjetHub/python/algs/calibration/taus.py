@@ -43,6 +43,7 @@ def tau_sequence(flags, configAcc):
         configSeq += makeConfig('TauJets.WorkingPoint')
         configSeq.setOptionValue('.containerName', output_name)
         configSeq.setOptionValue('.selectionName', id)
+        noEffSF = "noEffSF" in id
         if "Custom" in id:
             manualMinTauPt = flags.Analysis.Tau.min_pT * 0.001
             configSeq.setOptionValue('.useSelectionConfigFile', False)
@@ -56,10 +57,17 @@ def tau_sequence(flags, configAcc):
         elif "nopt" in id:
             configSeq.setOptionValue('.dropPtCut', True)
         quality = id.replace("_eleid", "").replace("GNTau", "").replace("RNN", "")
+        quality = quality.replace("_noEffSF", "")
         quality = quality.replace("_lowpt", "").replace("_nopt", "")
         quality = quality.replace("Custom", "")
         configSeq.setOptionValue('.quality', quality)
-        configSeq.setOptionValue('.saveCombinedSF', True)
+        #configSeq.setOptionValue('.saveCombinedSF', True)
+        if noEffSF:
+            configSeq.setOptionValue('.noEffSF', True)
+            configSeq.setOptionValue('.saveCombinedSF', False)
+        else:
+            configSeq.setOptionValue('.saveCombinedSF', True)
+        
         if flags.Analysis.Tau.do_TauLRT:
             # This is needed for the non-official TauJetsLRT working points, which can have multiple prong options
             configSeq.setOptionValue('.useSelectionConfigFile', False)

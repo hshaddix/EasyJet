@@ -8,9 +8,6 @@ expert_mode_warning_level: default
 # Which analysis to consider
 do_yyml_analysis: true
 
-# CutBookKeeper histPattern
-cbkHistPattern: "CutBookkeeper_%RUN%_%SYS%"
-
 # Toggles for object types
 do_photons: true
 do_electrons: true
@@ -35,29 +32,61 @@ Photon:
 Electron:
   min_pT: 10.0e+3
   max_eta: 2.37
-  ID: "MediumLH"
-  Iso: "Loose_VarRad" # TODO: exact WP used in Run 2 analysis is unclear from the documentation
+  ID: "LooseBLayerLH"
+  Iso: "NonIso" # TODO: exact WP used in Run 2 analysis is unclear from the documentation
+  correlationModelId: "TOTAL" # TODO: currently needed to run over mc23e, default SIMPLIFIED "does not contain necessary histograms"
   extra_wps:
+    - ["LooseBLayerLH", "Loose_VarRad"]
+    - ["LooseBLayerLH", "Tight_VarRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_FixedRad"]
+    - ["MediumLH", "Loose_VarRad"]
+    - ["MediumLH", "Tight_VarRad"]
+    - ["MediumLH", "TightTrackOnly_VarRad"]
+    - ["MediumLH", "TightTrackOnly_FixedRad"]
     - ["MediumDNN", "Loose_VarRad"]
+    - ["MediumDNN", "Tight_VarRad"]
+    - ["MediumDNN", "TightTrackOnly_VarRad"]
+    - ["MediumDNN", "TightTrackOnly_FixedRad"]
+  do_parent_decoration: true 
+  do_IFF_decoration: true
 
 Muon:
   min_pT: 10.0e+3
   max_eta: 2.7
   ID: "Medium"
-  Iso: "PflowLoose_VarRad" # TODO: find closest WP to Loose_FixedRad used in Run 2 analysis
+  Iso: "NonIso" # TODO: find closest WP to Loose_FixedRad used in Run 2 analysis
+  extra_wps:
+    - ["Medium", "Loose_VarRad"]
+    - ["Medium", "Tight_VarRad"]
+    - ["Medium", "PflowLoose_VarRad"]
+    - ["Medium", "PflowTight_VarRad"]
+  do_parent_decoration: true 
+  do_IFF_decoration: true
 
 Small_R_jet:
-  min_pT: 25.0e+3
-  max_eta: 4.4
+  min_pT: 20.0e+3
+  max_eta: 4.5
   # useFJvt: true # TODO: check if FJVT was applied in Run 2 analysis
   # btagging nominal working point
   btag_wp: "GN2v01_FixedCutBEff_77"
+  extra_wps:
+    - GN2v01_FixedCutBEff_70
+    - GN2v01_FixedCutBEff_85
+    - GN2v01_Continuous
 
 Tau:
   min_pT: 20.e+3
   max_eta: 2.5
-  ID: "RNNLoose"
-  extra_wps: ["RNNLoose_eleid"]
+  ID: "Baseline_eleid_noEffSF"
+  extra_wps:
+    - "RNNLoose_eleid"
+    - "RNNMedium_eleid"
+    - "RNNTight_eleid"
+    - "GNTauLoose_eleid"
+    - "GNTauMedium_eleid"
+    - "GNTauTight_eleid"
+
   # addMuonRM: true
 
 # orthogonality studies

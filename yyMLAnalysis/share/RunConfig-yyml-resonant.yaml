@@ -1,0 +1,9 @@
+include: [yyMLAnalysis/RunConfig-yyml-resonant-base.yaml]
+
+# CutBookKeeper histPattern
+cbkHistPattern: "CutBookkeeper_%DSID%_%RUN%_%SYS%"
+
+CutList:
+  - PASS_TRIGGER
+  - pass_matching_trigger_diphoton
+  - pass_any_subchannel
