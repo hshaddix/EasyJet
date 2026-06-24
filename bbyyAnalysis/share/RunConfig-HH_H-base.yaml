@@ -12,6 +12,13 @@ extra_KinematicFit_variables: true
 TopReconstruction:
   BDT_path: "bbyyAnalysis/model_topRecoBDT.root"
 
+# Toggle for ggH bjet filter
+do_ggHbjetFilter: true
+
+# Toggle for event cleaning
+do_event_cleaning: false
+dump_event_cleaning_info: true
+
 # bdt models used for categorisation and VBF jets selection
 # They should appear in this order lowMass / highMass / VBF jets
 
@@ -51,7 +58,7 @@ GNN_path_run3:
 #  choose VBF jets selection method
 
 save_detailed_Input_variables: true
-do_Hyy_multiclass: true
+do_Hyy_multiclass: false
 
 HyyMultiBDT_folder: "bbyyAnalysis/HyyMultiBDT"
 HyyMultiBDT_config:

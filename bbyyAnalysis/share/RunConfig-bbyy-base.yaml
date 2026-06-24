@@ -33,6 +33,7 @@ Small_R_jet:
   # to use multiple btagging WPs
   btag_extra_wps:
     - GN2v01_Continuous
+  gn3_tagger: "GN3EPCLV01" # GN3 tagger prefix used for score decorations (e.g. GN3EPCLV01_pb) other option GN3PflowMuonsV00
 
   amount: 4
   variables_int_allJets: ["truthLabel", "PassWP", "pcbt"]
@@ -138,7 +139,6 @@ save_VBF_vars: false
 save_extra_vars: false
 save_nonresonant_BDTInput_variables: false
 save_HbbCand_vars: false
-save_pass_trigger_info: false
 
 save_detailed_Input_variables: false
 do_Hyy_multiclass: false
