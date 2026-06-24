@@ -60,6 +60,7 @@ _ZBBY_PROCESSES = [
     "Wqqgamma_pTW140",
     "ttbar_allhad",
     "tty",
+    "Higgs",
 ]
 
 _ZBBJ_PROCESSES = [
@@ -70,6 +71,7 @@ _ZBBJ_PROCESSES = [
     "Zqq_ptZ_200_ECMS",
     "Wqq_ptW_200_ECMS",
     "ttbar_allhad",
+    "Higgs",
 ]
 
 MC_PROCESSES_BY_ANALYSIS = {
