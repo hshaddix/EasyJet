@@ -81,7 +81,7 @@ namespace HHMET
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // reset all cut flags to default=false
       for (CutEntry& cut : m_hhmetCuts) {
@@ -97,12 +97,12 @@ namespace HHMET
       int n_b_jets = 0;
       if (!m_lRjetHandle.empty()) {
         const xAOD::JetContainer *lRjets = nullptr;
-        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys));
+        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
         n_boosted_jets = lRjets->size();
       }
       if (!m_jetHandle.empty()) {
         const xAOD::JetContainer *jets = nullptr;
-        ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+        ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
         n_resolved_jets = jets->size();
         // Count b-tagged jets
         if (!m_isBtag.empty()) {
@@ -117,14 +117,14 @@ namespace HHMET
       int n_electrons = 0;
       if (!m_electronHandle.empty()) {
         const xAOD::ElectronContainer *electrons = nullptr;
-        ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+        ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
         n_electrons = electrons->size();
       }
 
       int n_muons = 0;
       if (!m_muonHandle.empty()) {
         const xAOD::MuonContainer *muons = nullptr;
-        ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+        ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
         n_muons = muons->size();
       }
 

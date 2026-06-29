@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "PhotonJetVarsAlg.h"
@@ -38,7 +38,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode PhotonJetVarsAlg::execute(const EventContext& /*ctx*/)
+  StatusCode PhotonJetVarsAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -48,15 +48,15 @@ namespace HHBBYY
 
         // container we read in
         const xAOD::EventInfo *event = nullptr;
-        ANA_CHECK (m_eventHandle.retrieve (event, sys));
+        ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
     
         // Photons
         const xAOD::PhotonContainer* photons = nullptr;
-        ANA_CHECK (m_photonHandle.retrieve(photons, sys));
+        ANA_CHECK (m_photonHandle.retrieve(photons, sys, ctx));
 
         // Jets
         const xAOD::JetContainer* jets = nullptr;
-        ANA_CHECK (m_jetHandle.retrieve(jets, sys));
+        ANA_CHECK (m_jetHandle.retrieve(jets, sys, ctx));
 
         const std::size_t nPhotons = photons->size();
         const std::size_t nJets    = jets->size();

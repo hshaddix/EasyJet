@@ -53,7 +53,7 @@ namespace VBSSEMILEP{
     if(m_saveCutFlow) ATH_CHECK (initialiseCutflow());
     return StatusCode::SUCCESS;
   }
-  StatusCode oneLepSelectorAlg::execute(const EventContext& /*ctx*/){
+  StatusCode oneLepSelectorAlg::execute(const EventContext& ctx){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 
@@ -63,16 +63,16 @@ namespace VBSSEMILEP{
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       
       const xAOD::JetContainer *signaljets = nullptr;
-      ANA_CHECK (m_signaljetHandle.retrieve (signaljets, sys));
+      ANA_CHECK (m_signaljetHandle.retrieve (signaljets, sys, ctx));
 
       const xAOD::JetContainer *vbsjets = nullptr;
-      ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys));
+      ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
 
       const xAOD::JetContainer *largeJets = nullptr;
-      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys));
+      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
 
       bool WPgiven = !m_isBtag.empty();
       std::vector<const xAOD::Jet*> bjets;
@@ -83,13 +83,13 @@ namespace VBSSEMILEP{
       }
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
         ATH_MSG_ERROR("Could not retrieve MET");

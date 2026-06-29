@@ -124,41 +124,41 @@ namespace VBSSEMILEP{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarstwoLepAlg::execute(const EventContext& /*ctx*/){
+    StatusCode BaselineVarstwoLepAlg::execute(const EventContext& ctx){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs
         const xAOD::EventInfo *event = nullptr;
-        ANA_CHECK (m_eventHandle.retrieve (event, sys));
+        ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
         const xAOD::JetContainer *smalljets = nullptr;
-        ANA_CHECK (m_smalljetHandle.retrieve (smalljets, sys));
+        ANA_CHECK (m_smalljetHandle.retrieve (smalljets, sys, ctx));
         
         const xAOD::JetContainer *largeJets = nullptr;
-        ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys));
+        ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys, ctx));
 
         const xAOD::JetContainer *signalJets = nullptr;    
         if (m_doResolved){
-          ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys));
+          ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys, ctx));
         }
 
         const xAOD::JetContainer *vbsjets = nullptr;
         const xAOD::JetContainer *RNNJets_boosted= nullptr;
         const xAOD::JetContainer *RNNJets_resolved = nullptr;
         if(!m_UseVBFRNN) {
-          ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys));
+          ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys, ctx));
         }
         else {
-          ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys));
+          ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys, ctx));
           if (m_doResolved)
-            ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys));
+            ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys, ctx));
         }
 
         const xAOD::MuonContainer *muons = nullptr;
-        ANA_CHECK (m_vbsMuonHandle.retrieve (muons, sys));
+        ANA_CHECK (m_vbsMuonHandle.retrieve (muons, sys, ctx));
 
         const xAOD::ElectronContainer *electrons = nullptr;
-        ANA_CHECK (m_vbsElectronHandle.retrieve (electrons, sys));
+        ANA_CHECK (m_vbsElectronHandle.retrieve (electrons, sys, ctx));
 
         for (const std::string &string_var: m_floatVariables) {
           m_Fbranches.at(string_var).set(*event, -99., sys);
@@ -209,15 +209,9 @@ namespace VBSSEMILEP{
         
         const xAOD::Muon* mu0 = muons->size() > 0 ? muons->at(0) : nullptr;
         const xAOD::Muon* mu1 = muons->size() > 1 ? muons->at(1) : nullptr;
-        /*
-        if (!mu0 && !ele0) {
-        ATH_MSG_WARNING("No valid lepton found!");
-        return StatusCode::SUCCESS;
-        }
-        */
         if (muons->empty() && electrons->empty()) {
-        ATH_MSG_WARNING("No valid lepton found!");
-        continue;
+	  ATH_MSG_WARNING("No valid lepton found!");
+	  continue;
         }
         
         std::vector<std::pair<const xAOD::IParticle*, int>> leptons;

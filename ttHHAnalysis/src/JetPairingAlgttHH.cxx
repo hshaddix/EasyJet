@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
    */
 
 /// @author Frederic Renner
@@ -47,7 +47,7 @@ namespace ttHH
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetPairingAlgttHH ::execute(const EventContext& /*ctx*/)
+  StatusCode JetPairingAlgttHH ::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -56,8 +56,8 @@ namespace ttHH
       // Retrive inputs
       const xAOD::JetContainer *bjetContainer = nullptr;
       const xAOD::JetContainer *jetContainer = nullptr;
-      ANA_CHECK (m_bjetHandle.retrieve (bjetContainer, sys));
-      ANA_CHECK (m_jetHandle.retrieve (jetContainer, sys));
+      ANA_CHECK (m_bjetHandle.retrieve (bjetContainer, sys, ctx));
+      ANA_CHECK (m_jetHandle.retrieve (jetContainer, sys, ctx));
 
       // fill workContainer with "views" of the jetContainer
       // see TJ's tutorial for this
@@ -157,7 +157,7 @@ namespace ttHH
           break;
       }
       // Write to eventstore
-      ATH_CHECK(m_outHandle.record(std::move(workContainer), sys));
+      ATH_CHECK(m_outHandle.record(std::move(workContainer), sys, ctx));
     }
     return StatusCode::SUCCESS;
   }
@@ -226,7 +226,7 @@ namespace ttHH
     TLorentzVector p1 = jet1->p4() + jet2->p4();
     TLorentzVector p2 = jet3->p4() + jet4->p4();
 
-    // retrive the invariant mass of the jet pair
+    // retrieve the invariant mass of the jet pair
     float mX12 = p1.M();
     float mX34 = p2.M();
 

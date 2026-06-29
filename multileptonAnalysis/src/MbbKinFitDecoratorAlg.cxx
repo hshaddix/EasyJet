@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "MbbKinFitDecoratorAlg.h"
@@ -42,7 +42,7 @@ namespace MULTILEPTON
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MbbKinFitDecoratorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode MbbKinFitDecoratorAlg::execute(const EventContext& ctx)
   {
 
     for (const auto &sys : m_systematicsList.systematicsVector())
@@ -51,13 +51,13 @@ namespace MULTILEPTON
         continue;
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
+      ANA_CHECK(m_electronHandle.retrieve(electrons, sys, ctx));
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK(m_muonHandle.retrieve(muons, sys));
+      ANA_CHECK(m_muonHandle.retrieve(muons, sys, ctx));
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK(m_jetHandle.retrieve(jets, sys));
+      ANA_CHECK(m_jetHandle.retrieve(jets, sys, ctx));
 
       // setup KF tool inputs
       const size_t nJets = jets->size();
@@ -124,7 +124,7 @@ namespace MULTILEPTON
       m_Conv_KF1.set(*event, Conv_KF1, sys);
 
       // Write Iteration 1 jets to event store
-      ATH_CHECK(m_jetOutHandle_KF1.record(std::move(constDataWorkJetCont_Iter1), sys));
+      ATH_CHECK(m_jetOutHandle_KF1.record(std::move(constDataWorkJetCont_Iter1), sys, ctx));
 
       // ========================================================
       // ITERATION 2: Mass-Constrained Fit
@@ -160,7 +160,7 @@ namespace MULTILEPTON
       m_Conv_KF2.set(*event, Conv_KF2, sys);
 
       // Write Iteration 2 jets to event store
-      ATH_CHECK(m_jetOutHandle_KF2.record(std::move(constDataWorkJetCont_Iter2), sys));
+      ATH_CHECK(m_jetOutHandle_KF2.record(std::move(constDataWorkJetCont_Iter2), sys, ctx));
     }
     return StatusCode::SUCCESS;
   }

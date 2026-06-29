@@ -54,19 +54,19 @@ namespace HHMET
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsBoostedAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsBoostedAlg ::execute(const EventContext& ctx)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in
       const xAOD::EventInfo *eventInfo = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys));
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       const xAOD::JetContainer *smallRjets = nullptr;
-      ANA_CHECK (m_smallRjetHandle.retrieve (smallRjets, sys));
+      ANA_CHECK (m_smallRjetHandle.retrieve (smallRjets, sys, ctx));
       std::size_t n_smallRjets = smallRjets->size();
 
       const xAOD::JetContainer *largeRjets = nullptr;
-      ANA_CHECK (m_largeRjetHandle.retrieve (largeRjets, sys));
+      ANA_CHECK (m_largeRjetHandle.retrieve (largeRjets, sys, ctx));
       std::size_t n_largeRjets = largeRjets->size();
 
       ATH_MSG_VERBOSE("set containers");

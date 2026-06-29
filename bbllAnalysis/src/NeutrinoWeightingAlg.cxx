@@ -57,7 +57,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode NeutrinoWeightingAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode NeutrinoWeightingAlg ::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -66,7 +66,7 @@ namespace HHBBLL
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       if(m_save_extra_vars) m_solutions.set(*event, 0, sys);
 
       for (const std::string &string_var : m_floatVariables) {
@@ -87,7 +87,7 @@ namespace HHBBLL
       }
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       bool WPgiven = !m_isBtag.empty();
       auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
@@ -98,13 +98,13 @@ namespace HHBBLL
       }
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
 	    ATH_MSG_ERROR("Could not retrieve MET");

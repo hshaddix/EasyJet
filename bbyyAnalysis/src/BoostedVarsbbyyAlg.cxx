@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BoostedVarsbbyyAlg.h"
@@ -49,7 +49,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BoostedVarsbbyyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BoostedVarsbbyyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -58,10 +58,10 @@ namespace HHBBYY
       if (!m_doSystematics && sys.name()!="") continue;
       // container we read in
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       for (const std::string &string_var: m_Fvarnames) {
         m_Fbranches.at(string_var).set(*event, -99., sys);

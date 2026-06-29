@@ -87,7 +87,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HZySelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode HZySelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner(m_filterParams, false);
@@ -99,16 +99,16 @@ namespace HZY
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::PhotonContainer *HZyPhotons = nullptr;
-      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys));
+      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys, ctx));
 
       const xAOD::ElectronContainer *HZyElectrons = nullptr;
-      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys));
+      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys, ctx));
 
       const xAOD::MuonContainer *HZyMuons = nullptr;
-      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
+      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys, ctx));
 
       // Reset all cut flags to default=false
       for (const auto &[key, value] : m_bools)

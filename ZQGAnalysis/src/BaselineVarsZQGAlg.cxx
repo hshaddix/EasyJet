@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsZQGAlg.h"
@@ -91,7 +91,7 @@ namespace ZQG
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZQGAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsZQGAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -100,22 +100,22 @@ namespace ZQG
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_ZQGJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_ZQGJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::JetContainer *largeJets  = nullptr;
       // STDM13 COMPATIBILITY: Only retrieve large-R jets if handle is initialized
       if (!m_ZQGLRJetHandle.empty()) {
-        ANA_CHECK (m_ZQGLRJetHandle.retrieve (largeJets , sys));
+        ANA_CHECK (m_ZQGLRJetHandle.retrieve (largeJets, sys, ctx));
       }
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_ZQGMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_ZQGMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_ZQGElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_ZQGElectronHandle.retrieve (electrons, sys, ctx));
 
 
       for (const std::string &string_var: m_floatVariables) {

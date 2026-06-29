@@ -1,5 +1,5 @@
 /*
-   Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 */
 
@@ -30,7 +30,7 @@ namespace XBBCALIB{
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ZcandSelectorAlg::execute(const EventContext& /*ctx*/){
+  StatusCode ZcandSelectorAlg::execute(const EventContext& ctx){
     /*
        Z candidate selection algorithm
        1) First select large-R jets pt>200GeV, m>40GeV (should be already done by the jet selector)
@@ -42,10 +42,10 @@ namespace XBBCALIB{
     for (const auto& sys : m_systematicsList.systematicsVector()){
       // Retrieve inputs
       const xAOD::JetContainer *ljets = nullptr;
-      ANA_CHECK (m_lrjetHandle.retrieve (ljets, sys));
+      ANA_CHECK (m_lrjetHandle.retrieve (ljets, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve (photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
 
       auto ZcandsJetCandidates= std::make_unique<ConstDataVector<xAOD::JetContainer> >(SG::VIEW_ELEMENTS);
 
@@ -57,7 +57,7 @@ namespace XBBCALIB{
           ZcandsJetCandidates->push_back(ljet);
         }
       }
-      ATH_CHECK(m_ZcandjetOutHandle.record(std::move(ZcandsJetCandidates), sys));
+      ATH_CHECK(m_ZcandjetOutHandle.record(std::move(ZcandsJetCandidates), sys, ctx));
     }//sys
 
     return StatusCode::SUCCESS;

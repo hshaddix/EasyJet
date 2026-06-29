@@ -36,7 +36,7 @@ namespace VBSSEMILEP{
     }
 
     
-    StatusCode VBSJetsSelectorAlg::execute(const EventContext& /*ctx*/){
+    StatusCode VBSJetsSelectorAlg::execute(const EventContext& ctx){
 
         /*
             1) First select back-to-back jets
@@ -50,10 +50,10 @@ namespace VBSSEMILEP{
 
             // Retrieve inputs
             const xAOD::JetContainer *jets = nullptr;
-            ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+            ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
             const xAOD::JetContainer *largeJets = nullptr;
-            ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys));
+            ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys, ctx));
             
             auto VBSJetContainer = std::make_unique<ConstDataVector<xAOD::JetContainer> >(SG::VIEW_ELEMENTS);
             auto nonVBSJetContainer = std::make_unique<ConstDataVector<xAOD::JetContainer>>(
@@ -136,8 +136,8 @@ namespace VBSSEMILEP{
                     const xAOD::Jet* b) {
                     return a->pt() > b->pt(); });
             
-            ATH_CHECK(m_VBSjetOutHandle.record(std::move(VBSJetContainer), sys));
-            ATH_CHECK(m_signaljetHandle.record(std::move(nonVBSJetContainer), sys));
+            ATH_CHECK(m_VBSjetOutHandle.record(std::move(VBSJetContainer), sys, ctx));
+            ATH_CHECK(m_signaljetHandle.record(std::move(nonVBSJetContainer), sys, ctx));
 
         }//syst
 

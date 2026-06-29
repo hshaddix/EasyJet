@@ -73,7 +73,7 @@ namespace HH4B
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // reset all cut flags to default=false
       for (CutEntry& cut : m_bbbbCuts) {
@@ -89,12 +89,12 @@ namespace HH4B
       int n_b_jets = 0;
       if (!m_lRjetHandle.empty()) {
         const xAOD::JetContainer *lRjets = nullptr;
-        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys));
+        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
         n_boosted_jets = lRjets->size();
       }
       if (!m_jetHandle.empty()) {
         const xAOD::JetContainer *jets = nullptr;
-        ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+        ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
         n_resolved_jets = jets->size();
         // Count b-tagged jets
         if (!m_isBtag.empty()) {

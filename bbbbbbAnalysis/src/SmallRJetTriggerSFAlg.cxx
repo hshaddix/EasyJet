@@ -212,9 +212,9 @@ namespace HHH6B
     {
       // Retrieve inputs
       const xAOD::JetContainer *inJets = nullptr;
-      ATH_CHECK(m_inJetHandle.retrieve(inJets, sys));
+      ATH_CHECK(m_inJetHandle.retrieve(inJets, sys, ctx));
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       // fill workContainer with "views" of the inContainer and initialize SF and Threshold
       // only fill the workContainer with jets that matched to any trigger
@@ -347,7 +347,7 @@ namespace HHH6B
       }
 
       // Write to eventstore
-      ATH_CHECK(m_outJetHandle.record(std::move(workContainer), sys));
+      ATH_CHECK(m_outJetHandle.record(std::move(workContainer), sys, ctx));
     }
 
     return StatusCode::SUCCESS;

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "LeptonVarsbbyyAlg.h"
@@ -40,7 +40,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonVarsbbyyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode LeptonVarsbbyyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -50,16 +50,16 @@ namespace HHBBYY
 
       // container we read in
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::MissingETContainer* met_container = nullptr;
-      ANA_CHECK (m_metHandle.retrieve(met_container, sys));
+      ANA_CHECK (m_metHandle.retrieve(met_container, sys, ctx));
 
       m_Ibranches.at("nLeptons").set(*event, electrons->size() + muons->size(), sys);
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "SumOfWeightsAlg.h"
@@ -54,13 +54,14 @@ namespace Easyjet
   {
 
     // Retrive inputs
-    SG::ReadHandle<xAOD::EventInfo> event(m_eventInfoKey, ctx);    ATH_CHECK (event.isValid());
+    SG::ReadHandle<xAOD::EventInfo> event(m_eventInfoKey, ctx);
+    ATH_CHECK (event.isValid());
 
     for (size_t iSyst{0}; const auto& sys : m_systematicsList.systematicsVector())
     {
       const xAOD::EventInfo *evtInfo = nullptr;
-      ATH_CHECK (m_eventHandle.retrieve (evtInfo, sys));
-      auto weight = m_generatorWeight.get(*evtInfo,sys); // float. see PMGTruthWeightTool.h
+      ATH_CHECK (m_eventHandle.retrieve (evtInfo, sys, ctx));
+      auto weight = m_generatorWeight.get(*evtInfo, sys); // float. see PMGTruthWeightTool.h
 
       SystInfo& syst_info = m_syst_info_vec[iSyst];
       syst_info.total_mcEvents += 1;

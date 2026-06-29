@@ -63,7 +63,7 @@ namespace VBSSEMILEP{
     return StatusCode::SUCCESS;
   }
   
-  StatusCode twoLepSelectorAlg::execute(const EventContext& /*ctx*/){
+  StatusCode twoLepSelectorAlg::execute(const EventContext& ctx){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 
@@ -73,23 +73,23 @@ namespace VBSSEMILEP{
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
   
       const xAOD::JetContainer *signalJets = nullptr;
 
       if (m_doResolved){
-        ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys));
+        ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys, ctx));
       }
 
       const xAOD::JetContainer *vbsjets = nullptr;
       if( !m_UseVBFRNN )
-        ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys));
+        ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
 
       const xAOD::JetContainer *largeJets = nullptr;
-      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys));
+      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
       
       const xAOD::JetContainer *smallJets = nullptr;
-      ANA_CHECK (m_smalljetHandle.retrieve (smallJets, sys));
+      ANA_CHECK (m_smalljetHandle.retrieve (smallJets, sys, ctx));
 
       bool WPgiven = !m_isBtag.empty();
       std::vector<const xAOD::Jet*> bjets;
@@ -107,10 +107,10 @@ namespace VBSSEMILEP{
         }
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       for (auto& [key, value] : m_boolnames) m_bools.at(key) = false;
 

@@ -42,7 +42,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HZyLeptonsORAlg::execute(const EventContext& /*ctx*/)
+  StatusCode HZyLeptonsORAlg::execute(const EventContext& ctx)
   {
     // Loop over all systematics
     for (const auto &sys : m_systematicsList.systematicsVector())
@@ -51,10 +51,10 @@ namespace HZY
       if (!m_doSystematics && sys.name() != "") continue;
 
       const xAOD::ElectronContainer *HZyElectrons = nullptr;
-      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys));
+      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys, ctx));
 
       const xAOD::MuonContainer *HZyMuons = nullptr;
-      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
+      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys, ctx));
 
       auto electrons_LIdLIso = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
       auto muons_MIdLIso = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
@@ -228,8 +228,8 @@ namespace HZY
                   return ma->pt() > mb->pt();
                 });
 
-      ATH_CHECK(m_HZyElectronORHandle.record(std::move(electrons_LIdLIso), sys));
-      ATH_CHECK(m_HZyMuonORHandle.record(std::move(muons_MIdLIso), sys));
+      ATH_CHECK(m_HZyElectronORHandle.record(std::move(electrons_LIdLIso), sys, ctx));
+      ATH_CHECK(m_HZyMuonORHandle.record(std::move(muons_MIdLIso), sys, ctx));
 
     } // end loop over systematics
 

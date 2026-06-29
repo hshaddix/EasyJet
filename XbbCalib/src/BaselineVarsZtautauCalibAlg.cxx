@@ -41,7 +41,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZtautauCalibAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsZtautauCalibAlg::execute(const EventContext& ctx)
   {
     //Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -49,16 +49,16 @@ namespace XBBCALIB
 
       // Initialize variables
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *largeRjets = nullptr;
-      ANA_CHECK (m_lRjetHandle.retrieve (largeRjets, sys));
+      ANA_CHECK (m_lRjetHandle.retrieve (largeRjets, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK (m_tauHandle.retrieve (taus, sys));
+      ANA_CHECK (m_tauHandle.retrieve (taus, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve(photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve(photons, sys, ctx));
 
       for (const std::string &string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set(*event, -99., sys);

@@ -77,7 +77,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonVarsHZyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode LeptonVarsHZyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())
@@ -87,25 +87,25 @@ namespace HZY
         continue;
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::ElectronContainer *HZyElectrons = nullptr;
-      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys));
+      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys, ctx));
 
       const xAOD::MuonContainer *HZyMuons = nullptr;
-      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
+      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys, ctx));
 
       const xAOD::ElectronContainer *HZyElectronOR = nullptr;
-      ANA_CHECK(m_HZyElectronORHandle.retrieve(HZyElectronOR, sys));
+      ANA_CHECK(m_HZyElectronORHandle.retrieve(HZyElectronOR, sys, ctx));
 
       const xAOD::MuonContainer *HZyMuonOR = nullptr;
-      ANA_CHECK(m_HZyMuonORHandle.retrieve(HZyMuonOR, sys));
+      ANA_CHECK(m_HZyMuonORHandle.retrieve(HZyMuonOR, sys, ctx));
 
       const xAOD::ElectronContainer *correctedSTEP3Electrons = nullptr;
-      ANA_CHECK(m_electronsSTEP3Handle.retrieve(correctedSTEP3Electrons, sys));
+      ANA_CHECK(m_electronsSTEP3Handle.retrieve(correctedSTEP3Electrons, sys, ctx));
 
       const xAOD::PhotonContainer *correctedSTEP4Photons = nullptr;
-      ANA_CHECK(m_photonsSTEP4Handle.retrieve(correctedSTEP4Photons, sys));
+      ANA_CHECK(m_photonsSTEP4Handle.retrieve(correctedSTEP4Photons, sys, ctx));
 
       // Reset all decorations
       for (const std::string &string_var : m_floatVariables)
@@ -317,9 +317,9 @@ namespace HZY
       }
       // Record both containers for every event.
       // One or both may be empty, but the StoreGate object will exist.
-      ATH_CHECK(m_FsrObjectHandle.record(std::move(fsrView), sys));
-      ANA_CHECK(m_ZCandElectronsHandle.record(std::move(electrons_ZCand), sys));
-      ANA_CHECK(m_ZCandMuonsHandle.record(std::move(muons_ZCand), sys));
+      ATH_CHECK(m_FsrObjectHandle.record(std::move(fsrView), sys, ctx));
+      ANA_CHECK(m_ZCandElectronsHandle.record(std::move(electrons_ZCand), sys, ctx));
+      ANA_CHECK(m_ZCandMuonsHandle.record(std::move(muons_ZCand), sys, ctx));
 
       // Count electrons and muons with ID and ISO requirements
       const int nElectrons_LIdLIso =

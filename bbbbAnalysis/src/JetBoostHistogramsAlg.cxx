@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Evil Teng Jian Khoo
@@ -49,7 +49,7 @@ namespace HH4B
     for (auto& [sys, hists]: m_jet_histograms) {
       ATH_MSG_VERBOSE("filling " << sys.name());
       const xAOD::JetContainer* jets = nullptr;
-      ATH_CHECK(m_jetsIn.retrieve(jets, sys));
+      ATH_CHECK(m_jetsIn.retrieve(jets, sys, ctx));
       for(const Item* jet : *jets) {
         hists->fill(*jet, weight);
       }

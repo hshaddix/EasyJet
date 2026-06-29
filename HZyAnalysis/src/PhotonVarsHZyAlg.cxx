@@ -62,7 +62,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode PhotonVarsHZyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode PhotonVarsHZyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())
@@ -71,19 +71,19 @@ namespace HZY
       if (!m_doSystematics && sys.name() != "") continue;
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::PhotonContainer *HZyPhotons = nullptr;
-      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys));
+      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys, ctx));
 
       const xAOD::JetContainer *HZyJets = nullptr;
-      ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys));
+      ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys, ctx));
 
       const xAOD::ElectronContainer *HZyElectronsOR_ZCand = nullptr;
-      ANA_CHECK(m_ZCandElectronsHandle.retrieve(HZyElectronsOR_ZCand, sys));
+      ANA_CHECK(m_ZCandElectronsHandle.retrieve(HZyElectronsOR_ZCand, sys, ctx));
 
       const xAOD::MuonContainer *HZyMuonsOR_ZCand = nullptr;
-      ANA_CHECK(m_ZCandMuonsHandle.retrieve(HZyMuonsOR_ZCand, sys));
+      ANA_CHECK(m_ZCandMuonsHandle.retrieve(HZyMuonsOR_ZCand, sys, ctx));
 
       // Set default values for all output branches, in case we have fewer photons than expected
       for (const std::string &string_var : m_floatVariables)
@@ -176,8 +176,8 @@ namespace HZY
       m_Ibranches.at("nPhotons_LIdNIso").set(*event, static_cast<int>(HZyPhotons->size()), sys);
       m_Fbranches.at("Photon_effSF").set(*event, Photon_SF, sys);
 
-      ATH_CHECK(m_HZyPhotonORHandle.record(std::move(photonsView), sys));
-      ATH_CHECK(m_HZyJetORHandle.record(std::move(jetsView), sys));
+      ATH_CHECK(m_HZyPhotonORHandle.record(std::move(photonsView), sys, ctx));
+      ATH_CHECK(m_HZyJetORHandle.record(std::move(jetsView), sys, ctx));
     }
 
     return StatusCode::SUCCESS;

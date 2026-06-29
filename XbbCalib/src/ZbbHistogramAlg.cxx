@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZbbHistogramAlg.h"
@@ -147,10 +147,10 @@ StatusCode ZbbHistogramAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode ZbbHistogramAlg::execute(const EventContext& /*ctx*/) {
+StatusCode ZbbHistogramAlg::execute(const EventContext& ctx) {
   for (const auto& [si, sys] : m_sysPairs) {
     const xAOD::EventInfo* event = nullptr;
-    ATH_CHECK(m_eventHandle.retrieve(event, sys));
+    ATH_CHECK(m_eventHandle.retrieve(event, sys, ctx));
     if (m_selHandle && !m_selHandle->get(*event, sys)) continue;
 
     const float mass   = m_massHandle->get(*event, sys);

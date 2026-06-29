@@ -204,7 +204,7 @@ namespace HHBBTT
 
     
 
-  StatusCode HHbbttSelectorAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode HHbbttSelectorAlg ::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -235,7 +235,7 @@ namespace HHBBTT
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       setThresholds(event, sys);
 
@@ -247,7 +247,7 @@ namespace HHBBTT
       //************
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       int n_jets = 0;
       bool WPgiven = !m_isBtag.empty();
@@ -275,7 +275,7 @@ namespace HHBBTT
         //***************
         int n_boosted_jets = 0;
         const xAOD::JetContainer *lRjets = nullptr;
-        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys));
+        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
         n_boosted_jets = lRjets->size();
 
         int n_boosted_b_jets = 0;
@@ -290,7 +290,7 @@ namespace HHBBTT
 
         int n_ditaus = 0;
         const xAOD::DiTauJetContainer *ditaus = nullptr;
-        ANA_CHECK (m_ditauHandle.retrieve (ditaus, sys));
+        ANA_CHECK (m_ditauHandle.retrieve (ditaus, sys, ctx));
         n_ditaus = ditaus->size();
 
         int n_tagged_ditaus = 0;
@@ -330,13 +330,13 @@ namespace HHBBTT
       // lepton
       //************
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK (m_tauHandle.retrieve (taus, sys));
+      ANA_CHECK (m_tauHandle.retrieve (taus, sys, ctx));
 
 
       int n_leptons_looseId_iso = 0;

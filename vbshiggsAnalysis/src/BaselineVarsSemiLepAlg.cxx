@@ -84,33 +84,33 @@ namespace VBSHIGGS{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarsSemiLepAlg::execute(const EventContext& /*ctx*/){
+    StatusCode BaselineVarsSemiLepAlg::execute(const EventContext& ctx){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs
         const xAOD::EventInfo *event = nullptr;
-        ANA_CHECK (m_eventHandle.retrieve (event, sys));
+        ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
         const xAOD::JetContainer *largeJets = nullptr;
-        ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys));
+        ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys, ctx));
 
         const xAOD::JetContainer *signalJets = nullptr;
-        ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys));
+        ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys, ctx));
         
         const xAOD::JetContainer *HJets = nullptr;
-        ANA_CHECK (m_HCandHandle.retrieve (HJets, sys));
+        ANA_CHECK (m_HCandHandle.retrieve (HJets, sys, ctx));
 
         const xAOD::JetContainer *vbsjets = nullptr;
-        ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys));
+        ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys, ctx));
 
         const xAOD::MuonContainer *muons = nullptr;
-        ANA_CHECK (m_vbsMuonHandle.retrieve (muons, sys));
+        ANA_CHECK (m_vbsMuonHandle.retrieve (muons, sys, ctx));
 
         const xAOD::ElectronContainer *electrons = nullptr;
-        ANA_CHECK (m_vbsElectronHandle.retrieve (electrons, sys));
+        ANA_CHECK (m_vbsElectronHandle.retrieve (electrons, sys, ctx));
 
         const xAOD::MissingETContainer *metCont = nullptr;
-        ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+        ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
         const xAOD::MissingET* met = (*metCont)["Final"];
         if (!met) {
           ATH_MSG_ERROR("Could not retrieve MET");

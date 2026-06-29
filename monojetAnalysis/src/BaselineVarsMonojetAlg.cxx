@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsMonojetAlg.h"
@@ -87,16 +87,16 @@ namespace MONOJET
 
       // Retrieve inputs
       const xAOD::EventInfo* event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer* jets = nullptr;
-      ANA_CHECK(m_jetHandle.retrieve(jets, sys));
+      ANA_CHECK(m_jetHandle.retrieve(jets, sys, ctx));
 
       const xAOD::JetContainer *largeJets  = nullptr;
-      ANA_CHECK (m_largejetHandle.retrieve(largeJets , sys));
+      ANA_CHECK (m_largejetHandle.retrieve(largeJets , sys, ctx));
 
       const xAOD::MissingETContainer* metCont = nullptr;
-      ANA_CHECK(m_metHandle.retrieve(metCont, sys));
+      ANA_CHECK(m_metHandle.retrieve(metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
         ATH_MSG_ERROR("Could not retrieve MET");
@@ -201,8 +201,8 @@ namespace MONOJET
     TLorentzVector vV(0, 0, 0, 0);
 
     if (m_isMC and !m_bornLeptons.empty()){
-        SG::ReadHandle<xAOD::TruthParticleContainer> bornLeptons(m_bornLeptons, ctx);        ATH_CHECK(bornLeptons.isValid());
-
+        SG::ReadHandle<xAOD::TruthParticleContainer> bornLeptons(m_bornLeptons, ctx);
+        ATH_CHECK(bornLeptons.isValid());
         
 	for (const xAOD::TruthParticle *tp : (*bornLeptons)){
             int pdg = abs(tp->pdgId());

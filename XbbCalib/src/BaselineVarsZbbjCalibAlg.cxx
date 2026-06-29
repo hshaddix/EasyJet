@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author 
@@ -74,16 +74,16 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZbbjCalibAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsZbbjCalibAlg::execute(const EventContext& ctx)
   {
     //Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys));
+      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys, ctx));
 
       m_lrjets_n.set(*event, static_cast<int>(lrjets->size()), sys);
 

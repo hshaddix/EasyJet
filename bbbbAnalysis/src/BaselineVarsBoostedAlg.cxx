@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Frederic Renner
@@ -48,20 +48,20 @@ namespace HH4B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsBoostedAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsBoostedAlg ::execute(const EventContext& ctx)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in
       const xAOD::EventInfo *eventInfo = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys));
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       const xAOD::JetContainer *largeRjets = nullptr;
-      ANA_CHECK (m_LargeRJetHandle.retrieve (largeRjets, sys));
+      ANA_CHECK (m_LargeRJetHandle.retrieve (largeRjets, sys, ctx));
       std::size_t n_largeRjets = largeRjets->size();
 
       const xAOD::JetContainer *RNNJets= nullptr;
       if(m_UseVBFRNN) {
-        ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets, sys));
+        ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets, sys, ctx));
       }
 
       // set defaults

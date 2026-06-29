@@ -58,7 +58,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TauSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode TauSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -66,10 +66,10 @@ namespace Easyjet
 
       // Retrive inputs
       const xAOD::TauJetContainer *inContainer = nullptr;
-      ANA_CHECK (m_inHandle.retrieve (inContainer, sys));      
+      ANA_CHECK (m_inHandle.retrieve (inContainer, sys, ctx));
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // Setup output 
       auto workContainer =
@@ -83,7 +83,7 @@ namespace Easyjet
         m_isSelectedTau.set(*tau, false, sys);
 
         if(!m_select.empty() && !m_select.get(*tau, sys))
-	        continue;
+	  continue;
 	
         // If not ID tau nor anti tau, skip
         if(m_keepAntiTaus){
@@ -149,7 +149,7 @@ namespace Easyjet
       }
     
       // Write to eventstore
-      ATH_CHECK(m_outHandle.record(std::move(workContainer), sys));   
+      ATH_CHECK(m_outHandle.record(std::move(workContainer), sys, ctx));
     }
 
     return StatusCode::SUCCESS;

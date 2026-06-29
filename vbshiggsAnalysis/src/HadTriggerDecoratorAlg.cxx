@@ -47,13 +47,13 @@ namespace VBSHIGGS
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HadTriggerDecoratorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode HadTriggerDecoratorAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()){
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       runBoolReadDecoMap runBoolDecos;
       for (const auto& [runBool, key] : m_runBooleans_key){

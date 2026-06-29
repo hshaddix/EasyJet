@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author
@@ -103,7 +103,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZllyCalibAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsZllyCalibAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())
@@ -111,19 +111,19 @@ namespace XBBCALIB
 
       // Initialize
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK(m_lrjetHandle.retrieve(lrjets, sys));
+      ANA_CHECK(m_lrjetHandle.retrieve(lrjets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK(m_XbbCalib_muonHandle.retrieve(muons, sys));
+      ANA_CHECK(m_XbbCalib_muonHandle.retrieve(muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK(m_XbbCalib_electronHandle.retrieve(electrons, sys));
+      ANA_CHECK(m_XbbCalib_electronHandle.retrieve(electrons, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK(m_photonHandle.retrieve(photons, sys));
+      ANA_CHECK(m_photonHandle.retrieve(photons, sys, ctx));
 
       for (const std::string &string_var : m_floats_to_copy)
       {

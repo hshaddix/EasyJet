@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "MbbKinFitDecoratorAlg.h"
@@ -42,7 +42,7 @@ namespace HHBBYY{
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MbbKinFitDecoratorAlg::execute(const EventContext& /*ctx*/) {
+  StatusCode MbbKinFitDecoratorAlg::execute(const EventContext& ctx) {
     
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -52,16 +52,16 @@ namespace HHBBYY{
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
         
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve (photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::MissingETContainer *MET = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (MET, sys));
+      ANA_CHECK (m_metHandle.retrieve (MET, sys, ctx));
 
       //setup KF tool inputs
       double KF1_Mbb = -99.;
@@ -135,7 +135,7 @@ namespace HHBBYY{
       m_Conv_KF1.set(*event, Conv_KF1, sys);
 
       // Write Iteration 1 jets to event store
-      ATH_CHECK(m_jetOutHandle_KF1.record(std::move(constDataWorkJetCont_Iter1), sys));
+      ATH_CHECK(m_jetOutHandle_KF1.record(std::move(constDataWorkJetCont_Iter1), sys, ctx));
 
       // ========================================================
       // ITERATION 2: Mass-Constrained Fit
@@ -177,7 +177,7 @@ namespace HHBBYY{
       m_Conv_KF2.set(*event, Conv_KF2, sys);
 
       // Write Iteration 2 jets to event store
-      ATH_CHECK(m_jetOutHandle_KF2.record(std::move(constDataWorkJetCont_Iter2), sys));
+      ATH_CHECK(m_jetOutHandle_KF2.record(std::move(constDataWorkJetCont_Iter2), sys, ctx));
     }
     return StatusCode::SUCCESS;
   }

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Giulia Di Gregorio, Luis Falda
@@ -120,28 +120,28 @@ namespace ttHH
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_ttHHJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_ttHHJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::JetContainer *bjets = nullptr;
-      ANA_CHECK (m_bjetHandle.retrieve (bjets, sys));
+      ANA_CHECK (m_bjetHandle.retrieve (bjets, sys, ctx));
 
       auto top1_jet_candidates = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
       auto top2_jet_candidates = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
 
       const xAOD::JetContainer *pairedJets = nullptr;
-      ANA_CHECK (m_pairedJetHandle.retrieve (pairedJets, sys));
+      ANA_CHECK (m_pairedJetHandle.retrieve (pairedJets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_ttHHMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_ttHHMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_ttHHElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_ttHHElectronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met){
         ATH_MSG_ERROR("Count not retrieve MET");

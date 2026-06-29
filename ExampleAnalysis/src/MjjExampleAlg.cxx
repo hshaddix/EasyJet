@@ -26,16 +26,16 @@ namespace EXANA
     return StatusCode::SUCCESS;
   }
 
-  StatusCode EXANA::MjjExampleAlg::execute(const EventContext& /*ctx*/)
+  StatusCode EXANA::MjjExampleAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_JetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_JetHandle.retrieve (jets, sys, ctx));
 
       m_mjj.set(*event, -99., sys);
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "FinalWeightAlg.h"
@@ -29,10 +29,10 @@ StatusCode FinalWeightAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode FinalWeightAlg::execute(const EventContext& /*ctx*/) {
+StatusCode FinalWeightAlg::execute(const EventContext& ctx) {
   for (const auto& sys : m_systematicsList.systematicsVector()) {
     const xAOD::EventInfo* event = nullptr;
-    ANA_CHECK(m_eventHandle.retrieve(event, sys));
+    ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
     float w = m_sysWeightHandle
         ? m_sysWeightHandle->get(*event, sys) : 1.f;
     for (const auto& acc : m_extraWeightAccs)

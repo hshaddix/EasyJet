@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsExampleAlg.h"
@@ -38,22 +38,22 @@ namespace EXANA
     return StatusCode::SUCCESS;
   }
 
-  StatusCode EXANA::BaselineVarsExampleAlg::execute(const EventContext& /*ctx*/)
+  StatusCode EXANA::BaselineVarsExampleAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       //const xAOD::JetContainer *lrjets = nullptr;
       //ANA_CHECK (m_LargeRJetHandle.retrieve (lrjets, sys));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_JetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_JetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve (photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
 
       for (const std::string &string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set(*event, -99., sys);

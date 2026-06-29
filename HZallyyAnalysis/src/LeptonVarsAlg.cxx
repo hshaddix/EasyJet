@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "LeptonVarsAlg.h"
@@ -57,20 +57,20 @@ namespace HZALLYY {
     return StatusCode::SUCCESS;
   }
   
-  StatusCode LeptonVarsAlg::execute(const EventContext& /*ctx*/) {
+  StatusCode LeptonVarsAlg::execute(const EventContext& ctx) {
     
     // Loop over all systs
     for (const auto & sys: m_systematicsList.systematicsVector()) {
       
       // Retrieve inputs
       const xAOD::EventInfo * event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
             
       const xAOD::MuonContainer * muons = nullptr;
-      ANA_CHECK(m_llyymuonHandle.retrieve(muons, sys));
+      ANA_CHECK(m_llyymuonHandle.retrieve(muons, sys, ctx));
 
       const xAOD::ElectronContainer * electrons = nullptr;
-      ANA_CHECK(m_llyyelectronHandle.retrieve(electrons, sys));
+      ANA_CHECK(m_llyyelectronHandle.retrieve(electrons, sys, ctx));
 
       for (const std::string & string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set( * event, -99., sys);

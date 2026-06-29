@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 
@@ -88,7 +88,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HLLTT::BaselineVarsllttAlg::execute(const EventContext& /*ctx*/)
+  StatusCode HLLTT::BaselineVarsllttAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -97,22 +97,22 @@ namespace HLLTT
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_llttJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_llttJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_llttMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_llttMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_llttElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_llttElectronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK (m_llttTauHandle.retrieve (taus, sys));
+      ANA_CHECK (m_llttTauHandle.retrieve (taus, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
 	ATH_MSG_ERROR("Could not retrieve MET");

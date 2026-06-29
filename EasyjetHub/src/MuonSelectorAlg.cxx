@@ -53,17 +53,17 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MuonSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode MuonSelectorAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {
 
       // Retrive inputs
       const xAOD::MuonContainer *inContainer = nullptr;
-      ANA_CHECK (m_inHandle.retrieve (inContainer, sys));      
+      ANA_CHECK (m_inHandle.retrieve (inContainer, sys, ctx));
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // Setup output 
       auto workContainer =
@@ -133,7 +133,7 @@ namespace Easyjet
       }
     
       // Write to eventstore
-      ATH_CHECK(m_outHandle.record(std::move(workContainer), sys));   
+      ATH_CHECK(m_outHandle.record(std::move(workContainer), sys, ctx));
     }
 
     return StatusCode::SUCCESS;

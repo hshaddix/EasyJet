@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 */
 
@@ -34,7 +34,7 @@ namespace VBSHIGGS{
     }
 
     
-    StatusCode VBSJetsSelectorAlg::execute(const EventContext& /*ctx*/){
+    StatusCode VBSJetsSelectorAlg::execute(const EventContext& ctx){
 
         /*
             1) First select back-to-back jets
@@ -48,10 +48,10 @@ namespace VBSHIGGS{
 
             // Retrieve inputs
             const xAOD::JetContainer *jets = nullptr;
-            ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+            ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
             const xAOD::JetContainer *largeJets = nullptr;
-            ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys));
+            ANA_CHECK (m_vbsLRJetHandle.retrieve (largeJets, sys, ctx));
 
             
             auto VBSJetContainer = std::make_unique<ConstDataVector<xAOD::JetContainer> >(SG::VIEW_ELEMENTS);
@@ -106,8 +106,8 @@ namespace VBSHIGGS{
                     nonVBSJetContainer->end() );
             }
             
-            ATH_CHECK(m_VBSjetOutHandle.record(std::move(VBSJetContainer), sys));
-            ATH_CHECK(m_NonVBsjetOutHandle.record(std::move(nonVBSJetContainer), sys));
+            ATH_CHECK(m_VBSjetOutHandle.record(std::move(VBSJetContainer), sys, ctx));
+            ATH_CHECK(m_NonVBsjetOutHandle.record(std::move(nonVBSJetContainer), sys, ctx));
 
         }//syst
 

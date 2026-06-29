@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Giacomo Magni and Marko Mihovilovic
@@ -39,15 +39,15 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsBoostedbbttAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsBoostedbbttAlg ::execute(const EventContext& ctx)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in
       const xAOD::EventInfo *eventInfo = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys));
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       const xAOD::JetContainer *largeRjets = nullptr;
-      ANA_CHECK (m_lRjetHandle.retrieve (largeRjets, sys));
+      ANA_CHECK (m_lRjetHandle.retrieve (largeRjets, sys, ctx));
       std::size_t n_largeRjets = largeRjets->size();
 
       // set defaults

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Abraham Tishelman-Charny
@@ -39,7 +39,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode OrthogonalityAlg::execute(const EventContext& /*ctx*/)
+  StatusCode OrthogonalityAlg::execute(const EventContext& ctx)
   {
     int N_HHPhotons = -1, N_HHBjets = -1;
       
@@ -48,19 +48,19 @@ namespace Easyjet
     {
       
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       
       // Initialize variable values to 0
       for (uint8_t ivar=0; ivar<N_CHANNELS; ++ivar) {
         m_Bbranches.at(ivar).set(*event, false, sys);
       }
 
-      // Retrive inputs
+      // Retrieve inputs
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve (photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
       
       const xAOD::JetContainer *bjets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (bjets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (bjets, sys, ctx));
       
       N_HHPhotons = photons->size();
       N_HHBjets = bjets->size();

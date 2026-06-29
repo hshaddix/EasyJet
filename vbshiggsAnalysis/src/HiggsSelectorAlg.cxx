@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 */
 
@@ -31,7 +31,7 @@ namespace VBSHIGGS{
         return StatusCode::SUCCESS;
     }
 
-    StatusCode HiggsSelectorAlg::execute(const EventContext& /*ctx*/){
+    StatusCode HiggsSelectorAlg::execute(const EventContext& ctx){
         /*
             Higgs selection algorithm
             1) First select leading 2 b-jets
@@ -42,7 +42,7 @@ namespace VBSHIGGS{
         for (const auto& sys : m_systematicsList.systematicsVector()){
             // Retrieve inputs
             const xAOD::JetContainer *jets = nullptr;
-            ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+            ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
             auto HiggsJetCandidates= std::make_unique<ConstDataVector<xAOD::JetContainer> >(SG::VIEW_ELEMENTS);
 
@@ -92,7 +92,7 @@ namespace VBSHIGGS{
                 HiggsJetCandidates->push_back(hjet1);
                 HiggsJetCandidates->push_back(hjet2);
             }
-            ATH_CHECK(m_HiggsjetOutHandle.record(std::move(HiggsJetCandidates), sys));
+            ATH_CHECK(m_HiggsjetOutHandle.record(std::move(HiggsJetCandidates), sys, ctx));
         }//sys
 
         return StatusCode::SUCCESS;

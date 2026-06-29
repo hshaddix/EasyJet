@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsssWWAlg.h"
@@ -103,7 +103,7 @@ namespace ssWWVBS
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsssWWAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsssWWAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -112,19 +112,19 @@ namespace ssWWVBS
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_ssWWJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_ssWWJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_ssWWMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_ssWWMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_ssWWElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_ssWWElectronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       const xAOD::MissingET* met_track = (*metCont)["PVSoftTrk"];
       if (!met) {

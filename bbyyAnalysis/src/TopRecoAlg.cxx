@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "TopRecoAlg.h"
@@ -123,7 +123,7 @@ namespace HHBBYY
   }
 
 
-  StatusCode TopRecoAlg::execute(const EventContext& /*ctx*/)
+  StatusCode TopRecoAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {
@@ -133,19 +133,19 @@ namespace HHBBYY
 
       // Inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer* jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve(jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve(jets, sys, ctx));
 
       const xAOD::MuonContainer* muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve(muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve(muons, sys, ctx));
 
       const xAOD::ElectronContainer* electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve(electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve(electrons, sys, ctx));
 
       const xAOD::MissingETContainer* met_container = nullptr;
-      ANA_CHECK (m_metHandle.retrieve(met_container, sys));
+      ANA_CHECK (m_metHandle.retrieve(met_container, sys, ctx));
 
       // Counters
       const int nLeptons = static_cast<int>(electrons->size() + muons->size());

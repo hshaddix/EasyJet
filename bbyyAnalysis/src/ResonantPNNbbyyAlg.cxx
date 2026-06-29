@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ResonantPNNbbyyAlg.h"
@@ -69,20 +69,20 @@ namespace SHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ResonantPNNbbyyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ResonantPNNbbyyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
       // container we read in
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve (photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
 
       uint64_t eventNum = event->eventNumber();
 

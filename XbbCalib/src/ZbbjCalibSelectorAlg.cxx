@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZbbjCalibSelectorAlg.h"
@@ -39,7 +39,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZbbjCalibSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ZbbjCalibSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Global filter originally false
@@ -52,17 +52,17 @@ namespace XBBCALIB
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys));
+      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys, ctx));
 
       // Create output view container (always written, even if event fails)
       auto ordered = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
 
       // Veto Z->cc events from Zqq samples (Zcc/Zqq overlap removal)
       if (m_isCC_acc && (*m_isCC_acc)(*event) == 1) {
-        ANA_CHECK (m_outHandle.record (std::move(ordered), sys));
+        ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
         continue;
       }
 
@@ -70,7 +70,7 @@ namespace XBBCALIB
 
       // 1. Require at least 2 jets (always checked — can't access jets that don't exist)
       if (lrjets->size() < m_minJets) {
-        ANA_CHECK (m_outHandle.record (std::move(ordered), sys));
+        ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
         if (m_bypass) filter.setPassed(true);
         continue;
       }
@@ -78,7 +78,7 @@ namespace XBBCALIB
       // 2. Leading jet UFO/calo pT cut (trigger plateau, before BJR reordering)
       //    lrjets->at(0) is the leading calo-pT jet at this point
       if (lrjets->at(0)->pt() < m_leadJetUfoPtCut) {
-        ANA_CHECK (m_outHandle.record (std::move(ordered), sys));
+        ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
         if (m_bypass) filter.setPassed(true);
         continue;
       }
@@ -123,7 +123,7 @@ namespace XBBCALIB
                        pass_asymmetry && pass_rapidity;
 
       if (!m_bypass && !pass_all) {
-        ANA_CHECK (m_outHandle.record (std::move(ordered), sys));
+        ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
         continue;
       }
 
@@ -132,7 +132,7 @@ namespace XBBCALIB
         ordered->push_back(jet);
       }
 
-      ANA_CHECK (m_outHandle.record (std::move(ordered), sys));
+      ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
       filter.setPassed(true);
     }
 

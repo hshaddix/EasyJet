@@ -81,7 +81,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode AntiTauDecoratorAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode AntiTauDecoratorAlg ::execute(const EventContext& ctx)
   {
 
     const static SG::AuxElement::Decorator<int> categoryDecorator("antiTauEventCategory");
@@ -90,16 +90,16 @@ namespace HHBBTT
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve (event, sys));
+      ANA_CHECK(m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK(m_tauHandle.retrieve (taus, sys));
+      ANA_CHECK(m_tauHandle.retrieve (taus, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK(m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK(m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK(m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK(m_electronHandle.retrieve (electrons, sys, ctx));
 
       std::unordered_map<HHBBTT::TriggerChannel,
 			 std::unordered_map<HHBBTT::Var, float>> ptThresholds;

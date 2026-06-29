@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsZCharmAlg.h"
@@ -77,7 +77,7 @@ namespace ZCC
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZCharmAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsZCharmAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -86,16 +86,16 @@ namespace ZCC
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_ZCharmJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_ZCharmJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_ZCharmMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_ZCharmMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_ZCharmElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_ZCharmElectronHandle.retrieve (electrons, sys, ctx));
 
 
       for (const std::string &string_var: m_floatVariables) {

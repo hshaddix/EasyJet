@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZbbyCalibSelectorAlg.h"
@@ -37,7 +37,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZbbyCalibSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ZbbyCalibSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Global filter originally false
@@ -50,16 +50,16 @@ namespace XBBCALIB
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // Veto Z->cc events from Zqq samples (Zcc/Zqq overlap removal)
       if (m_isCC_acc && (*m_isCC_acc)(*event) == 1) continue;
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys));
+      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_photonHandle.retrieve(photons, sys));
+      ANA_CHECK (m_photonHandle.retrieve(photons, sys, ctx));
       if (lrjets->empty()) continue;
 
       // Global event filter true if any syst passes and controls

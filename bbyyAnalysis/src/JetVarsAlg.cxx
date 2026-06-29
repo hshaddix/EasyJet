@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "JetVarsAlg.h"
@@ -42,7 +42,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode JetVarsAlg::execute(const EventContext& /*ctx*/)
+  StatusCode JetVarsAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -52,11 +52,11 @@ namespace HHBBYY
 
         // container we read in
         const xAOD::EventInfo *event = nullptr;
-        ANA_CHECK (m_eventHandle.retrieve (event, sys));
+        ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
     
         // Jets
         const xAOD::JetContainer* jets = nullptr;
-        ANA_CHECK (m_jetHandle.retrieve(jets, sys));
+        ANA_CHECK (m_jetHandle.retrieve(jets, sys, ctx));
 
         // Check b-jet WP
         const bool WPgiven = !m_isBtag.empty();

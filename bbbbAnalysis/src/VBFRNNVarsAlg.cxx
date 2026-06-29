@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Frederic Renner
@@ -58,21 +58,21 @@ namespace HH4B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode VBFRNNVarsAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode VBFRNNVarsAlg ::execute(const EventContext& ctx)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in
       const xAOD::EventInfo *eventInfo = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys));
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       const xAOD::JetContainer *RNNJets_boosted= nullptr;
       const xAOD::JetContainer *RNNJets_resolved= nullptr;
       if(m_UseVBFRNN) {
         if(m_doBoosted){
-          ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys));
+          ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys, ctx));
         }
         if(m_doResolved){
-          ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys));
+          ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys, ctx));
         }
       }
 

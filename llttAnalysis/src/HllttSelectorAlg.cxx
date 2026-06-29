@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Weiming Yao
@@ -90,7 +90,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode HllttSelectorAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode HllttSelectorAlg ::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -102,19 +102,19 @@ namespace HLLTT
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK (m_tauHandle.retrieve (taus, sys));
+      ANA_CHECK (m_tauHandle.retrieve (taus, sys, ctx));
 
       const xAOD::TauJetContainer *mrmtaus = nullptr;
-      ANA_CHECK (m_mrmtauHandle.retrieve (mrmtaus, sys));      
+      ANA_CHECK (m_mrmtauHandle.retrieve (mrmtaus, sys, ctx));
 
       bool trigPassed_SLT = false;
       bool trigPassed_DLT = false;

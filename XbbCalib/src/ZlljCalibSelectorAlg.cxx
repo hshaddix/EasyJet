@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZlljCalibSelectorAlg.h"
@@ -36,7 +36,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZlljCalibSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ZlljCalibSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Global filter originally false
@@ -50,18 +50,18 @@ namespace XBBCALIB
       // Initialize Variables
       bool pass_baseline = false;
 
-      // Retrive inputs
+      // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys));
+      ANA_CHECK (m_lrjetHandle.retrieve (lrjets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
       
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       //************
       // Apply Selection

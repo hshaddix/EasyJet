@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "PhotonVarsAlg.h"
@@ -45,17 +45,17 @@ namespace HZALLYY {
     return StatusCode::SUCCESS;
   }
   
-  StatusCode PhotonVarsAlg::execute(const EventContext& /*ctx*/) {
+  StatusCode PhotonVarsAlg::execute(const EventContext& ctx) {
     
     // Loop over all systs
     for (const auto & sys: m_systematicsList.systematicsVector()) {
       
       // Retrieve inputs
       const xAOD::EventInfo * event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
       
       const xAOD::PhotonContainer * photons = nullptr;
-      ANA_CHECK(m_llyyphotonHandle.retrieve(photons, sys));
+      ANA_CHECK(m_llyyphotonHandle.retrieve(photons, sys, ctx));
 
       for (const std::string & string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set( * event, -99., sys);
@@ -67,19 +67,19 @@ namespace HZALLYY {
 
       
 	
-	  for (unsigned int i = 0; i < std::min(std::size_t(2), photons -> size()); i++) {
-	    const xAOD::Photon * ph = photons -> at(i);
-	    if (!ph) continue;
-	    std::string prefix = "Photon" + std::to_string(i + 1);
-	    TLorentzVector tlv = ph -> p4();
-	    m_Fbranches.at(prefix + "_pt").set( * event, tlv.Pt(), sys);
-	    m_Fbranches.at(prefix + "_eta").set( * event, tlv.Eta(), sys);
-	    m_Fbranches.at(prefix + "_phi").set( * event, tlv.Phi(), sys);
-	    m_Fbranches.at(prefix + "_E").set( * event, tlv.E(), sys);
-	    if(m_isMC){
-	      m_Fbranches.at(prefix+"_effSF").set(*event, m_ph_SF.get(*ph, sys), sys);
-	    }
-	  }            
+      for (unsigned int i = 0; i < std::min(std::size_t(2), photons -> size()); i++) {
+	const xAOD::Photon * ph = photons -> at(i);
+	if (!ph) continue;
+	std::string prefix = "Photon" + std::to_string(i + 1);
+	TLorentzVector tlv = ph -> p4();
+	m_Fbranches.at(prefix + "_pt").set( * event, tlv.Pt(), sys);
+	m_Fbranches.at(prefix + "_eta").set( * event, tlv.Eta(), sys);
+	m_Fbranches.at(prefix + "_phi").set( * event, tlv.Phi(), sys);
+	m_Fbranches.at(prefix + "_E").set( * event, tlv.E(), sys);
+	if(m_isMC){
+	  m_Fbranches.at(prefix+"_effSF").set(*event, m_ph_SF.get(*ph, sys), sys);
+	}
+      }
 	
       m_Ibranches.at("nPhotons").set( * event, photons -> size(), sys);
     } // 

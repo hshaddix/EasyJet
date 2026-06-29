@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsbbllAlg.h"
@@ -67,7 +67,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsbbllAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsbbllAlg::execute(const EventContext& ctx)
   {
 
     // Loop over all systs
@@ -76,10 +76,10 @@ namespace HHBBLL
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
 	ATH_MSG_ERROR("Could not retrieve MET");

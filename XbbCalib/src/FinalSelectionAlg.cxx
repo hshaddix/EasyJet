@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "FinalSelectionAlg.h"
@@ -76,10 +76,10 @@ StatusCode FinalSelectionAlg::initialize() {
   return StatusCode::SUCCESS;
 }
 
-StatusCode FinalSelectionAlg::execute(const EventContext& /*ctx*/) {
+StatusCode FinalSelectionAlg::execute(const EventContext& ctx) {
   for (const auto& sys : m_systematicsList.systematicsVector()) {
     const xAOD::EventInfo* event = nullptr;
-    ANA_CHECK(m_eventHandle.retrieve(event, sys));
+    ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
     bool pass = true;
 

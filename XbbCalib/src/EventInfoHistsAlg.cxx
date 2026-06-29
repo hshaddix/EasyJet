@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "EventInfoHistsAlg.h"
@@ -228,7 +228,7 @@ StatusCode EventInfoHistsAlg::execute(const EventContext& ctx) const {
     if (m_nominalOnly && !sys.empty()) continue;
     ATH_MSG_VERBOSE("filling " << sys.name());
     const xAOD::EventInfo* evtInfo = nullptr;
-    ATH_CHECK(m_eventHandle.retrieve(evtInfo, sys));
+    ATH_CHECK(m_eventHandle.retrieve(evtInfo, sys, ctx));
     if (m_selectionDecoHandle
         && !m_selectionDecoHandle->get(*evtInfo, sys)) continue;
     float weight = m_weightHandle

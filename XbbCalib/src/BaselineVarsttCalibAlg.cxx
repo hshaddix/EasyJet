@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 /// @author Derrick Allen
 /// @author Jason Oliver - systematics, scale factors, handle aliasing.
@@ -88,29 +88,29 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsttCalibAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsttCalibAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())
     {
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK(m_ttcalib_jetHandle.retrieve(jets, sys));
+      ANA_CHECK(m_ttcalib_jetHandle.retrieve(jets, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK(m_ttcalib_lrjetHandle.retrieve(lrjets, sys));
+      ANA_CHECK(m_ttcalib_lrjetHandle.retrieve(lrjets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK(m_ttcalib_muonHandle.retrieve(muons, sys));
+      ANA_CHECK(m_ttcalib_muonHandle.retrieve(muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK(m_ttcalib_electronHandle.retrieve(electrons, sys));
+      ANA_CHECK(m_ttcalib_electronHandle.retrieve(electrons, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK(m_metHandle.retrieve(metCont, sys));
+      ANA_CHECK(m_metHandle.retrieve(metCont, sys, ctx));
 
       // Is this needed?
       const xAOD::MissingET *met = (*metCont)["Final"];

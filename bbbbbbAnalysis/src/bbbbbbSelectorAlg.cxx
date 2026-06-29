@@ -90,7 +90,7 @@ namespace HHH6B
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // reset all cut flags to default=false
       for (CutEntry& cut : m_bbbbbbCuts) {
@@ -105,7 +105,7 @@ namespace HHH6B
       int n_truth_jets_after_cuts = 0;
       if (!m_truthJetHandle.empty() && m_isMC) {
         const xAOD::JetContainer *truthJets = nullptr;
-        ANA_CHECK (m_truthJetHandle.retrieve (truthJets, sys));
+        ANA_CHECK (m_truthJetHandle.retrieve (truthJets, sys, ctx));
         n_truth_jets = truthJets->size();
         
         // Apply same pT/eta cuts to truth jets (20 GeV, 4.5 eta based on config)
@@ -126,7 +126,7 @@ namespace HHH6B
       int n_jets_before_selection = 0;
       if (!m_jetHandleBeforeSel.empty()) {
         const xAOD::JetContainer *jetsBeforeSel = nullptr;
-        ANA_CHECK (m_jetHandleBeforeSel.retrieve (jetsBeforeSel, sys));
+        ANA_CHECK (m_jetHandleBeforeSel.retrieve (jetsBeforeSel, sys, ctx));
         n_jets_before_selection = jetsBeforeSel->size();
         
         // Only count for NOSYS to avoid double counting
@@ -147,12 +147,12 @@ namespace HHH6B
       int n_b_jets = 0;
       if (!m_lRjetHandle.empty()) {
         const xAOD::JetContainer *lRjets = nullptr;
-        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys));
+        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
         n_boosted_jets = lRjets->size();
       }
       if (!m_jetHandle.empty()) {
         const xAOD::JetContainer *jets = nullptr;
-        ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+        ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
         n_resolved_jets = jets->size();
         
         // Only count for NOSYS to avoid double counting

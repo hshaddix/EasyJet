@@ -68,19 +68,19 @@ namespace HHH6B
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsResolvedAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsResolvedAlg ::execute(const EventContext& ctx)
   {
     ATH_MSG_DEBUG("BaselineVarsResolvedAlg::execute() called");
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       const xAOD::EventInfo *eventInfo = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys));
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       // const xAOD::JetContainer *RNNJets= nullptr;
       // if(m_UseVBFRNN) {
-      //   ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets, sys));
+      //   ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets, sys, ctx));
       // }
       // set defaults
       for (const std::string& var : m_vars)

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "PhotonVarsbbyyAlg.h"
@@ -49,7 +49,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode PhotonVarsbbyyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode PhotonVarsbbyyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -59,10 +59,10 @@ namespace HHBBYY
 
       // container we read in
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK (m_bbyyPhotonHandle.retrieve (photons, sys));
+      ANA_CHECK (m_bbyyPhotonHandle.retrieve (photons, sys, ctx));
 
       const xAOD::Photon* ph1 = nullptr;
       const xAOD::Photon* ph2 = nullptr;

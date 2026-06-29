@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2023 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "MMCSelectorAlg.h"
@@ -32,7 +32,7 @@ namespace HLLTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MMCSelectorAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode MMCSelectorAlg ::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -44,7 +44,7 @@ namespace HLLTT
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       bool MMC_MASS = false;
 

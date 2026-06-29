@@ -62,94 +62,94 @@ namespace VBSHIGGS {
       return StatusCode::SUCCESS;
   }
 
-  StatusCode FullHadSelectorAlg::execute(const EventContext& /*ctx*/) {
-      for (const auto& sys : m_systematicsList.systematicsVector()) {
+  StatusCode FullHadSelectorAlg::execute(const EventContext& ctx) {
+    for (const auto& sys : m_systematicsList.systematicsVector()) {
 
-          const xAOD::EventInfo* event = nullptr;
-          ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      const xAOD::EventInfo* event = nullptr;
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
-          const xAOD::JetContainer* smallJets = nullptr;
-          const xAOD::JetContainer* largeJets = nullptr;
-    const xAOD::ElectronContainer* electrons = nullptr;
-    const xAOD::MuonContainer* muons = nullptr;
-    const xAOD::JetContainer *signalJets = nullptr;
-    const xAOD::JetContainer *HJets = nullptr;
+      const xAOD::JetContainer* smallJets = nullptr;
+      const xAOD::JetContainer* largeJets = nullptr;
+      const xAOD::ElectronContainer* electrons = nullptr;
+      const xAOD::MuonContainer* muons = nullptr;
+      const xAOD::JetContainer *signalJets = nullptr;
+      const xAOD::JetContainer *HJets = nullptr;
 
-    if (m_doResolved){
-      ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys));
-      ANA_CHECK (m_HCandHandle.retrieve (HJets, sys));
-    }
-    const xAOD::JetContainer *vbsjets = nullptr;
-    if( !m_UseVBFRNN )
-      ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys));
+      if (m_doResolved){
+	ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys, ctx));
+	ANA_CHECK (m_HCandHandle.retrieve (HJets, sys, ctx));
+      }
+      const xAOD::JetContainer *vbsjets = nullptr;
+      if( !m_UseVBFRNN )
+	ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
 
 
-    ANA_CHECK(m_smallJetHandle.retrieve(smallJets, sys));
-    ANA_CHECK(m_largeJetHandle.retrieve(largeJets, sys));
-    ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
-    ANA_CHECK(m_muonHandle.retrieve(muons, sys));
-    bool WPgiven = !m_isBtag.empty();
-    std::vector<const xAOD::Jet*> bjets;
+      ANA_CHECK(m_smallJetHandle.retrieve(smallJets, sys, ctx));
+      ANA_CHECK(m_largeJetHandle.retrieve(largeJets, sys, ctx));
+      ANA_CHECK(m_electronHandle.retrieve(electrons, sys, ctx));
+      ANA_CHECK(m_muonHandle.retrieve(muons, sys, ctx));
+      bool WPgiven = !m_isBtag.empty();
+      std::vector<const xAOD::Jet*> bjets;
 
-    if (m_doResolved){
-      for(const xAOD::Jet* jet : *signalJets) {
-        if (WPgiven) {
-          if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets.push_back(jet);
-        }
+      if (m_doResolved){
+	for(const xAOD::Jet* jet : *signalJets) {
+	  if (WPgiven) {
+	    if (m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5) bjets.push_back(jet);
+	  }
+	}
+      }
+
+      for (auto& [key, _] : m_bools) m_bools[key] = false;
+
+      m_bools[PASS_LEPTON_VETO] = (muons->empty() && electrons->empty());
+      if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
+      if (largeJets->size() == 1) m_bools[PASS_EXACTLY_ONE_LARGE_JET] = true;
+      if (largeJets->size() == 2) m_bools[PASS_EXACTLY_TWO_LARGE_JETS] = true;
+      if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
+      if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
+	m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      }
+      bool passAll = true;
+      for (auto& [key, val] : m_bools) {
+	if (key == PASS_ALL_CUTS) continue;
+	passAll &= val;
+      }
+      m_bools[PASS_ALL_CUTS] = passAll;
+      m_passallcuts.set(*event, passAll, sys);
+
+
+      if (sys.name() == "" && m_saveCutFlow) {
+	m_totalEvents += 1;
+	// Count how many configured cuts this event passed.
+	for (const auto& cut : m_inputCutKeys) {
+	  if (m_vbshiggsCuts.exists(m_boolnames.at(cut))) {
+	    m_vbshiggsCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
+	    if (m_vbshiggsCuts(m_boolnames.at(cut)).passed) {
+	      m_vbshiggsCuts(m_boolnames.at(cut)).counter += 1;
+	    }
+	  }
+	}
+
+	// Count consecutive cut passing for relative/standard cutflow histograms.
+	unsigned int consecutive_cuts = 0;
+	for (size_t i = 0; i < m_vbshiggsCuts.size(); ++i) {
+	  if (m_vbshiggsCuts[i].passed)
+	    consecutive_cuts++;
+	  else
+	    break;
+	}
+
+	for (unsigned int i = 0; i < consecutive_cuts; i++) {
+	  m_vbshiggsCuts[i].relativeCounter += 1;
+	}
+      }
+
+      for (const auto& [key, value] : m_bools) {
+	m_Bbranches.at(key).set(*event, value, sys);
       }
     }
 
-    for (auto& [key, _] : m_bools) m_bools[key] = false;
-
-    m_bools[PASS_LEPTON_VETO] = (muons->empty() && electrons->empty());
-    if (smallJets->size() == 2) m_bools[PASS_EXACTLY_TWO_SMALL_JETS] = true;
-    if (largeJets->size() == 1) m_bools[PASS_EXACTLY_ONE_LARGE_JET] = true;
-    if (largeJets->size() == 2) m_bools[PASS_EXACTLY_TWO_LARGE_JETS] = true;
-    if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
-    if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
-      m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
-    } 
-    bool passAll = true;
-    for (auto& [key, val] : m_bools) {
-      if (key == PASS_ALL_CUTS) continue;
-      passAll &= val;
-    }
-    m_bools[PASS_ALL_CUTS] = passAll;
-    m_passallcuts.set(*event, passAll, sys);
-
-    
-    if (sys.name() == "" && m_saveCutFlow) {
-      m_totalEvents += 1;
-      // Count how many configured cuts this event passed.
-      for (const auto& cut : m_inputCutKeys) {
-        if (m_vbshiggsCuts.exists(m_boolnames.at(cut))) {
-          m_vbshiggsCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
-          if (m_vbshiggsCuts(m_boolnames.at(cut)).passed) {
-            m_vbshiggsCuts(m_boolnames.at(cut)).counter += 1;
-          }
-        }
-      }
-
-      // Count consecutive cut passing for relative/standard cutflow histograms.
-      unsigned int consecutive_cuts = 0;
-      for (size_t i = 0; i < m_vbshiggsCuts.size(); ++i) {
-        if (m_vbshiggsCuts[i].passed)
-          consecutive_cuts++;
-        else
-          break;
-      }
-
-      for (unsigned int i = 0; i < consecutive_cuts; i++) {
-        m_vbshiggsCuts[i].relativeCounter += 1;
-      }
-    }
-
-    for (const auto& [key, value] : m_bools) {
-      m_Bbranches.at(key).set(*event, value, sys);
-    }
-      }
-
-      return StatusCode::SUCCESS;
+    return StatusCode::SUCCESS;
   }
 
   StatusCode FullHadSelectorAlg::finalize() {

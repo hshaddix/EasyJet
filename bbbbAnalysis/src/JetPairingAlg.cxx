@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Frederic Renner
@@ -60,7 +60,7 @@ namespace HH4B
     {
       // Retrieve inputs
       const xAOD::JetContainer *inContainer = nullptr;
-      ATH_CHECK(m_inJetHandle.retrieve(inContainer, sys));
+      ATH_CHECK(m_inJetHandle.retrieve(inContainer, sys, ctx));
 
       // fill workContainer with "views" of the inContainer
       // see TJ's tutorial for this
@@ -202,7 +202,7 @@ namespace HH4B
         // keep only the higgs candidate ones to avoid confusion
         workContainer->erase(workContainer->begin() + 4, workContainer->end());
       }
-      ATH_CHECK(m_outJetHandle.record(std::move(workContainer), sys));
+      ATH_CHECK(m_outJetHandle.record(std::move(workContainer), sys, ctx));
     }
     return StatusCode::SUCCESS;
   }

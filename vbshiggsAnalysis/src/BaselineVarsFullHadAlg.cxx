@@ -128,21 +128,21 @@ namespace VBSHIGGS {
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsFullHadAlg::execute(const EventContext& /*ctx*/) {
+  StatusCode BaselineVarsFullHadAlg::execute(const EventContext& ctx) {
 
     for (const auto& sys : m_systematicsList.systematicsVector()) {
 
       const xAOD::EventInfo* event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer* largeJets = nullptr;
-      ANA_CHECK(m_vbsLRJetHandle.retrieve(largeJets, sys));
+      ANA_CHECK(m_vbsLRJetHandle.retrieve(largeJets, sys, ctx));
 
       const xAOD::JetContainer *signalJets = nullptr;    
       const xAOD::JetContainer *HJets = nullptr;
       if (m_doResolved){
-        ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys));
-        ANA_CHECK (m_HCandHandle.retrieve (HJets, sys));
+        ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys, ctx));
+        ANA_CHECK (m_HCandHandle.retrieve (HJets, sys, ctx));
       }
 
       
@@ -150,12 +150,12 @@ namespace VBSHIGGS {
       const xAOD::JetContainer *RNNJets_boosted= nullptr;
       const xAOD::JetContainer *RNNJets_resolved = nullptr;
       if(!m_UseVBFRNN) {
-        ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys));
+        ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys, ctx));
       }
       else {
-        ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys));
+        ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys, ctx));
         if (m_doResolved)
-    ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys));
+	  ANA_CHECK (m_RNNjetResolvedHandle.retrieve (RNNJets_resolved, sys, ctx));
       }
 
 

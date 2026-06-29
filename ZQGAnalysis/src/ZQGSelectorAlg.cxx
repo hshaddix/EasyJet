@@ -97,7 +97,7 @@ namespace ZQG
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       bool pass_truth_baseline = false;
       if (m_isMC){
         // Find truth decision
@@ -110,7 +110,7 @@ namespace ZQG
       }
       
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       std::string ftag2D_WP = "ftag_quantile_GN2v01_Continuous2D";
       std::vector<int> ctag_values = {1,2,3};
@@ -129,14 +129,14 @@ namespace ZQG
       const xAOD::JetContainer *largeJets = nullptr;
       // STDM13 COMPATIBILITY: Only retrieve large-R jets if handle is initialized
       if (!m_largejetHandle.empty()) {
-        ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys));
+        ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
       }
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
       
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
 
       m_bools.at(ZQG::IS_ee) = false;

@@ -107,7 +107,7 @@ namespace ssWWVBS
   }
 
 
-  StatusCode ssWWSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ssWWSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -119,10 +119,10 @@ namespace ssWWVBS
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
       
 
       bool WPgiven = !m_isBtag.empty();
@@ -136,15 +136,15 @@ namespace ssWWVBS
       }
  
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
       
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       //All Met containner names={"RefEle","Muons","MuonEloss","RefJet","PVSoftTrk","Final"}
       //The sum of the former 5 turns is the "Final"
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"]; // To check
       const xAOD::MissingET* met_track = (*metCont)["PVSoftTrk"];
       if (!met) {

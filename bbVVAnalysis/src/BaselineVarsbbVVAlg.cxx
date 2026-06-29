@@ -124,35 +124,35 @@ namespace HHBBVV
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsbbVVAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsbbVVAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_bbVVJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_bbVVJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK (m_bbVVLRJetHandle.retrieve (lrjets, sys));
+      ANA_CHECK (m_bbVVLRJetHandle.retrieve (lrjets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_bbVVMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_bbVVMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_bbVVElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_bbVVElectronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
       if(m_bbVV_VBF){
-        ANA_CHECK (m_bbVVTauHandle.retrieve (taus, sys));
+        ANA_CHECK (m_bbVVTauHandle.retrieve (taus, sys, ctx));
       }
 
       
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
           ATH_MSG_ERROR("Could not retrieve MET");

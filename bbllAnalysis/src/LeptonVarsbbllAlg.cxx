@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "LeptonVarsbbllAlg.h"
@@ -53,7 +53,7 @@ namespace HHBBLL
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonVarsbbllAlg::execute(const EventContext& /*ctx*/)
+  StatusCode LeptonVarsbbllAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -62,13 +62,13 @@ namespace HHBBLL
 
       // container we read in
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_bbllElectronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_bbllElectronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_bbllMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_bbllMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::Electron* ele0 = nullptr;
       const xAOD::Electron* ele1 = nullptr;

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "BaselineVarsbbyyAlg.h"
@@ -114,7 +114,7 @@ namespace HHBBYY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsbbyyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsbbyyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
@@ -124,13 +124,13 @@ namespace HHBBYY
 
       // container we read in
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_bbyyJetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_bbyyJetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK (m_metHandle.retrieve (metCont, sys));
+      ANA_CHECK (m_metHandle.retrieve (metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"];
       if (!met) {
         ATH_MSG_ERROR("Could not retrieve MET");
@@ -138,7 +138,7 @@ namespace HHBBYY
       }
       const xAOD::JetContainer *KFJets = nullptr;
       if(m_doKF){
-        ANA_CHECK (m_KFJetHandle.retrieve (KFJets, sys));
+        ANA_CHECK (m_KFJetHandle.retrieve (KFJets, sys, ctx));
       }
 
       // initialize
@@ -1657,7 +1657,7 @@ namespace HHBBYY
                                                                                const xAOD::JetContainer *jets) {
     ConstDataVector<xAOD::JetContainer> categorisation_jets{Hbb_Jet1, Hbb_Jet2};
 
-    // retreive the third and fourth jets
+    // retrieve the third and fourth jets
     if (jets->size() > 2) {
       for (const xAOD::Jet *jet : *jets) {
         if (jet == Hbb_Jet1 || jet == Hbb_Jet2) {

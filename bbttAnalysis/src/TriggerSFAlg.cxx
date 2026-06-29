@@ -80,7 +80,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TriggerSFAlg::execute(const EventContext& /*ctx*/)
+  StatusCode TriggerSFAlg::execute(const EventContext& ctx)
   {
 
     runBoolReadDecoMap runBoolDecos;
@@ -94,19 +94,19 @@ namespace HHBBTT
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_bbttMuonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_bbttMuonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_bbttEleHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_bbttEleHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK (m_bbttTauHandle.retrieve (taus, sys));
+      ANA_CHECK (m_bbttTauHandle.retrieve (taus, sys, ctx));
 
       m_eventTriggerSF.set(*event, -999., sys);
 

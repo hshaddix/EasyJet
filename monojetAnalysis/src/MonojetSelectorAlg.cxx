@@ -73,7 +73,7 @@ namespace MONOJET
   }
 
 
-  StatusCode MonojetSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode MonojetSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner(m_filterParams, false);
@@ -85,10 +85,10 @@ namespace MONOJET
 
       // Retrive inputs
       const xAOD::EventInfo* event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer* jets = nullptr;
-      ANA_CHECK(m_jetHandle.retrieve(jets, sys));
+      ANA_CHECK(m_jetHandle.retrieve(jets, sys, ctx));
 
       bool WPgiven = !m_isBtag.empty();
       auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
@@ -99,7 +99,7 @@ namespace MONOJET
       }
 
       const xAOD::MissingETContainer *metCont = nullptr;
-      ANA_CHECK(m_metHandle.retrieve(metCont, sys));
+      ANA_CHECK(m_metHandle.retrieve(metCont, sys, ctx));
       const xAOD::MissingET* met = (*metCont)["Final"]; // To check
       if (!met) {
         ATH_MSG_ERROR("Could not retrieve MET");
@@ -107,19 +107,19 @@ namespace MONOJET
       }
 
       const xAOD::JetContainer *largeJets = nullptr;
-      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys));
+      ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
 
       const xAOD::MuonContainer* muons = nullptr;
-      ANA_CHECK(m_muonHandle.retrieve(muons, sys));
+      ANA_CHECK(m_muonHandle.retrieve(muons, sys, ctx));
 
       const xAOD::ElectronContainer* electrons = nullptr;
-      ANA_CHECK(m_electronHandle.retrieve(electrons, sys));
+      ANA_CHECK(m_electronHandle.retrieve(electrons, sys, ctx));
 
       const xAOD::TauJetContainer* taus = nullptr;
-      ANA_CHECK(m_tauHandle.retrieve(taus, sys));
+      ANA_CHECK(m_tauHandle.retrieve(taus, sys, ctx));
 
       const xAOD::PhotonContainer* photons = nullptr;
-      ANA_CHECK(m_photonHandle.retrieve(photons, sys));
+      ANA_CHECK(m_photonHandle.retrieve(photons, sys, ctx));
 
       // reset all cut flags to default=false
       for (CutEntry& cut : m_MonojetCuts) {

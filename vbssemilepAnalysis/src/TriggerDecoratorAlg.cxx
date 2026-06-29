@@ -69,22 +69,22 @@ namespace VBSSEMILEP
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TriggerDecoratorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode TriggerDecoratorAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()){
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
       
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetsHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetsHandle.retrieve (jets, sys, ctx));
 
       runBoolReadDecoMap runBoolDecos;
       for (const auto& [runBool, key] : m_runBooleans_key){

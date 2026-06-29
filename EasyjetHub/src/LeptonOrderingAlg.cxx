@@ -38,16 +38,16 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode LeptonOrderingAlg::execute(const EventContext& /*ctx*/)
+  StatusCode LeptonOrderingAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()) {
 
       // Retrive inputs
       const xAOD::ElectronContainer *inEleContainer = nullptr;
-      ANA_CHECK (m_inEleHandle.retrieve (inEleContainer, sys));      
+      ANA_CHECK (m_inEleHandle.retrieve (inEleContainer, sys, ctx));
       const xAOD::MuonContainer *inMuContainer = nullptr;
-      ANA_CHECK (m_inMuHandle.retrieve (inMuContainer, sys));      
+      ANA_CHECK (m_inMuHandle.retrieve (inMuContainer, sys, ctx));
 
       std::vector<std::pair<const xAOD::IParticle*, int>> leptons;
 

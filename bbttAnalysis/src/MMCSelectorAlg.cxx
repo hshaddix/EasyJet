@@ -39,7 +39,7 @@ namespace HHBBTT
     return StatusCode::SUCCESS;
   }
 
-  StatusCode MMCSelectorAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode MMCSelectorAlg ::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -51,7 +51,7 @@ namespace HHBBTT
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       // Check if one of the signal regions
       bool is_lephad = false;

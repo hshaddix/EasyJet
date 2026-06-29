@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Derrick Allen
@@ -43,7 +43,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode ttCalibSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ttCalibSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Global filter originally false
@@ -70,14 +70,14 @@ namespace XBBCALIB
       const xAOD::MissingETContainer *metCont = nullptr;
 
       // retreive information from containers
-      ANA_CHECK(m_eventHandle.retrieve(eventinfo, systematic));
-      ANA_CHECK(m_ttcalib_jetHandle.retrieve(jets, systematic));
-      ANA_CHECK(m_ttcalib_lrjetHandle.retrieve(lrjets, systematic));
-      ANA_CHECK(m_ttcalib_electronHandle.retrieve(electrons, systematic));
-      ANA_CHECK(m_ttcalib_muonHandle.retrieve(muons, systematic));
-      ANA_CHECK(m_metHandle.retrieve(metCont, systematic));
+      ANA_CHECK(m_eventHandle.retrieve(eventinfo, systematic, ctx));
+      ANA_CHECK(m_ttcalib_jetHandle.retrieve(jets, systematic, ctx));
+      ANA_CHECK(m_ttcalib_lrjetHandle.retrieve(lrjets, systematic, ctx));
+      ANA_CHECK(m_ttcalib_electronHandle.retrieve(electrons, systematic, ctx));
+      ANA_CHECK(m_ttcalib_muonHandle.retrieve(muons, systematic, ctx));
+      ANA_CHECK(m_metHandle.retrieve(metCont, systematic, ctx));
 
-      // post retreival checks - here is only a met check
+      // post retrieval checks - here is only a met check
       // in principle. we can do any checks
       const xAOD::MissingET *met = (*metCont)["Final"];
       if (!met)

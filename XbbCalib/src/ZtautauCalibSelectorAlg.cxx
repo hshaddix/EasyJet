@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #include "ZtautauCalibSelectorAlg.h"
@@ -32,7 +32,7 @@ namespace XBBCALIB
   }
 
 
-  StatusCode ZtautauCalibSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode ZtautauCalibSelectorAlg::execute(const EventContext& ctx)
   {
 
     // Global filter originally false
@@ -48,9 +48,9 @@ namespace XBBCALIB
 
       // Retrive inputs
       const xAOD::JetContainer *lRjets = nullptr;
-      ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys));
+      ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK(m_electronHandle.retrieve (electrons, sys));
+      ANA_CHECK(m_electronHandle.retrieve (electrons, sys, ctx));
 
 
       //************

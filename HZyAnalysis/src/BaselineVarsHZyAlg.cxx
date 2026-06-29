@@ -58,7 +58,7 @@ namespace HZY
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsHZyAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsHZyAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())
@@ -67,25 +67,25 @@ namespace HZY
       if (!m_doSystematics && sys.name() != "") continue;
 
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::PhotonContainer *HZyPhotons = nullptr;
-      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys));
+      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys, ctx));
 
       const xAOD::ElectronContainer *HZyElectrons = nullptr;
-      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys));
+      ANA_CHECK(m_HZyElectronHandle.retrieve(HZyElectrons, sys, ctx));
 
       const xAOD::MuonContainer *HZyMuons = nullptr;
-      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys));
+      ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys, ctx));
 
       const xAOD::JetContainer *HZyJets = nullptr;
-      ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys));
+      ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys, ctx));
 
       const xAOD::PhotonContainer *HZyPhotonOR = nullptr;
-      ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys));
+      ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys, ctx));
 
       const xAOD::IParticleContainer* fsrObject = nullptr;
-      ANA_CHECK(m_FsrObjectHandle.retrieve(fsrObject, sys));
+      ANA_CHECK(m_FsrObjectHandle.retrieve(fsrObject, sys, ctx));
 
       // Reset all decorations to default values at the start of each systematics loop
       for (const std::string &string_var : m_floatVariables)

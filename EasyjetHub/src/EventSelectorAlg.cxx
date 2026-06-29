@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Thomas Strebler
@@ -31,7 +31,7 @@ namespace Easyjet
     return StatusCode::SUCCESS;
   }
 
-  StatusCode EventSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode EventSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -42,7 +42,7 @@ namespace Easyjet
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       bool pass = m_filter_deco.get(*event, sys);
       if(!pass) continue;

@@ -49,20 +49,20 @@ namespace HHH6B
 
   }
 
-  StatusCode BaselineVarsSemiResolvedAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsSemiResolvedAlg ::execute(const EventContext& ctx)
   {
     ATH_MSG_DEBUG("BaselineVarsSemiResolvedAlg::execute() called");
     for (const auto& sys : m_systematicsList.systematicsVector()) {
       // container we read in
       const xAOD::EventInfo *eventInfo = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys));
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       const xAOD::JetContainer *largeRjets = nullptr;
-      ANA_CHECK (m_LargeRJetHandle.retrieve (largeRjets, sys));
+      ANA_CHECK (m_LargeRJetHandle.retrieve (largeRjets, sys, ctx));
       std::size_t n_largeRjets = largeRjets->size();
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
 
       // set defaults

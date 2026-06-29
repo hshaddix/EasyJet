@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 /// @author Unknown
@@ -61,19 +61,19 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 
-  StatusCode BaselineVarsZbbyCalibAlg::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsZbbyCalibAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto &sys : m_systematicsList.systematicsVector())
     {
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK(m_eventHandle.retrieve(event, sys));
+      ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
       const xAOD::JetContainer *lrjets = nullptr;
-      ANA_CHECK(m_lrjetHandle.retrieve(lrjets, sys));
+      ANA_CHECK(m_lrjetHandle.retrieve(lrjets, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK(m_photonHandle.retrieve(photons, sys));
+      ANA_CHECK(m_photonHandle.retrieve(photons, sys, ctx));
 
       // selected Probe Jet
       size_t n_lrjets = lrjets->size();

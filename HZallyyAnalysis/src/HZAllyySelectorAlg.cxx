@@ -68,7 +68,7 @@ namespace HZALLYY
   }
   
   
-  StatusCode HZAllyySelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode HZAllyySelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -80,16 +80,16 @@ namespace HZALLYY
 	
 	// Retrive inputs
 	const xAOD::EventInfo *event = nullptr;
-	ANA_CHECK (m_eventHandle.retrieve (event, sys));
+	ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 	
 	const xAOD::MuonContainer *muons = nullptr;
-	ANA_CHECK (m_muonHandle.retrieve (muons, sys));
+	ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 	
 	const xAOD::ElectronContainer *electrons = nullptr;
-	ANA_CHECK (m_electronHandle.retrieve (electrons, sys));
+	ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
 	const xAOD::PhotonContainer *photons = nullptr;
-	ANA_CHECK (m_photonHandle.retrieve (photons, sys));    
+	ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
 
 	
 	m_bools.at(HZALLYY::pass_trigger_SLT) = false;
