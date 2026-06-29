@@ -5,7 +5,7 @@ from AnalysisAlgorithmsConfig.ConfigFactory import ConfigFactory
 
 from EasyjetHub.steering.utils.name_helper import drop_sys
 from EasyjetHub.steering.analysis_configuration import get_trigger_chains_scale_factor
-
+from AthenaConfiguration.Enums import LHCPeriod 
 
 def muon_sequence(flags, configAcc):
 
@@ -53,6 +53,7 @@ def muon_sequence(flags, configAcc):
     configSeq.setOptionValue('.runTrackBiasing', flags.Analysis.Muon.runTrackBiasing)
     configSeq.setOptionValue('.writeTrackD0Z0', True)
     configSeq.setOptionValue('.decorateTruth', True)
+    configSeq.setOptionValue('.calibMode', flags.Analysis.Muon.calibrationMode)
 
     extra_iso_suffixes = list(flags.Analysis.Muon.extra_iso_suffixes or [])
 
@@ -94,6 +95,10 @@ def muon_sequence(flags, configAcc):
             configSeq.setOptionValue('.saveCombinedSF', True)
             if flags.Analysis.Muon.MergeLRT:
                 configSeq.setOptionValue('.useLRT', True)
+
+            # https://atlas-mcp.docs.cern.ch/Guidelines/muonmomentumcorrections/?h=notcorrectdata_idms#recommendations-for-tool-setup
+            # for HighPt muon working point (i.e analysis with muons pT > 300 GeV) 
+            # correctData_IDMS should be used in Run-2 and notCorrectData_IDMS for Run-3
 
     if flags.Analysis.Small_R_jet.runBJetPtCalib or \
        flags.Analysis.Large_R_jet.runMuonJetPtCorr:

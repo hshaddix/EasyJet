@@ -190,6 +190,7 @@ Muon:
   extra_wps: []
   extra_iso_suffixes: []
   runTrackBiasing: false
+  calibrationMode: "correctData_CB"
 
 Tau:
   min_pT: 20.e+3
