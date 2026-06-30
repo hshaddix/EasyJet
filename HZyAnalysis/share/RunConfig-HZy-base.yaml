@@ -15,8 +15,8 @@ do_met: true
 
 # Toggles for reconstructed objects decorations
 Small_R_jet:
-  min_pT: 20.e+3
-  max_eta: 4.5
+  min_pT: 25.e+3
+  max_eta: 4.4
   useFJvt: true
   # btagging nominal working point
   btag_wp: "GN2v01_FixedCutBEff_85"

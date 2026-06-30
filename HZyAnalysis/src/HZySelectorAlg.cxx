@@ -294,7 +294,7 @@ namespace HZY
 
     // Photon OR lepton or jet selections on the selected Zgamma candidate photon
     if (!HZyCuts.exists("PHOTONS_JETS_OR_LEPTONS")) return;
-    if (m_Ibranches_photons.at("nPhotons_OR_LIdNIso").get(*event, sys) >= 1) {
+    if (m_Ibranches_photons.at("nPhotonsOR_LIdNIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::PHOTONS_JETS_OR_LEPTONS) = true;
     }
 
@@ -325,12 +325,12 @@ namespace HZY
 
     // Photon ID and Isolation selections on the selected Zgamma candidate photon
     if (!HZyCuts.exists("PHOTON_TIGHT_ID")) return;
-    if (m_Ibranches_photons.at("nPhotons_OR_TIdNIso").get(*event, sys) >= 1) {
+    if (m_Ibranches_photons.at("nPhotonsOR_TIdNIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::PHOTON_TIGHT_ID) = true;
     }
 
     if (!HZyCuts.exists("PHOTON_ISOLATION")) return;
-    if (m_Ibranches_photons.at("nPhotons_OR_TIdLIso").get(*event, sys) >= 1) {
+    if (m_Ibranches_photons.at("nPhotonsOR_TIdLIso").get(*event, sys) >= 1) {
       m_bools.at(HZY::PHOTON_ISOLATION) = true;
     }
 

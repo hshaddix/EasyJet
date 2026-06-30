@@ -55,6 +55,17 @@ private:
     CP::SysReadHandle<xAOD::MuonContainer> m_ZCandMuonsHandle{
         this, "HZyMuonsOR_ZCand", "HZyMuonsOR_ZCand_%SYS%", "Input Muons forming ZCand (from LLgCand tool)"};
 
+    CP::SysReadHandle<xAOD::ElectronContainer> m_HZyElectronORHandle{
+        this, "HZyElectronsOR", "HZyElectronsOR_%SYS%", "HZy Electron OR container with Muons to read"};
+    CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonORHandle{
+        this, "HZyMuonsOR", "HZyMuonsOR_%SYS%", "HZy Muon OR container with Electrons to read"};
+    
+    /// \brief Write these lepton containers for VH and ttH production modes with more than 2 leptons
+    CP::SysWriteHandle<ConstDataVector<xAOD::ElectronContainer>> m_HZyElORPhotonsHandle{
+        this, "HZyElOR_Photons", "HZyElOR_Photons_%SYS%", "HZy Electrons OR with photons"};
+    CP::SysWriteHandle<ConstDataVector<xAOD::MuonContainer>> m_HZyMuORPhotonsHandle{
+        this, "HZyMuOR_Photons", "HZyMuOR_Photons_%SYS%", "HZy Muons OR with photons"};
+
     CP::SysWriteHandle<ConstDataVector<xAOD::PhotonContainer>> m_HZyPhotonORHandle{
         this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photons passing OR with leptons and jets"};
 

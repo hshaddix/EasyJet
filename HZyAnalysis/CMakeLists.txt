@@ -36,7 +36,7 @@ atlas_install_python_modules(
   python/HZy_config.py
 )
 atlas_install_data(
-  #data/*
+  data/*
   share/*
 )
 

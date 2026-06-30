@@ -33,6 +33,11 @@ namespace HZY
     ATH_CHECK(m_ZCandElectronsHandle.initialize(m_systematicsList));
     ATH_CHECK(m_ZCandMuonsHandle.initialize(m_systematicsList));
 
+    ATH_CHECK(m_HZyElectronORHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyMuonORHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyElORPhotonsHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyMuORPhotonsHandle.initialize(m_systematicsList));
+
     ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyJetORHandle.initialize(m_systematicsList));
 
@@ -85,6 +90,12 @@ namespace HZY
       const xAOD::MuonContainer *HZyMuonsOR_ZCand = nullptr;
       ANA_CHECK(m_ZCandMuonsHandle.retrieve(HZyMuonsOR_ZCand, sys, ctx));
 
+      const xAOD::ElectronContainer *HZyElectronOR = nullptr;
+      ANA_CHECK(m_HZyElectronORHandle.retrieve(HZyElectronOR, sys, ctx));
+
+      const xAOD::MuonContainer *HZyMuonOR = nullptr;
+      ANA_CHECK(m_HZyMuonORHandle.retrieve(HZyMuonOR, sys, ctx));
+
       // Set default values for all output branches, in case we have fewer photons than expected
       for (const std::string &string_var : m_floatVariables)
       {
@@ -125,7 +136,7 @@ namespace HZY
       safeRemoveOverlap(*photonsView, *caloZCandMuonsView, m_dR_Ph_CaloMu);
       // Photon/Staco Muon OR (Remove Photon if near Z-Cand non-Calo Muon)
       safeRemoveOverlap(*photonsView, *nonCaloZCandMuonsView, m_dR_Ph_StacoMu);
-      m_Ibranches.at("nPhotons_OR_LIdNIso").set(*event, static_cast<int>(photonsView->size()), sys);
+      m_Ibranches.at("nPhotonsOR_LIdNIso").set(*event, static_cast<int>(photonsView->size()), sys);
 
       ATH_MSG_DEBUG("Starting jet OR against cleaned photons and Z-candidate leptons.");
       // Jet/Photon OR (Remove Jet if near Photon - requires the already-cleaned photon container)
@@ -145,8 +156,8 @@ namespace HZY
       const bool passTightIDLooseIso =
           selHZyLoosePhoton ? m_photonTIdLIsoDecorHandle.get(*selHZyLoosePhoton, sys) : false;
 
-      m_Ibranches.at("nPhotons_OR_TIdNIso").set(*event, passTightIDNonIso ? 1 : 0, sys);
-      m_Ibranches.at("nPhotons_OR_TIdLIso").set(*event, passTightIDLooseIso ? 1 : 0, sys);
+      m_Ibranches.at("nPhotonsOR_TIdNIso").set(*event, passTightIDNonIso ? 1 : 0, sys);
+      m_Ibranches.at("nPhotonsOR_TIdLIso").set(*event, passTightIDLooseIso ? 1 : 0, sys);
 
       ATH_MSG_DEBUG("Before recording OR views: photonsView size = "
         << photonsView->size() << ", jetsView size = " << jetsView->size());
@@ -178,6 +189,68 @@ namespace HZY
 
       ATH_CHECK(m_HZyPhotonORHandle.record(std::move(photonsView), sys, ctx));
       ATH_CHECK(m_HZyJetORHandle.record(std::move(jetsView), sys, ctx));
+    
+      // ------------------------------------------------------------
+      // Create mutable views of the full cleaned electron/muon
+      // collections. These are the equivalent of old `electrons`
+      // and `muons` before their final OR with the selected photon.
+      // ------------------------------------------------------------
+      auto electronsORPhotonsView = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
+      for (const xAOD::Electron* electron : *HZyElectronOR)
+      {
+        if (electron)
+          electronsORPhotonsView->push_back(electron);
+      }
+
+      auto muonsORPhotonsView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+      for (const xAOD::Muon* muon : *HZyMuonOR)
+      {
+        if (muon)
+          muonsORPhotonsView->push_back(muon);
+      }
+
+      // ------------------------------------------------------------
+      // Final lepton-photon OR:
+      // remove electrons/muons overlapping with the one selected
+      // Tight-ID + Loose-Iso signal photon.
+      // ------------------------------------------------------------
+      if (signalPhoton)
+      {
+        auto signalPhotonView = std::make_unique<ConstDataVector<xAOD::PhotonContainer>>(SG::VIEW_ELEMENTS);
+        signalPhotonView->push_back(signalPhoton);
+
+        // Remove electron if it overlaps with selected signal photon.
+        safeRemoveOverlap(*electronsORPhotonsView, *signalPhotonView, m_dR_Ph_El);
+
+        // Split muons because CaloTagged and non-Calo muons use
+        // different overlap-removal radii.
+        auto caloMuonsORPhotonsView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+        auto nonCaloMuonsORPhotonsView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+        for (const xAOD::Muon* muon : *muonsORPhotonsView)
+        {
+          if (!muon) continue;
+          if (muon->muonType() == xAOD::Muon::MuonType::CaloTagged)
+            caloMuonsORPhotonsView->push_back(muon);
+          else
+            nonCaloMuonsORPhotonsView->push_back(muon);
+        }
+
+        // Remove muons overlapping with selected signal photon.
+        safeRemoveOverlap(*caloMuonsORPhotonsView, *signalPhotonView, m_dR_Ph_CaloMu);
+        safeRemoveOverlap(*nonCaloMuonsORPhotonsView, *signalPhotonView, m_dR_Ph_StacoMu);
+
+        // Rebuild final merged muon container after photon OR.
+        muonsORPhotonsView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+        for (const xAOD::Muon* muon : *caloMuonsORPhotonsView)
+          muonsORPhotonsView->push_back(muon);
+
+        for (const xAOD::Muon* muon : *nonCaloMuonsORPhotonsView)
+          muonsORPhotonsView->push_back(muon);
+      }
+      m_Ibranches.at("nElectronsIdIso_ORPh").set(*event, static_cast<int>(electronsORPhotonsView->size()), sys);
+      m_Ibranches.at("nMuonsIdIso_ORPh").set(*event, static_cast<int>(muonsORPhotonsView->size()), sys);
+      ATH_CHECK(m_HZyElORPhotonsHandle.record(std::move(electronsORPhotonsView), sys, ctx));
+      ATH_CHECK(m_HZyMuORPhotonsHandle.record(std::move(muonsORPhotonsView), sys, ctx));
     }
 
     return StatusCode::SUCCESS;

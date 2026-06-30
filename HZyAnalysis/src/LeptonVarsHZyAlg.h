@@ -91,11 +91,9 @@ private:
     // Read lepton containers from HZyLeptonORAlg, which will be used to build
     // Z candidates
     CP::SysReadHandle<xAOD::ElectronContainer> m_HZyElectronORHandle{
-        this, "HZyElectronsOR", "HZyElectronsOR_%SYS%",
-        "HZy Electron OR container to read"};
+        this, "HZyElectronsOR", "HZyElectronsOR_%SYS%", "HZy Electron OR container with Muons to read"};
     CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonORHandle{
-        this, "HZyMuonsOR", "HZyMuonsOR_%SYS%",
-        "HZy Muon OR container to read"};
+        this, "HZyMuonsOR", "HZyMuonsOR_%SYS%", "HZy Muon OR container with Electrons to read"};
 
     // Store leptons for building candidate Z to be used in HZyPhotonJetORAlg
     CP::SysWriteHandle<ConstDataVector<xAOD::ElectronContainer>> m_ZCandElectronsHandle{
@@ -140,7 +138,7 @@ private:
     Gaudi::Property<std::vector<double>> m_mllWindow{
         this, "mllWindowInfsr", {66.0, 89.0}, "Allowed mll window [GeV] for FSR correction"};
     Gaudi::Property<double> m_mllFsrThre{this, "mllFsrThreshold", 100.0, "Allowed FSR mll window [GeV]"};
-    
+
     Gaudi::Property<std::vector<std::string>> m_floatVariables
     {this, "floatVariableList", {}, "Name list of floating variables"};
     

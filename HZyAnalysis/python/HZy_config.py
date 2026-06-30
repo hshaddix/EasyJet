@@ -173,8 +173,13 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
     cfg.addEventAlgo(
         CompFactory.HZY.BaselineVarsHZyAlg(
             "BaselineVarsHZyAlg",
+            isMC=flags.Input.isMC,
             floatVariableList=float_variables['baseline'],
+            intVariableList=int_variables['baseline'],
             floatVariableList_leptons=float_variables['leptons'],
+            intVariableList_leptons=int_variables['leptons'],
+            floatVariableList_photons=float_variables['photons'],
+            intVariableList_photons=int_variables['photons'],
             doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
@@ -216,8 +221,9 @@ def get_PhotonVarsHZyAlg_variables(flags):
         "Photon_effSF", "Ph_Pt_Raw", "Ph_Eta_Raw", "Ph_Phi_Raw",
     ]
     int_variable_names = [
-        "nPhotons_LIdNIso", "nPhotons_OR_LIdNIso", "nPhotons_OR_TIdNIso", 
-        "nPhotons_OR_TIdLIso", "Ph_ConvType", "Ph_isEMTight"]
+        "nPhotons_LIdNIso", "nPhotonsOR_LIdNIso", "nPhotonsOR_TIdNIso",
+        "nPhotonsOR_TIdLIso", "Ph_ConvType", "Ph_isEMTight",
+        "nElectronsIdIso_ORPh", "nMuonsIdIso_ORPh"]
 
     return float_variable_names, int_variable_names
 
@@ -233,7 +239,7 @@ def get_LeptonVarsHZyAlg_variables(flags):
 
     int_variable_names = [
         "Lep_Channel", "LepLepZ_Size", "Muon_hasFsr", "Muon_Index_Fsr",
-        "nElectrons_LIdNIso", "nMuons_MIdNIso", 
+        "nElectrons_LIdNIso", "nMuons_MIdNIso",
         "nElectrons_LIdLIso", "nMuons_MIdLIso"]
 
     return float_variable_names, int_variable_names
@@ -248,9 +254,7 @@ def get_JetVarsHZyAlg_variables(flags):
 
 def get_BaselineVarsHZyAlg_variables(flags):
     float_variable_names = [
-        "BeamSpotWeight",
-        "MC_Weight",
-        "LLGam_M_Fsr",
+        "BeamSpotWeight", "MC_Weight", "LLGam_M_Fsr",
     ]
 
     for obj in ["LLGam"]:
@@ -259,9 +263,30 @@ def get_BaselineVarsHZyAlg_variables(flags):
                 float_variable_names.append(f"{obj}_{var}_{suffix}")
 
     float_variable_names += [
-        "LLGam_RelPhpT_Cstr",
+        "LLGam_RelPhpT_Cstr", "VBF_Score_Run3",
+        "ggF_Score_Run3", "RelpT_Score_Run3"
     ]
-    int_variable_names = []
+
+    # MVA input feature names for ONNX inference
+    onnx_input_features = [
+        "VBF_DRmin_y_j", "VBF_Dphi_Zy_jj_Fullrange",
+        "VBF_Dy_j_j", "VBF_N_j",
+        "VBF_Zepp", "VBF_eta_j1",
+        "VBF_eta_j2", "VBF_m_jj",
+        "VBF_mass_j1", "VBF_mass_j2",
+        "VBF_pT_j1", "VBF_pT_j2",
+        "VBF_pT_jj", "VBF_pTt_Zy",
+        "VBF_phi_j1", "Zy_Dphi_j1",
+        "ll_eta", "ll_pt",
+        "ll_pt_rel", "ph_eta",
+        "ph_pt", "ph_pt_rel",
+        "llg_angles_costheta_ginH", "llg_angles_costheta_linZ",
+        "llg_deta_Zy", "llg_dphi_Zy", "llg_angles_phi_linZ",
+        "llg_eta", "llg_pt",
+        "llg_pt_rel", "llg_pTt",
+    ]
+    float_variable_names += onnx_input_features
+    int_variable_names = ["category_Run3"]
 
     return float_variable_names, int_variable_names
 

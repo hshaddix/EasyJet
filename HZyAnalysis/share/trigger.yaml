@@ -129,8 +129,11 @@ scale_factor:
       - 'HLT_mu22_mu8noL1_L1MU14FCH'
     "2024":
       - "HLT_e26_lhtight_ivarloose_L1eEM26M || HLT_e60_lhmedium_L1eEM26M || HLT_e140_lhloose_L1eEM26M"
-      - "HLT_2e17_lhvloose_L12eEM18M"
-      - "HLT_2e24_lhvloose_L12eEM24L"
+      # no scale factors for e17 and e24 
+      # https://gitlab.cern.ch/atlas/athena/-/blob/release/25.2.98/Trigger/TrigAnalysis/TrigGlobalEfficiencyCorrection/data/MapKeys.cfg#L216
+      # https://atlas-groupdata.web.cern.ch/atlas-groupdata/ElectronEfficiencyCorrection/2015_2025/rel22.2/2025_Run3_Consolidated_Recommendation_v4/trigger/
+      # - "HLT_2e17_lhvloose_L12eEM18M"
+      # - "HLT_2e24_lhvloose_L12eEM24L"
       - "HLT_mu24_ivarmedium_L1MU14FCH || HLT_mu50_L1MU14FCH"
       - "HLT_2mu14_L12MU8F"
       - "HLT_mu22_mu8noL1_L1MU14FCH"
