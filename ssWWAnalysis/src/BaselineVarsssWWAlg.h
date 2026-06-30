@@ -8,6 +8,9 @@
 
 #include <AthenaBaseComps/AthHistogramAlgorithm.h>
 
+#include "AsgTools/ToolHandle.h"
+#include "PMGAnalysisInterfaces/IPMGTruthWeightTool.h"
+
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysWriteDecorHandle.h>
@@ -62,6 +65,26 @@ private:
 
     Gaudi::Property<bool> m_isMC
       { this, "isMC", false, "Is this simulation?" };
+
+    ToolHandle<PMGTools::IPMGTruthWeightTool> m_weightTool
+      { this, "weightTool", "",
+        "PMG truth weight tool for named MC weights" };
+
+    Gaudi::Property<std::string> m_expandedEwWeightName
+      { this, "expandedEwWeightName", "MUR1_MUF1_PDF303200_EXPASSEW",
+        "Named PMG truth weight for the expanded EW variation" };
+
+    Gaudi::Property<std::string> m_additionalEwWeightName
+      { this, "additionalEwWeightName", "MUR1_MUF1_PDF303200_ASSEW",
+        "Named PMG truth weight for the additive EW variation" };
+
+    Gaudi::Property<std::string> m_multiplicativeEwWeightName
+      { this, "multiplicativeEwWeightName", "MUR1_MUF1_PDF303200_MULTIASSEW",
+        "Named PMG truth weight for the multiplicative EW variation" };
+
+    Gaudi::Property<unsigned int> m_specialWeightsDsid
+      { this, "specialWeightsDsid", 701045,
+        "Only retrieve the special PMG truth weights for this DSID" };
 
     Gaudi::Property<bool> m_isRun3
       { this, "isRun3", true, "Is this Run 3?" };

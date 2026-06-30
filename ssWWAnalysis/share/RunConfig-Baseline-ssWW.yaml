@@ -7,6 +7,8 @@ bypass: false
 
 expert_mode_warning_level: ignore
 
+store_high_level_variables: true
+
 # Toggles for object types
 do_small_R_jets: true
 do_muons: true

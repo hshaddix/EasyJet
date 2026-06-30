@@ -26,6 +26,8 @@ atlas_add_component(ssWWAnalysis
   TriggerMatchingToolLib
   EventBookkeeperToolsLib
   EasyjetHubLib
+  PMGAnalysisInterfacesLib
+  PMGToolsLib
 )
 
 # Install python modules, joboptions, and share content

@@ -48,6 +48,10 @@ namespace ssWWVBS
     }
 
     if(m_isMC){
+      if (!m_weightTool.empty()) {
+        ATH_CHECK(m_weightTool.retrieve());
+      }
+
       ATH_CHECK (m_ele_truthOrigin.initialize(m_systematicsList, m_ssWWElectronHandle));
       ATH_CHECK (m_ele_truthType.initialize(m_systematicsList, m_ssWWElectronHandle));
 
@@ -105,7 +109,6 @@ namespace ssWWVBS
 
   StatusCode BaselineVarsssWWAlg::execute(const EventContext& ctx)
   {
-
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector())
     {
@@ -139,6 +142,31 @@ namespace ssWWVBS
 
       for (const std::string &string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set(*event, -99., sys);
+      }
+
+      if (m_isMC) {
+        const bool useSpecialWeights = event->mcChannelNumber() == m_specialWeightsDsid;
+        const auto setTruthWeightBranch = [&](const std::string& branchName,
+                                             const std::string& weightName) {
+          auto branchItr = m_Fbranches.find(branchName);
+          if (branchItr == m_Fbranches.end()) {
+            return;
+          }
+
+          float weight = 1.f;
+          if (useSpecialWeights && !weightName.empty() && !m_weightTool.empty()) {
+            if (m_weightTool->hasWeight(weightName)) {
+              weight = m_weightTool->getWeight(event, weightName);
+            } else {
+              ATH_MSG_DEBUG("PMG truth weight not available for this sample: " << weightName);
+            }
+          }
+          branchItr->second.set(*event, weight, sys);
+        };
+
+        setTruthWeightBranch("mc_weight_exp", m_expandedEwWeightName);
+        setTruthWeightBranch("mc_weight_add", m_additionalEwWeightName);
+        setTruthWeightBranch("mc_weight_mul", m_multiplicativeEwWeightName);
       }
 
       for (const auto& var: m_intVariables) {

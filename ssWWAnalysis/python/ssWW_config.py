@@ -146,6 +146,10 @@ def ssWW_cfg(flags, smalljetkey, muonkey, electronkey,
             floatVariableList=float_variables,
             intVariableList=int_variables,
             boolVectorVariableList=bool_vectorlike_variables,
+            weightTool=(
+                "PMGTools::PMGTruthWeightTool/ssWWPMGTruthWeightTool"
+                if flags.Input.isMC else ""
+            ),
         )
     )
 
@@ -260,6 +264,13 @@ def get_BaselineVarsssWWAlg_variables(flags):
 def get_BaselineVarsssWWAlg_highlevelvariables(flags):
     high_level_float_variables = []
     high_level_int_variables = []
+
+    if flags.Input.isMC:
+        high_level_float_variables += [
+            "mc_weight_exp",
+            "mc_weight_add",
+            "mc_weight_mul",
+        ]
 
     return high_level_float_variables, high_level_int_variables
 

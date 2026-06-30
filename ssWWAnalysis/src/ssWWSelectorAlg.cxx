@@ -25,6 +25,7 @@ namespace ssWWVBS
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("     ssWWSelectorAlg      \n");
     ATH_MSG_INFO("*********************************\n");
+    std::cout<<"in ssWWSelectorAlg, m_isMC=  "<<m_isMC<<std::endl;
 
     // Initialise global event filter
     ATH_CHECK (m_filterParams.initialize(m_systematicsList));
@@ -265,7 +266,6 @@ namespace ssWWVBS
       if(m_bools.at(ssWWVBS::PASS_TRIGGER) && m_bools.at(ssWWVBS::PASS_TWO_LEPTONS) && m_bools.at(ssWWVBS::DILEPTON_MASS_THRESHOLD)) pass_baseline=true;
 
       // definition of SR and WZCR events: eee, mmm, mme, eem
-      // std::cout<<"     ssWWSelectorAlg::execute()     : line  248"<<std::endl;
       if(pass_baseline && m_bools.at(ssWWVBS::EXACTLY_TWO_LEPTONS) && m_bools.at(ssWWVBS::TWO_SAME_CHARGE_LEPTONS)  ){ 
         if(m_bools.at(ssWWVBS::AT_LEAST_TWO_JETS) && m_bools.at(ssWWVBS::DIJETS_DELTA_RAPIDITY) && m_bools.at(ssWWVBS::DIJETS_MASS_HIGH) && m_bools.at(ssWWVBS::BJET_VETO) ){
           if( m_bools.at(ssWWVBS::MET) ){
