@@ -44,8 +44,9 @@ ttree_output:
       ruth_parent_info: true
       no_bjet_calib_p4: true
       run_selection: true
+      qg_tagger_info: true
       # the QGTransformer_ConstScore is only available for PHYS with p6846+
-      extra_variables: 
+      extra_variables:
         - ["QGTransformer_ConstScore", null]
     ditaus:
       score_branches: true
@@ -82,6 +83,8 @@ CutList:
 Small_R_jet:
   amount_bjet: 0
   doL1Matching: true
+  qg_tagger_wps: [10, 20, 30, 40, 50, 60, 70, 80, 90]
+  qg_tagger_apply_sfs: true
 
 Tau:
   amount: 0

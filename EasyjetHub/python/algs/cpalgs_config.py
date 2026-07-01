@@ -9,7 +9,7 @@ from EasyjetHub.output.ttree.wtag_decor_config import wtag_decor_cfg
 from EasyjetHub.output.ttree.lundnet_decor_config import lundnet_decor_cfg
 from EasyjetHub.output.ttree.tau_decor_config import tau_decor_cfg
 from EasyjetHub.output.ttree.jet_decor_config import (
-    jet_decor_cfg, large_R_jet_decor_cfg
+    jet_decor_cfg, large_R_jet_decor_cfg, qg_tagger_decor_cfg
 )
 from EasyjetHub.output.ttree.electron_decor_config import electron_decor_config
 from EasyjetHub.output.ttree.muon_decor_config import muon_track_decor_config
@@ -61,6 +61,7 @@ def cpalgs_cfg(flags):
 
     if flags.Analysis.do_small_R_jets:
         cfg.merge(jet_decor_cfg(flags))
+        cfg.merge(qg_tagger_decor_cfg(flags))
 
     if flags.Analysis.do_large_R_UFO_jets:
         cfg.merge(large_R_jet_decor_cfg(flags))

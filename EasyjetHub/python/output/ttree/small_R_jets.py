@@ -215,6 +215,23 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
                     (f"{gn3t}_p{prob}", "float")
                 ]
 
+    # Quark/Gluon tagger decisions per WP
+    if jet_output_flags.qg_tagger_info:
+        small_jet_flags = flags.Analysis.Small_R_jet
+        qg_wps = small_jet_flags.qg_tagger_wps
+        write_qg_sfs = small_jet_flags.qg_tagger_apply_sfs and flags.Input.isMC
+        for wp in qg_wps:
+            wp_str = str(wp)
+            small_R_jet_branches.variables += [
+                (f"QGTransformer_PassScore{wp_str}WP", "char"),
+                (f"QGTransformer_ValidKinRange{wp_str}WP", "char"),
+            ]
+            if write_qg_sfs:
+                small_R_jet_branches.variables += [
+                    (f"QGTransformer_Efficiency{wp_str}WP", "float"),
+                    (f"QGTransformer_Inefficiency{wp_str}WP", "float"),
+                ]
+
     small_R_jet_branches.variables += jet_output_flags.extra_variables
     if flags.Input.isMC:
         small_R_jet_branches.variables += jet_output_flags.mc_extra_variables

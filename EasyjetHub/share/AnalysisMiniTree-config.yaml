@@ -27,6 +27,7 @@ collection_options:
     btag_details: false
     run_selection: false
     gn3_scores: false
+    qg_tagger_info: false
     extra_variables: []
     mc_extra_variables: []
 
