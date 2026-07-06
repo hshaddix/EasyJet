@@ -6,10 +6,6 @@
 
 namespace HHH6B
 {
-  TriggerDecoratorAlg::TriggerDecoratorAlg(const std::string &name,
-					   ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator) { }
-
   StatusCode TriggerDecoratorAlg ::initialize()
   {
     ATH_CHECK(m_eventInfoKey.initialize());

@@ -30,7 +30,7 @@ namespace HHH6B
   class bbbbbbSelectorAlg final : public AthHistogramAlgorithm {
 
     public:
-      bbbbbbSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

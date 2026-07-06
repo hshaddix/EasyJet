@@ -24,8 +24,7 @@ namespace HHH6B
   {
     /// \brief The standard constructor
 public:
-    //BaselineVarsSemiResolvedAlg(const std::string &name, ISvcLocator *pSvcLocator);
-    BaselineVarsSemiResolvedAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

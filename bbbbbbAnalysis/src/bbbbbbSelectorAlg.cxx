@@ -10,13 +10,6 @@
 
 namespace HHH6B
 {
-  bbbbbbSelectorAlg::bbbbbbSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode bbbbbbSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

@@ -59,12 +59,6 @@ namespace {
 
 namespace HHH6B
 {
-  JetPairingAlg ::JetPairingAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode JetPairingAlg ::initialize()
   {
     ATH_CHECK(m_inJetHandle.initialize(m_systematicsList));

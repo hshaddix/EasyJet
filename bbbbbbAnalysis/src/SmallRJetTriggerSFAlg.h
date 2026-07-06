@@ -30,7 +30,7 @@ namespace HHH6B
   class SmallRJetTriggerSFAlg final : public AthHistogramAlgorithm
   {
 public:
-    SmallRJetTriggerSFAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     StatusCode initialize() override;
     StatusCode execute(const EventContext& ctx) override;

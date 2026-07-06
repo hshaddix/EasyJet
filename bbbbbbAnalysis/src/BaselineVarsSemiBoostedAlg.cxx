@@ -15,12 +15,6 @@
 namespace HHH6B
 
 {
-  BaselineVarsSemiBoostedAlg ::BaselineVarsSemiBoostedAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsSemiBoostedAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
