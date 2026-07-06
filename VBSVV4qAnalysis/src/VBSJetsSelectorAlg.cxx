@@ -31,7 +31,7 @@ namespace VBSVV4q{
     }
 
     
-    StatusCode VBSJetsSelectorAlg::execute(const EventContext& /*ctx*/){
+    StatusCode VBSJetsSelectorAlg::execute(const EventContext& ctx){
 
         /*
             -) HighestMjjForwardJets : small-R jets pair after overlap, forward no btag and opposite eta, with the highest mjj
@@ -44,10 +44,10 @@ namespace VBSVV4q{
 
             // Retrieve inputs
             const xAOD::JetContainer *smallRjets = nullptr;
-            ANA_CHECK (m_smallRjetHandle.retrieve (smallRjets, sys));
+            ANA_CHECK (m_smallRjetHandle.retrieve (smallRjets, sys, ctx));
 
             const xAOD::JetContainer *largeRjets = nullptr;
-            ANA_CHECK (m_largeRjetHandle.retrieve (largeRjets, sys));
+            ANA_CHECK (m_largeRjetHandle.retrieve (largeRjets, sys, ctx));
 
             // make sure they are pT sorted
             //std::sort(smallRjets->begin(), smallRjets->end(), [] (const xAOD::Jet* a, const xAOD::Jet* b) {return a->pt() > b->pt(); });
@@ -140,8 +140,8 @@ namespace VBSVV4q{
                     nonVBSJetContainer->end() );
             }
             
-            ATH_CHECK(m_VBSjetOutHandle.record(std::move(VBSJetContainer), sys));
-            ATH_CHECK(m_NonVBSjetOutHandle.record(std::move(nonVBSJetContainer), sys));
+            ATH_CHECK(m_VBSjetOutHandle.record(std::move(VBSJetContainer), sys, ctx));
+            ATH_CHECK(m_NonVBSjetOutHandle.record(std::move(nonVBSJetContainer), sys, ctx));
 
         }//syst
 

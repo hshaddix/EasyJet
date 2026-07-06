@@ -30,7 +30,7 @@ namespace VBSVV4q{
         return StatusCode::SUCCESS;
     }
 
-    StatusCode SignalJetsSelectorAlg::execute(const EventContext& /*ctx*/){
+    StatusCode SignalJetsSelectorAlg::execute(const EventContext& ctx){
         /*
             signal jets selection algorithm
                 - two leading pT large-R jets with m > 40 GeV (pT/eta cuts already applied)
@@ -41,7 +41,7 @@ namespace VBSVV4q{
         for (const auto& sys : m_systematicsList.systematicsVector()){
             // Retrieve inputs
             const xAOD::JetContainer *jets = nullptr;
-            ANA_CHECK (m_LargeRJetsHandle.retrieve (jets, sys));
+            ANA_CHECK (m_LargeRJetsHandle.retrieve (jets, sys, ctx));
             auto SignalJetsCandidates = std::make_unique<ConstDataVector<xAOD::JetContainer> >(SG::VIEW_ELEMENTS);
             // init for discojet score and candidate signal jets
             float discojet1 = -99., discojet2 = -99., discojet = -99.;
@@ -85,7 +85,7 @@ namespace VBSVV4q{
                 } 
             }
 
-            ATH_CHECK(m_SignalLargeRJetsOutHandle.record(std::move(SignalJetsCandidates), sys));
+            ATH_CHECK(m_SignalLargeRJetsOutHandle.record(std::move(SignalJetsCandidates), sys, ctx));
 
         }//sys
 

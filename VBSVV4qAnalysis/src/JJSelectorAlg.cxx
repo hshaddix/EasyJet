@@ -47,7 +47,7 @@ namespace VBSVV4q{
     return StatusCode::SUCCESS;
   }
   
-  StatusCode JJSelectorAlg::execute(const EventContext& /*ctx*/){
+  StatusCode JJSelectorAlg::execute(const EventContext& ctx){
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
 
@@ -57,14 +57,14 @@ namespace VBSVV4q{
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
   
       const xAOD::JetContainer *vbsjets = nullptr;
       if( !m_UseVBFRNN )
-	ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys));
+        ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
 
       const xAOD::JetContainer *largeJets = nullptr;
-      ANA_CHECK (m_LargeRJetsHandle.retrieve (largeJets, sys));
+      ANA_CHECK (m_LargeRJetsHandle.retrieve (largeJets, sys, ctx));
 
       for (auto& [key, value] : m_boolnames) m_bools.at(key) = false;
 
@@ -75,7 +75,7 @@ namespace VBSVV4q{
       } 
 
       if( !m_UseVBFRNN )
-	vbsjetsSelection(vbsjets);
+        vbsjetsSelection(vbsjets);
 
       bool pass_preselection = true;
       //bool pass_preselection = m_bools.at(VBSVV4q::PASS_RES_BASELINE) || m_bools.at(VBSVV4q::PASS_MERG_BASELINE);

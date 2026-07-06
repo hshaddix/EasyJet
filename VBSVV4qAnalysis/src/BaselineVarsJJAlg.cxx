@@ -64,29 +64,29 @@ namespace VBSVV4q{
       return StatusCode::SUCCESS;
     }
 
-    StatusCode BaselineVarsJJAlg::execute(const EventContext& /*ctx*/){
+    StatusCode BaselineVarsJJAlg::execute(const EventContext& ctx){
       // Loop over all systs
       for (const auto& sys : m_systematicsList.systematicsVector()){
         // Retrieve inputs
         const xAOD::EventInfo *event = nullptr;
-        ANA_CHECK (m_eventHandle.retrieve (event, sys));
+        ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
         const xAOD::JetContainer *LargeRJets = nullptr;
-        ANA_CHECK (m_LargeRJetsHandle.retrieve (LargeRJets, sys));
+        ANA_CHECK (m_LargeRJetsHandle.retrieve (LargeRJets, sys, ctx));
 
         const xAOD::JetContainer *SigLargeRJets = nullptr;
-        ANA_CHECK (m_SigLargeRJetsHandle.retrieve (SigLargeRJets, sys));
+        ANA_CHECK (m_SigLargeRJetsHandle.retrieve (SigLargeRJets, sys, ctx));
 
         const xAOD::JetContainer *SmallRJets = nullptr;
-        ANA_CHECK (m_SmallRJetsHandle.retrieve (SmallRJets, sys));
+        ANA_CHECK (m_SmallRJetsHandle.retrieve (SmallRJets, sys, ctx));
 
         const xAOD::JetContainer *vbsjets = nullptr;
-	const xAOD::JetContainer *RNNJets = nullptr;
+        const xAOD::JetContainer *RNNJets = nullptr;
         if(!m_UseVBFRNN) {
-          ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys));
+          ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
         }
         else {
-          ANA_CHECK (m_RNNjetHandle.retrieve (RNNJets, sys));
+          ANA_CHECK (m_RNNjetHandle.retrieve (RNNJets, sys, ctx));
         }
 
         for (const std::string &string_var: m_floatVariables) {
@@ -174,7 +174,7 @@ namespace VBSVV4q{
           float discojet (-99.);
           if(m_loadDisCoJet){
             discojet = m_discojet.get(*jet, sys);
-	    m_Fbranches.at("SigJet" + std::to_string(iii) + "_DisCoJet").set(*event, discojet, sys); 
+            m_Fbranches.at("SigJet" + std::to_string(iii) + "_DisCoJet").set(*event, discojet, sys); 
           }
 
         }

@@ -39,16 +39,16 @@ namespace VBSVV4q
     return StatusCode::SUCCESS;
   }
 
-  StatusCode TriggerDecoratorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode TriggerDecoratorAlg::execute(const EventContext& ctx)
   {
     // Loop over all systs
     for (const auto& sys : m_systematicsList.systematicsVector()){
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetsHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetsHandle.retrieve (jets, sys, ctx));
 
       for (const auto& [channel, name] : m_triggerChannels) m_trig_bools.at(channel) = false;
 
