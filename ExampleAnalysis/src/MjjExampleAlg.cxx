@@ -6,12 +6,6 @@
 
 namespace EXANA
 {
-  MjjExampleAlg ::MjjExampleAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode MjjExampleAlg ::initialize()
   {
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));

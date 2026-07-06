@@ -6,12 +6,6 @@
 
 namespace EXANA
 {
-  BaselineVarsExampleAlg ::BaselineVarsExampleAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsExampleAlg ::initialize()
   {
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
