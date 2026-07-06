@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "AnaAlgorithm/AnaAlgorithm.h"
+#include "EasyjetHub/BaseSelectorAlg.h"
 #include <AsgDataHandles/ReadDecorHandleKey.h>
 #include <AsgDataHandles/ReadDecorHandle.h>
 
@@ -33,11 +33,11 @@ namespace HHBBTT
 {
 
   /// \brief An algorithm for counting containers
-  class HHbbttSelectorAlg final : public EL::AnaAlgorithm
+  class HHbbttSelectorAlg final : public Easyjet::BaseSelectorAlg
   {
     /// \brief The standard constructor
 public:
-    using EL::AnaAlgorithm::AnaAlgorithm;
+    using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -56,8 +56,6 @@ private:
 
     std::vector<HHBBTT::Channel> m_channels;
 
-    Gaudi::Property<bool> m_isMC
-      { this, "isMC", false, "Is this simulation?" };
     Gaudi::Property<bool> m_useTriggerSel
       { this, "useTriggerSelections", true, "Apply trigger-related selections" };
     Gaudi::Property<bool> m_doAntiIDRegions
@@ -262,14 +260,11 @@ private:
     {HHBBTT::pass_AntiIsoLepHad, "pass_AntiIsoLepHad"},
     {HHBBTT::pass_Boosted, "pass_Boosted"},
     };
+    std::unordered_map<std::string, HHBBTT::Booleans> m_nameToBool;
 
     /// \brief Cutflow Variables
-    CutManager m_bbttCuts;
-    Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
     std::vector<HHBBTT::Booleans> m_inputCutKeys;
-    Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-    long long int m_total_events{0};
-    double m_total_mcEventWeight{0.0};
+
     CP::SysReadDecorHandle<float>
       m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
 
@@ -277,8 +272,6 @@ private:
 
     std::unordered_map<HHBBTT::TriggerChannel, std::unordered_map<HHBBTT::Var, float>> m_pt_threshold;
     std::unordered_map<HHBBTT::TriggerChannel, std::unordered_map<HHBBTT::Var, int>> m_trigger_pt_threshold;
-
-    StatusCode initialiseCutflow();
 
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::EventInfo, char> > trigPassReadDecoMap;
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::ReadDecorHandle<xAOD::MuonContainer, char> > muTrigMatchReadDecoMap;
@@ -297,7 +290,6 @@ private:
        const xAOD::Jet* eta_lt3p2_jet0, const xAOD::Jet* eta_lt2p5_bjet0,
        const xAOD::Jet* eta_lt2p5_bjet1);
 
-    void applyCutFlow(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
     void applySingleLepTriggerSelection
       (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos,
        const xAOD::Electron* ele, const eleTrigMatchReadDecoMap& ele_trigMatchDecos,

@@ -11,8 +11,10 @@ add_compile_options(-Werror)
 
 # Component(s) in the package:
 atlas_add_library( EasyjetHubLib
-		   Easyjet/CutManager.h
-		   src/CutManager.cxx
+                   EasyjetHub/CutManager.h
+                   EasyjetHub/BaseSelectorAlg.h
+                   src/CutManager.cxx
+                   src/BaseSelectorAlg.cxx
                    INCLUDE_DIRS ${ROOT_INCLUDE_DIRS}
                    PUBLIC_HEADERS EasyjetHub
                    LINK_LIBRARIES

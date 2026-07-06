@@ -50,7 +50,8 @@ namespace HHBBTT
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_jetHandle));
     }
 
-    if (m_saveCutFlow) ATH_CHECK (m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
+    if (m_saveCutFlow)
+      ATH_CHECK (m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
 
     ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
 
@@ -192,7 +193,15 @@ namespace HHBBTT
       }
     }
 
-    if (m_saveCutFlow) ATH_CHECK (initialiseCutflow());
+    if (m_saveCutFlow){
+      std::vector<std::string> boolNameList;
+      for (const auto& [key, value]: m_boolnames){
+        boolNameList.push_back(value);
+        m_nameToBool[value] = key;
+      }
+      ATH_CHECK (initialiseCutflow(boolNameList));
+    }
+
     return StatusCode::SUCCESS;
   }
 
@@ -229,7 +238,7 @@ namespace HHBBTT
 
       // Retrieve inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
+      ATH_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
       setThresholds(event, sys);
 
@@ -241,7 +250,7 @@ namespace HHBBTT
       //************
 
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
+      ATH_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       int n_jets = 0;
       bool WPgiven = !m_isBtag.empty();
@@ -269,7 +278,7 @@ namespace HHBBTT
         //***************
         int n_boosted_jets = 0;
         const xAOD::JetContainer *lRjets = nullptr;
-        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
+        ATH_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
         n_boosted_jets = lRjets->size();
 
         int n_boosted_b_jets = 0;
@@ -284,7 +293,7 @@ namespace HHBBTT
 
         int n_ditaus = 0;
         const xAOD::DiTauJetContainer *ditaus = nullptr;
-        ANA_CHECK (m_ditauHandle.retrieve (ditaus, sys, ctx));
+        ATH_CHECK (m_ditauHandle.retrieve (ditaus, sys, ctx));
         n_ditaus = ditaus->size();
 
         int n_tagged_ditaus = 0;
@@ -324,13 +333,13 @@ namespace HHBBTT
       // lepton
       //************
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
+      ATH_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
 
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
+      ATH_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
       const xAOD::TauJetContainer *taus = nullptr;
-      ANA_CHECK (m_tauHandle.retrieve (taus, sys, ctx));
+      ATH_CHECK (m_tauHandle.retrieve (taus, sys, ctx));
 
 
       int n_leptons_looseId_iso = 0;
@@ -848,7 +857,11 @@ namespace HHBBTT
 
       // do the CUTFLOW only with sys="" -> NOSYS
       if (sys.name()=="" && m_saveCutFlow){
-        applyCutFlow(event,sys);
+        std::vector<bool> cutBools;
+        for(const auto& cut : m_inputCutList)
+          cutBools.push_back(m_bools.at(m_nameToBool.at(cut)));
+        double mc_weight = m_isMC ? m_generatorWeight.get(*event, sys) : 0.;
+        ATH_CHECK (applyCutFlow(cutBools, mc_weight));
       }
 
       // Fill syst-aware output decorators
@@ -868,61 +881,11 @@ namespace HHBBTT
   }
 
   StatusCode HHbbttSelectorAlg::finalize() {
-    ANA_CHECK (m_filterParams.finalize ());
-
-    m_bbttCuts.CheckCutResults(); // Print CheckCutResults
-
-    if(m_saveCutFlow) {
-      m_bbttCuts.DoAbsoluteEfficiency(m_total_events, efficiency("AbsoluteEfficiency"));
-      m_bbttCuts.DoRelativeEfficiency(m_total_events, efficiency("RelativeEfficiency"));
-      m_bbttCuts.DoStandardCutFlow(m_total_events, efficiency("StandardCutFlow"));
-      if(m_isMC) {
-        m_bbttCuts.DoWeightedAbsoluteEfficiency(m_total_mcEventWeight, efficiency("WeightedAbsoluteEfficiency"));
-        m_bbttCuts.DoWeightedRelativeEfficiency(m_total_mcEventWeight, efficiency("WeightedRelativeEfficiency"));
-        m_bbttCuts.DoWeightedStandardCutFlow(m_total_mcEventWeight, efficiency("WeightedStandardCutFlow"));
-      }
-      m_bbttCuts.DoCutflowLabeling(m_total_events, hist("EventsPassed_BinLabeling"));
-    }
-
+    ATH_CHECK (m_filterParams.finalize ());
+    ATH_CHECK (finaliseCutflow());
     return StatusCode::SUCCESS;
   }
 
-  void HHbbttSelectorAlg::applyCutFlow(
-    const xAOD::EventInfo* event, const CP::SystematicSet& sys
-  ) { 
-        //****************
-        // Cutflow
-        //****************
-        // Compute total_events
-        m_total_events+=1;
-        if(m_isMC) m_total_mcEventWeight+= m_generatorWeight.get(*event, sys);
-
-        // Count which cuts the event passed
-        for (const auto &cut : m_inputCutKeys) {
-          if(m_bbttCuts.exists(m_boolnames.at(cut))) {
-            m_bbttCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
-            if (m_bbttCuts(m_boolnames.at(cut)).passed) {
-              m_bbttCuts(m_boolnames.at(cut)).counter += 1;
-              if(m_isMC) m_bbttCuts(m_boolnames.at(cut)).w_counter += m_generatorWeight.get(*event, sys);
-            }
-          }
-        }
-
-        // Check how many consecutive cuts are passed by the event.
-        unsigned int consecutive_cuts = 0;
-        for (size_t i = 0; i < m_bbttCuts.size(); ++i) {
-          if (m_bbttCuts[i].passed)
-            consecutive_cuts++;
-          else
-            break;
-        }
-
-        // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
-        for (unsigned int i=0; i<consecutive_cuts; i++) {
-          m_bbttCuts[i].relativeCounter += 1;
-          if(m_isMC) m_bbttCuts[i].w_relativeCounter += m_generatorWeight.get(*event, sys);
-        }
-  }
 
   void HHbbttSelectorAlg::applyTriggerSelection
   (const xAOD::EventInfo* event, const trigPassReadDecoMap& triggerdecos,
@@ -1233,57 +1196,6 @@ namespace HHBBTT
     m_bools.at(HHBBTT::pass_trigger_MET) = trigPassed_MET;
   
   };
-
-  StatusCode HHbbttSelectorAlg ::initialiseCutflow()
-  {
-    // CutFlow
-    std::vector<std::string> boolnamelist;
-    for (const auto& [key, value]: m_boolnames) {
-      boolnamelist.push_back(value);
-    }
-    m_bbttCuts.CheckInputCutList(m_inputCutList,boolnamelist);
-
-    // Initialize an array containing the enum values needed for the cutlist
-    m_inputCutKeys.resize(m_inputCutList.size());
-    std::vector<bool> inputWasFound (m_inputCutList.size(), false);
-    for (const auto& [key, value]: m_boolnames) {
-      auto it = std::find(m_inputCutList.begin(), m_inputCutList.end(), value);
-      if(it != m_inputCutList.end()) {
-        auto index = it - m_inputCutList.begin();
-        m_inputCutKeys.at(index) = key;
-        inputWasFound.at(index) = true;
-      }
-    }
-    // Check that every element of m_inputCutList has a corresponding enum in m_inputCutEnum
-    for (unsigned int index = 0; index < inputWasFound.size(); index++) {
-      if(inputWasFound.at(index)) continue;
-      ATH_MSG_ERROR("Doubled or falsely spelled cuts in CutList (see config file)." + m_inputCutList[index]);
-    }
-    // Initialize a vector of CutEntry structs based on the input Cut List
-    for (const auto &cut : m_inputCutKeys) {
-      m_bbttCuts.add(m_boolnames[cut]);
-    }
-
-    //After filling the CutManager, book your histograms.
-    const unsigned int nbins = m_bbttCuts.size() + 1; //  need an extra bin for the total num of events.
-    ANA_CHECK (book (TEfficiency("AbsoluteEfficiency","Absolute Efficiency of HH->bbtt cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("RelativeEfficiency","Relative Efficiency of HH->bbtt cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("StandardCutFlow","StandardCutFlow of HH->bbtt cuts;Cuts;#epsilon",
-                                  nbins, 0.5, nbins + 0.5)));
-    if(m_isMC) {
-      ANA_CHECK (book (TEfficiency("WeightedAbsoluteEfficiency","Weighted Absolute Efficiency of HH->bbtt cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-      ANA_CHECK (book (TEfficiency("WeightedRelativeEfficiency","Weighted Relative Efficiency of HH->bbtt cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-      ANA_CHECK (book (TEfficiency("WeightedStandardCutFlow","Weighted StandardCutFlow of HH->bbtt cuts;Cuts;#epsilon",
-         nbins, 0.5, nbins + 0.5)));
-    }
-    ANA_CHECK (book (TH1F("EventsPassed_BinLabeling", "Events passed by each cut / Bin labeling", nbins, 0.5, nbins + 0.5)));
-    return StatusCode::SUCCESS;
-  }
-
 
   void HHbbttSelectorAlg::setThresholds(const xAOD::EventInfo* event,
 					const CP::SystematicSet& sys){
