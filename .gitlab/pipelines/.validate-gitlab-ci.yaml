@@ -9,7 +9,6 @@ variables:
   if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
   changes:
     - "EasyjetHub/**/*"
-    - "EasyjetPlus/**/*"
     - "EasyjetTests/**/*"
     - ".gitlab-ci.yml"
 
