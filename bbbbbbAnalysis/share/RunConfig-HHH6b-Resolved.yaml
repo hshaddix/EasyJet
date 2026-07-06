@@ -16,6 +16,7 @@ do_small_R_jets: true
 do_large_R_UFO_jets: true
 do_muons: true
 do_met: true
+do_taus: true
 
 Small_R_jet:
   min_pT: 10.e+3
@@ -36,11 +37,14 @@ Large_R_jet:
   runMuonJetPtCorr: true
   amount_leadingjet: 3
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml, EasyjetHub/xbb-taggers/GN2Xv01_ftop0p0_hbb.yaml]
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml]
 
 Muon:
   ID: "Loose"
   Iso: "PflowLoose_VarRad"
+
+Tau:
+  ID: "Baseline"
 
 # list of triggers per year to consider
 Trigger:
@@ -86,6 +90,7 @@ ttree_output:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
+    taus: 'container_names.output.taus'
   collection_options:
     small_R_jets:
       truth_parent_info: true
@@ -100,6 +105,9 @@ ttree_output:
       no_bjet_calib_p4: true
       run_selection: true
       bjet_regression: true
+    taus:
+      run_selection: true
+
 
   truth_outputs:
     small_R_jets: 'container_names.input.truth4Jet'

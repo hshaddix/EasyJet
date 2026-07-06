@@ -23,7 +23,7 @@ from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches,
 )
 
-from EasyjetHub.algs.postprocessing.SelectorAlgConfig import JetSelectorAlgCfg
+from EasyjetHub.algs.postprocessing.SelectorAlgConfig import JetSelectorAlgCfg, TauSelectorAlgCfg
 import AthenaCommon.SystemOfUnits as Units
 
 
@@ -38,8 +38,13 @@ def trihiggs_cfg(
     if flags.Analysis.do_small_R_jets:
         smalljetkey = (
             flags.Analysis.container_names.output.reco4PFlowJet)
+        taukey = (
+            flags.Analysis.container_names.output.taus
+        )
         couting_jet_container = (
             "resolvedAnalysisSmallRJets_%SYS%")
+        couting_tau_container = (
+            "TauJets_%SYS%")
         couting_rnnjet_container = (
             "bbbbbbAnalysisSmallRRNNJets_%SYS%")
         couting_bjet_container = (
@@ -82,6 +87,14 @@ def trihiggs_cfg(
                 minPt=20. * Units.GeV,
                 maxEta=2.5,
                 minimumAmount=-1,
+            )
+        )
+
+        cfg.merge(
+            TauSelectorAlgCfg(
+                flags, name="TauSelectorAlg",
+                containerInKey=taukey,
+                containerOutKey=couting_tau_container,
             )
         )
 

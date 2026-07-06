@@ -42,6 +42,7 @@ do_large_R_UFO_jets: false
 do_large_R_Topo_jets: false
 do_VR_jets: false
 do_muons: false
+do_taus: false
 do_met: false
 
 Small_R_jet:
