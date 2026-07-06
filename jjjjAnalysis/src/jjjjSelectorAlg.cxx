@@ -80,7 +80,7 @@ namespace jjjj
   }
 
 
-  StatusCode jjjjSelectorAlg::execute(const EventContext& /*ctx*/)
+  StatusCode jjjjSelectorAlg::execute(const EventContext& ctx)
   {
     // Global filter originally false
     CP::SysFilterReporterCombiner filterCombiner (m_filterParams, false);
@@ -91,10 +91,10 @@ namespace jjjj
       CP::SysFilterReporter filter (filterCombiner, sys);
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys));
+      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
       m_bools.at(jjjj::pass_trigger_SJT) = false;
       m_bools.at(jjjj::PASS_TRIGGER) = false;
       setThresholds(event, sys);

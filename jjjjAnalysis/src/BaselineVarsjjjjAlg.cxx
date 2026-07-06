@@ -40,13 +40,13 @@ namespace jjjj
 
   }
 
-  StatusCode BaselineVarsjjjjAlg ::execute(const EventContext& /*ctx*/)
+  StatusCode BaselineVarsjjjjAlg ::execute(const EventContext& ctx)
   {
     for (const auto& sys : m_systematicsList.systematicsVector()){
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys));
+      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       const xAOD::JetContainer *SmallRJets = nullptr;
-      ANA_CHECK (m_SmallRJetsHandle.retrieve (SmallRJets, sys));
+      ANA_CHECK (m_SmallRJetsHandle.retrieve (SmallRJets, sys, ctx));
 
       for (const std::string &string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set(*event, -99., sys);
