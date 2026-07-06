@@ -343,7 +343,7 @@ namespace HHBBTT
       boosted_paths = {"HLT_j360_a10_lcw_sub_L1J100"};
     }
     else if(year==2016){
-      boosted_paths = {"HLT_j420_a10_lcw_sub_L1J100"};
+      boosted_paths = {"HLT_j420_a10_lcw_L1J100"};
     } else if(year==2017){
       boosted_paths = {"HLT_j390_a10t_lcw_jes_30smcINF_L1J100", "HLT_j420_a10t_lcw_jes_40smcINF_L1J100", "HLT_j460_a10t_lcw_jes_L1J100"};
     } else if(year==2018){
@@ -381,7 +381,7 @@ namespace HHBBTT
     if(year==2015){
       met_paths = {"HLT_xe70_mht"};
     } else if(year==2016){
-      met_paths = {"HLT_xe110_mht_L1XE50"};
+      met_paths = {"HLT_xe90_mht_L1XE50", "HLT_xe110_mht_L1XE50"};
     } else if(year==2017){
       met_paths = {"HLT_xe110_pufit_L1XE55"};
     } else if(year==2018){

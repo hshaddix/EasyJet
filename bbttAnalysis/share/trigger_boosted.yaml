@@ -12,7 +12,7 @@ chains:
   - 'HLT_xe70_mht'
   '2016':
   #LRT
-  - 'HLT_j420_a10_lcw_sub_L1J100'
+  - 'HLT_j420_a10_lcw_L1J100'
   #STT
   - 'HLT_tau80_medium1_tracktwo_L1TAU60'
   - 'HLT_tau125_medium1_tracktwo'
@@ -23,6 +23,7 @@ chains:
   - 'HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo'
   #MET
   - 'HLT_xe110_mht_L1XE50'
+  - 'HLT_xe90_mht_L1XE50'
   '2017':
   #LRT
   - 'HLT_j390_a10t_lcw_jes_30smcINF_L1J100'
