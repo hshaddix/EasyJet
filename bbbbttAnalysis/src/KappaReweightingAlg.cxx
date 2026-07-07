@@ -9,14 +9,6 @@
 
 namespace HHHBBBBTT
 {
-
-    KappaReweightingAlg::KappaReweightingAlg(const std::string &name,
-        ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator)
-    {
-
-    }
-
     StatusCode KappaReweightingAlg::initialize()
     {
 

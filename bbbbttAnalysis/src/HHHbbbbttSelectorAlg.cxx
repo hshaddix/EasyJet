@@ -12,12 +12,6 @@
 
 namespace HHHBBBBTT
 {
-  HHHbbbbttSelectorAlg ::HHHbbbbttSelectorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode HHHbbbbttSelectorAlg ::initialize()
   {
 

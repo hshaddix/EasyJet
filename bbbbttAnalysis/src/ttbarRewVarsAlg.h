@@ -21,7 +21,7 @@ class ttbarRewVarsAlg final : public AthHistogramAlgorithm
 {
 
 public:
-    ttbarRewVarsAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     StatusCode initialize() override;
     StatusCode execute(const EventContext& ctx) override;
