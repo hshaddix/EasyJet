@@ -6,11 +6,6 @@
 
 namespace HHBBYY
 {
-  JetVarsAlg::JetVarsAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode JetVarsAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

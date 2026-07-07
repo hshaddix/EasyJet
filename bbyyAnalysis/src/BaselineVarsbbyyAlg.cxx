@@ -17,11 +17,6 @@
 
 namespace HHBBYY
 {
-  BaselineVarsbbyyAlg::BaselineVarsbbyyAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode BaselineVarsbbyyAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

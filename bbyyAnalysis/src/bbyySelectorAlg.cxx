@@ -11,13 +11,6 @@
 
 namespace HHBBYY
 {
-
-  bbyySelectorAlg::bbyySelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  { }
-
-
   StatusCode bbyySelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

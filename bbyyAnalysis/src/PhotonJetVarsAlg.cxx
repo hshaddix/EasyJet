@@ -6,11 +6,6 @@
 
 namespace HHBBYY
 {
-    PhotonJetVarsAlg::PhotonJetVarsAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode PhotonJetVarsAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

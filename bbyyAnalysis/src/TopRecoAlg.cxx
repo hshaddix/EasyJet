@@ -63,11 +63,6 @@ namespace
 
 namespace HHBBYY
 {
-
-  TopRecoAlg::TopRecoAlg(const std::string &name, ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode TopRecoAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

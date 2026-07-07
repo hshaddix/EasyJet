@@ -7,11 +7,6 @@
 
 namespace HHBBYY
 {
-  BoostedVarsbbyyAlg::BoostedVarsbbyyAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode BoostedVarsbbyyAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

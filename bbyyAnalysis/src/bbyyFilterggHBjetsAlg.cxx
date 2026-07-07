@@ -7,14 +7,6 @@
 
 namespace HHBBYY
 {
-
-  bbyyFilterggHBjetsAlg::bbyyFilterggHBjetsAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode bbyyFilterggHBjetsAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

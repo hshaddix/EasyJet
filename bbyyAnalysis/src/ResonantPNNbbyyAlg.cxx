@@ -11,11 +11,6 @@
 
 namespace SHBBYY
 {
-  ResonantPNNbbyyAlg::ResonantPNNbbyyAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode ResonantPNNbbyyAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

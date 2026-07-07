@@ -12,12 +12,6 @@
 
 namespace HHBBYY
 {
-
-  HyyHHbbyyMVAAlg::HyyHHbbyyMVAAlg(const std::string &name,
-                                   ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode HyyHHbbyyMVAAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

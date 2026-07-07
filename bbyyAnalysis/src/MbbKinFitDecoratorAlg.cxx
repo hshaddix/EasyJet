@@ -8,12 +8,6 @@
 #include "TLorentzVector.h"
 
 namespace HHBBYY{
-      MbbKinFitDecoratorAlg ::MbbKinFitDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-    
-  }
     StatusCode MbbKinFitDecoratorAlg ::initialize()
   {
     // Read syst-aware input handles
