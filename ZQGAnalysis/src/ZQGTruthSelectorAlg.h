@@ -36,7 +36,7 @@ namespace ZQG
   class ZQGTruthSelectorAlg final : public EL::AnaAlgorithm {
 
     public:
-      ZQGTruthSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

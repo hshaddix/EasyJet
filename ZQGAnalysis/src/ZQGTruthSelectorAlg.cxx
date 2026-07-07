@@ -12,14 +12,6 @@
 
 namespace ZQG
 {
-  
-  ZQGTruthSelectorAlg::ZQGTruthSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode ZQGTruthSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

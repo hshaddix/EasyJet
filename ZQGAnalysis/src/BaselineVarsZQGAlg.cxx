@@ -12,13 +12,6 @@
 
 namespace ZQG
 {
-  BaselineVarsZQGAlg::BaselineVarsZQGAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode BaselineVarsZQGAlg::initialize()
   {
     // Read syst-aware input handles
