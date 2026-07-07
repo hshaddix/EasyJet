@@ -55,8 +55,7 @@ namespace HZY
   {
 
 public:
-    HZySelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
-    virtual ~HZySelectorAlg() = default;
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

@@ -9,12 +9,6 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 namespace HZY
 {
-  BaselineVarsHZyAlg::BaselineVarsHZyAlg(const std::string &name,
-                                         ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsHZyAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

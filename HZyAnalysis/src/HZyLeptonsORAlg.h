@@ -24,7 +24,7 @@ namespace HZY
   {
     /// \brief The standard constructor
 public:
-    HZyLeptonsORAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
     /// \brief Initialisation method
     StatusCode initialize() override;
     /// \brief Execute method

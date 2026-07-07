@@ -8,12 +8,6 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 namespace HZY
 {
-  LeptonVarsHZyAlg::LeptonVarsHZyAlg(const std::string &name,
-                                     ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode LeptonVarsHZyAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

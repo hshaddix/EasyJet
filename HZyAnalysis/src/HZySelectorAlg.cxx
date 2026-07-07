@@ -11,13 +11,6 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
 namespace HZY
 {
-
-  HZySelectorAlg::HZySelectorAlg(const std::string &name,
-                                 ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode HZySelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
