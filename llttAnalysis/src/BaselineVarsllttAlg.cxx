@@ -11,13 +11,6 @@
 
 namespace HLLTT
 {
-  BaselineVarsllttAlg::BaselineVarsllttAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode BaselineVarsllttAlg::initialize()
   {
 

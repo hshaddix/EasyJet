@@ -12,13 +12,6 @@ using ROOT::Math::VectorUtil::DeltaR;
 
 namespace HLLTT
 {
-  LeptonPairDecoratorAlg ::LeptonPairDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  
-  }
-
   StatusCode LeptonPairDecoratorAlg ::initialize()
   {
 

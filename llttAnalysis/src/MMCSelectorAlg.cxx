@@ -9,13 +9,6 @@
 
 namespace HLLTT
 {
-  MMCSelectorAlg::MMCSelectorAlg(const std::string &name,
-				 ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode MMCSelectorAlg::initialize()
   {
     // Initialise global event filter

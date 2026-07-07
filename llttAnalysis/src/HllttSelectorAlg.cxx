@@ -13,13 +13,6 @@
 
 namespace HLLTT
 {
-  HllttSelectorAlg ::HllttSelectorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode HllttSelectorAlg ::initialize()
   {
 
