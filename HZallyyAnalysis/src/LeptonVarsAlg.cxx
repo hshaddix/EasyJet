@@ -5,11 +5,6 @@
 #include "LeptonVarsAlg.h"
 
 namespace HZALLYY {
-  LeptonVarsAlg::LeptonVarsAlg(const std::string & name,
-    ISvcLocator * pSvcLocator): AthHistogramAlgorithm(name, pSvcLocator) {
-    
-  }
-  
   StatusCode LeptonVarsAlg::initialize() {
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("       LeptonVarsAlg       \n");

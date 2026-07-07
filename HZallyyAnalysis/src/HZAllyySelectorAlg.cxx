@@ -9,14 +9,7 @@
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 
 namespace HZALLYY
-{
-  
-  HZAllyySelectorAlg::HZAllyySelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-  
+{  
   StatusCode HZAllyySelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

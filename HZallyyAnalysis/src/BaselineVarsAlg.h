@@ -21,7 +21,7 @@ namespace HZALLYY
   {
     /// \brief The standard constructor
   public:
-    BaselineVarsAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

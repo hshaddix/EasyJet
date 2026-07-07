@@ -5,11 +5,6 @@
 #include "PhotonVarsAlg.h"
 
 namespace HZALLYY {
-  PhotonVarsAlg::PhotonVarsAlg(const std::string & name,
-    ISvcLocator * pSvcLocator): AthHistogramAlgorithm(name, pSvcLocator) {
-    
-  }
-  
   StatusCode PhotonVarsAlg::initialize() {
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("       PhotonVarsAlg       \n");

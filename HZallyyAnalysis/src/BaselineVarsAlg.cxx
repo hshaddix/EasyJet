@@ -6,12 +6,7 @@
 #include "AthContainers/AuxElement.h"
 #include "TLorentzVector.h"
 #include <AthenaKernel/Units.h>
-namespace HZALLYY {
-  BaselineVarsAlg::BaselineVarsAlg(const std::string & name,
-    ISvcLocator * pSvcLocator): AthHistogramAlgorithm(name, pSvcLocator) {
-    
-  }
-  
+namespace HZALLYY {  
   StatusCode BaselineVarsAlg::initialize() {
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("       BaselineVarsAlg       \n");

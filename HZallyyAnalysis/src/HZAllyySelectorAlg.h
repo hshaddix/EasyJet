@@ -60,7 +60,7 @@ namespace HZALLYY
   class HZAllyySelectorAlg final : public EL::AnaAlgorithm {
     
   public:
-    HZAllyySelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using EL::AnaAlgorithm::AnaAlgorithm;
     
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
