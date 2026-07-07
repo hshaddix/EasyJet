@@ -25,7 +25,7 @@ namespace HHBBLL
   {
     /// \brief The standard constructor
   public:
-    BJetsVarsbbllAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
     
     StatusCode initialize() override;
     StatusCode execute(const EventContext& ctx) override;

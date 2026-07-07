@@ -7,10 +7,6 @@
 #include "NeutrinoWeightingTool.h"
 
 namespace HHBBLL {
-  NeutrinoWeightingTool::NeutrinoWeightingTool(const std::string &type, const std::string &name, const IInterface *parent)
-    : AthAlgTool(type, name, parent){
-  };
-
   StatusCode NeutrinoWeightingTool::initialize(){
 
     if (m_resolution_settings == "fixed"){

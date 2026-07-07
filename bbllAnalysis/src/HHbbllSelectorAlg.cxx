@@ -10,14 +10,6 @@
 
 namespace HHBBLL
 {
-
-  HHbbllSelectorAlg::HHbbllSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode HHbbllSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

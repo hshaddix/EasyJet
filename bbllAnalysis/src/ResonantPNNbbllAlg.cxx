@@ -18,11 +18,6 @@
 
 namespace HHBBLL
 {
-  ResonantPNNbbllAlg::ResonantPNNbbllAlg(const std::string &name,
-					   ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode ResonantPNNbbllAlg ::initialize()
   {
     ATH_CHECK (m_jetHandle.initialize(m_systematicsList));

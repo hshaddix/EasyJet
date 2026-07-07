@@ -13,11 +13,6 @@
 
 namespace HHBBLL
 {
-  BJetsVarsbbllAlg::BJetsVarsbbllAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode BJetsVarsbbllAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

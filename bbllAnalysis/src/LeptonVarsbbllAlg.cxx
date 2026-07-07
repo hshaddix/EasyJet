@@ -6,11 +6,6 @@
 
 namespace HHBBLL
 {
-  LeptonVarsbbllAlg::LeptonVarsbbllAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode LeptonVarsbbllAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

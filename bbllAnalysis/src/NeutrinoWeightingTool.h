@@ -69,8 +69,7 @@ namespace HHBBLL {
 
   public:
 
-    virtual ~NeutrinoWeightingTool() = default;
-    NeutrinoWeightingTool(const std::string& type, const std::string& name, const IInterface* parent);
+    using AthAlgTool::AthAlgTool;
 
     StatusCode initialize() override;
 

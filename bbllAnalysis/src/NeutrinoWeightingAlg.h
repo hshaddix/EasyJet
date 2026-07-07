@@ -30,7 +30,7 @@ namespace HHBBLL
   {
     /// \brief The standard constructor
 public:
-    NeutrinoWeightingAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using EL::AnaAlgorithm::AnaAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
