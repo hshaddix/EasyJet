@@ -12,12 +12,6 @@
 
 namespace ZCC
 {
-  ZCharmTruthSelectorAlg::ZCharmTruthSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode ZCharmTruthSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

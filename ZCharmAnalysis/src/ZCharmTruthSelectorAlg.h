@@ -34,7 +34,7 @@ namespace ZCC
   class ZCharmTruthSelectorAlg final : public EL::AnaAlgorithm {
 
     public:
-      ZCharmTruthSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

@@ -11,13 +11,6 @@
 
 namespace ZCC
 {
-  BaselineVarsZCharmAlg::BaselineVarsZCharmAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode BaselineVarsZCharmAlg::initialize()
   {
     // Read syst-aware input handles

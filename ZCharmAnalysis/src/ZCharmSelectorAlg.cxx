@@ -13,14 +13,6 @@
 
 namespace ZCC
 {
-
-  ZCharmSelectorAlg::ZCharmSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode ZCharmSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
