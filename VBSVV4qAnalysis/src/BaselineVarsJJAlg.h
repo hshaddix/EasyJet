@@ -24,7 +24,7 @@ namespace VBSVV4q{
     class BaselineVarsJJAlg final : public AthHistogramAlgorithm {
         /// \brief The standard constructor
         public: 
-            BaselineVarsJJAlg(const std::string &name, ISvcLocator *pSvcLocator);
+            using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
             /// \brief Initialisation method, for setting up tools and other persistent
             /// configs

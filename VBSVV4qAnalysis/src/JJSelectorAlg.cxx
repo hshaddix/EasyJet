@@ -9,9 +9,6 @@
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 
 namespace VBSVV4q{
-
-  JJSelectorAlg::JJSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator) : EL::AnaAlgorithm(name, pSvcLocator){  }
-
   StatusCode JJSelectorAlg::initialize(){
 
     ATH_MSG_INFO("*********************\n");

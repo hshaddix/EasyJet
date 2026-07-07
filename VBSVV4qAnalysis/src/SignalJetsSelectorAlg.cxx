@@ -7,10 +7,6 @@
  #include <AthenaKernel/Units.h>
 
 namespace VBSVV4q{
-
-    SignalJetsSelectorAlg :: SignalJetsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator)
-                                         : EL::AnaAlgorithm(name, pSvcLocator){}
-
     StatusCode SignalJetsSelectorAlg::initialize(){
 
         ATH_MSG_INFO("*********************************\n");

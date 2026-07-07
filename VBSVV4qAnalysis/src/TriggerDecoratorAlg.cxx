@@ -8,11 +8,6 @@
 
 namespace VBSVV4q
 {
-
-  TriggerDecoratorAlg::TriggerDecoratorAlg(const std::string &name,
-					   ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator){}
-
   StatusCode TriggerDecoratorAlg::initialize()
   {
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));

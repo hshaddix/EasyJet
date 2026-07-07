@@ -6,10 +6,6 @@
 #include "VBSJetsSelectorAlg.h"
 
 namespace VBSVV4q{
-    VBSJetsSelectorAlg :: VBSJetsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator)
-                                             : EL::AnaAlgorithm(name, pSvcLocator){}
-                                           
-
     StatusCode VBSJetsSelectorAlg::initialize(){
 
         ATH_MSG_INFO("*********************************\n");

@@ -6,13 +6,6 @@
 #include "BosonTaggerAlg.h"
 
 namespace VBSVV4q{
-
-    BosonTaggerAlg::BosonTaggerAlg(const std::string &name,
-                                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator){
-
-    }
-
     StatusCode BosonTaggerAlg::initialize(){
 
       ATH_MSG_INFO("******************************\n");

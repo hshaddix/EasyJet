@@ -8,13 +8,6 @@
 #include "TLorentzVector.h"
 
 namespace VBSVV4q{
-
-    BaselineVarsJJAlg::BaselineVarsJJAlg(const std::string &name,
-                                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator){
-
-    }
-
     StatusCode BaselineVarsJJAlg::initialize(){
       ATH_MSG_INFO("*********************************\n");
       ATH_MSG_INFO("       JJBaselineVarsAlg         \n");

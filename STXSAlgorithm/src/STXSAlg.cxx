@@ -20,10 +20,6 @@
 //
 namespace Easyjet
 {
-  STXSAlg ::STXSAlg(
-    const std::string &name, ISvcLocator *pSvcLocator)
-    : AthAlgorithm(name, pSvcLocator) { }
-
   StatusCode STXSAlg ::initialize()
   {
     ATH_MSG_DEBUG("Initialising " << name());

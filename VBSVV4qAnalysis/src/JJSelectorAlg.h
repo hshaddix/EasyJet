@@ -35,7 +35,7 @@ namespace VBSVV4q{
   class JJSelectorAlg final : public EL::AnaAlgorithm{
 
     public:
-      JJSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

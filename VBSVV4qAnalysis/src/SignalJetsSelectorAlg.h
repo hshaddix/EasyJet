@@ -22,7 +22,7 @@ namespace VBSVV4q{
     class SignalJetsSelectorAlg final : public EL::AnaAlgorithm{
         /// \brief The standard constructor
         public:
-            SignalJetsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator);
+            using EL::AnaAlgorithm::AnaAlgorithm;
 
             /// \brief Initialisation method, for setting up tools and other persistent
             /// configs
