@@ -12,14 +12,6 @@
 
 namespace ssWWVBS
 {
-
-  ssWWSelectorAlg::ssWWSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode ssWWSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

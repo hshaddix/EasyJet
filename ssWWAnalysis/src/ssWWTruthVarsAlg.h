@@ -27,7 +27,7 @@ namespace ssWWVBS
   class ssWWTruthVarsAlg final : public EL::AnaAlgorithm
   {
   public:
-    ssWWTruthVarsAlg(const std::string& name, ISvcLocator* pSvcLocator);
+    using EL::AnaAlgorithm::AnaAlgorithm;
 
     StatusCode initialize() override;
     StatusCode execute(const EventContext& ctx) override;

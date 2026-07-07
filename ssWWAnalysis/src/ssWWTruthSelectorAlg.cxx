@@ -13,14 +13,6 @@
 
 namespace ssWWVBS
 {
-  
-  ssWWTruthSelectorAlg::ssWWTruthSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode ssWWTruthSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

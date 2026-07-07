@@ -149,12 +149,6 @@ namespace
 
 namespace ssWWVBS
 {
-  ssWWTruthVarsAlg::ssWWTruthVarsAlg(const std::string& name,
-                                     ISvcLocator* pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode ssWWTruthVarsAlg::initialize()
   {
     ATH_CHECK(m_eventInKey.initialize());
