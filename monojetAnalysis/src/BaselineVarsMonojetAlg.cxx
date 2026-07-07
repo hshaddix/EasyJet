@@ -15,12 +15,6 @@
 
 namespace MONOJET
 {
-  BaselineVarsMonojetAlg::BaselineVarsMonojetAlg(const std::string& name,
-    ISvcLocator* pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsMonojetAlg::initialize()
   {
     // Read syst-aware input handles

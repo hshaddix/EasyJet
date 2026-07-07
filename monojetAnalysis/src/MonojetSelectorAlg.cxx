@@ -13,14 +13,6 @@
 
 namespace MONOJET
 {
-
-  MonojetSelectorAlg::MonojetSelectorAlg(const std::string& name,
-    ISvcLocator* pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode MonojetSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
