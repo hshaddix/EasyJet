@@ -51,7 +51,7 @@ namespace HHYYML
     {
 
 public:
-    yymlSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using EL::AnaAlgorithm::AnaAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

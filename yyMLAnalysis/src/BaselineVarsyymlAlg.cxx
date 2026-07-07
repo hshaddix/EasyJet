@@ -11,13 +11,6 @@
 
 namespace HHYYML
 {
-  BaselineVarsyymlAlg::BaselineVarsyymlAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode BaselineVarsyymlAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

@@ -10,13 +10,6 @@
 
 namespace HHYYML
 {
-  yymlSelectorAlg::yymlSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode yymlSelectorAlg::initialize() {
 
     ATH_MSG_INFO("*********************************\n");
