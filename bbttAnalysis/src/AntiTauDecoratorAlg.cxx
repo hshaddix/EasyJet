@@ -9,10 +9,6 @@
 
 namespace HHBBTT
 {
-  AntiTauDecoratorAlg::AntiTauDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator) { }
-
   StatusCode AntiTauDecoratorAlg::initialize()
   {
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));

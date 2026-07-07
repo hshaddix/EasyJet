@@ -10,13 +10,6 @@
 
 namespace HHBBTT
 {
-  MMCDecoratorAlg ::MMCDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  
-  }
-
   StatusCode MMCDecoratorAlg ::initialize()
   {
 

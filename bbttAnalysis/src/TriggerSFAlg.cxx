@@ -13,13 +13,6 @@
 
 namespace HHBBTT
 {
-  TriggerSFAlg::TriggerSFAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode TriggerSFAlg::initialize()
   {
 

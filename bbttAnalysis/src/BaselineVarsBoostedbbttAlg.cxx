@@ -8,12 +8,6 @@
 
 namespace HHBBTT
 {
-  BaselineVarsBoostedbbttAlg ::BaselineVarsBoostedbbttAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsBoostedbbttAlg ::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

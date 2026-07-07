@@ -9,10 +9,6 @@
 
 namespace HHBBTT
 {
-  BJetTriggerDecoratorAlg::BJetTriggerDecoratorAlg(const std::string &name,
-					   ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator) { }
-
   StatusCode BJetTriggerDecoratorAlg::initialize()
   {
     ATH_CHECK (m_eventInfoKey.initialize());
