@@ -9,9 +9,6 @@
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 
 namespace VBSHIGGS{
-
-  FullLepSelectorAlg::FullLepSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator) : EL::AnaAlgorithm(name, pSvcLocator){  }
-
   StatusCode FullLepSelectorAlg::initialize(){
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("     FullLepSelectorAlg      \n");

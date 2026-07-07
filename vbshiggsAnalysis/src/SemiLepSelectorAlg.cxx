@@ -9,8 +9,6 @@
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 
 namespace VBSHIGGS{
-
-  SemiLepSelectorAlg::SemiLepSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator) : EL::AnaAlgorithm(name, pSvcLocator){  }
   StatusCode SemiLepSelectorAlg::initialize(){
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("     SemiLepSelectorAlg      \n");

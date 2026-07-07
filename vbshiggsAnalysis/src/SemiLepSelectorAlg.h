@@ -30,7 +30,7 @@ namespace VBSHIGGS{
   /// \brief An algorithm for counting containers
   class SemiLepSelectorAlg final : public EL::AnaAlgorithm{
     public:
-      SemiLepSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

@@ -22,7 +22,7 @@ namespace VBSHIGGS{
     class HiggsSelectorAlg final : public EL::AnaAlgorithm{
         /// \brief The standard constructor
         public:
-            HiggsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator);
+            using EL::AnaAlgorithm::AnaAlgorithm;
 
             /// \brief Initialisation method, for setting up tools and other persistent
             /// configs

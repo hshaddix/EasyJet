@@ -23,7 +23,7 @@ namespace VBSHIGGS{
     class BaselineVarsFullLepAlg final : public AthHistogramAlgorithm {
         /// \brief The standard constructor
         public: 
-            BaselineVarsFullLepAlg(const std::string &name, ISvcLocator *pSvcLocator);
+             using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
             /// \brief Initialisation method, for setting up tools and other persistent
             /// configs

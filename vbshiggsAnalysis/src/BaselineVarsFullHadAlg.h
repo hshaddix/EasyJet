@@ -21,7 +21,7 @@ namespace VBSHIGGS {
 class BaselineVarsFullHadAlg final : public AthHistogramAlgorithm {
 
 public:
-  BaselineVarsFullHadAlg(const std::string&, ISvcLocator*);
+  using AthHistogramAlgorithm::AthHistogramAlgorithm;
   StatusCode initialize() override;
   StatusCode execute(const EventContext& ctx) override;
 

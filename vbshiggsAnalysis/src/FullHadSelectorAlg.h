@@ -28,7 +28,7 @@ namespace VBSHIGGS {
 
 class FullHadSelectorAlg : public EL::AnaAlgorithm {
 public:
-    FullHadSelectorAlg(const std::string& name, ISvcLocator* pSvcLocator);
+    using EL::AnaAlgorithm::AnaAlgorithm;
 
     StatusCode initialize() override;
     StatusCode execute(const EventContext& ctx) override;

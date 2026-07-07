@@ -27,7 +27,7 @@ namespace VBSHIGGS
   class HadTriggerDecoratorAlg final : public EL::AnaAlgorithm
   {
     public:
-      HadTriggerDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       StatusCode initialize() override;
       StatusCode execute(const EventContext& ctx) override;

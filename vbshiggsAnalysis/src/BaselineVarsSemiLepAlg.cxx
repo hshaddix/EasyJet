@@ -8,12 +8,6 @@
 #include <AthContainers/ConstDataVector.h>
 
 namespace VBSHIGGS{
-    BaselineVarsSemiLepAlg::BaselineVarsSemiLepAlg(const std::string &name,
-                                            ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator){
-
-    }
-
     StatusCode BaselineVarsSemiLepAlg::initialize(){
       ATH_MSG_INFO("*********************************\n");
       ATH_MSG_INFO("       SemiLepBaselineVarsAlg    \n");

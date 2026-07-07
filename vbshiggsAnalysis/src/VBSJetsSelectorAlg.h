@@ -26,7 +26,7 @@ namespace VBSHIGGS{
         /// \brief The standard constructor
 
         public:
-            VBSJetsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator);
+            using EL::AnaAlgorithm::AnaAlgorithm;
 
             /// \brief Initialisation method, for setting up tools and other persistent
             /// configs

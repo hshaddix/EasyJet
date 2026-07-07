@@ -8,10 +8,6 @@
 
 namespace VBSHIGGS
 {
-  HadTriggerDecoratorAlg::HadTriggerDecoratorAlg(const std::string &name,
-					   ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator){}
-
   StatusCode HadTriggerDecoratorAlg::initialize()
   {
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));

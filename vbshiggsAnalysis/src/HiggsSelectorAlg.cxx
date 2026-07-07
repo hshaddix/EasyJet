@@ -6,9 +6,6 @@
 #include "HiggsSelectorAlg.h"
 
 namespace VBSHIGGS{
-    HiggsSelectorAlg :: HiggsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator)
-                                         : EL::AnaAlgorithm(name, pSvcLocator){}
-
     StatusCode HiggsSelectorAlg::initialize(){
 
         ATH_MSG_INFO("*********************************\n");

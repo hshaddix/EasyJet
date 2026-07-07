@@ -72,11 +72,6 @@ BosonPairingResult findBestBosonPairing(const std::vector<const xAOD::Jet*>& jet
 } // namespace
 
 namespace VBSHIGGS {
-
-  BaselineVarsFullHadAlg::BaselineVarsFullHadAlg(
-    const std::string& name, ISvcLocator* pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator) {}
-
   StatusCode BaselineVarsFullHadAlg::initialize() {
 
     ATH_MSG_INFO("*********************************");

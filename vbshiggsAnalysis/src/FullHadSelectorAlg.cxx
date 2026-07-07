@@ -13,9 +13,6 @@
 
 
 namespace VBSHIGGS {
-
-  FullHadSelectorAlg::FullHadSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator) : EL::AnaAlgorithm(name, pSvcLocator){}
-
   StatusCode FullHadSelectorAlg::initialize() {
       ATH_MSG_INFO("*********************************");
       ATH_MSG_INFO("     FullHadSelectorAlg         ");

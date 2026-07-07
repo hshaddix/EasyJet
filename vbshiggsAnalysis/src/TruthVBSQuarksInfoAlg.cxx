@@ -17,10 +17,6 @@
 //
 namespace VBSHIGGS
 {
-  TruthVBSQuarksInfoAlg ::TruthVBSQuarksInfoAlg(
-    const std::string &name, ISvcLocator *pSvcLocator)
-    : AthAlgorithm(name, pSvcLocator) { }
-
   StatusCode TruthVBSQuarksInfoAlg ::initialize()
   {
     ATH_MSG_DEBUG("Initialising " << name());

@@ -32,7 +32,7 @@ namespace VBSHIGGS{
   /// \brief An algorithm for counting containers
   class FullLepSelectorAlg final : public EL::AnaAlgorithm{
     public:
-      FullLepSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
