@@ -13,10 +13,6 @@
 
 namespace HHBBVV
 {
-  VBFSelectorAlg::VBFSelectorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator) {}
-
   StatusCode VBFSelectorAlg::initialize()
   {
 

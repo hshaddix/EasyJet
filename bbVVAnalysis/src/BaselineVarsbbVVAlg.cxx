@@ -8,14 +8,7 @@
 #include "TLorentzVector.h"
 
 namespace HHBBVV
-{
-  BaselineVarsbbVVAlg::BaselineVarsbbVVAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-  
+{  
   StatusCode BaselineVarsbbVVAlg::initialize()
   {
     // Read syst-aware input handles
