@@ -13,13 +13,6 @@
 
 namespace jjjj
 {
-  BaselineVarsjjjjAlg ::BaselineVarsjjjjAlg(const std::string &name,
-                                                    ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-    //declareProperty("bTagWP", m_bTagWP);
-  }
-
   StatusCode BaselineVarsjjjjAlg ::initialize()
   {
     ATH_CHECK (m_SmallRJetsHandle.initialize(m_systematicsList));

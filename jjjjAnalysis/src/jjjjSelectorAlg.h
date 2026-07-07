@@ -40,7 +40,7 @@ namespace jjjj
   class jjjjSelectorAlg final : public EL::AnaAlgorithm {
 
     public:
-      jjjjSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
