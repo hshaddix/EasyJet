@@ -10,12 +10,6 @@
 #include <AthenaKernel/Units.h>
 
 namespace VBSSEMILEP{
-    BaselineVarsoneLepAlg::BaselineVarsoneLepAlg(const std::string &name,
-                                            ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator){
-
-    }
-
     StatusCode BaselineVarsoneLepAlg::initialize(){
       ATH_MSG_INFO("*********************************\n");
       ATH_MSG_INFO("       oneLepBaselineVarsAlg    \n");

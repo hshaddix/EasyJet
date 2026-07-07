@@ -33,7 +33,7 @@ namespace VBSSEMILEP
   class TriggerDecoratorAlg final : public EL::AnaAlgorithm
   {
     public:
-      TriggerDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using EL::AnaAlgorithm::AnaAlgorithm;
 
       StatusCode initialize() override;
       StatusCode execute(const EventContext& ctx) override;

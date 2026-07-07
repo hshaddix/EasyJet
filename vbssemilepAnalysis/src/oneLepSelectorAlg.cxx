@@ -9,8 +9,6 @@
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 
 namespace VBSSEMILEP{
-
-  oneLepSelectorAlg::oneLepSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator) : EL::AnaAlgorithm(name, pSvcLocator){  }
   StatusCode oneLepSelectorAlg::initialize(){
     ATH_MSG_INFO("*********************************\n");
     ATH_MSG_INFO("     oneLepSelectorAlg      \n");

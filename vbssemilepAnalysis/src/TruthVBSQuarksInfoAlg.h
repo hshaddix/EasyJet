@@ -29,8 +29,7 @@ namespace VBSSEMILEP
   {
     /// \brief The standard constructor
 public:
-    TruthVBSQuarksInfoAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator);
+    using AthAlgorithm::AthAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

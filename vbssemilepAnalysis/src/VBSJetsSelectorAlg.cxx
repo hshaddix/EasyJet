@@ -7,10 +7,6 @@
 #include <AthenaKernel/Units.h>
 
 namespace VBSSEMILEP{
-    VBSJetsSelectorAlg :: VBSJetsSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator)
-                                             : EL::AnaAlgorithm(name, pSvcLocator){}
-                                           
-
     StatusCode VBSJetsSelectorAlg::initialize(){
 
         ATH_MSG_INFO("*********************************\n");
