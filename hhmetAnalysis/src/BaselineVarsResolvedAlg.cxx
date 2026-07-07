@@ -10,12 +10,6 @@
 
 namespace HHMET
 {
-  BaselineVarsResolvedAlg ::BaselineVarsResolvedAlg(const std::string &name,
-                                                    ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsResolvedAlg ::initialize()
   {
 

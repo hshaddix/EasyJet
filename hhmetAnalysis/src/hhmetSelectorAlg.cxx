@@ -10,13 +10,6 @@
 
 namespace HHMET
 {
-  hhmetSelectorAlg::hhmetSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode hhmetSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
