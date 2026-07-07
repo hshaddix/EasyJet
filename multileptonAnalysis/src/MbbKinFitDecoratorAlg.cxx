@@ -9,11 +9,6 @@
 
 namespace MULTILEPTON
 {
-  MbbKinFitDecoratorAlg ::MbbKinFitDecoratorAlg(const std::string &name,
-      ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
   StatusCode MbbKinFitDecoratorAlg ::initialize()
   {
 

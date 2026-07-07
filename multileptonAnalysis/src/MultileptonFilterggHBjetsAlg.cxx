@@ -7,14 +7,6 @@
 
 namespace MULTILEPTON
 {
-
-  MultileptonFilterggHBjetsAlg::MultileptonFilterggHBjetsAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode MultileptonFilterggHBjetsAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

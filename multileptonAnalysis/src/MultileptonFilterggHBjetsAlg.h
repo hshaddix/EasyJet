@@ -22,7 +22,7 @@ namespace MULTILEPTON
   class MultileptonFilterggHBjetsAlg final : public AthHistogramAlgorithm {
 
     public:
-      MultileptonFilterggHBjetsAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

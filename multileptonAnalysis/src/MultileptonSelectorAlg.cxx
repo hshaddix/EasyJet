@@ -10,13 +10,6 @@
 
 namespace MULTILEPTON
 {
-  MultileptonSelectorAlg::MultileptonSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : EL::AnaAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode MultileptonSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
