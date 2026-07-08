@@ -8,10 +8,6 @@
 
 namespace Easyjet
 {
-  ElectronSelectorAlg::ElectronSelectorAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode ElectronSelectorAlg::initialize()
   {
     // Read syst-aware input/output handles

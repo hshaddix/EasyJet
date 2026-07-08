@@ -20,10 +20,6 @@
 //
 namespace Easyjet
 {
-  TruthWBosonInformationAlg ::TruthWBosonInformationAlg(
-    const std::string &name, ISvcLocator *pSvcLocator)
-    : AthAlgorithm(name, pSvcLocator) { }
-
   StatusCode TruthWBosonInformationAlg ::initialize()
   {
     ATH_MSG_DEBUG("Initialising " << name());

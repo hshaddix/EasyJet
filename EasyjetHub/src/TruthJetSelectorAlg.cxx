@@ -11,10 +11,6 @@
 
 namespace Easyjet
 {
-  TruthJetSelectorAlg ::TruthJetSelectorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode TruthJetSelectorAlg ::initialize()
   {
     // Read input/output handles

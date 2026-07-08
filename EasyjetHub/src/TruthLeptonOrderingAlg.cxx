@@ -11,10 +11,6 @@
 
 namespace Easyjet
 {
-  TruthLeptonOrderingAlg::TruthLeptonOrderingAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode TruthLeptonOrderingAlg::initialize()
   {
     // Read input/output handle keys

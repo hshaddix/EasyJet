@@ -11,11 +11,6 @@
 #include <EventBookkeeperTools/FilterReporter.h>
 
 namespace Easyjet {
-
-SecVtxFilterAlg ::SecVtxFilterAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator) {}
-
 StatusCode SecVtxFilterAlg ::initialize() {
   // Initializa input containers
   ATH_CHECK(m_vertexInKey.initialize());

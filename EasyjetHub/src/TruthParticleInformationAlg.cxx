@@ -275,9 +275,6 @@ public:
     }
   };
 
-  TruthParticleInformationAlg ::TruthParticleInformationAlg(
-    const std::string &name, ISvcLocator *pSvcLocator)
-    : AthAlgorithm(name, pSvcLocator) { }
 
   StatusCode TruthParticleInformationAlg ::initialize()
   {

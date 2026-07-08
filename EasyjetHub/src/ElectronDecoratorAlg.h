@@ -25,7 +25,7 @@ namespace Easyjet
   {
     /// \brief The standard constructor
   public:
-    ElectronDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthReentrantAlgorithm::AthReentrantAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

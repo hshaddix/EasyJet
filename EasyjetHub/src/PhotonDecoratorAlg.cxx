@@ -19,10 +19,6 @@
 
 namespace Easyjet
 {
-  PhotonDecoratorAlg ::PhotonDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator) { }
-
   StatusCode PhotonDecoratorAlg ::initialize()
   {
     ATH_CHECK (m_photonsInKey.initialize());

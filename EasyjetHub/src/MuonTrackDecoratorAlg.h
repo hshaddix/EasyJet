@@ -23,7 +23,7 @@ namespace Easyjet {
 class MuonTrackDecoratorAlg final : public AthReentrantAlgorithm {
   /// \brief The standard constructor
 public:
-  MuonTrackDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+  using AthReentrantAlgorithm::AthReentrantAlgorithm;
 
   /// \brief Initialisation method, for setting up tools and other persistent
   /// configs

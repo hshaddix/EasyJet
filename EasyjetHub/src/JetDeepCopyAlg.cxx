@@ -8,12 +8,6 @@
 
 namespace Easyjet
 {
-  JetDeepCopyAlg ::JetDeepCopyAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode JetDeepCopyAlg ::initialize()
   {
     ATH_CHECK(m_jetsInKey.initialize());

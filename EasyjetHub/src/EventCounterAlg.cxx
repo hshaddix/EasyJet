@@ -5,12 +5,6 @@
 #include <fstream>
 #include <filesystem>
 
-EventCounterAlg::EventCounterAlg(const std::string &name,
-                                 ISvcLocator* loc):
-  AthAlgorithm(name, loc),
-  m_n_events(0)
-{
-}
 
 StatusCode EventCounterAlg::initialize() {
   if (m_outputFile.value().empty()) {

@@ -5,10 +5,6 @@
 #include <cmath> 
 
 namespace Easyjet {
-
-  JetNeutrinoDecoratorAlg::JetNeutrinoDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator)
-      : AthAlgorithm(name, pSvcLocator) {}
-
   StatusCode JetNeutrinoDecoratorAlg::initialize() {
     ATH_CHECK(m_jetsInKey.initialize());
     ATH_CHECK(m_truthParticlesInKey.initialize());

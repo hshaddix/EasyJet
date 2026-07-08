@@ -22,7 +22,8 @@ namespace Easyjet {
 
   class JetNeutrinoDecoratorAlg : public AthAlgorithm {
   public:
-    JetNeutrinoDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthAlgorithm::AthAlgorithm;
+
     virtual StatusCode initialize() override;
     virtual StatusCode execute(const EventContext& ctx) override;
 

@@ -8,7 +8,7 @@
 class EventCounterAlg: public AthAlgorithm
 {
 public:
-  EventCounterAlg(const std::string& name, ISvcLocator* loc);
+  using AthAlgorithm::AthAlgorithm;
 
   virtual StatusCode initialize() override;
   virtual StatusCode execute(const EventContext& ctx) override;
@@ -22,7 +22,7 @@ private:
     this, "countName", "n_events", "name for counts in json file"
   };
 
-  std::atomic<unsigned long long> m_n_events;
+  std::atomic<unsigned long long> m_n_events = 0;
 };
 
 

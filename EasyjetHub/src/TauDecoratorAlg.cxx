@@ -15,10 +15,6 @@
 
 namespace Easyjet
 {
-  TauDecoratorAlg ::TauDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator) { }
-
   StatusCode TauDecoratorAlg ::initialize()
   {
     ATH_CHECK (m_tausInKey.initialize());

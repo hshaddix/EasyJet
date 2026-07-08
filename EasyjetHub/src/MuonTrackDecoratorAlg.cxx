@@ -12,10 +12,6 @@
 #include <cmath>
 
 namespace Easyjet {
-MuonTrackDecoratorAlg ::MuonTrackDecoratorAlg(const std::string &name,
-                                    ISvcLocator *pSvcLocator)
-    : AthReentrantAlgorithm(name, pSvcLocator) {}
-
 StatusCode MuonTrackDecoratorAlg ::initialize() {
   // Initializa input containers
   ATH_CHECK(m_muonsInKey.initialize());

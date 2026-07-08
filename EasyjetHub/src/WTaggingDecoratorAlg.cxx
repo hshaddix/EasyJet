@@ -8,13 +8,6 @@
 
 namespace Easyjet
 {
-  WTaggingDecoratorAlg ::WTaggingDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthAlgorithm(name, pSvcLocator)
-  {
-  
-  }
-
   StatusCode WTaggingDecoratorAlg ::initialize()
   {
     ATH_CHECK (m_jetsInKey.initialize());

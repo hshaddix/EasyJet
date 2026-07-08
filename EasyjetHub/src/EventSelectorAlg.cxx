@@ -11,11 +11,6 @@
 
 namespace Easyjet
 {
-  EventSelectorAlg::EventSelectorAlg(const std::string &name,
-				     ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator)
-  {}
-
   StatusCode EventSelectorAlg::initialize()
   {
     // Initialise global event filter

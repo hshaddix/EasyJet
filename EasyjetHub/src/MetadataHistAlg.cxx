@@ -5,13 +5,6 @@
 #include "MetadataHistAlg.h"
 
 namespace Easyjet {
-
-  MetadataHistAlg::MetadataHistAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode MetadataHistAlg::initialize() 
   {
     ATH_MSG_INFO("*********************************\n");

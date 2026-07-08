@@ -8,10 +8,6 @@
 
 namespace Easyjet
 {
-  LeptonOrderingAlg::LeptonOrderingAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode LeptonOrderingAlg::initialize()
   {
     // Read syst-aware input/output handles

@@ -7,14 +7,6 @@
 
 namespace Easyjet
 {
-
-  SumOfWeightsAlg::SumOfWeightsAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode SumOfWeightsAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

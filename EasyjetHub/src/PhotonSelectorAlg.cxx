@@ -10,10 +10,6 @@
 
 namespace Easyjet
 {
-  PhotonSelectorAlg::PhotonSelectorAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode PhotonSelectorAlg::initialize()
   {
 

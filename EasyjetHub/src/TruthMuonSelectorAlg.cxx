@@ -11,10 +11,6 @@
 
 namespace Easyjet
 {
-  TruthMuonSelectorAlg::TruthMuonSelectorAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode TruthMuonSelectorAlg::initialize()
   {
     // Read input/output handles

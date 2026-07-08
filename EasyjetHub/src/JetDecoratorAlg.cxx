@@ -12,10 +12,6 @@
 
 namespace Easyjet
 {
-  JetDecoratorAlg::JetDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-    : AthReentrantAlgorithm(name, pSvcLocator) { }
-
   StatusCode JetDecoratorAlg::initialize()
   {
     ATH_CHECK(m_jetsInKey.initialize());

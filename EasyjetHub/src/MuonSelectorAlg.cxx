@@ -8,10 +8,6 @@
 
 namespace Easyjet
 {
-  MuonSelectorAlg::MuonSelectorAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode MuonSelectorAlg::initialize()
   {
 

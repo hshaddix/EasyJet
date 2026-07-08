@@ -23,7 +23,7 @@ namespace Easyjet
   {
     /// \brief The standard constructor
 public:
-    OrthogonalityAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -48,7 +48,7 @@ private:
     CP::SysReadHandle<xAOD::JetContainer>
     m_jetHandle{ this, "bjets", "",   "Jet container to read" };
 
-    CP::SysWriteDecorHandleArray<char> m_Bbranches{{}, this};
+    CP::SysWriteDecorHandleArray<char> m_Bbranches{{"orth_pass_bbyy", "orth_pass_bbbb", "orth_pass_bbtt"}, this};
 
   };
 }

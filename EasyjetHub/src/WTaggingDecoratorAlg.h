@@ -26,7 +26,7 @@ namespace Easyjet
   {
     /// \brief The standard constructor
 public:
-    WTaggingDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthAlgorithm::AthAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

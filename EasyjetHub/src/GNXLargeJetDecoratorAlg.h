@@ -21,7 +21,7 @@ namespace Easyjet
   class GNXLargeJetDecoratorAlg final : public AthReentrantAlgorithm {
 
     public:
-      GNXLargeJetDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using AthReentrantAlgorithm::AthReentrantAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

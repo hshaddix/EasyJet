@@ -6,10 +6,6 @@
 
 namespace Easyjet
 {
-  TauSelectorAlg::TauSelectorAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode TauSelectorAlg::initialize()
   {
 

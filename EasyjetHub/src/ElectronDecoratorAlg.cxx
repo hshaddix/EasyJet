@@ -18,10 +18,6 @@
 
 namespace Easyjet
 {
-  ElectronDecoratorAlg ::ElectronDecoratorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthReentrantAlgorithm(name, pSvcLocator) { }
-
   StatusCode ElectronDecoratorAlg ::initialize()
   {
     ATH_CHECK (m_electronsInKey.initialize());

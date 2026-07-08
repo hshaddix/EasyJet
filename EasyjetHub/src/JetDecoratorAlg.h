@@ -28,7 +28,7 @@ namespace Easyjet
   class JetDecoratorAlg final : public AthReentrantAlgorithm
   {
   public:
-    JetDecoratorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthReentrantAlgorithm::AthReentrantAlgorithm;
 
     StatusCode initialize() override;
     StatusCode execute(const EventContext& ctx) const override;

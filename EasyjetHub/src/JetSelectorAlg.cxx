@@ -8,10 +8,6 @@
 
 namespace Easyjet
 {
-  JetSelectorAlg ::JetSelectorAlg(const std::string &name,
-                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode JetSelectorAlg ::initialize()
   {
     // Read syst-aware input/output handles

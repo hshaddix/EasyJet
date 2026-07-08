@@ -5,11 +5,6 @@
 
 namespace Easyjet
 {
-
-  EventInfoGlobalAlg::EventInfoGlobalAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator) { }
-
   StatusCode EventInfoGlobalAlg::initialize() {
 
     ATH_CHECK(m_EventInfoKey.initialize());

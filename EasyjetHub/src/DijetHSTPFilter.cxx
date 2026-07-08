@@ -18,10 +18,6 @@
 //
 namespace Easyjet
 {
-  DijetHSTPFilter ::DijetHSTPFilter(
-    const std::string &name, ISvcLocator *pSvcLocator)
-    : AthAlgorithm(name, pSvcLocator) { }
-
   StatusCode DijetHSTPFilter ::initialize()
   {
     ATH_MSG_DEBUG("Initializing " << name());

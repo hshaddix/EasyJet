@@ -8,17 +8,7 @@
 
 namespace Easyjet
 {
-
-  // 
   enum ORTH_CHANNEL : uint8_t {BBYY, BBBB, BBTT, N_CHANNELS};
-  std::vector<std::string> Bvarnames = {"orth_pass_bbyy", "orth_pass_bbbb", "orth_pass_bbtt"};
-
-  OrthogonalityAlg::OrthogonalityAlg(const std::string &name,
-                                       ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator),
-      m_Bbranches{Bvarnames,this}
-      { }
-
   StatusCode OrthogonalityAlg::initialize()
   {
     
@@ -26,7 +16,7 @@ namespace Easyjet
     ATH_MSG_INFO("       OrthogonalityAlg       \n");
     ATH_MSG_INFO("*********************************\n");
 
-    ATH_CHECK( Bvarnames.size() == N_CHANNELS );
+    ATH_CHECK( m_Bbranches.size() == N_CHANNELS );
 
     ATH_CHECK (m_photonHandle.initialize(m_systematicsList));
     ATH_CHECK (m_jetHandle.initialize(m_systematicsList));
