@@ -1,6 +1,28 @@
 variables:
   GIT_SUBMODULE_STRATEGY: recursive
 
+###########################################################
+# Wipe this MR's own eos ntuples directory before the run stage
+# starts. This guarantees that by the time the backfill job
+# runs, any file already present in that directory was freshly produced 
+# by this MR's own pipeline, and # anything else needs to be copied over 
+# from the reference MR.  
+# Without this, a file backfilled in a previous pipeline run of this 
+# MR (e.g. from an older reference) could linger and be mistaken for
+# fresh output.
+###########################################################
+clean-mr-eos-dir:
+  rules:
+    - if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+  stage: build
+  tags:
+    - k8s-eos
+  needs: []
+  # not compiled/installed yet at this point in the pipeline (this job
+  # must run before compile), call it explicitly
+  script:
+    - EasyjetTests/bin/easyjet-clean-mr-dir
+
 cmake:
   stage: build
   script:
@@ -31,7 +53,10 @@ compile:
     reports:
       dotenv: build/build_packages.env
     expire_in: 1 week
-  needs: [cmake]
+  needs:
+    - cmake
+    - job: clean-mr-eos-dir
+      optional: true
 
 clang_tidy:
   stage: build

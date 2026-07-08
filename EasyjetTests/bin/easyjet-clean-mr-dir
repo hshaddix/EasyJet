@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -Eeu
+
+if [[ -z ${EOS_ACCOUNT_PASSWORD+x} || -z ${EOS_ACCOUNT_USERNAME+x} || -z ${EOS_ACCOUNT_PATH+x} || -z ${EOS_ACCOUNT_PROJECT+x} ]]; then
+    echo "eos env not defined, cannot clean folder"
+    exit 1
+fi
+
+if [[ -z "${CI_MERGE_REQUEST_IID:-}" ]]; then
+    echo "merge request ID not defined, cannot clean folder"
+    exit 1
+fi
+
+projectdir="root://${EOS_ACCOUNT_PROJECT}.cern.ch"
+desteosdir="$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$CI_MERGE_REQUEST_IID"
+
+echo $EOS_ACCOUNT_PASSWORD | kinit -l 1h $EOS_ACCOUNT_USERNAME
+klist
+
+# Remove anything left over from a previous pipeline run of this MR (e.g.
+# a file backfilled from an old reference before it was superseded), so
+# that once the run stage completes, this directory contains exactly the
+# files this pipeline itself produced. easyjet-backfill relies on that
+# invariant: it treats any file already present here as freshly produced
+# by this MR, and anything missing as needing to come from the reference
+# MR.
+for eosfile in $(xrdfs "$projectdir" ls "$desteosdir" 2>/dev/null || true); do
+    filename=$(basename "$eosfile")
+    if [[ "$filename" == .sys.* ]]; then
+        continue
+    fi
+    echo "removing stale '${filename}'"
+    xrdfs "$projectdir" rm "$eosfile"
+done

@@ -21,25 +21,14 @@ projectdir="root://${EOS_ACCOUNT_PROJECT}.cern.ch"
 refeosdir="$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$VALIDATION_REFERENCE_MR"
 desteosdir="$EOS_ACCOUNT_PATH/gitlab_ci_output/ntuples/$CI_MERGE_REQUEST_IID"
 
-echo $EOS_ACCOUNT_PASSWORD | kinit -l 1h $EOS_ACCOUNT_USERNAME 
+echo $EOS_ACCOUNT_PASSWORD | kinit -l 1h $EOS_ACCOUNT_USERNAME
 klist
 
-# Returns the time of last file modification
-# or 0 if the file does not exist / stat fails.
-get_mtime() {
-    local path="$1"
-    local mtime_str
-    mtime_str=$(xrdfs "$projectdir" stat "$path" 2>/dev/null | awk '/MTime:/{print $2, $3}')
-    if [[ -z "$mtime_str" ]]; then
-        echo 0
-        return
-    fi
-    date -d "$mtime_str" +%s 2>/dev/null || echo 0
-}
-
-
-# copy files from VALIDATION_REFERENCE_MR directory.
-# If a file already exists, overwrite it if the reference is newer.
+# The clean-mr-eos-dir job wipes this MR's ntuples directory at the start
+# of every pipeline (before the run stage), so by the time this job runs
+# (after the run and validate stages) any file already present here was
+# freshly produced by this MR's own pipeline. Anything else must come
+# from the reference.
 for reffile in $(xrdfs $projectdir ls $refeosdir); do
     filename=$(basename $reffile)
     # skip eos system file
@@ -48,17 +37,10 @@ for reffile in $(xrdfs $projectdir ls $refeosdir); do
         continue
     fi
     destfile="$desteosdir/$filename"
-
-    ref_mtime=$(get_mtime "$reffile")
-    dest_mtime=$(get_mtime "$destfile")
-
-    if [[ "$dest_mtime" -eq 0 ]]; then
-        echo "copying missing file '${filename}' from reference"
-        xrdcp --force "${projectdir}//${reffile}" "${projectdir}//${destfile}"
-    elif [[ "$ref_mtime" -gt "$dest_mtime" ]]; then
-        echo "updating '${filename}': reference (mtime=${ref_mtime}) is newer than dest (mtime=${dest_mtime})"
-        xrdcp --force "${projectdir}//${reffile}" "${projectdir}//${destfile}"
-    else
-        echo "skipping '${filename}': dest is up-to-date (dest_mtime=${dest_mtime}, ref_mtime=${ref_mtime})"
+    if xrdfs "$projectdir" stat "$destfile" > /dev/null 2>&1; then
+        echo "skipping '${filename}': already produced by this MR's own pipeline"
+        continue
     fi
+    echo "backfilling '${filename}' from reference"
+    xrdcp --force "${projectdir}//${reffile}" "${projectdir}//${destfile}"
 done
