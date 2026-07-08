@@ -68,7 +68,7 @@ def tau_sequence(flags, configAcc):
         else:
             configSeq.setOptionValue('.saveCombinedSF', True)
         
-        if flags.Analysis.Tau.do_TauLRT:
+        if "Baseline" in quality and flags.Analysis.Tau.do_TauLRT:
             # This is needed for the non-official TauJetsLRT working points, which can have multiple prong options
             configSeq.setOptionValue('.useSelectionConfigFile', False)
             configSeq.setOptionValue('.manual_sel_ntracks', [1, 2, 3, 4])
