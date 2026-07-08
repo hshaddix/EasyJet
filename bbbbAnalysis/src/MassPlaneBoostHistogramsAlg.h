@@ -31,8 +31,7 @@ namespace HH4B
   {
     /// \brief The standard constructor
 public:
-    MassPlaneBoostHistogramsAlg(const std::string &name, ISvcLocator *pSvcLocator);
-    ~MassPlaneBoostHistogramsAlg();
+    using AthReentrantAlgorithm::AthReentrantAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -60,12 +59,14 @@ private:
       this, "output", "", "output file service"
     };
 
+    Gaudi::Property<std::string> m_truthMatchingPrefix{this, "truthMatchingPrefix", ""};
+    Gaudi::Property<std::vector<std::string>> m_mmv{this, "matchingMethods", {}};
+
     // properties declared later, I'm not sure how to do this properly
     // in the header
     bhist::MassPlaneHistsConfig m_config;
     // hack because gaudi doesn't support std::set<std::string>, fill
     // this thing and then put it in config above.
-    std::vector<std::string> m_mmv;
 
     using HP = std::unique_ptr<bhist::MassPlaneHists>;
     using JHist = std::pair<CP::SystematicSet,HP>;

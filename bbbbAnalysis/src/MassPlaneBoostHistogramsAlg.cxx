@@ -13,22 +13,13 @@
 
 namespace HH4B
 {
-  MassPlaneBoostHistogramsAlg::MassPlaneBoostHistogramsAlg(
-    const std::string &name,
-    ISvcLocator *pSvcLocator)
-    : AthReentrantAlgorithm(name, pSvcLocator)
-  {
-    declareProperty("truthMatchingPrefix", m_config.truth_matching_prefix);
-    declareProperty("matchingMethods", m_mmv);
-  }
-  MassPlaneBoostHistogramsAlg::~MassPlaneBoostHistogramsAlg() = default;
-
   StatusCode MassPlaneBoostHistogramsAlg::initialize()
   {
-    // gaudi hack
+    ATH_MSG_DEBUG("initialize");
+
+    m_config.truth_matching_prefix = m_truthMatchingPrefix;
     m_config.matching_methods.insert(m_mmv.begin(), m_mmv.end());
 
-    ATH_MSG_DEBUG("initialize");
     ATH_CHECK(m_eventInfoKey.initialize());
     ATH_CHECK(m_jetsIn.initialize(m_systematicsList));
     ATH_CHECK(m_output_svc.retrieve());

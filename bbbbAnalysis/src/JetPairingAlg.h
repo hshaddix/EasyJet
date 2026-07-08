@@ -66,7 +66,7 @@ namespace HH4B
   {
     /// \brief The standard constructor
 public:
-    JetPairingAlg(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -92,7 +92,7 @@ private:
 
     Gaudi::Property<std::string> m_pairingStrategy {
         this, "pairingStrategy", "", "Pairing strategy."};
-    std::string m_bdt_kinematicGroup;
+    Gaudi::Property<std::string> m_bdt_kinematicGroup {this, "kinematicGroup", ""};
     // Declare the BDTs
     std::vector<std::unique_ptr<MVAUtils::BDT>> m_pairing_bdts;
     // Declare the enum for jet pairing strategy

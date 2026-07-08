@@ -10,12 +10,6 @@
 
 namespace HH4B
 {
-  BaselineVarsResolvedAlg ::BaselineVarsResolvedAlg(const std::string &name,
-                                                    ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsResolvedAlg ::initialize()
   {
     ATH_CHECK (m_jetHandle.initialize(m_systematicsList));

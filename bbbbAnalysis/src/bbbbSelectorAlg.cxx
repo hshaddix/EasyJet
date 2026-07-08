@@ -10,13 +10,6 @@
 
 namespace HH4B
 {
-  bbbbSelectorAlg::bbbbSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
-
   StatusCode bbbbSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

@@ -9,12 +9,6 @@
 
 namespace HH4B
 {
-  BaselineVarsBoostedAlg ::BaselineVarsBoostedAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode BaselineVarsBoostedAlg ::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

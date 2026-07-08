@@ -9,12 +9,6 @@
 
 namespace HH4B
 {
-  VBFRNNVarsAlg ::VBFRNNVarsAlg(const std::string &name,
-                                                  ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode VBFRNNVarsAlg ::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

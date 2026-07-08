@@ -10,12 +10,6 @@
 
 namespace HH4B
 {
-  SmallRJetTriggerSFAlg::SmallRJetTriggerSFAlg(const std::string &name,
-                                                   ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode SmallRJetTriggerSFAlg::initialize()
   {
     ATH_CHECK(m_inJetHandle.initialize(m_systematicsList));

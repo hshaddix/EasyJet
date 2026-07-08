@@ -15,13 +15,6 @@
 
 namespace HH4B
 {
-  JetPairingAlg ::JetPairingAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-    declareProperty("kinematicGroup", m_bdt_kinematicGroup);
-  }
-
   StatusCode JetPairingAlg ::initialize()
   {
     ATH_CHECK(m_inJetHandle.initialize(m_systematicsList));
