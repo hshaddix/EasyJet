@@ -11,14 +11,6 @@
 
 namespace ttHH
 {
-  JetPairingAlgttHH ::JetPairingAlgttHH(const std::string &name,
-      ISvcLocator *pSvcLocator)
-    : AthHistogramAlgorithm(name, pSvcLocator),
-    m_outHandle(this, "pairedOutBJets", "pairedttHHAnalysisJets_%SYS%", "Jet container to write")
-  {
-    declareProperty("pairingStrategyName", m_pairingStrategyName);
-  }
-
   StatusCode JetPairingAlgttHH ::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

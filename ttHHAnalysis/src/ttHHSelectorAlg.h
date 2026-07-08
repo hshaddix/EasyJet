@@ -37,7 +37,7 @@ namespace ttHH
   class ttHHSelectorAlg final : public AthHistogramAlgorithm {
 
     public:
-      ttHHSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -103,11 +103,11 @@ namespace ttHH
       Gaudi::Property<bool> m_bypass
       { this, "bypass", false, "Run selector algorithm in pass-through mode" };
 
-      std::vector<std::string> m_inputCutList{};
+      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
 
-      std::vector<std::string> m_leptonTriggers;
+      Gaudi::Property<std::vector<std::string>> m_leptonTriggers{this, "triggerLists", {}};
 
-      bool m_saveCutFlow;
+      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
       long long int m_total_events{0};
 
       std::unordered_map<std::string, CP::SysWriteDecorHandle<char> > m_Bbranches;

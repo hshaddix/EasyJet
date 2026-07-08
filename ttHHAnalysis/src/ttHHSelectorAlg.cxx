@@ -9,17 +9,6 @@
 
 namespace ttHH
 {
-
-  ttHHSelectorAlg::ttHHSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-    declareProperty("cutList", m_inputCutList);
-    declareProperty("saveCutFlow", m_saveCutFlow);
-    declareProperty("triggerLists", m_leptonTriggers);
-  }
-
-
   StatusCode ttHHSelectorAlg::initialize()
   {
 

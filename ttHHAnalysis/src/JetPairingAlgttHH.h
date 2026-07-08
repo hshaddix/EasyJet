@@ -29,7 +29,7 @@ namespace ttHH
   {
     /// \brief The standard constructor
 public:
-    JetPairingAlgttHH(const std::string &name, ISvcLocator *pSvcLocator);
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -55,13 +55,13 @@ private:
     m_isBtag {this, "bTagWPDecorName", "", "Name of input decorator for b-tagging"};
 
     /// \brief Setup syst-aware output container handles
-    CP::SysWriteHandle<xAOD::JetContainer> m_outHandle;
+    CP::SysWriteHandle<xAOD::JetContainer> m_outHandle{this, "pairedOutBJets", "pairedttHHAnalysisJets_%SYS%", "Jet container to write"};
 
     std::vector<const xAOD::Jet*> bJetChiSquarePairing(const xAOD::JetContainer& Jets, float targetMass1, float targetMass2);
 
     std::tuple<const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, const xAOD::Jet*, float> minChiSquared(const xAOD::JetContainer& Jets, const std::vector<size_t>& indexes, float targetMass1, float targetMass2);
 
-    std::string m_pairingStrategyName;
+    Gaudi::Property<std::string> m_pairingStrategyName{this, "pairingStrategyName", ""};
 
     std::optional<PairingStrategy> m_pairingStrategy;
 

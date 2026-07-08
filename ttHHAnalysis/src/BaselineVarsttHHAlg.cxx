@@ -20,12 +20,7 @@
 
 
 namespace ttHH
-{
-  BaselineVarsttHHAlg::BaselineVarsttHHAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  { }
-  
+{ 
   StatusCode BaselineVarsttHHAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");
