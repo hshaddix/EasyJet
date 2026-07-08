@@ -27,9 +27,8 @@ namespace XBBCALIB
   {
     /// \brief The standard constructor
 public:
-    BaselineVarsZbbjCalibAlg(const std::string &name, ISvcLocator *pSvcLocator);
-        
-    ~BaselineVarsZbbjCalibAlg();
+    using AthHistogramAlgorithm::AthHistogramAlgorithm;
+
     ///  \\brief Initialisation method, for setting up tools and other persistent
     /// configs
     StatusCode initialize() override;

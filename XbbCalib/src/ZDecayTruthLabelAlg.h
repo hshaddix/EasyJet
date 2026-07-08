@@ -20,7 +20,8 @@ namespace XBBCALIB {
 /// container indicates a Z->cc decay. Only schedule on Zqq DSIDs.
 class ZDecayTruthLabelAlg final : public AthAlgorithm {
 public:
-  ZDecayTruthLabelAlg(const std::string& name, ISvcLocator* sl);
+  using AthAlgorithm::AthAlgorithm;
+
   StatusCode initialize() override;
   StatusCode execute(const EventContext& ctx) override;
 

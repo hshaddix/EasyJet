@@ -35,8 +35,8 @@ namespace XBBCALIB {
 
 class ZbbHistogramAlg final : public AthAlgorithm {
 public:
-  ZbbHistogramAlg(const std::string& name, ISvcLocator* pSvcLocator);
-  ~ZbbHistogramAlg();
+  using AthAlgorithm::AthAlgorithm;
+
   StatusCode initialize() override;
   StatusCode execute(const EventContext& ctx) override;
   StatusCode finalize() override;

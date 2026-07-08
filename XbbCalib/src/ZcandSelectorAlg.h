@@ -23,7 +23,7 @@ namespace XBBCALIB{
   class ZcandSelectorAlg final : public EL::AnaAlgorithm{
     /// \brief The standard constructor
   public:
-    ZcandSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator);
+    using EL::AnaAlgorithm::AnaAlgorithm;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs

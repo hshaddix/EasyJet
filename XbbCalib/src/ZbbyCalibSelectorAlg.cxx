@@ -9,14 +9,6 @@
 
 namespace XBBCALIB
 {
-
-  ZbbyCalibSelectorAlg::ZbbyCalibSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode ZbbyCalibSelectorAlg::initialize()
   {
     // Initialise global event filter

@@ -19,7 +19,8 @@ namespace XBBCALIB {
 
 class FinalWeightAlg final : public AthAlgorithm {
 public:
-  FinalWeightAlg(const std::string& name, ISvcLocator* sl);
+  using AthAlgorithm::AthAlgorithm;
+
   StatusCode initialize() override;
   StatusCode execute(const EventContext& ctx) override;
 

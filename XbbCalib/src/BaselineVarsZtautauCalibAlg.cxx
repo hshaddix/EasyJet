@@ -6,11 +6,6 @@
 
 namespace XBBCALIB
 {
-  BaselineVarsZtautauCalibAlg::BaselineVarsZtautauCalibAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  { }
-
   StatusCode BaselineVarsZtautauCalibAlg::initialize()
   {
     ATH_CHECK (m_lRjetHandle.initialize(m_systematicsList));

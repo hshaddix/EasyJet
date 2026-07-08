@@ -8,10 +8,6 @@
 
 namespace XBBCALIB {
 
-ZDecayTruthLabelAlg::ZDecayTruthLabelAlg(const std::string& name,
-                                          ISvcLocator* sl)
-  : AthAlgorithm(name, sl) {}
-
 StatusCode ZDecayTruthLabelAlg::initialize() {
   ATH_CHECK(m_eventKey.initialize());
   ATH_CHECK(m_isCC_key.initialize());

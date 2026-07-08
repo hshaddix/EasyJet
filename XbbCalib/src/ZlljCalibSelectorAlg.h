@@ -28,7 +28,7 @@ namespace XBBCALIB
   class ZlljCalibSelectorAlg final : public AthHistogramAlgorithm {
 
     public:
-      ZlljCalibSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs

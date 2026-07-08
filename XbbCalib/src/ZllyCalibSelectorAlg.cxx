@@ -9,14 +9,6 @@
 
 namespace XBBCALIB
 {
-
-  ZllyCalibSelectorAlg::ZllyCalibSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode ZllyCalibSelectorAlg::initialize()
   {
     ATH_MSG_INFO("*********************************\n");

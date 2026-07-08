@@ -8,17 +8,6 @@
 
 namespace XBBCALIB
 {
-  BaselineVarsZbbjCalibAlg::BaselineVarsZbbjCalibAlg(const std::string &name,
-                                           ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  { }
-
-  //BaselineVarsZbbjCalibAlg::~BaselineVarsZbbjCalibAlg() = default;
-  BaselineVarsZbbjCalibAlg::~BaselineVarsZbbjCalibAlg()
-{
-    
-}
-
   StatusCode BaselineVarsZbbjCalibAlg::initialize()
   {
     ATH_CHECK (m_lrjetHandle.initialize(m_systematicsList));

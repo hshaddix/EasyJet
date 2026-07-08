@@ -30,7 +30,7 @@ namespace XBBCALIB
   class ZbbjCalibSelectorAlg final : public AthHistogramAlgorithm {
 
     public:
-      ZbbjCalibSelectorAlg(const std::string &name, ISvcLocator *pSvcLocator);
+      using AthHistogramAlgorithm::AthHistogramAlgorithm;
 
       StatusCode initialize() override;
       StatusCode execute(const EventContext& ctx) override;

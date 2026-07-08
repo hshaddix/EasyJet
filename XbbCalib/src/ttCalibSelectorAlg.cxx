@@ -13,13 +13,6 @@
 
 namespace XBBCALIB
 {
-
-  ttCalibSelectorAlg::ttCalibSelectorAlg(const std::string &name,
-                                         ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-  }
-
   StatusCode ttCalibSelectorAlg::initialize()
   {
     // Initialise global event filter

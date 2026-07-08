@@ -11,14 +11,6 @@
 
 namespace XBBCALIB
 {
-
-  ZbbjCalibSelectorAlg::ZbbjCalibSelectorAlg(const std::string &name,
-                                ISvcLocator *pSvcLocator)
-      : AthHistogramAlgorithm(name, pSvcLocator)
-  {
-
-  }
-
   StatusCode ZbbjCalibSelectorAlg::initialize()
   {
     ATH_CHECK (m_filterParams.initialize(m_systematicsList));

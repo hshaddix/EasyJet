@@ -6,9 +6,6 @@
 #include "ZcandSelectorAlg.h"
 
 namespace XBBCALIB{
-  ZcandSelectorAlg :: ZcandSelectorAlg(const std::string& name, ISvcLocator *pSvcLocator)
-    : EL::AnaAlgorithm(name, pSvcLocator){}
-
   StatusCode ZcandSelectorAlg::initialize(){
 
     ATH_MSG_INFO("*********************************\n");

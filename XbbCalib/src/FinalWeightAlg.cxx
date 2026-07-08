@@ -6,9 +6,6 @@
 
 namespace XBBCALIB {
 
-FinalWeightAlg::FinalWeightAlg(const std::string& name, ISvcLocator* sl)
-  : AthAlgorithm(name, sl) {}
-
 StatusCode FinalWeightAlg::initialize() {
   if (m_weightHandle.empty()) {
     ATH_MSG_ERROR("weightDecoration must be configured");

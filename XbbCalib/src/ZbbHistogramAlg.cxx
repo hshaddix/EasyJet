@@ -64,12 +64,6 @@ private:
 
 namespace XBBCALIB {
 
-ZbbHistogramAlg::ZbbHistogramAlg(const std::string& name,
-                                 ISvcLocator* pSvcLocator)
-  : AthAlgorithm(name, pSvcLocator) {}
-
-ZbbHistogramAlg::~ZbbHistogramAlg() = default;
-
 StatusCode ZbbHistogramAlg::initialize() {
   if (m_ptEdges.value().size() < 2) {
     ATH_MSG_ERROR("ptEdges must have at least 2 entries");
