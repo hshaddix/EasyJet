@@ -306,6 +306,18 @@ def main():
     if args.site:
         submit_opts["site"] = args.site
 
+    print(args)
+    import sys
+    sys.exit()
+
+    # Keep track of data run numbers, add them to the file
+    if args.data_list is not None:
+        submit_opts["addNthFieldOfInDSToLFN"] = 2
+    else:
+        # This option is incompatible with the above, though probably not that useful
+        # on MC where submission is less frequently on containers
+        submit_opts["notExpandInDS"] = True
+
     if args.asetup is None:
         atlas_project = os.environ["AtlasProject"]
 
@@ -396,7 +408,6 @@ def main():
             "prun",
             "--inDS", io["inDS"],
             "--outDS", io["outDS"],
-            "--notExpandInDS",
             "--exec", exec_cmd,
         ]
         if args.ProductionRole:
@@ -419,7 +430,7 @@ def main():
                 if isinstance(v, (list, tuple)):
                     v = ",".join(map(str, v))
 
-                cmd += [f"--{k}", v]
+                cmd += [f"--{k}", str(v)]
 
         print(" ".join(cmd))
         if not args.dry_run:
