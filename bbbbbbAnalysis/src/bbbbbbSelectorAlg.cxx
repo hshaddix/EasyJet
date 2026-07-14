@@ -46,12 +46,14 @@ namespace HHH6B
       m_triggerDecorKeys.emplace(trig,triggerDecorKey);
       ATH_CHECK(m_triggerDecorKeys.at(trig).initialize());
     }
-    
-    for (const std::string &string_var: m_inputCutList) {
-      CP::SysWriteDecorHandle<bool> var {string_var+"_%SYS%", this};
-      m_Bbranches.emplace(string_var, var);
-      ATH_CHECK (m_Bbranches.at(string_var).initialize(m_systematicsList, m_eventHandle));
-    }
+
+    // Intialise booleans with value false. Also initialise syst-aware output decorators
+    for (auto& [key, value] : m_boolnames) {
+      m_bools.emplace(key, false);
+      CP::SysWriteDecorHandle<char> whandle{value+"_%SYS%", this};
+      m_Bbranches.emplace(key, whandle);
+      ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
+    };
 
     // Initialize b-jet multiplicity categorization decorators
     ATH_CHECK (m_pass_4b.initialize(m_systematicsList, m_eventHandle));
@@ -67,7 +69,16 @@ namespace HHH6B
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize());
 
-    if(m_saveCutFlow) ATH_CHECK (initialiseCutflow());
+    if(m_saveCutFlow){
+      std::vector<std::string> boolNameList;
+      for (const auto& [key, value]: m_boolnames){
+        boolNameList.push_back(value);
+        m_nameToBool[value] = key;
+      }
+      ATH_CHECK (initialiseCutflow(boolNameList));
+      ATH_CHECK (initialiseJetCutflow());
+    }
+
     return StatusCode::SUCCESS;
   }
 
@@ -83,22 +94,18 @@ namespace HHH6B
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
+      ATH_CHECK (m_eventHandle.retrieve (event, sys, ctx));
 
-      // reset all cut flags to default=false
-      for (CutEntry& cut : m_bbbbbbCuts) {
-        cut.passed = false;
-        m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
-      }
+      for (auto& [key, value] : m_boolnames) m_bools.at(key) = false;
     
-      evaluateTriggerCuts(*event, m_Triggers, m_bbbbbbCuts, ctx);
+      evaluateTriggerCuts(*event, m_Triggers, ctx);
       
       // Get number of truth jets (for cutflow)
       int n_truth_jets = 0;
       int n_truth_jets_after_cuts = 0;
       if (!m_truthJetHandle.empty() && m_isMC) {
         const xAOD::JetContainer *truthJets = nullptr;
-        ANA_CHECK (m_truthJetHandle.retrieve (truthJets, sys, ctx));
+        ATH_CHECK (m_truthJetHandle.retrieve (truthJets, sys, ctx));
         n_truth_jets = truthJets->size();
         
         // Apply same pT/eta cuts to truth jets (20 GeV, 4.5 eta based on config)
@@ -119,7 +126,7 @@ namespace HHH6B
       int n_jets_before_selection = 0;
       if (!m_jetHandleBeforeSel.empty()) {
         const xAOD::JetContainer *jetsBeforeSel = nullptr;
-        ANA_CHECK (m_jetHandleBeforeSel.retrieve (jetsBeforeSel, sys, ctx));
+        ATH_CHECK (m_jetHandleBeforeSel.retrieve (jetsBeforeSel, sys, ctx));
         n_jets_before_selection = jetsBeforeSel->size();
         
         // Only count for NOSYS to avoid double counting
@@ -140,12 +147,12 @@ namespace HHH6B
       int n_b_jets = 0;
       if (!m_lRjetHandle.empty()) {
         const xAOD::JetContainer *lRjets = nullptr;
-        ANA_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
+        ATH_CHECK (m_lRjetHandle.retrieve (lRjets, sys, ctx));
         n_boosted_jets = lRjets->size();
       }
       if (!m_jetHandle.empty()) {
         const xAOD::JetContainer *jets = nullptr;
-        ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
+        ATH_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
         n_resolved_jets = jets->size();
         
         // Only count for NOSYS to avoid double counting
@@ -171,7 +178,7 @@ namespace HHH6B
         }
       }
 
-      evaluateJetCuts(n_boosted_jets, n_resolved_jets, n_b_jets, m_bbbbbbCuts);
+      evaluateJetCuts(n_boosted_jets, n_resolved_jets, n_b_jets);
 
       // Categorize events based on b-jet multiplicity (after preselection, but not as cuts)
       // These are labels, not cuts - all events get categorized
@@ -190,48 +197,27 @@ namespace HHH6B
       m_n_reco_jets_before_cuts.set(*event, n_jets_before_selection, sys);
       m_n_reco_jets_after_cuts.set(*event, n_resolved_jets, sys);
 
-      bool passedall = true;
-      for (CutEntry& cut : m_bbbbbbCuts) {
-        passedall = passedall && cut.passed;
-        m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
+      // do the CUTFLOW only with sys="" -> NOSYS
+      if (sys.name()=="" && m_saveCutFlow){
+        std::vector<bool> cutBools;
+        for(const auto& cut : m_inputCutList)
+          cutBools.push_back(m_bools.at(m_nameToBool.at(cut)));
+        double mc_weight = m_isMC ? m_generatorWeight.get(*event, sys) : 0.;
+        ATH_CHECK (applyCutFlow(cutBools, mc_weight));
       }
+
+      bool passedall = true;
+      for (auto& [key, var] : m_bools) {
+        passedall = passedall && var;
+        m_Bbranches.at(key).set(*event, var, sys);
+      }
+
+      // discard events not passing
+      if (!m_bypass && !passedall) continue;
 
       // Global event filter true if any syst passes and controls
       // if event is passed to output writing or not
-      if (m_bypass || passedall) filter.setPassed(true);
-
-      // Only store cutflow for NOSYS
-      if (sys.name()=="" && m_saveCutFlow){
-
-        // Compute total_events
-        m_total_events+=1;
-        if (m_isMC) m_total_mcEventWeight+= m_generatorWeight.get(*event, sys);
-
-        // Count how many cuts the event passed and increase the relative counter
-        for (const auto &cut : m_inputCutList) {
-          if(m_bbbbbbCuts.exists(cut)) {
-            if (m_bbbbbbCuts(cut).passed) {
-              m_bbbbbbCuts(cut).counter += 1;
-              if (m_isMC) m_bbbbbbCuts(cut).w_counter += m_generatorWeight.get(*event, sys);
-            }
-          }
-        }
-
-        // Check how many consecutive cuts are passed by the event.
-        unsigned int consecutive_cuts = 0;
-        for (size_t i = 0; i < m_bbbbbbCuts.size(); ++i) {
-          if (m_bbbbbbCuts[i].passed) consecutive_cuts++;
-          else break;
-        }
-
-        // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
-        // I think this is an elegant way to do it :) . Considering the difficulties a configurable cut list imposes. 
-        for (unsigned int i=0; i<consecutive_cuts; i++) {
-          m_bbbbbbCuts[i].relativeCounter += 1;
-          if (m_isMC) m_bbbbbbCuts[i].w_relativeCounter += m_generatorWeight.get(*event, sys);
-        }
-      }
-
+      filter.setPassed(true);
     }
 
     return StatusCode::SUCCESS;
@@ -241,7 +227,9 @@ namespace HHH6B
   {
     //adapt the following for each syst TODO
     ATH_MSG_INFO("Total events = " << m_total_events <<std::endl);
-    m_bbbbbbCuts.CheckCutResults(); // Print CheckCutResults
+
+    ATH_CHECK (m_filterParams.finalize ());
+    ATH_CHECK (finaliseCutflow());
 
     // Print and save jet cutflow summary
     if(m_saveCutFlow) {
@@ -325,106 +313,55 @@ namespace HHH6B
       }
       ATH_MSG_INFO("=================================================");
       
-      m_bbbbbbCuts.DoAbsoluteEfficiency(m_total_events, efficiency("AbsoluteEfficiency"));
-      m_bbbbbbCuts.DoRelativeEfficiency(m_total_events, efficiency("RelativeEfficiency"));
-      m_bbbbbbCuts.DoStandardCutFlow(m_total_events, efficiency("StandardCutFlow"));
-      if (m_isMC) {
-        m_bbbbbbCuts.DoWeightedAbsoluteEfficiency(m_total_mcEventWeight, efficiency("WeightedAbsoluteEfficiency"));
-        m_bbbbbbCuts.DoWeightedRelativeEfficiency(m_total_mcEventWeight, efficiency("WeightedRelativeEfficiency"));
-        m_bbbbbbCuts.DoWeightedStandardCutFlow(m_total_mcEventWeight, efficiency("WeightedStandardCutFlow"));
-      }
-      m_bbbbbbCuts.DoCutflowLabeling(m_total_events, hist("EventsPassed_BinLabeling"));
     }
 
     return StatusCode::SUCCESS;
 
   }
 
-  void bbbbbbSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event, const std::vector<std::string> &Triggers, 
-                                            CutManager& bbbbbbCuts, const EventContext& ctx) {
-    if (!bbbbbbCuts.exists("PASS_TRIGGER"))
-        return;
-    
+  void bbbbbbSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event,
+					      const std::vector<std::string>& triggers,
+					      const EventContext& ctx) {
     bool pass_trigger = false;
 
-    for (const std::string &trigger : Triggers)
+    for (const std::string &trigger : triggers)
     {
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
       SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey, ctx);    // OR between triggers
       pass_trigger |= m_triggerDecorHandle(event);     
     }
-    bbbbbbCuts("PASS_TRIGGER").passed = pass_trigger;
+    m_bools.at(HHH6B::PASS_TRIGGER) = pass_trigger;
   }
 
-  void bbbbbbSelectorAlg::evaluateJetCuts(const int nBoostedJets, const int nResolvedJets, const int nBJets, CutManager& bbbbbbCuts)
+  void bbbbbbSelectorAlg::evaluateJetCuts(const int nBoostedJets,
+					  const int nResolvedJets,
+					  const int nBJets)
   {
-    if (nResolvedJets >= 4 && bbbbbbCuts.exists("AT_LEAST_FOUR_JETS"))
-      bbbbbbCuts("AT_LEAST_FOUR_JETS").passed = true;
-
-    if (nResolvedJets >= 6 && bbbbbbCuts.exists("AT_LEAST_SIX_JETS"))
-      bbbbbbCuts("AT_LEAST_SIX_JETS").passed = true;
-
-    if (nBJets >= 4 && bbbbbbCuts.exists("AT_LEAST_FOUR_BJETS"))
-      bbbbbbCuts("AT_LEAST_FOUR_BJETS").passed = true;
-
-    if (nBJets >= 6 && bbbbbbCuts.exists("AT_LEAST_SIX_BJETS"))
-      bbbbbbCuts("AT_LEAST_SIX_BJETS").passed = true;
-
-    if ((nResolvedJets >= 6 && nBJets >= 4) && bbbbbbCuts.exists("AT_LEAST_SIX_JETS_FOUR_BJETS"))
-      bbbbbbCuts("AT_LEAST_SIX_JETS_FOUR_BJETS").passed = true;
-
-    if ((nBoostedJets >= 3 || nResolvedJets >= 6) && bbbbbbCuts.exists("AT_LEAST_SIX_JETS_OR_THREE_LRJETS"))
-      bbbbbbCuts("AT_LEAST_SIX_JETS_OR_THREE_LRJETS").passed = true;
-
-    if ((nBoostedJets == 1 && nResolvedJets >= 4) && bbbbbbCuts.exists("AT_LEAST_FOUR_JETS_AND_ONE_LRJET"))
-      bbbbbbCuts("AT_LEAST_FOUR_JETS_AND_ONE_LRJET").passed = true;
-
-    if ((nBoostedJets == 2 && nResolvedJets >= 2) && bbbbbbCuts.exists("AT_LEAST_TWO_JETS_AND_TWO_LRJETS"))
-      bbbbbbCuts("AT_LEAST_TWO_JETS_AND_TWO_LRJETS").passed = true;
-
-    if ((nBoostedJets >= 3) && bbbbbbCuts.exists("AT_LEAST_THREE_LRJETS"))
-      bbbbbbCuts("AT_LEAST_THREE_LRJETS").passed = true;
-
-
+    m_bools.at(HHH6B::AT_LEAST_FOUR_JETS) = nResolvedJets >= 4;
+    m_bools.at(HHH6B::AT_LEAST_SIX_JETS) = nResolvedJets >= 6;
+    m_bools.at(HHH6B::AT_LEAST_FOUR_BJETS) = nBJets >= 4;
+    m_bools.at(HHH6B::AT_LEAST_SIX_BJETS) = nBJets >= 6;
+    m_bools.at(HHH6B::AT_LEAST_SIX_JETS_FOUR_BJETS) =
+      (nResolvedJets >= 6 && nBJets >= 4);
+    m_bools.at(HHH6B::AT_LEAST_SIX_JETS_OR_THREE_LRJETS) =
+      (nBoostedJets >= 3 || nResolvedJets >= 6);
+    m_bools.at(HHH6B::AT_LEAST_FOUR_JETS_AND_ONE_LRJET) =
+      (nBoostedJets == 1 && nResolvedJets >= 4);
+    m_bools.at(HHH6B::AT_LEAST_TWO_JETS_AND_TWO_LRJETS) =
+      (nBoostedJets == 2 && nResolvedJets >= 2);
+    m_bools.at(HHH6B::AT_LEAST_THREE_LRJETS) = nBoostedJets >= 3;
   }
 
-  StatusCode bbbbbbSelectorAlg::initialiseCutflow(){
-
-    m_bbbbbbCuts.CheckInputCutList(m_inputCutList,m_STANDARD_CUTS);
-
-    for (const std::string &cut : m_inputCutList)  {
-      // Initialize a vector of CutEntry structs based on the input Cut List
-      m_bbbbbbCuts.add(cut);
-    }
-
-    //After filling the CutManager, book your histograms.
-    const unsigned int nbins = m_bbbbbbCuts.size() + 1; //  need an extra bin for the total num of events.
-    ANA_CHECK (book (TEfficiency("AbsoluteEfficiency","Absolute Efficiency of HHH6B-> cuts.Needs rescaling to total events.;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("RelativeEfficiency","Relative Efficiency of HHH6B-> cuts.Needs rescaling to total events.;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("StandardCutFlow","StandardCutFlow of HHH6B-> cuts.Needs rescaling to total events.;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    if (m_isMC) {
-      ANA_CHECK (book (TEfficiency("WeightedAbsoluteEfficiency","Weighted Absolute Efficiency of HHH6B-> cuts.Needs rescaling to sumOfWeights.;Cuts;#epsilon",
-				   nbins, 0.5, nbins + 0.5)));
-      ANA_CHECK (book (TEfficiency("WeightedRelativeEfficiency","Weighted Relative Efficiency of HHH6B-> cuts.Needs rescaling to sumOfWeights.;Cuts;#epsilon",
-				   nbins, 0.5, nbins + 0.5)));
-      ANA_CHECK (book (TEfficiency("WeightedStandardCutFlow","Weighted StandardCutFlow of HHH6B-> cuts.Needs rescaling to sumOfWeights.;Cuts;#epsilon",
-				   nbins, 0.5, nbins + 0.5)));
-    }
-    ANA_CHECK (book (TH1F("EventsPassed_BinLabeling", "Events passed by each cut / Bin labeling", nbins, 0.5, nbins + 0.5)));
-    
+  StatusCode bbbbbbSelectorAlg::initialiseJetCutflow(){
     // Book jet cutflow histograms
-    ANA_CHECK (book (TH1F("JetCutflow", "Jet Cutflow;Selection Stage;Number of Jets", 5, 0.5, 5.5)));
-    ANA_CHECK (book (TH1F("JetCutflowPerEvent", "Average Jets per Event;Selection Stage;Jets per Event", 5, 0.5, 5.5)));
+    ATH_CHECK (book (TH1F("JetCutflow", "Jet Cutflow;Selection Stage;Number of Jets", 5, 0.5, 5.5)));
+    ATH_CHECK (book (TH1F("JetCutflowPerEvent", "Average Jets per Event;Selection Stage;Jets per Event", 5, 0.5, 5.5)));
     
     // Book jet kinematics histograms
-    ANA_CHECK (book (TH1F("Jet_pT_BeforeCuts", "Jet pT Before Cuts;pT [GeV];Jets", 100, 0, 500)));
-    ANA_CHECK (book (TH1F("Jet_eta_BeforeCuts", "Jet #eta Before Cuts;#eta;Jets", 100, -5, 5)));
-    ANA_CHECK (book (TH1F("Jet_pT_AfterCuts", "Jet pT After Cuts;pT [GeV];Jets", 100, 0, 500)));
-    ANA_CHECK (book (TH1F("Jet_eta_AfterCuts", "Jet #eta After Cuts;#eta;Jets", 100, -5, 5)));
-
+    ATH_CHECK (book (TH1F("Jet_pT_BeforeCuts", "Jet pT Before Cuts;pT [GeV];Jets", 100, 0, 500)));
+    ATH_CHECK (book (TH1F("Jet_eta_BeforeCuts", "Jet #eta Before Cuts;#eta;Jets", 100, -5, 5)));
+    ATH_CHECK (book (TH1F("Jet_pT_AfterCuts", "Jet pT After Cuts;pT [GeV];Jets", 100, 0, 500)));
+    ATH_CHECK (book (TH1F("Jet_eta_AfterCuts", "Jet #eta After Cuts;#eta;Jets", 100, -5, 5)));
     return StatusCode::SUCCESS;
   }
 

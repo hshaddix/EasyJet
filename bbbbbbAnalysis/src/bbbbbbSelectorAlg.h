@@ -6,7 +6,7 @@
 #ifndef SELECTIONFLAGS6BALG_H
 #define SELECTIONFLAGS6BALG_H
 
-#include <AthenaBaseComps/AthHistogramAlgorithm.h>
+#include "EasyjetHub/BaseSelectorAlg.h"
 
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
@@ -20,17 +20,15 @@
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
 
-#include <EasyjetHub/CutManager.h>
-
-class CutManager;
+#include "bbbbbbEnums.h"
 
 namespace HHH6B
 {
   /// \brief An algorithm for counting containers
-  class bbbbbbSelectorAlg final : public AthHistogramAlgorithm {
+  class bbbbbbSelectorAlg final : public Easyjet::BaseSelectorAlg {
 
     public:
-      using AthHistogramAlgorithm::AthHistogramAlgorithm;
+      using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -57,13 +55,14 @@ namespace HHH6B
       };
 
       void evaluateTriggerCuts(const xAOD::EventInfo& event, 
-                          const std::vector<std::string> &Triggers, CutManager& bbbbbbCuts, const EventContext& ctx);
-      void evaluateJetCuts(const int nBoostedJets, const int nResolvedJets, const int nBJets, CutManager& bbbbbbCuts);
+			       const std::vector<std::string>& triggers,
+			       const EventContext& ctx);
+      void evaluateJetCuts(const int nBoostedJets, const int nResolvedJets,
+			   const int nBJets);
 
-      StatusCode initialiseCutflow();
+      StatusCode initialiseJetCutflow();
 
       /// \brief Setup syst-aware input container handles
-      CutManager m_bbbbbbCuts;
       CP::SysListHandle m_systematicsList {this};
 
       CP::SysReadHandle<xAOD::EventInfo>
@@ -84,15 +83,9 @@ namespace HHH6B
       CP::SysReadDecorHandle<char>
 	m_isBtag {this, "btagSelDecor", "", "Name of input dectorator for b-tagging"};
 
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
-
       Gaudi::Property<std::vector<std::string>> m_Triggers{this, "Triggers", {}};
 
       std::unordered_map<std::string,  SG::ReadDecorHandleKey<xAOD::EventInfo>> m_triggerDecorKeys;
-
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      long long int m_total_events{0};
-      double m_total_mcEventWeight{0.0};
 
       // Jet cutflow counters
       long long int m_total_truth_jets{0};
@@ -101,14 +94,27 @@ namespace HHH6B
       long long int m_jets_after_selection{0};
       long long int m_bjets_after_selection{0};
 
-      Gaudi::Property<bool> m_isMC
-        { this, "isMC", false, "Is this simulation?" };
-
       CP::SysFilterReporterParams m_filterParams {this, "bbbb selection"};
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run the selector algorithm in run-through mode" };
 
-      std::unordered_map<std::string, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map < HHH6B::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
+      std::unordered_map < HHH6B::Booleans, bool > m_bools;
+      std::unordered_map < HHH6B::Booleans, std::string > m_boolnames =
+	{
+	  {HHH6B::PASS_TRIGGER, "PASS_TRIGGER"},
+	  {HHH6B::AT_LEAST_FOUR_JETS, "AT_LEAST_FOUR_JETS"},
+	  {HHH6B::AT_LEAST_SIX_JETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_FOUR_BJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_SIX_BJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_FOUR_JETS_OR_TWO_LRJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_SIX_JETS_FOUR_BJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_TWO_JETS_AND_TWO_LRJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_FOUR_JETS_AND_ONE_LRJET, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_THREE_LRJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_SIX_JETS_OR_THREE_LRJETS, "AT_LEAST_SIX_JETS"},
+	};
+      std::unordered_map<std::string, HHH6B::Booleans> m_nameToBool;
 
       // B-jet multiplicity categorization decorators
       CP::SysWriteDecorHandle<bool> m_pass_4b{"pass_4b_%SYS%", this};
@@ -125,7 +131,6 @@ namespace HHH6B
 
       CP::SysReadDecorHandle<float>
         m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
-        // m_generatorWeight{ this, "generatorWeight", "generatorWeight_NOSYS", "MC event weights" };
 
   };
 
