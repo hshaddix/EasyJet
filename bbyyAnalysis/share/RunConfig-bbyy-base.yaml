@@ -75,6 +75,7 @@ Met:
 
 OverlapRemoval:
   favourPhotonOverLepton: false # if set to true, HgamOR is applied
+  allowNoPV: true
 
 # orthogonality studies  
 orthogonality:

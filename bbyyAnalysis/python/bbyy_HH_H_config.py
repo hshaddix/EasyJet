@@ -16,6 +16,15 @@ def bbyy_HH_H_cfg(flags, smalljetkey, photonkey, muonkey, electronkey,
                  largeRjetkey, float_variables, int_variables)
     )
 
+    if flags.Input.isMC:
+        cfg.addEventAlgo(
+            CompFactory.Easyjet.JetNeutrinoDecoratorAlg(
+                "JetNeutrinoDecoratorAlg",
+                jetsIn="AntiKt4TruthDressedWZJets",
+                truthParticlesIn="TruthNeutrinos"
+            )
+        )
+
     cfg.addEventAlgo(
         CompFactory.HHBBYY.TopRecoAlg(
             "TopRecoAlg",
