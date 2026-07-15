@@ -106,7 +106,7 @@ private:
         this, "globalTriggerMatch", "globalTriggerMatch_%SYS%", "Global trigger matching"};
 
     CP::SysFilterReporterParams m_filterParams{this, "HZy selection"};
-    CP::SysWriteDecorHandle<bool> m_passallcuts{"Pass_allcuts_%SYS%", this};
+    CP::SysWriteDecorHandle<char> m_passallcuts{"Pass_allcuts_%SYS%", this};
 
     // Set the Gaudi properties that are transferred from the inputs
     Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
@@ -131,7 +131,7 @@ private:
     std::unordered_map<std::string, CP::SysReadDecorHandle<float>> m_Fbranches_baseline;
 
     std::unordered_map<std::string, CP::SysReadDecorHandle<bool>> m_triggerdecos;
-    std::unordered_map<HZY::Booleans, CP::SysWriteDecorHandle<bool>> m_Bbranches;
+    std::unordered_map<HZY::Booleans, CP::SysWriteDecorHandle<char>> m_Bbranches;
     std::unordered_map<HZY::Booleans, bool> m_bools;
     std::unordered_map<HZY::Booleans, std::string> m_boolnames{
         {HZY::pass_trigger_SLT, "pass_trigger_SLT"},

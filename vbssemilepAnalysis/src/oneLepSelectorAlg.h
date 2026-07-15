@@ -91,9 +91,9 @@ namespace VBSSEMILEP{
       
       long long int m_total_events{0};
 
-      std::unordered_map<VBSSEMILEP::Booleans, CP::SysWriteDecorHandle<bool> > m_Bbranches;
+      std::unordered_map<VBSSEMILEP::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<VBSSEMILEP::Booleans, bool> m_bools;
-      CP::SysWriteDecorHandle<bool> m_passallcuts {"PassAllCuts_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<VBSSEMILEP::Booleans, std::string> m_boolnames{
         {VBSSEMILEP::PASS_TRIGGER, "PASS_TRIGGER"},
         {VBSSEMILEP::PASS_ONE_LEPTON, "PASS_ONE_LEPTON"},

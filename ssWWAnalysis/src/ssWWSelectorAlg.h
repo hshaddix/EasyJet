@@ -188,8 +188,8 @@ namespace ssWWVBS
 
       CP::SysWriteDecorHandle<char> m_ele_selected {"ele_is_selected_%SYS%", this};
       CP::SysWriteDecorHandle<char> m_mu_selected {"mu_is_selected_%SYS%", this};
-      CP::SysWriteDecorHandle<bool> m_ele_TrigMatching {"ele_TrigMatchingDecor_%SYS%", this};
-      CP::SysWriteDecorHandle<bool> m_mu_TrigMatching {"mu_TrigMatchingDecor_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_ele_TrigMatching {"ele_TrigMatchingDecor_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_mu_TrigMatching {"mu_TrigMatchingDecor_%SYS%", this};
       
 
       std::unordered_map<ssWWVBS::TriggerChannel, std::unordered_map<ssWWVBS::Var, float>> m_pt_threshold;
