@@ -6,9 +6,8 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #ifndef HZYANALYSIS_HZYSELECTORALG
 #define HZYANALYSIS_HZYSELECTORALG
 
-#include "EasyjetHub/CutManager.h"
+#include "EasyjetHub/BaseSelectorAlg.h"
 
-#include <AthenaBaseComps/AthHistogramAlgorithm.h>
 #include <SystematicsHandles/SysFilterReporterParams.h>
 #include <SystematicsHandles/SysListHandle.h>
 #include <SystematicsHandles/SysReadDecorHandle.h>
@@ -26,7 +25,6 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #include <unordered_map>
 #include <vector>
 
-class CutManager;
 
 namespace HZY
 {
@@ -51,11 +49,11 @@ namespace HZY
   };
 
   /// \brief An algorithm for counting containers
-  class HZySelectorAlg final : public AthHistogramAlgorithm
+  class HZySelectorAlg final : public Easyjet::BaseSelectorAlg
   {
 
 public:
-    using AthHistogramAlgorithm::AthHistogramAlgorithm;
+    using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -71,19 +69,12 @@ private:
     void evaluateTriggerCuts(
         const xAOD::EventInfo *event,
         const xAOD::ElectronContainer *electrons,
-        const xAOD::MuonContainer *muons, CutManager &HZyCuts,
+        const xAOD::MuonContainer *muons,
         const CP::SystematicSet &sys);
     void evaluateEventSelections(
         const xAOD::EventInfo *event, 
-        CutManager &HZyCuts, const CP::SystematicSet &sys);
-        
-    StatusCode initialiseCutflow();
+        const CP::SystematicSet &sys);
 
-    /// \brief Setup syst-aware input container handles
-    CutManager m_HZyCuts;
-
-    long long int m_total_events{0};
-    double m_total_mcEventWeight{0.0};
     std::vector<HZY::Booleans> m_inputCutKeys;
 
     CP::SysListHandle m_systematicsList{this};
@@ -112,8 +103,6 @@ private:
     Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
     Gaudi::Property<bool> m_bypass{this, "bypass", false, "Run the selector algorithm in run-through mode (DEBUG)"};
     Gaudi::Property<std::vector<std::string>> m_leptonTriggers{this, "triggerLists", {}, "Name list of triggers"};
-    Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
-    Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
 
     Gaudi::Property<double> m_mllRawMax_HmumuVeto{this, "max_mll_veto_hmumu", 101.0, "Upper raw mll threshold [GeV] for the Hmumu veto"};
     Gaudi::Property<std::vector<double>> m_mllCstrWindow{this, "mll_cstr_window", {81.18, 101.18}, "Allowed constrained mll window [GeV]"};
@@ -149,8 +138,8 @@ private:
         {HZY::PHOTON_TIGHT_ID, "PHOTON_TIGHT_ID"},
         {HZY::PHOTON_ISOLATION, "PHOTON_ISOLATION"},
         {HZY::MASS_DILEPTON_PHOTON, "MASS_DILEPTON_PHOTON"},
-        // {HZY::PASS_RELPT_HIGH, "PASS_RELPT_HIGH"},
     };
+    std::unordered_map<std::string, HZY::Booleans> m_nameToBool;
 
   };
 } // namespace HZY
