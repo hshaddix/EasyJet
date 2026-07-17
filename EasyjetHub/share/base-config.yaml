@@ -45,6 +45,7 @@ Truth:
   do_STXS: false
   include: [DSID_samples.yaml]
   nHiggses: 2
+  nZBosons: 2
   recordGrandchildren: false
   truthParticleContainersToFix: []
   truthVertexContainersToFix: []

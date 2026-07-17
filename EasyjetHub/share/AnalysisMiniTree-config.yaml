@@ -90,6 +90,7 @@ truth_outputs:
   small_R_jets: ''
   large_R_jets: ''
   higgs_particle: ''
+  z_bosons: ''
   taus: ''
   electrons: ''
   muons: ''

@@ -10,6 +10,8 @@
 #include "TruthParticleInformationAlg.h"
 #include "TruthUtils.h"
 #include <algorithm>
+#include <cstdint>
+#include <set>
 
 #include <AsgDataHandles/WriteDecorHandle.h>
 
@@ -328,6 +330,17 @@ public:
     ATH_CHECK(m_truthChildrenPdgIdFromHiggsesDecorKeys.initialize());
     ATH_CHECK(m_truthInitialChildrenPdgIdFromHiggsesDecorKeys.initialize());
 
+    m_truthZBosonsKinDecorKeys.resize(m_nZBosons);
+    for (unsigned int z = 0; z < m_nZBosons; z++)
+    {
+      for (const std::string &var : m_kinVars)
+      {
+        m_truthZBosonsKinDecorKeys[z].emplace_back(
+          m_EventInfoKey,
+          "truth_Z" + std::to_string(z + 1) + "_" + var);
+      }
+      ATH_CHECK(m_truthZBosonsKinDecorKeys[z].initialize());
+    }
     if (m_recordGrandchildren)
     {
       m_truthGrandchildrenKinFromHiggsesDecorKeys.resize(m_nHiggses);
@@ -422,6 +435,10 @@ public:
     */
     std::vector<TruthScalar> higgses =
       getFinalHiggses(truthParticlesContainer);
+
+    std::vector<TruthScalar> zBosons =
+      getFinalZBosons(truthSMParticles);
+    decorateTruthZBosonInformation(eventInfo, zBosons);
     /*
       Decorate truth particle information on EventInfo with defaults if higgses
       empty
@@ -557,6 +574,23 @@ public:
       absCosThetaStarDecorHandle(m_absCosThetaStarDecorKey);
     absCosThetaStarDecorHandle(eventInfo) = abs_cos_theta_star;
 
+  }
+
+  void TruthParticleInformationAlg ::decorateTruthZBosonInformation(
+    const xAOD::EventInfo &eventInfo,
+    std::vector<TruthScalar>& zBosons) const
+  {
+    constexpr float invalid = -999.f;
+    for (unsigned int z = 0; z < m_nZBosons; z++)
+    {
+      for (size_t i = 0; i < m_kinVars.size(); i++)
+      {
+        SG::WriteDecorHandle<xAOD::EventInfo, float> truthZBosonKinDecorHandle(
+          m_truthZBosonsKinDecorKeys[z][i]);
+        truthZBosonKinDecorHandle(eventInfo) =
+          z < zBosons.size() ? zBosons[z].p4(i) : invalid;
+      }
+    }
   }
   
   void TruthParticleInformationAlg::verbosePrintParticleAndChildren(
@@ -742,6 +776,35 @@ public:
       });
 
     return higgses;
+  }
+
+  std::vector<TruthScalar>
+  TruthParticleInformationAlg ::getFinalZBosons(
+    const xAOD::TruthParticleContainer &truthParticlesContainer) const
+  {
+    std::vector<TruthScalar> zBosons;
+    std::set<std::uint64_t> seenUIDs;
+
+    for (const xAOD::TruthParticle *tp : truthParticlesContainer)
+    {
+      if (tp->pdgId() != MC::Z0BOSON)
+        continue;
+
+      const xAOD::TruthParticle *finalZ =
+        getFinalParticleOfType(tp, {MC::Z0BOSON});
+      if (!finalZ || !seenUIDs.insert(finalZ->uid()).second)
+        continue;
+
+      zBosons.emplace_back(finalZ);
+    }
+
+    std::sort(
+      zBosons.begin(), zBosons.end(),
+      [](TruthScalar &a, TruthScalar &b) {
+        return a.p4(0) > b.p4(0);
+      });
+
+    return zBosons;
   }
 
 

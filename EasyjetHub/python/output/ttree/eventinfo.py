@@ -239,6 +239,13 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
                 for variable in [fmt.format(i + 1)]
             ]
 
+    if tree_flags.truth_outputs.z_bosons and flags.Input.isMC:
+        eventinfo_branches.variables += [
+            (f"truth_Z{i}_{var}", "float")
+            for var in ["pt", "eta", "phi", "m"]
+            for i in range(1, flags.Analysis.Truth.nZBosons + 1)
+        ]
+
     if flags.Analysis.GRL.store_decoration:
         from GoodRunsLists.GoodRunsListsDictionary import getGoodRunsLists
         for key in getGoodRunsLists().keys():

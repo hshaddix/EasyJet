@@ -55,6 +55,7 @@ def truth_particle_info_cfg(
             ),
             decayModes=flags.Analysis.Truth.decayModes,
             nHiggses=flags.Analysis.Truth.nHiggses,
+            nZBosons=flags.Analysis.Truth.nZBosons,
             recordGrandchildren=flags.Analysis.Truth.recordGrandchildren,
         )
     )

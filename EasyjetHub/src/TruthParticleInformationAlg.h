@@ -72,6 +72,10 @@ private:
     std::vector<const xAOD::TruthParticle *>
     getInitialChildren(const xAOD::TruthParticle *p) const;
 
+    void
+    decorateTruthZBosonInformation(const xAOD::EventInfo &eventInfo,
+                                   std::vector<TruthScalar>& zBosons) const;
+
     std::vector<std::vector<const xAOD::TruthParticle *>>
     getFinalGrandchildren(const std::vector<const xAOD::TruthParticle *>& children) const;
 
@@ -80,6 +84,9 @@ private:
 
     std::vector<TruthScalar>
     getFinalHiggses(const xAOD::TruthParticleContainer &container) const;
+
+    std::vector<TruthScalar>
+    getFinalZBosons(const xAOD::TruthParticleContainer &container) const;
 
     void verbosePrintParticleAndChildren(const xAOD::TruthParticle *p,
                                          int counter) const;
@@ -107,6 +114,10 @@ private:
         "Truth particle information container to write"};
 
     Gaudi::Property<unsigned int> m_nHiggses                {this, "nHiggses", 2, "Number of Higgses to record"};
+  
+    Gaudi::Property<unsigned int> m_nZBosons{
+      this, "nZBosons", 2, "Maximum number of truth Z bosons to record"};
+
     Gaudi::Property<bool> m_recordGrandchildren{
       this, "recordGrandchildren", false, "Record HH grandchildren or not"};
 
@@ -118,6 +129,9 @@ private:
 
     std::vector<SG::WriteDecorHandleKeyArray<xAOD::EventInfo, float>>
       m_truthHiggsesKinDecorKeys;
+
+    std::vector<SG::WriteDecorHandleKeyArray<xAOD::EventInfo, float>>
+      m_truthZBosonsKinDecorKeys;
 
     SG::WriteDecorHandleKeyArray<xAOD::EventInfo, int>
       m_truthChildrenPdgIdFromHiggsesDecorKeys;

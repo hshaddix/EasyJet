@@ -59,6 +59,7 @@ ttree_output:
     higgs_particle: 'container_names.output.truthHHParticles'
     taus: 'container_names.input.truthtaus'
     met: 'container_names.input.truthmet'
+    z_bosons: 'container_names.input.truthSMParticles'
 
 # Enable cutflow 
 CutList:
