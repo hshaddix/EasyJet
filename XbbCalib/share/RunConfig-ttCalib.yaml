@@ -54,9 +54,9 @@ do_trigger_filtering: true
 
 do_overlap_removal: true
 OverlapRemoval:
-  do_large_R_jets: false
+  do_large_R_jets: true
   do_small_R_jet_large_R_jet: false
-  do_boostedLeptons: true
+  do_boostedLeptons: false
 
 
 # Include the TTree configuration and update details
