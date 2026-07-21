@@ -22,6 +22,7 @@ atlas_add_component(bbbbAnalysis
   src/JetBoostHistogramsAlg.cxx
   src/MassPlaneBoostHistograms.cxx
   src/MassPlaneBoostHistogramsAlg.cxx
+  src/LargeRJetTriggerMatchingAlg.cxx
   src/SmallRJetTriggerSFAlg.cxx
   src/TriggerDecoratorAlg.cxx
   src/components/bbbbAnalysis_entries.cxx

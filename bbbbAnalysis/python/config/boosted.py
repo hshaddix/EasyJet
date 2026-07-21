@@ -6,6 +6,16 @@ from EasyjetHub.output.ttree.selected_objects import (
 )
 
 
+def get_boosted_triggers_by_year(flags):
+    # Restrict to the year(s) relevant for this job (flags.Analysis.Years),
+    # rather than the full set of years enumerated in the trigger yaml,
+    # to avoid writing dead branches for years the sample doesn't contain.
+    return {
+        str(year): flags.Analysis.Trigger.selection.chains[str(year)]
+        for year in flags.Analysis.Years
+    }
+
+
 def boosted_cfg(flags, largejetkey, float_variables=None):
     if not float_variables:
         float_variables = []
@@ -19,6 +29,22 @@ def boosted_cfg(flags, largejetkey, float_variables=None):
             floatVariableList=float_variables,
         )
     )
+
+    if flags.Analysis.Large_R_jet.do_matching:
+        # Boosted LR-jet triggers are always inferred
+        from EasyjetHub.algs.postprocessing.trigger_matching import (
+            TriggerMatchingToolCfg
+        )
+        trig_matching_tool = cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags))
+
+        cfg.addEventAlgo(
+            CompFactory.HH4B.LargeRJetTriggerMatchingAlg(
+                "LargeRJetTriggerMatchingAlg",
+                jetsIn=largejetkey.replace("%SYS%", "NOSYS"),
+                triggersByYear=get_boosted_triggers_by_year(flags),
+                trigMatchingTool=trig_matching_tool,
+            )
+        )
 
     return cfg
 
@@ -57,6 +83,20 @@ def boosted_branches(flags):
     # This is tunable with the flags amount and variables
     # in the object configs.
     branches += get_selected_objects_branches(flags, "bbbb_boosted")
+
+    if flags.Analysis.Large_R_jet.do_matching:
+        jet_coll = flags.Analysis.container_names.output.reco10UFOJet.replace(
+            "%SYS%", "NOSYS")
+        lr_triggers = set()
+        for chains in get_boosted_triggers_by_year(flags).values():
+            lr_triggers |= {t for t in chains if "_a10" in t}
+        print(f"Boosted LR-jet triggers: {lr_triggers}")
+        for trig in lr_triggers:
+            modified_trig = trig.replace("-", "_").replace(".", "p")
+            branches += [
+                f'{jet_coll}.isLRjetMatched_{modified_trig}'
+                f'->{jet_coll}_isLRjetMatched_{modified_trig} type=char'
+            ]
 
     for var in float_variable_names:
         if flags.Input.isMC and "truthLabel" in var:

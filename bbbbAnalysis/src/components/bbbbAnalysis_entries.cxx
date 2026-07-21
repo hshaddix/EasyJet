@@ -7,6 +7,7 @@
 #include "../SmallRJetTriggerSFAlg.h"
 #include "../TriggerDecoratorAlg.h"
 #include "../VBFRNNVarsAlg.h"
+#include "../LargeRJetTriggerMatchingAlg.h"
 
 using namespace HH4B;
 
@@ -16,6 +17,7 @@ DECLARE_COMPONENT(bbbbSelectorAlg)
 DECLARE_COMPONENT(JetPairingAlg)
 DECLARE_COMPONENT(JetBoostHistogramsAlg)
 DECLARE_COMPONENT(MassPlaneBoostHistogramsAlg)
+DECLARE_COMPONENT(LargeRJetTriggerMatchingAlg)
 DECLARE_COMPONENT(SmallRJetTriggerSFAlg)
 DECLARE_COMPONENT(TriggerDecoratorAlg)
 DECLARE_COMPONENT(VBFRNNVarsAlg)
