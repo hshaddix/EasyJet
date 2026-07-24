@@ -9,7 +9,7 @@
 
 #include <memory>
 
-#include <AthenaBaseComps/AthHistogramAlgorithm.h>
+#include "EasyjetHub/BaseSelectorAlg.h"
 #include <AsgDataHandles/ReadDecorHandleKey.h>
 
 #include <SystematicsHandles/SysReadHandle.h>
@@ -30,10 +30,10 @@
 namespace XBBCALIB
 {
   /// \brief An algorithm for counting containers
-  class ZllyCalibSelectorAlg final : public AthHistogramAlgorithm {
+  class ZllyCalibSelectorAlg final : public Easyjet::BaseSelectorAlg {
 
     public:
-      using AthHistogramAlgorithm::AthHistogramAlgorithm;
+      using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -41,18 +41,9 @@ namespace XBBCALIB
       /// \brief Execute method, for actions to be taken in the event loop
       StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+      StatusCode finalize() override;
 
     private :
-      // ToolHandle<whatever> handle {this, "pythonName", "defaultValue",
-      // "someInfo"};
-      const std::vector<std::string> m_STANDARD_CUTS{
-        "PASS_EXACTLY_ONE_PHOTON",
-        "PASS_TWO_SF_LEPTONS",
-      };
-      StatusCode initialiseCutflow();
-
-      CutManager m_ZllyCalibCuts; 
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run selector algorithm in pass-through mode" };
 
@@ -79,20 +70,19 @@ namespace XBBCALIB
 
       CP::SysFilterReporterParams m_filterParams {this, "XbbCalib selection"};
 
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
       std::vector<XBBCALIB::Booleans> m_inputCutKeys;
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-
-      long long int m_total_events{0};
 
       std::unordered_map<XBBCALIB::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<XBBCALIB::Booleans, bool> m_bools;
       CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<XBBCALIB::Booleans, std::string> m_boolnames{
-      // {XBBCALIB::PASS_TRIGGER, "PASS_TRIGGER"},
-      {XBBCALIB::PASS_EXACTLY_ONE_PHOTON, "PASS_EXACTLY_ONE_PHOTON"},
-      {XBBCALIB::PASS_TWO_SF_LEPTONS, "PASS_TWO_SF_LEPTONS"},
+	// {XBBCALIB::PASS_TRIGGER, "PASS_TRIGGER"},
+	{XBBCALIB::PASS_EXACTLY_ONE_PHOTON, "PASS_EXACTLY_ONE_PHOTON"},
+	  {XBBCALIB::PASS_TWO_SF_LEPTONS, "PASS_TWO_SF_LEPTONS"},
       };
+      std::unordered_map<std::string, XBBCALIB::Booleans> m_nameToBool;
+      CP::SysReadDecorHandle<float> m_generatorWeight
+	{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
 
   };
 

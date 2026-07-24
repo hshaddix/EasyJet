@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -36,7 +36,7 @@ namespace XBBCALIB
       /// \brief Execute method, for actions to be taken in the event loop
       StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+      StatusCode finalize() override;
 
     private :
       // ToolHandle<whatever> handle {this, "pythonName", "defaultValue",
