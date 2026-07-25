@@ -54,6 +54,8 @@ selection:
       # VBFDelayed stream before Run 474770, Main stream after Run 474770
       - 'HLT_j75c_020jvt_j50c_020jvt_j25c_020jvt_j20c_020jvt_SHARED_2j20c_020jvt_bgn280_pf_ftf_presel2c20XX2c20bgtwo85_L1jJ85p0ETA21_3jJ40p0ETA25'
       - 'HLT_2j35c_020jvt_bgn260_2j35c_020jvt_pf_ftf_presel2j25XX2j25bgtwo85_L14jJ40p0ETA25'
+      #2b
+      - 'HLT_j165_0eta290_020jvt_bgn260_j55_0eta290_020jvt_bgn260_pf_ftf_preselj140bgtwo85XXj45bgtwo85_L1jJ160'
     # boosted
       # From XbbCalib/trigger_ljr.yaml
       - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1SC111_CjJ40'
