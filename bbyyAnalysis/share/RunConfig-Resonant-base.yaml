@@ -2,7 +2,16 @@ include: [bbyyAnalysis/RunConfig-bbyy-base.yaml]
 
 # Which analysis to consider
 do_SH_Analysis: true
+do_resonant_onebtag: true
 
+# Update on jet information
+Small_R_jet:
+    amount: 0
+
+## Extra things to safe
+save_HbbCand_vars: true
+save_cutflow: true
+    
 # PNN specific flags
 mX_mS_pairs: []
 mX_values: []

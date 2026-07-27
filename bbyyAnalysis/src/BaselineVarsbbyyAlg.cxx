@@ -237,6 +237,10 @@ namespace HHBBYY
           Hbb_Jet2 = bjets->at(1);
         }
         H_bb = Hbb_Jet1->p4() + Hbb_Jet2->p4();
+      } else if(jets->size() == 1) {
+        // Special case in the SH analysis, there exactly one (b-)jet in the 1bjet category exists
+        Hbb_Jet1 = jets->at(0);
+        H_bb = Hbb_Jet1->p4(); 
       }
 
       std::vector<const xAOD::Jet*> Hbb_jets = {Hbb_Jet1, Hbb_Jet2};

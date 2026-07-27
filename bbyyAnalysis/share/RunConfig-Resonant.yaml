@@ -1,9 +1,5 @@
 include: [bbyyAnalysis/RunConfig-Resonant-base.yaml]
 
-do_resonant_onebtag: true
-
-save_cutflow: true
-
 CutList :
       - PASS_TRIGGER
       - TWO_LOOSE_PHOTONS
@@ -15,9 +11,6 @@ CutList :
       - AT_LEAST_ONE_JET
       - LESS_THAN_SIX_CENTRAL_JETS
       - AT_LEAST_ONE_B_JET
-
-do_CP_systematics: true
-systematics_regex: [".*"]
         
 ttree_output:
   include: [bbyy-base-output.yaml]
