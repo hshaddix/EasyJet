@@ -7,7 +7,7 @@
 #ifndef HZALLYYANALYSIS_HZALLYYSELECTORALG
 #define HZALLYYANALYSIS_HZALLYYSELECTORALG
 
-#include "AnaAlgorithm/AnaAlgorithm.h"
+#include "EasyjetHub/BaseSelectorAlg.h"
 
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysListHandle.h>
@@ -22,7 +22,6 @@
 #include <xAODJet/JetContainer.h>
 
 #include "TriggerMatchingTool/IMatchingTool.h"
-#include <EasyjetHub/CutManager.h>
 
 namespace HZALLYY
 {
@@ -57,10 +56,10 @@ namespace HZALLYY
     };
 
   /// \brief An algorithm for counting containers
-  class HZAllyySelectorAlg final : public EL::AnaAlgorithm {
+  class HZAllyySelectorAlg final : public Easyjet::BaseSelectorAlg {
     
   public:
-    using EL::AnaAlgorithm::AnaAlgorithm;
+    using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
     
     /// \brief Initialisation method, for setting up tools and other persistent
     /// configs
@@ -156,26 +155,21 @@ namespace HZALLYY
       {HZALLYY::DILEP_PT, "DILEP_PT"},
       {HZALLYY::ATLEAST_ONE_PHOTON, "ATLEAST_ONE_PHOTON"},
 	};
+    std::unordered_map<std::string, HZALLYY::Booleans> m_nameToBool;
 
-    CutManager m_llyyCuts;
-    Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
-    std::vector<HZALLYY::Booleans> m_inputCutKeys;
-    Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
     CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
-    double m_total_mcEventWeight{0.0};
     CP::SysReadDecorHandle<float> m_generatorWeight
       { this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
 
     std::unordered_map<HZALLYY::TriggerChannel, std::unordered_map<HZALLYY::Var, float>> m_pt_threshold;
 
-    void evaluatePhotonCuts
-      (const xAOD::PhotonContainer& photons, CutManager& llyyCuts);
+    void evaluatePhotonCuts(const xAOD::PhotonContainer& photons);
     
     void evaluateTriggerCuts
       (const xAOD::EventInfo* event,
        const xAOD::Electron* ele0, const xAOD::Electron* ele1,
        const xAOD::Muon* mu0, const xAOD::Muon* mu1,
-       CutManager& llyyCuts, const CP::SystematicSet& sys);
+       const CP::SystematicSet& sys);
     void evaluateSingleLeptonTrigger
       (const xAOD::EventInfo* event, 
        const xAOD::Electron* ele, const xAOD::Muon* mu,
@@ -187,10 +181,9 @@ namespace HZALLYY
        const CP::SystematicSet& sys);
     
     void evaluateLeptonCuts(const xAOD::ElectronContainer& electrons,
-			    const xAOD::MuonContainer& muons, CutManager& llyyCuts);
+			    const xAOD::MuonContainer& muons);
     void setThresholds(const xAOD::EventInfo* event,
 		       const CP::SystematicSet& sys);
-    StatusCode initialiseCutflow();
   };
 
 }
