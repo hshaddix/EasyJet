@@ -1,0 +1,10 @@
+include: [bbttAnalysis/RunConfig-bbtt-boosted.yaml]
+
+do_CP_systematics: true
+systematics_regex: [".*GEN*"]
+
+store_high_level_variables: false
+save_cutflow: false
+
+Trigger:
+  writeOutput: false
