@@ -21,6 +21,7 @@ save_extra_vars: false
 do_GNN2bjetSelection: false
 save_HbbCand_vars: false
 save_pass_trigger_info: false
+do_KinematicFit: true
 extra_KinematicFit_variables: true #Save kinematics of both KF iterations
 
 ttree_output:
