@@ -107,9 +107,25 @@ private:
     CP::SysReadDecorHandle<char> m_Whad2 {"Whad2_%SYS%", this};
     CP::SysReadDecorHandle<char> m_Hbb {"Hbb_%SYS%", this};
 
+    // Backward-compatible GN2X support (used by regions, e.g. VBF, that
+    // have not migrated to GN3X yet)
     Gaudi::Property<std::vector<std::string>> m_GN2X_wps
       { this, "GN2X_WPs", {}, "GN2X_hbb_wps from the bbVV config" };
     std::vector<CP::SysReadDecorHandle<int>> m_GN2X_wp_Handles;
+    bool m_use_GN2X = false;
+
+    const std::vector<std::string> m_GN2X_score_decorations{
+      "GN2Xv01_phbb",
+      "GN2Xv01_pqcd",
+      "GN2Xv01_phcc",
+      "GN2Xv01_ptop"
+    };
+    std::vector<CP::SysReadDecorHandle<float>> m_GN2X_score_handles;
+
+    Gaudi::Property<std::vector<std::string>> m_GN3X_wps
+      { this, "GN3X_WPs", {}, "GN3X_hbb_wps from the bbVV config" };
+    std::vector<CP::SysReadDecorHandle<int>> m_GN3X_wp_Handles;
+    bool m_use_GN3X = false;
 
     Gaudi::Property<std::string> m_WTag_Type
       { this, "wtag_type", "", "WTagger type from the bbVV config"};
@@ -118,13 +134,24 @@ private:
     CP::SysReadDecorHandle<float> m_WTag_score{"", this};
     CP::SysReadDecorHandle<char> m_Pass_WTag{"", this};
 
+    Gaudi::Property<std::vector<std::string>> m_WTag_score_decorations
+      { this, "wtag_score_decorations", {}, "Additional continuous W-tagger score decorations" };
+    std::vector<CP::SysReadDecorHandle<float>> m_WTag_score_handles;
+
     std::vector<CP::SysReadDecorHandle<float>> m_tau_wta;
     std::vector<CP::SysReadDecorHandle<float>> m_ecf;
 
-    CP::SysReadDecorHandle<float> m_GN2Xv01_phbb{"GN2Xv01_phbb", this};
-    CP::SysReadDecorHandle<float> m_GN2Xv01_phcc{"GN2Xv01_phcc", this};
-    CP::SysReadDecorHandle<float> m_GN2Xv01_pqcd{"GN2Xv01_pqcd", this};
-    CP::SysReadDecorHandle<float> m_GN2Xv01_ptop{"GN2Xv01_ptop", this};
+    const std::vector<std::string> m_GN3X_score_decorations{
+      "GN3XPV01_phbb",
+      "GN3XPV01_phcc",
+      "GN3XPV01_ptop",
+      "GN3XPV01_pWqq",
+      "GN3XPV01_pqcdbb",
+      "GN3XPV01_pqcdbx",
+      "GN3XPV01_pqcdcx",
+      "GN3XPV01_pqcdll"
+    };
+    std::vector<CP::SysReadDecorHandle<float>> m_GN3X_score_handles;
 
     Gaudi::Property<std::vector<std::string>> m_floatVariables
       {this, "floatVariableList", {}, "Name list of floating variables"};

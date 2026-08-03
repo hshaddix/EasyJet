@@ -59,6 +59,22 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
         if not flags.Analysis.Small_R_jet.btag_wp \
         else "ftag_select_" + flags.Analysis.Small_R_jet.btag_wp
 
+    is_valid_for_wtransformer = False
+    for tag in flags.Input.AMITag.split("_"):
+        if tag.startswith("p") and tag[1:].isdigit() and int(tag[1:]) >= 7017:
+            is_valid_for_wtransformer = True
+
+    wtag_score_decorations = []
+    if (
+        flags.Analysis.ttree_output.collection_options
+        .large_R_jets.WTransformer_details
+        and is_valid_for_wtransformer
+    ):
+        wtag_score_decorations = [
+            "WTransformer_ConstScore",
+            "WTransformer_massdec_ConstScore",
+        ]
+
     cfg.addEventAlgo(
         CompFactory.HHBBVV.HHbbVVSelectorAlg(
             "HHbbVVSelectorAlg",
@@ -74,7 +90,7 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             isMC=flags.Input.isMC,
             bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
                     else False),
-            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.GN2Xv01.wps
+            GN3X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps,
         )
     )
 
@@ -88,9 +104,10 @@ def bbVV_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             floatVariableList=float_variables,
             intVariableList=int_variables,
             channel=flags.Analysis.channel,
-            GN2X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.GN2Xv01.wps,
+            GN3X_WPs=flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps,
             wtag_type=flags.Analysis.Large_R_jet.wtag_type,
-            wtag_wp=flags.Analysis.Large_R_jet.wtag_wp
+            wtag_wp=flags.Analysis.Large_R_jet.wtag_wp,
+            wtag_score_decorations=wtag_score_decorations,
         )
     )
 
@@ -112,20 +129,39 @@ def get_BaselineVarshhbbVVAlg_variables(flags):
 
     wtag_type = flags.Analysis.Large_R_jet.wtag_type
     wtag_wp = flags.Analysis.Large_R_jet.wtag_wp
+    is_valid_for_wtransformer = False
+    for tag in flags.Input.AMITag.split("_"):
+        if tag.startswith("p") and tag[1:].isdigit() and int(tag[1:]) >= 7017:
+            is_valid_for_wtransformer = True
+
+    wtag_score_decorations = []
+    if (
+        flags.Analysis.ttree_output.collection_options
+        .large_R_jets.WTransformer_details
+        and is_valid_for_wtransformer
+    ):
+        wtag_score_decorations = [
+            "WTransformer_ConstScore",
+            "WTransformer_massdec_ConstScore",
+        ]
 
     for obj in objects:
         for var in ["pt", "eta", "phi", "m"]:
             float_variable_names += [obj + "_Jet_" + var]
-        for var in ["phbb", "pqcd", "phcc", "ptop"]:
-            float_variable_names += [obj + "_Jet_GN2Xv01_" + var]
+        for var in [
+            "phbb", "phcc", "ptop", "pWqq",
+            "pqcdbb", "pqcdbx", "pqcdcx", "pqcdll"
+        ]:
+            float_variable_names += [obj + "_Jet_GN3XPV01_" + var]
         float_variable_names += [obj + "_Jet_" + wtag_type
                                  + "_" + wtag_wp + "_Score"]
+        for decoration in wtag_score_decorations:
+            float_variable_names += [obj + "_Jet_" + decoration]
 
     for obj in objects:
-        for var in flags.Analysis.Large_R_jet.flat_mass_selections.GN2Xv01.wps:
-            int_variable_names += [obj + "_Jet_Pass_GN2X_" + var]
-        int_variable_names += [obj + "_Jet_Pass_" + wtag_type
-                                   + "_" + wtag_wp]
+        for var in (flags.Analysis.Large_R_jet.flat_mass_selections.GN3XPV01_hbb.wps):
+            int_variable_names += [obj + "_Jet_Pass_GN3XPV01_hbb_" + var]
+        int_variable_names += [obj + "_Jet_Pass_" + wtag_type + "_" + wtag_wp]
 
     if "Boosted0Lep" in flags.Analysis.channel:
         for i in range(1, 5):

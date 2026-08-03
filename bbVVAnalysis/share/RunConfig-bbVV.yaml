@@ -78,5 +78,6 @@ ttree_output:
   collection_options:
     large_R_jets:
       truth_labels: true
+      WTransformer_details: true
   truth_outputs:
     higgs_particle: 'container_names.output.truthHHParticles'

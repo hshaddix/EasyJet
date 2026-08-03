@@ -22,11 +22,15 @@ namespace HHBBVV
     // Read syst-aware input handles
     ATH_CHECK (m_jetHandle.initialize(m_systematicsList));
     ATH_CHECK (m_lrjetHandle.initialize(m_systematicsList));
-    
-    // Choose the first GN2X wp
-    m_Pass_GN2X = CP::SysReadDecorHandle<int>
-      ("xbb_select_GN2Xv01_" + m_GN2X_wps.value().front(), this);
-    ATH_CHECK (m_Pass_GN2X.initialize(m_systematicsList, m_lrjetHandle));
+
+    // Choose the first configured GN3X working point.
+    if (m_GN3X_wps.value().empty()) {
+      ATH_MSG_ERROR("GN3X working points must be configured");
+      return StatusCode::FAILURE;
+    }
+    m_Pass_GN3X = CP::SysReadDecorHandle<int>
+      ("xbb_select_GN3XPV01_hbb_" + m_GN3X_wps.value().front(), this);
+    ATH_CHECK (m_Pass_GN3X.initialize(m_systematicsList, m_lrjetHandle));
     ATH_CHECK (m_Tau2_wta.initialize(m_systematicsList, m_lrjetHandle));
     ATH_CHECK (m_Tau4_wta.initialize(m_systematicsList, m_lrjetHandle));
 
@@ -528,16 +532,16 @@ namespace HHBBVV
 
   void HHbbVVSelectorAlg::signalBtagging(const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad, const CP::SystematicSet& sys, bool& HBB_BTAG, bool& WHAD_BTAG) {
 
-    if(Hbb)HBB_BTAG = (bool)m_Pass_GN2X.get(*Hbb, sys); // Choose the first GN2X wp
-    if(Whad)WHAD_BTAG = (bool)m_Pass_GN2X.get(*Whad, sys);
+    if(Hbb)HBB_BTAG = (bool)m_Pass_GN3X.get(*Hbb, sys);
+    if(Whad)WHAD_BTAG = (bool)m_Pass_GN3X.get(*Whad, sys);
 
   }
 
   void HHbbVVSelectorAlg::signalBtagging(const xAOD::Jet *&Hbb, const xAOD::Jet *&Whad, const xAOD::Jet *&Whad2, const CP::SystematicSet& sys, bool& HBB_BTAG, bool& WHAD_BTAG, bool& WHAD2_BTAG) {
 
-    if(Hbb)HBB_BTAG = (bool)m_Pass_GN2X.get(*Hbb, sys); // Choose the first GN2X wp
-    if(Whad)WHAD_BTAG = (bool)m_Pass_GN2X.get(*Whad, sys);
-    if(Whad2)WHAD2_BTAG = (bool)m_Pass_GN2X.get(*Whad2, sys);
+    if(Hbb)HBB_BTAG = (bool)m_Pass_GN3X.get(*Hbb, sys);
+    if(Whad)WHAD_BTAG = (bool)m_Pass_GN3X.get(*Whad, sys);
+    if(Whad2)WHAD2_BTAG = (bool)m_Pass_GN3X.get(*Whad2, sys);
 
   }
   
@@ -562,5 +566,3 @@ namespace HHBBVV
   }
 
 }
-
-

@@ -105,9 +105,9 @@ private:
     CP::SysReadDecorHandle<float> m_Tau2_wta = {this, "tau2", "Tau2_wta", "Tau2_wta"};
     CP::SysReadDecorHandle<float> m_Tau4_wta = {this, "tau4", "Tau4_wta", "Tau4_wta"};
 
-    Gaudi::Property<std::vector<std::string>> m_GN2X_wps
-      { this, "GN2X_WPs", {}, "GN2X_hbb_wps from the bbVV config" };
-    CP::SysReadDecorHandle<int> m_Pass_GN2X{"", this}; // Select the most loose WP in HHbbVVSelectorAlg
+    Gaudi::Property<std::vector<std::string>> m_GN3X_wps
+      { this, "GN3X_WPs", {}, "GN3X_hbb_wps from the bbVV config" };
+    CP::SysReadDecorHandle<int> m_Pass_GN3X{"", this}; // Select the first configured WP
     
     CP::SysReadHandle<xAOD::ElectronContainer>
     m_electronHandle{ this, "electrons", "bbVVAnalysisElectrons_%SYS%", "Electron container to read" };

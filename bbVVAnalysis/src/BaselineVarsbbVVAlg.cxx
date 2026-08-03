@@ -52,17 +52,24 @@ namespace HHBBVV
     ATH_CHECK(m_Whad.initialize(m_systematicsList, m_bbVVLRJetHandle)); // Whad jet
     ATH_CHECK(m_Whad2.initialize(m_systematicsList, m_bbVVLRJetHandle)); // Whad2 jet
 
-    for(const auto& wp: m_GN2X_wps)
-      m_GN2X_wp_Handles.emplace_back("xbb_select_GN2Xv01_" + wp, this);
-    for(auto& handle : m_GN2X_wp_Handles)
-      ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
-    
+    m_use_GN2X = !m_GN2X_wps.value().empty();
+    m_use_GN3X = !m_GN3X_wps.value().empty();
+
+    for(const auto& wp: m_GN2X_wps) m_GN2X_wp_Handles.emplace_back("xbb_select_GN2Xv01_" + wp, this);
+    for(auto& handle : m_GN2X_wp_Handles) ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
+
+    for(const auto& wp: m_GN3X_wps) m_GN3X_wp_Handles.emplace_back("xbb_select_GN3XPV01_hbb_" + wp, this);
+    for(auto& handle : m_GN3X_wp_Handles) ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
+
     m_WTag_score = CP::SysReadDecorHandle<float>
       (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Score", this);
     m_Pass_WTag = CP::SysReadDecorHandle<char>
       (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
     ATH_CHECK(m_WTag_score.initialize(m_systematicsList, m_bbVVLRJetHandle));
     ATH_CHECK(m_Pass_WTag.initialize(m_systematicsList, m_bbVVLRJetHandle));
+
+    for(const auto& decoration : m_WTag_score_decorations) m_WTag_score_handles.emplace_back(decoration, this);
+    for(auto& handle : m_WTag_score_handles) ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
 
     for(unsigned int i=1; i<5; i++)
       m_tau_wta.emplace_back("Tau"+std::to_string(i)+"_wta", this);
@@ -74,10 +81,15 @@ namespace HHBBVV
     for(auto& handle : m_ecf)
       ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
 
-    ATH_CHECK(m_GN2Xv01_phbb.initialize(m_systematicsList, m_bbVVLRJetHandle));
-    ATH_CHECK(m_GN2Xv01_phcc.initialize(m_systematicsList, m_bbVVLRJetHandle));
-    ATH_CHECK(m_GN2Xv01_pqcd.initialize(m_systematicsList, m_bbVVLRJetHandle));
-    ATH_CHECK(m_GN2Xv01_ptop.initialize(m_systematicsList, m_bbVVLRJetHandle));
+    if(m_use_GN2X){
+      for(const auto& decoration : m_GN2X_score_decorations) m_GN2X_score_handles.emplace_back(decoration, this);
+      for(auto& handle : m_GN2X_score_handles) ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
+    }
+
+    if(m_use_GN3X){
+      for(const auto& decoration : m_GN3X_score_decorations) m_GN3X_score_handles.emplace_back(decoration, this);
+      for(auto& handle : m_GN3X_score_handles) ATH_CHECK(handle.initialize(m_systematicsList, m_bbVVLRJetHandle));
+    }
 
     // Initialise syst-aware output decorators
     for(const std::string &var : m_floatVariables){
@@ -255,24 +267,48 @@ namespace HHBBVV
           m_Fbranches.at(prefix + "_phi").set(*event, lrjet->phi(), sys);
           m_Fbranches.at(prefix + "_m").set(*event, lrjet->m(), sys);
 
-          float phbb_score = m_GN2Xv01_phbb.get(*lrjet, sys);
-          float pqcd_score = m_GN2Xv01_pqcd.get(*lrjet, sys);
-          float phcc_score = m_GN2Xv01_phcc.get(*lrjet, sys);
-          float ptop_score = m_GN2Xv01_ptop.get(*lrjet, sys);
           float wtag_score = m_WTag_score.get(*lrjet, sys);
-          m_Fbranches.at(prefix+"_GN2Xv01_phbb").set(*event, phbb_score, sys);
-          m_Fbranches.at(prefix+"_GN2Xv01_pqcd").set(*event, pqcd_score, sys);
-          m_Fbranches.at(prefix+"_GN2Xv01_phcc").set(*event, phcc_score, sys);
-          m_Fbranches.at(prefix+"_GN2Xv01_ptop").set(*event, ptop_score, sys);
+          if(m_use_GN2X){
+            for(unsigned int score=0; score<m_GN2X_score_handles.size(); score++)
+            {
+              float value = m_GN2X_score_handles.at(score).get(*lrjet, sys);
+              m_Fbranches.at(prefix+"_"+m_GN2X_score_decorations[score]).set(
+                *event, value, sys);
+            }
+          }
+          if(m_use_GN3X){
+            for(unsigned int score=0; score<m_GN3X_score_handles.size(); score++)
+            {
+              float value = m_GN3X_score_handles.at(score).get(*lrjet, sys);
+              m_Fbranches.at(prefix+"_"+m_GN3X_score_decorations[score]).set(
+                *event, value, sys);
+            }
+          }
           m_Fbranches.at(prefix+"_"+m_WTag_Type+"_"+m_WTag_WP+"_Score").set(*event, wtag_score, sys);
-          
+
+          for(unsigned int score=0; score<m_WTag_score_handles.size(); score++)
+          {
+            float value = m_WTag_score_handles.at(score).get(*lrjet, sys);
+            m_Fbranches.at(prefix+"_"+m_WTag_score_decorations[score]).set(*event, value, sys);
+          }
+
           int pass_wtag = static_cast<int>(m_Pass_WTag.get(*lrjet, sys));
           m_Ibranches.at(prefix+"_Pass_"+m_WTag_Type+"_"+m_WTag_WP).set(*event, pass_wtag, sys);
 
           for(unsigned int wp=0; wp<m_GN2X_wps.size(); wp++)
           {
             int pass_GN2X = m_GN2X_wp_Handles.at(wp).get(*lrjet, sys);
-            m_Ibranches.at(prefix+"_Pass_GN2X_"+m_GN2X_wps[wp]).set(*event, pass_GN2X, sys);
+            m_Ibranches.at(
+              prefix+"_Pass_GN2X_"+m_GN2X_wps[wp]
+            ).set(*event, pass_GN2X, sys);
+          }
+
+          for(unsigned int wp=0; wp<m_GN3X_wps.size(); wp++)
+          {
+            int pass_GN3X = m_GN3X_wp_Handles.at(wp).get(*lrjet, sys);
+            m_Ibranches.at(
+              prefix+"_Pass_GN3XPV01_hbb_"+m_GN3X_wps[wp]
+            ).set(*event, pass_GN3X, sys);
           }
         }
       }
