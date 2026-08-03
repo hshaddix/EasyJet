@@ -46,6 +46,8 @@ def muon_sequence(flags, configAcc):
     configSeq.setOptionValue('.containerName', output_name)
     if flags.Analysis.Muon.MergeZPH:
         configSeq.setOptionValue('.inputContainer', 'Muons_Merged')
+        # apply the MS-only calibration to the merged ZeroPixelHit muons
+        configSeq.setOptionValue('.useZeroPixMuons', True)
     elif flags.Analysis.Muon.MergeLRT:
         configSeq.setOptionValue('.inputContainer', 'Muons_LRTMerged')
     configSeq.setOptionValue('.minPt', flags.Analysis.Muon.min_pT)
