@@ -809,6 +809,7 @@ namespace HHHBBBBTT
     for (const auto &channel : m_channels){
       if (channel == HHHBBBBTT::LepHad){
         use_SLT = true;
+        use_DBT = true;
       }
       else if (channel == HHHBBBBTT::HadHad){
         use_STT = true;
