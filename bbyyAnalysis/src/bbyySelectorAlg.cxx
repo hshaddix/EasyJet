@@ -203,7 +203,7 @@ namespace HHBBYY
 
 
       rel_pT_bucket = -1;
-      if (n_TightID_NonIso_photons >=2 || n_LooseID_Iso_photons >=2 || n_photons >=2){
+      if (photons->size() >= 2){
         evaluatePhotonCuts(sel_photons, n_TightID_NonIso_photons, n_LooseID_Iso_photons, n_photons, m_bbyyCuts);
       }
       m_Ibranches.at("rel_pT_bucket").set(*event, rel_pT_bucket, sys);
