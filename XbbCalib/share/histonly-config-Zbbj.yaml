@@ -8,6 +8,7 @@ output:
       include:
         - XbbCalib/hists-config-Zbbj.yaml
       blinding:
+        variable: "Zcand0_bJR10v01_mass"
         include:
           - XbbCalib/blinding.yaml
 

@@ -671,6 +671,22 @@ hist_syst_Zbbj_mc23:
   script:
     - easyjet-test hist-syst-Zbbj-mc23
 
+hist_Zbby_data:
+  tags:
+    - cvmfs
+  stage: run
+  needs: [compile]
+  script:
+    - easyjet-test hist-Zbby-data
+
+hist_Zbbj_data:
+  tags:
+    - cvmfs
+  stage: run
+  needs: [compile]
+  script:
+    - easyjet-test hist-Zbbj-data
+
 # test without eos or cvmfs run, intentionally doesn't include cvmfs
 # and pretends not to have EOS credentials
 

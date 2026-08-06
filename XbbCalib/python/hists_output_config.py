@@ -153,6 +153,6 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
             )
         )
 
-    if not hists_cfg.disable_metadata:
+    if flags.Input.isMC and not hists_cfg.disable_metadata:
         cfg.merge(MetadataAlgCfg(flags, h5_output_hists=h5_svc))
     return cfg
