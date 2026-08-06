@@ -6,8 +6,9 @@ def muon_track_decor_config(flags, **kwargs):
     cfg = ComponentAccumulator()
 
     muoncoll = flags.Analysis.container_names.input.muons
-
-    if flags.Analysis.Muon.MergeLRT:
+    if flags.Analysis.Muon.MergeZPH:
+        muoncoll = "Muons_Merged"
+    elif flags.Analysis.Muon.MergeLRT:
         muoncoll = "Muons_LRTMerged"
 
     cfg.addEventAlgo(
