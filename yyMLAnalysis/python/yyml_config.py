@@ -175,7 +175,8 @@ def yyml_branches(flags):
                    "pass_0l1tau",
                    "pass_2l0tau",
                    "pass_1l1tau",
-                   "pass_0l2tau"]:
+                   "pass_0l2tau",
+                   "pass_0l0tau"]:
         branches += [f"EventInfo.{ch_cut}_%SYS% ->"
                      f"yyml_{ch_cut}"
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]

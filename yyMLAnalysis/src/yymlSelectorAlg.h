@@ -44,6 +44,7 @@ namespace HHYYML
         pass_2l0tau,
         pass_1l1tau,
         pass_0l2tau,
+        pass_0l0tau,
     };
 
     /// \brief An algorithm for counting containers
@@ -126,6 +127,7 @@ private:
         {HHYYML::pass_2l0tau, "pass_2l0tau"},
         {HHYYML::pass_1l1tau, "pass_1l1tau"},
         {HHYYML::pass_0l2tau, "pass_0l2tau"},
+        {HHYYML::pass_0l0tau, "pass_0l0tau"},
     };
 
     /// \brief Cutflow Variables
@@ -154,6 +156,8 @@ private:
     bool evaluate1l1tauSelection(const SubChannelClassify &classify);
 
     bool evaluate0l2tauSelection(const SubChannelClassify &classify);
+    
+    bool evaluate0l0tauSelection(const SubChannelClassify &classify);
 
     void applyChannelSelection(
         const xAOD::ElectronContainer& electrons,

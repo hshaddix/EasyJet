@@ -63,6 +63,9 @@ namespace HHYYML {
     else if (m_n_leptons == 0 && m_n_taus == 2) {
       return CH_ID::hh0l2tau;
     }
+    else if (m_n_leptons == 0 && m_n_taus == 0) {
+      return CH_ID::hh0l0tau;
+    }
     else {
       return CH_ID::unknown;
     }

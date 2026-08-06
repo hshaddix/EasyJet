@@ -334,6 +334,17 @@ namespace HHYYML
     return pass_selection;
   }
 
+  bool yymlSelectorAlg::evaluate0l0tauSelection(
+    const SubChannelClassify &classify) {
+ 
+    auto sub_channel_id = classify.getSubChannelId();
+    if (sub_channel_id != CH_ID::hh0l0tau) return false;
+    bool pass_selection = true;
+    return pass_selection;
+   }
+
+
+
   void yymlSelectorAlg::applyChannelSelection(
     const xAOD::ElectronContainer& electrons,
     const xAOD::MuonContainer& muons,
@@ -346,12 +357,14 @@ namespace HHYYML
     m_bools.at(HHYYML::pass_2l0tau) = evaluate2l0tauSelection(classifier);
     m_bools.at(HHYYML::pass_1l1tau) = evaluate1l1tauSelection(classifier);
     m_bools.at(HHYYML::pass_0l2tau) = evaluate0l2tauSelection(classifier);
+    m_bools.at(HHYYML::pass_0l0tau) = evaluate0l0tauSelection(classifier);
 
     bool pass_any_subchannel = m_bools.at(HHYYML::pass_1l0tau) ||
                                m_bools.at(HHYYML::pass_0l1tau) ||
                                m_bools.at(HHYYML::pass_2l0tau) ||
                                m_bools.at(HHYYML::pass_1l1tau) ||
-                               m_bools.at(HHYYML::pass_0l2tau);
+                               m_bools.at(HHYYML::pass_0l2tau) ||
+                               m_bools.at(HHYYML::pass_0l0tau);
 
     m_bools.at(HHYYML::pass_any_subchannel) = pass_any_subchannel;
 

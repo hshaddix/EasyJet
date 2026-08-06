@@ -11,6 +11,7 @@ namespace HHYYML {
     hh2l0tau = 3,
     hh1l1tau = 4,
     hh0l2tau = 5,
+    hh0l0tau = 6,
   };
 
   enum class FLAVOR_1L {

@@ -33,34 +33,64 @@ Electron:
   min_pT: 10.0e+3
   max_eta: 2.37
   ID: "LooseBLayerLH"
-  Iso: "NonIso" # TODO: exact WP used in Run 2 analysis is unclear from the documentation
+  Iso: "NonIso"
   correlationModelId: "TOTAL" # TODO: currently needed to run over mc23e, default SIMPLIFIED "does not contain necessary histograms"
   extra_wps:
+    # ID only
+    - ["MediumLH", "NonIso"]
+    - ["TightLH", "NonIso"]
+    # Loose ID
+    - ["LooseBLayerLH", "HighPtCaloOnly"]
     - ["LooseBLayerLH", "Loose_VarRad"]
     - ["LooseBLayerLH", "Tight_VarRad"]
-    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
     - ["LooseBLayerLH", "TightTrackOnly_FixedRad"]
+    - ["LooseBLayerLH", "TightTrackOnly_VarRad"]
+    # Medium ID
+    - ["MediumLH", "HighPtCaloOnly"]
     - ["MediumLH", "Loose_VarRad"]
     - ["MediumLH", "Tight_VarRad"]
-    - ["MediumLH", "TightTrackOnly_VarRad"]
     - ["MediumLH", "TightTrackOnly_FixedRad"]
-    - ["MediumDNN", "Loose_VarRad"]
-    - ["MediumDNN", "Tight_VarRad"]
-    - ["MediumDNN", "TightTrackOnly_VarRad"]
-    - ["MediumDNN", "TightTrackOnly_FixedRad"]
-  do_parent_decoration: true 
+    - ["MediumLH", "TightTrackOnly_VarRad"]
+    # Tight ID
+    - ["TightLH", "HighPtCaloOnly"]
+    - ["TightLH", "Loose_VarRad"]
+    - ["TightLH", "Tight_VarRad"]
+    - ["TightLH", "TightTrackOnly_FixedRad"]
+    - ["TightLH", "TightTrackOnly_VarRad"]
+
+  do_parent_decoration: true
   do_IFF_decoration: true
+
 
 Muon:
   min_pT: 10.0e+3
   max_eta: 2.7
-  ID: "Medium"
-  Iso: "NonIso" # TODO: find closest WP to Loose_FixedRad used in Run 2 analysis
+  ID: "Loose"
+  Iso: "NonIso"
   extra_wps:
-    - ["Medium", "Loose_VarRad"]
-    - ["Medium", "Tight_VarRad"]
+    # Loose ID
+    - ["Loose",  "PflowLoose_VarRad"]
+    - ["Loose",  "PflowTight_VarRad"]
+    - ["Loose",  "Loose_VarRad"]
+    - ["Loose",  "Tight_VarRad"]
+    # Medium ID
+    - ["Medium", "NonIso"]
     - ["Medium", "PflowLoose_VarRad"]
     - ["Medium", "PflowTight_VarRad"]
+    - ["Medium", "Loose_VarRad"]
+    - ["Medium", "Tight_VarRad"]
+    # Tight ID
+    - ["Tight",  "NonIso"]
+    - ["Tight",  "PflowLoose_VarRad"]
+    - ["Tight",  "PflowTight_VarRad"]
+    - ["Tight",  "Loose_VarRad"]
+    - ["Tight",  "Tight_VarRad"]
+    # HighPt ID
+    - ["HighPt", "NonIso"]
+    - ["HighPt", "PflowLoose_VarRad"]
+    - ["HighPt", "PflowTight_VarRad"]
+    - ["HighPt", "Loose_VarRad"]
+    - ["HighPt", "Tight_VarRad"]
   do_parent_decoration: true 
   do_IFF_decoration: true
 
@@ -105,7 +135,7 @@ do_trigger_filtering: true
 do_overlap_removal: true
 
 OverlapRemoval:
-  favourPhotonOverLepton: false # if set to true, HgamOR is applied
+  favourPhotonOverLepton: true # if set to true, HgamOR is applied
 
 # flag for event cleaning
 do_event_cleaning: true
