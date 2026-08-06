@@ -12,7 +12,8 @@ from EasyjetHub.output.ttree.selected_objects import (
 )
 
 from EasyjetHub.algs.postprocessing.trigger_matching import TriggerMatchingToolCfg
-
+from XbbCalib.hists_output_config import hists_output_cfg
+from .vars_to_copy import lrj_floats_to_copy, lrj_ints_to_copy, lrj_gn3x_working_points
 
 def ZtautauCalib_cfg(
     flags,
@@ -93,6 +94,7 @@ def ZtautauCalib_cfg(
             "ZtautauCalibSelectorAlg",
             eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
             bypass=flags.Analysis.bypass,
+            isMC=flags.Input.isMC,
         )
     )
 
@@ -104,6 +106,20 @@ def ZtautauCalib_cfg(
             intVariableList=int_variables,
             trigMatchingTool=matchingtool,
             triggerlist=flags.Analysis.Trigger["selection"]["chains"].as_mutable(),
+            copiedVariablePrefix0="Zcand0_",
+            intsToCopy=lrj_ints_to_copy(flags),
+            floatsToCopy=lrj_floats_to_copy(flags)
+        )
+    )
+    
+    out_path = (
+        flags.Analysis.h5_output
+        if flags.Analysis.output.h5.hists.enable else None
+    )
+    cfg.merge(
+        hists_output_cfg(
+            flags, flags.Analysis.output.h5.hists, out_path,
+            tag_wps=lrj_gn3x_working_points(flags)
         )
     )
 
@@ -113,7 +129,7 @@ def ZtautauCalib_cfg(
 def ZtautauCalib_branches(flags):
     """Variables to compute."""
     branches = []
-    float_variable_names = []
+    float_variable_names = ["Zcand0_met_mass", "Zcand0_truth_m", "Zcand0_truth_pt", "Zcand0_truth_eta", "Zcand0_truth_phi"]
     int_variable_names = ["nJets", "nTaus"]
 
     object_level_branches, object_level_float_variables, object_level_int_variables = (
@@ -130,6 +146,12 @@ def ZtautauCalib_branches(flags):
         ]
 
     for var in int_variable_names:
+        branches += [
+            f"EventInfo.{var}_%SYS% -> XbbCalib_{var}"
+            + flags.Analysis.systematics_suffix_separator
+            + "%SYS%"
+        ]
+    for var in float_variable_names:
         branches += [
             f"EventInfo.{var}_%SYS% -> XbbCalib_{var}"
             + flags.Analysis.systematics_suffix_separator

@@ -1,0 +1,24 @@
+disable_metadata: false
+selection:
+  n_lrjets_min: 2
+variables:
+  Zcand0_met_mass:
+    lower: 40000
+    upper: 300000
+    n_bins: 52
+weights:
+  all_runs:
+    - PileupWeight_NOSYS
+  run2:
+    - beamSpotWeight
+multidim:
+  leading:
+    mass_var: Zcand0_met_mass
+    mass_lower: 40000
+    mass_upper: 300000
+    mass_n_bins: 52
+    pt_var: Zcand0_pt
+    pt_edges: [200000., 400000., 3000000.]
+    wp_prefix: Zcand0
+    truth_pt_var: Zcand0_truth_pt
+    truth_pt_edges: [200000., 320000., 400000., 500000., 3000000.]

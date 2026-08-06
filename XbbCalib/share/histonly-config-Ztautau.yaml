@@ -1,0 +1,18 @@
+include:
+  - XbbCalib/RunConfig-ZtautauCalib.yaml
+
+output:
+  h5:
+    hists:
+      enable: true
+      include:
+        - XbbCalib/hists-config-Ztautau.yaml
+      blinding:
+        enable: false
+
+do_CP_systematics: false
+systematics_regex: [".*"]
+
+grid:
+  n_files_per_job: 2
+

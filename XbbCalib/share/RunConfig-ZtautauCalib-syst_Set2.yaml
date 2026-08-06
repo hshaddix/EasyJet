@@ -1,4 +1,4 @@
-include: [XbbCalib/RunConfig_Ztautau.yaml]
+include: [XbbCalib/RunConfig-ZtautauCalib.yaml]
 
 # Run all CP syst
 do_CP_systematics: true

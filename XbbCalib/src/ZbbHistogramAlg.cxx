@@ -15,6 +15,15 @@ namespace {
 
 namespace bh = boost::histogram;
 using WS = bh::accumulators::weighted_sum<float>;
+
+using Hist5D = decltype(bh::make_histogram_with(
+    bh::dense_storage<WS>(),
+    bh::axis::regular<float>(1, 0.f, 1.f, ""),
+    bh::axis::variable<float>(std::vector<float>{0.f, 1.f}, ""),
+    bh::axis::variable<float>(std::vector<float>{0.f, 1.f}, ""),
+    bh::axis::category<int>(std::vector<int>{0}, ""),
+    bh::axis::category<int>(std::vector<int>{0}, "")));
+
 using Hist4D = decltype(bh::make_histogram_with(
     bh::dense_storage<WS>(),
     bh::axis::regular<float>(1, 0.f, 1.f, ""),
@@ -22,9 +31,50 @@ using Hist4D = decltype(bh::make_histogram_with(
     bh::axis::category<int>(std::vector<int>{0}, ""),
     bh::axis::category<int>(std::vector<int>{0}, "")));
 
-class ZbbHist final : public IZbbHist {
+
+class ZbbHist5D final : public IZbbHist {
 public:
-  ZbbHist(int mass_bins, float mass_lower, float mass_upper,
+  ZbbHist5D(int mass_bins, float mass_lower, float mass_upper,
+            const std::vector<float>& pt_edges,
+            const std::vector<float>& truth_pt_edges,
+            int n_wps_plus_notag, int n_sys)
+  {
+    std::vector<int> wp_cats(static_cast<std::size_t>(n_wps_plus_notag));
+    std::iota(wp_cats.begin(), wp_cats.end(), 0);
+    std::vector<int> sys_cats(static_cast<std::size_t>(n_sys));
+    std::iota(sys_cats.begin(), sys_cats.end(), 0);
+    m_hist = bh::make_histogram_with(
+        bh::dense_storage<WS>(),
+        bh::axis::regular<float>(mass_bins, mass_lower, mass_upper, "mass"),
+        bh::axis::variable<float>(pt_edges, "pt"),
+        bh::axis::variable<float>(truth_pt_edges, "truth_pt"),
+        bh::axis::category<int>(wp_cats, "wp"),
+        bh::axis::category<int>(sys_cats, "sys"));
+  }
+
+  void fill(float mass, float pt, float truth_pt, int wp_idx, int sys_idx,
+            float weight) override {
+    m_hist(mass, pt, truth_pt, wp_idx, sys_idx, bh::weight(weight));
+  }
+
+  void write(H5::Group& parent,
+             const std::string& name,
+             const std::vector<std::string>& wp_labels,
+             const std::vector<std::string>& sys_labels) const override {
+    std::map<std::string, std::vector<std::string>> lmap;
+    lmap["wp"]  = wp_labels;
+    lmap["sys"] = sys_labels;
+    H5Utils::hist::write_hist_to_group(parent, m_hist, name, lmap);
+  }
+
+private:
+  Hist5D m_hist;
+};
+
+
+class ZbbHist4D final : public IZbbHist {
+public:
+  ZbbHist4D(int mass_bins, float mass_lower, float mass_upper,
           const std::vector<float>& pt_edges,
           int n_wps_plus_notag, int n_sys)
   {
@@ -40,8 +90,8 @@ public:
         bh::axis::category<int>(sys_cats, "sys"));
   }
 
-  void fill(float mass, float pt, int wp_idx, int sys_idx,
-            float weight) override {
+  void fill(float mass, float pt, float /*truth_pt*/,
+            int wp_idx, int sys_idx, float weight) override {
     m_hist(mass, pt, wp_idx, sys_idx, bh::weight(weight));
   }
 
@@ -70,6 +120,11 @@ StatusCode ZbbHistogramAlg::initialize() {
     return StatusCode::FAILURE;
   }
 
+  if (!m_truthPtVarName.value().empty() && m_truthPtEdges.value().size() < 2) {
+    ATH_MSG_ERROR("truthPtEdges must have at least 2 entries");
+    return StatusCode::FAILURE;
+  }
+
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
 
   if (!m_weightDecoName.value().empty()) {
@@ -85,6 +140,13 @@ StatusCode ZbbHistogramAlg::initialize() {
   m_ptHandle = std::make_unique<CP::SysReadDecorHandle<float>>(
       m_ptVarName.value() + "_%SYS%", this);
   ATH_CHECK(m_ptHandle->initialize(m_systematicsList, m_eventHandle));
+
+  if (!m_truthPtVarName.value().empty()) {
+    m_truthPtHandle = std::make_unique<CP::SysReadDecorHandle<float>>(
+        m_truthPtVarName.value() + "_%SYS%", this);
+    ATH_CHECK(m_truthPtHandle->initialize(
+        m_systematicsList, m_eventHandle));
+  }
 
   if (!m_selectionDecoName.value().empty()) {
     m_selHandle = std::make_shared<CP::SysReadDecorHandle<char>>(
@@ -117,12 +179,25 @@ StatusCode ZbbHistogramAlg::initialize() {
     m_sysLabels.push_back(
         sysvec[si].name().empty() ? "NOSYS" : sysvec[si].name());
   }
-
-  m_hist = std::make_unique<ZbbHist>(
-      m_massBins, m_massLower, m_massUpper,
-      m_ptEdges.value(),
-      static_cast<int>(decos.size()),
-      n_sys);
+  
+  if (!m_truthPtVarName.value().empty()) {
+    m_hist = std::make_unique<ZbbHist5D>(
+        m_massBins,
+        m_massLower,
+        m_massUpper,
+        m_ptEdges.value(),
+        m_truthPtEdges.value(),
+        static_cast<int>(decos.size()),
+        n_sys);
+  } else {
+    m_hist = std::make_unique<ZbbHist4D>(
+        m_massBins,
+        m_massLower,
+        m_massUpper,
+        m_ptEdges.value(),
+        static_cast<int>(decos.size()),
+        n_sys);
+  }
 
   // Invariants maintained by the loops above -- failures indicate a bug.
   if (m_wpLabels.size() != decos.size()) {
@@ -149,12 +224,16 @@ StatusCode ZbbHistogramAlg::execute(const EventContext& ctx) {
 
     const float mass   = m_massHandle->get(*event, sys);
     const float pt     = m_ptHandle->get(*event, sys);
+
+    const float truth_pt = m_truthPtHandle
+            ? m_truthPtHandle->get(*event, sys) : 0.f;
+
     const float weight = m_weightHandle
         ? m_weightHandle->get(*event, sys) : 1.f;
 
     for (const auto& [wi, h] : m_wpHandles)
       if (!h || h->get(*event, sys) != 0)
-        m_hist->fill(mass, pt, wi, si, weight);
+        m_hist->fill(mass, pt, truth_pt, wi, si, weight);
   }
   return StatusCode::SUCCESS;
 }

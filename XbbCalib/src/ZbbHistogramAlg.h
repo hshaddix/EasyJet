@@ -19,10 +19,10 @@
 namespace H5 { class Group; }
 
 // PIMPL interface: concrete type (ZbbHist) lives in the .cxx anonymous
-// namespace and holds the Hist4D; this interface avoids exposing the
+// namespace and holds the histogram; this interface avoids exposing the
 // boost::histogram type in the header.
 struct IZbbHist {
-  virtual void fill(float mass, float pt, int wp_idx, int sys_idx,
+  virtual void fill(float mass, float pt, float truth_pt, int wp_idx, int sys_idx,
                     float weight) = 0;
   virtual void write(H5::Group& parent,
                      const std::string& name,
@@ -58,6 +58,9 @@ private:
   Gaudi::Property<std::string> m_ptVarName{
     this, "ptVar", "Zcand_0_pt",
     "EventInfo float deco for jet pT (_%SYS% appended internally)"};
+  Gaudi::Property<std::string> m_truthPtVarName{
+    this, "truthPtVar", "Zcand_0_truth_pt",
+    "EventInfo float deco for truth jet pT"};
   Gaudi::Property<std::vector<std::string>> m_wpDecoNames{
     this, "wpDecorations", {},
     "EventInfo int decos for WP pass/fail, one per WP "
@@ -72,6 +75,11 @@ private:
     this, "ptEdges", {},
     "Bin edges for the variable pT axis in MeV (>= 2 entries required)"};
 
+  // truth pT axis: variable bin edges (MeV)
+  Gaudi::Property<std::vector<float>> m_truthPtEdges{
+    this, "truthPtEdges", {},
+    "Bin edges for the variable truth pT axis in MeV (>= 2 entries required)"};
+
   Gaudi::Property<std::string> m_groupName{
     this, "groupName", "multidim",
     "HDF5 subgroup for output (empty = write at file root)"};
@@ -85,6 +93,7 @@ private:
   std::unique_ptr<CP::SysReadDecorHandle<float>> m_weightHandle;
   std::unique_ptr<CP::SysReadDecorHandle<float>> m_massHandle;
   std::unique_ptr<CP::SysReadDecorHandle<float>> m_ptHandle;
+  std::unique_ptr<CP::SysReadDecorHandle<float>> m_truthPtHandle;
   std::shared_ptr<CP::SysReadDecorHandle<char>>  m_selHandle;
   std::vector<std::pair<int,
     std::unique_ptr<CP::SysReadDecorHandle<int>>>> m_wpHandles;
