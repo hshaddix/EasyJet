@@ -1,11 +1,11 @@
-ptag_mc=p6697
-#ptag_data=p6700
-campaign=v3
+ptag_mc=p7017
+#ptag_data=p7019
+campaign=v4
 
 dir_samples="../easyjet/yyMLAnalysis/datasets/PHYS/"
 yaml="RunConfig-yyml-resonant.yaml"
 mc_campaign_signal="mc23a"
-mc_campaign="${mc_campaign_signal}_p6"
+mc_campaign="${mc_campaign_signal}_resonant"
 mc_list_sample_names=(
     "PHYS_Signal_Resonant_HH_$mc_campaign_signal.txt"
     "PHYS_SingleHiggs_$mc_campaign.txt"
@@ -22,7 +22,7 @@ easyjet-gridsubmit --mc-list <(sed -e '$a\' "${mc_list_sample_names[@]/#/${dir_s
     --campaign ${campaign} \
     --noEmail
 
-easyjet-gridsubmit --data-list ${dir_samples}/PHYS_data22_p6.txt \
+easyjet-gridsubmit --data-list ${dir_samples}/PHYS_data22_resonant.txt \
     --run-config yyMLAnalysis/${yaml} \
     --exec yyml-ntupler \
     --nGBperJob 50 \
