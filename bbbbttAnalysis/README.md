@@ -8,43 +8,63 @@ Analysis Package for the $HHH\rightarrow b\bar{b}b\bar{b} \tau\tau$ analysis
 - `python/`: Main python code to configure the components (objects, selections as well as the variables to save)
   - `bbbbtt_config`
 - `share/`: yaml files containing configurations used by the components
-  - `RunConfig-bbbbtt[-bypass]`: where all the common flags are set, configurations called by the executables (see below).
+  - `RunConfig-bbbbtt-base`: where all the common flags are set, configurations called by the executables
+  - `RunConfig-bbbbtt[-nomOnly]`: config file to run jobs without systematics.
+  - `RunConfig-bbbbtt-syst`: config file to run jobs with systematics.
+  - `RunConfig-bbbbtt-syst-hadhad`: config file to run HadHad-only jobs with systematics.
+  - `RunConfig-bbbbtt-syst-lephad`: config file to run LepHad-only jobs with systematics.
+  - `RunConfig-bbbbtt-syst-lowTauPt`: config file setting configuration with low pT taus (pT < 20 GeV).
 - `src/`: C++ code
-  - `HHHbbbbttSelectorAlg`: Find if the event pass the baseline bbbbtt selection [**STILL HAS TO BE ADAPTED!**];
+  - `HHHbbbbttSelectorAlg`: Find if the event pass the baseline bbbbtt selections;
   - `MMCDecoratorAlg`: Compute the tau tau MMC mass;
   - `MMCSelectorAlg`: Filter events based on MMC;
   - `BaselineVarsbbbbttAlg`: Compute the baseline variables for the analysis.
+  - `ttbarRewVarsAlg`: Implements ttbar truth variables needed for the ttbar NNLO reweighting downstream.
+  - `KappaReweightingAlg`: Saves variables needed tor the HHH signal reweighting to different tri-linear and quartic Higgs self-coupling values.
+  - `TriggerDecoratorAlg`: Gets trigger matching information;
+  - `TriggerSFAlg`: Gets trigger SFs;
+  - `TriggerUtils`: Defines trigger pass.
 
 # How to Run
 
-1. Get the files to make the test: have a look at the general [README section](https://gitlab.cern.ch/easyjet/easyjet#running-on-files) for updated informations.
+- Follow the general [EasyJet README](https://gitlab.cern.ch/easyjet/easyjet#installation) to install all the necessary packages
+  - At the `git sparse-checkout set` step, include the `bbbbtt` and `bbtt` packages:
+  ```
+  git sparse-checkout set EasyjetHub EasyjetTests bbbbttAnalysis bbttAnalysis
+  ```
 
-2. Run the ntupler on those files:
-- run the analysis on <span style="color: #F2385A">PHYS</span>: ```bbbbtt-ntupler ttbar_PHYS_10evt.root --run-config bbbbttAnalysis/RunConfig-bbbbtt-bypass.yaml --out-file output_PHYS_bbbbtt.root```
-- run the analysis on <span style="color: #4BD9D9;">PHYSLITE</span>: ```bbbbtt-ntupler ttbar_PHYSLITE_10evt.root --run-config bbbbttAnalysis/RunConfig-bbbbtt-bypass.yaml --out-file output_PHYSLITE_bbbbtt.root```
-An alternative is to use the preselection step using the configuration `RunConfig-bbbbtt.yaml` instead of `RunConfig-bbbbtt-bypass.yaml`, however fewer events would be recorded.
-- possible channels are `lephad`, `hadhad`, `lephad1b` (`lephad` one b-tag region), `hadhad1b` (`hadhad` one b-tag region), `ZCR` (Z+HF control region) and `TopEMuCR` (top control region, similar to ZCR but with different flavour leptons)
+-  Run the ntupler on an available PHYS file: 
+```
+bbbbtt-ntupler [input DAOD file] -c ../easyjet/bbbbttAnalysis/share/RunConfig-bbbbtt-nomOnly.yaml --out-file test.root -e 1000
+  ```
+Examples of DAOD files for signal HHH and data can be found in this [link](https://cernbox.cern.ch/s/12GpYGVOGhr52JO).
+
+-  For sending jobs to the grid, follow the following example for nominal-only:
+```
+for f in ../easyjet/bbbbttAnalysis/datasets/PHYS/prod/mc20_13TeV.HHH.prod.txt ; do easyjet-gridsubmit --exec bbbbtt-ntupler --run-config ../easyjet/bbbbttAnalysis/share/RunConfig-bbbbtt-nomOnly.yaml --channels LepHad HadHad --noTag --campaign EJ_0_52_1 --nGBperJob 3  --mergeOutput --mc-list $f; done
+```
+In case of submitting with systematics, some extra care is needed when selecting the job parameters. Here is one example for signal submission:
+```
+for f in ../easyjet/bbbbttAnalysis/datasets/PHYS/prod/prod_mc23.txt ; do easyjet-gridsubmit --exec bbbbtt-ntupler --run-config ../easyjet/bbbbttAnalysis/share/RunConfig-bbbbtt-syst.yaml --channels HadHad LepHad --noTag --campaign EJ_0_52_0_v3i_syst --nGBperJob 3 --memory 4000 --maxNFilesPerJob 1 --mergeOutput --mc-list $f; done
+```
+For non-signal submission, the `maxNFilesPerJob` parameter can be removed (and let the grid optimize the job submission).
+
 
 # Output
 
-If these run properly, your outputs files should contain a TTree `AnalysisMiniTree` with the following content (X denotes a set of variables associated to the object, usually pT, Eta ...):
+If these run properly, your outputs files should contain a TTree `AnalysisMiniTree` with the following content (XXX denotes a set of variables associated to the object, usually pT, Eta ...):
 * Some information saved for every analyses displayed in the main [README section](https://gitlab.cern.ch/easyjet/easyjet#have-a-look-at-the-output);
 * Truth information:
     * jets (implemented as a vector): `truthjet_antikt4_X`.
 * Reconstructed objects:
-    * electron / muon / tau kinematics (implemented as a vector): `el_NOSYS_X` / `mu_NOSYS_X` / `tau_NOSYS_X`;
-    * jet kinematics (implemented as a vector): `recojet_antikt4PFlow_NOSYS_X`;
-    * $E_T^{miss}$ : `met_NOSYS_X`.
-* Standard set of `bbbbtt` variables, including: [**STILL HAS TO BE IMPLEMENTED!**]
-    * cuts to pass: `bbbbtt_pass_X_NOSYS`.
-    * Missing Mass Calculator (MMC) outputs: `bbbbtt_mmc_X`;
-    * selected lepton: `bbbbtt_Lepton_X_NOSYS`;
-    * Leading and sub-leading taus (kinematics + efficiency SF): `bbbbtt_Leading_Tau_X` and `bbbbtt_Sublead_Tau_X`;
-    * Leading and sub-leading b-jets: `bbbbtt_Leading_Bjet_X` and `bbbbtt_Sublead_Bjet_X`;
-    * Reconstructed Higgs candidates: `bbbbtt_H_bb_X` and `bbbbtt_H_vis_tautau_X`;
-    * HH variables: `bbbbtt_HH_X` and `bbbbtt_HH_vis_X`.
+    * electron / muon / tau kinematics (implemented as a vector): `el_XXX` / `mu_XXX` / `tau_XXX`;
+    * jet kinematics (implemented as a vector): `recojet_antikt4PFlow_XXX`;
+    * $E_T^{miss}$ : `met_XXX`.
+* Standard set of `bbbbtt` variables, including:
+    * cuts to pass: `bbbbtt_pass_XXX`.
+    * Missing Mass Calculator (MMC) outputs: `bbbbtt_mmc_XXX`;
 
 # Main developers
 
 This code is an adaptation from the bbtt package. The main developments in this HHH package have been performed by (non extensive list, feel free to add your name):
-Marcus Rodrigues, Jordy Degens
+Marcus Rodrigues, Jordy Degens, Gabriel Oliveira Correa

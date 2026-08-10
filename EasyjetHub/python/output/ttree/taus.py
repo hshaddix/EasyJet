@@ -1,6 +1,7 @@
 from EasyjetHub.output.ttree.branch_manager import BranchManager, SystOption
 from EasyjetHub.steering.sample_metadata import is_at_least
 from EasyjetHub.output.ttree.truth_taus import get_TopHiggs_tau_truth_labels
+from AthenaConfiguration.Enums import LHCPeriod
 
 
 def get_tau_branches(flags, tree_flags, input_container, output_prefix):
@@ -82,7 +83,8 @@ def get_tau_branches(flags, tree_flags, input_container, output_prefix):
             (f"effSF_{id_wp}_%SYS%", None)
             for id_wp in id_wps
             #if not ("GNTau" in id_wp)
-            if not ("GNTau" in id_wp or "noEffSF" in id_wp)
+            if not (("GNTau" in id_wp and flags.GeoModel.Run is LHCPeriod.Run2) 
+                or "noEffSF" in id_wp)
         ]
 
     # Requires TauSelectorAlg to be run

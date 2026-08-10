@@ -324,7 +324,6 @@ scale_factor:
       - 'HLT_tau160_mediumRNN_tracktwoMVA'
       '2024': []
   bjet:
-    btagTriggerCDI: 'xAODBTaggingEfficiency/13p6TeV-Online/online-MC23_2025-11-26_v3_smooth.root'
     chains:
       '2015': []
       '2016': []
