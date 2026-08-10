@@ -17,6 +17,10 @@ namespace VBSHIGGS{
      // Initialise global event filter
     ATH_CHECK (m_filterParams.initialize(m_systematicsList));
     ATH_CHECK (m_passTriggerSLT.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_passTriggerDLT.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_passTriggerASLT1_em.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_passTriggerASLT1_me.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK (m_passTriggerASLT2.initialize(m_systematicsList, m_eventHandle));
 
     ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
     ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
@@ -73,7 +77,8 @@ namespace VBSHIGGS{
       ANA_CHECK (m_HCandHandle.retrieve (HJets, sys, ctx));
 
       const xAOD::JetContainer *vbsjets = nullptr;
-      ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
+      if( !m_UseVBFRNN )
+        ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
 
       const xAOD::JetContainer *largeJets = nullptr;
       ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
@@ -92,6 +97,19 @@ namespace VBSHIGGS{
       if (!m_passTriggerSLT.empty() and m_passTriggerSLT.get(*event, sys)) {
         m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
       } 
+      if (!m_passTriggerDLT.empty() and m_passTriggerDLT.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      } 
+      if (!m_passTriggerASLT1_em.empty() and m_passTriggerASLT1_em.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      } 
+      if (!m_passTriggerASLT1_me.empty() and m_passTriggerASLT1_me.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      } 
+      if (!m_passTriggerASLT2.empty() and m_passTriggerASLT2.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      }
+
 
       // leptons selection
       int n_electrons = electrons->size();

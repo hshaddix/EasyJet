@@ -1,61 +1,79 @@
 selection:
   chains:
     '2015':
-    - 'HLT_e24_lhmedium_L1EM20VH'
-    - 'HLT_e60_lhmedium'
-    - 'HLT_e120_lhloose'
-    - 'HLT_mu20_iloose_L1MU15'
-    - 'HLT_mu40'
+    - 'HLT_e24_lhmedium_L1EM20VH' # SingleEle
+    - 'HLT_e60_lhmedium' # SingleEle
+    - 'HLT_e120_lhloose' # SingleEle
+    - 'HLT_mu20_iloose_L1MU15' # SingleMu
+    - 'HLT_mu40' # SingleMu
+    - 'HLT_mu60_0eta105_msonly' # SingleMu
     '2016':
-    - 'HLT_e26_lhtight_nod0_ivarloose'
-    - 'HLT_e60_lhmedium_nod0'
-    - 'HLT_e140_lhloose_nod0'
-    - 'HLT_mu26_ivarmedium'
-    - 'HLT_mu50'
+    - 'HLT_e26_lhtight_nod0_ivarloose' # SingleEle
+    - 'HLT_e60_lhmedium_nod0' # SingleEle
+    - 'HLT_e140_lhloose_nod0' # SingleEle
+    - 'HLT_e300_etcut' # SingleEle
+    - 'HLT_mu26_ivarmedium' # SingleMu
+    - 'HLT_mu50' # SingleMu
     '2017':
-    - 'HLT_e26_lhtight_nod0_ivarloose'
-    - 'HLT_e60_lhmedium_nod0'
-    - 'HLT_e140_lhloose_nod0'
-    - 'HLT_mu26_ivarmedium'
-    - 'HLT_mu50'
+    - 'HLT_e26_lhtight_nod0_ivarloose' # SingleEle
+    - 'HLT_e60_lhmedium_nod0' # SingleEle
+    - 'HLT_e140_lhloose_nod0' # SingleEle
+    - 'HLT_e300_etcut' # SingleEle
+    - 'HLT_mu26_ivarmedium' # SingleMu
+    - 'HLT_mu50' # SingleMu
+    - 'HLT_mu60_0eta105_msonly' # SingleMu
     '2018':
-    - 'HLT_e26_lhtight_nod0_ivarloose'
-    - 'HLT_e60_lhmedium_nod0'
-    - 'HLT_e140_lhloose_nod0'
-    - 'HLT_mu26_ivarmedium'
-    - 'HLT_mu50'
+    - 'HLT_e26_lhtight_nod0_ivarloose' # SingleEle
+    - 'HLT_e60_lhmedium_nod0' # SingleEle
+    - 'HLT_e140_lhloose_nod0' # SingleEle
+    - 'HLT_e300_etcut' # SingleEle
+    - 'HLT_mu26_ivarmedium' # SingleMu
+    - 'HLT_mu50' # SingleMu
+    - 'HLT_mu60_0eta105_msonly' # SingleMu
     '2022':
-    - 'HLT_e26_lhtight_ivarloose_L1EM22VHI'
-    - 'HLT_e60_lhmedium_L1EM22VHI'
-    - 'HLT_e140_lhloose_L1EM22VHI'
-    - 'HLT_e300_etcut_L1EM22VHI'
-    - 'HLT_mu24_ivarmedium_L1MU14FCH'
-    - 'HLT_mu50_L1MU14FCH'
-    - 'HLT_mu60_L1MU14FCH'
-    - 'HLT_mu60_0eta105_msonly_L1MU14FCH'
-    - 'HLT_mu80_msonly_3layersEC_L1MU14FCH'
+    - 'HLT_e17_lhvloose_L1EM15VHI' # SingleEle
+    - 'HLT_e20_lhvloose_L1EM15VH' # SingleEle
+    - 'HLT_e250_etcut_L1EM22VHI' # SingleEle
+    - 'HLT_e26_lhtight_ivarloose_L1EM22VHI' # SingleEle
+    - 'HLT_e60_lhmedium_L1EM22VHI' # SingleEle
+    - 'HLT_e140_lhloose_L1EM22VHI' # SingleEle
+    - 'HLT_e300_etcut_L1EM22VHI' # SingleEle
+    - 'HLT_mu24_ivarmedium_L1MU14FCH' # SingleMu 
+    - 'HLT_mu50_L1MU14FCH' # SingleMu
+    - 'HLT_mu60_L1MU14FCH' # SingleMu
+    - 'HLT_mu60_0eta105_msonly_L1MU14FCH' # SingleMu
+    - 'HLT_mu80_msonly_3layersEC_L1MU14FCH' # SingleMu
     '2023':
-    - 'HLT_e26_lhtight_ivarloose_L1eEM26M'
-    - 'HLT_e60_lhmedium_L1eEM26M'
-    - 'HLT_e140_lhloose_L1eEM26M'
-    - 'HLT_e140_lhloose_noringer_L1eEM26M'
-    - 'HLT_e300_etcut_L1eEM26M'
-    - 'HLT_mu24_ivarmedium_L1MU14FCH'
-    - 'HLT_mu50_L1MU14FCH'
-    - 'HLT_mu60_L1MU14FCH'
-    - 'HLT_mu60_0eta105_msonly_L1MU14FCH'
-    - 'HLT_mu80_msonly_3layersEC_L1MU14FCH'
+    - 'HLT_e26_lhtight_ivarloose_L1EM22VHI' # SingleEle
+    - 'HLT_e60_lhmedium_L1EM22VHI' # SingleEle
+    - 'HLT_e140_lhloose_L1EM22VHI' # SingleEle
+    - 'HLT_e140_lhloose_noringer_L1EM22VHI' # SingleEle
+    - 'HLT_e300_etcut_L1EM22VHI' # SingleEle
+    - 'HLT_e26_lhtight_ivarloose_L1eEM26M' # SingleEle
+    - 'HLT_e60_lhmedium_L1eEM26M' # SingleEle
+    - 'HLT_e140_lhloose_L1eEM26M' # SingleEle
+    - 'HLT_e140_lhloose_noringer_L1eEM26M' # SingleEle
+    - 'HLT_e300_etcut_L1eEM26M' # SingleEle
+    - 'HLT_mu24_ivarmedium_L1MU14FCH' # SingleMu 
+    - 'HLT_mu50_L1MU14FCH' # SingleMu 
+    - 'HLT_mu60_L1MU14FCH' # SingleMu 
+    - 'HLT_mu60_0eta105_msonly_L1MU14FCH' # SingleMu 
+    - 'HLT_mu80_msonly_3layersEC_L1MU14FCH' # SingleMu 
     '2024':
-    - 'HLT_e26_lhtight_ivarloose_L1eEM26M'
-    - 'HLT_e60_lhmedium_L1eEM26M'
-    - 'HLT_e140_lhloose_L1eEM26M'
-    - 'HLT_e140_lhloose_noringer_L1eEM26M'
-    - 'HLT_e300_etcut_L1eEM26M'
-    - 'HLT_mu24_ivarmedium_L1MU14FCH'
-    - 'HLT_mu50_L1MU14FCH'
-    - 'HLT_mu60_L1MU14FCH'
-    - 'HLT_mu60_0eta105_msonly_L1MU14FCH'
-    - 'HLT_mu80_msonly_3layersEC_L1MU14FCH'
+    - 'HLT_e20_lhtight_ivarloose_L1ZAFB-25DPHI-eEM18M' # SingleEle
+    - 'HLT_e26_lhtight_ivarloose_L1eEM26M' # SingleEle
+    - 'HLT_e26_lhtight_ivarloose_L1eEM26T' # SingleEle
+    - 'HLT_e26_lhtight_ivarmedium_L1eEM26M' # SingleEle
+    - 'HLT_e26_lhtight_ivartight_L1eEM26M' # SingleEle
+    - 'HLT_e60_lhmedium_L1eEM26M' # SingleEle
+    - 'HLT_e140_lhloose_L1eEM26M' # SingleEle
+    - 'HLT_e140_lhloose_noringer_L1eEM26M' # SingleEle
+    - 'HLT_e300_etcut_L1eEM26M' # SingleEle
+    - 'HLT_mu24_ivarmedium_L1MU14FCH' # SingleMu 
+    - 'HLT_mu50_L1MU14FCH' # SingleMu 
+    - 'HLT_mu60_L1MU14FCH' # SingleMu 
+    - 'HLT_mu60_0eta105_msonly_L1MU14FCH' # SingleMu 
+    - 'HLT_mu80_msonly_3layersEC_L1MU14FCH' # SingleMu 
 
 scale_factor:
   doSF: true
@@ -74,7 +92,7 @@ scale_factor:
     - 'HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0'
     - 'HLT_mu26_ivarmedium || HLT_mu50'
     '2022':
-    - 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI || HLT_e300_etcut_L1EM22VHI'
+    - 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI'
     - 'HLT_mu24_ivarmedium_L1MU14FCH || HLT_mu50_L1MU14FCH'
     '2023':
     - 'HLT_e26_lhtight_ivarloose_L1eEM26M || HLT_e60_lhmedium_L1eEM26M || HLT_e140_lhloose_L1eEM26M || HLT_e300_etcut_L1eEM26M'
@@ -82,7 +100,6 @@ scale_factor:
     '2024':
     - 'HLT_e26_lhtight_ivarloose_L1eEM26M || HLT_e60_lhmedium_L1eEM26M || HLT_e140_lhloose_L1eEM26M'
     - 'HLT_mu24_ivarmedium_L1MU14FCH || HLT_mu50_L1MU14FCH'
-
 
   Electron:
     ID_Run2: "TightLH"
@@ -100,7 +117,7 @@ scale_factor:
       '2018':
       - 'HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0'
       '2022':
-      - 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI || HLT_e300_etcut_L1EM22VHI'
+      - 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI'
       '2023':
       - 'HLT_e26_lhtight_ivarloose_L1eEM26M || HLT_e60_lhmedium_L1eEM26M || HLT_e140_lhloose_L1eEM26M || HLT_e300_etcut_L1eEM26M'
       '2024':

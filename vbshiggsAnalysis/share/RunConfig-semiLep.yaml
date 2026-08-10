@@ -11,7 +11,7 @@ channels: ["SemiLep"]
 do_resolved: true
 
 # Use VBFRNN tagger
-UseVBFRNN : false
+UseVBFRNN : true
 
 # Toggles for object types
 do_large_R_UFO_jets: true
@@ -41,6 +41,15 @@ Electron:
 
     - ["TightDNNElectron", "Loose_VarRad"]
     - ["TightDNNElectron", "Tight_VarRad"]
+
+    - ["VeryLooseNoCF97DNNElectron", "Loose_VarRad"]
+    - ["VeryLooseNoCF97DNNElectron", "Tight_VarRad"]
+
+    - ["MediumNoCFDNNElectron", "Loose_VarRad"]
+    - ["MediumNoCFDNNElectron", "Tight_VarRad"]
+
+    - ["TightNoCFDNNElectron", "Loose_VarRad"]
+    - ["TightNoCFDNNElectron", "Tight_VarRad"]
   do_IFF_decoration: true
   do_reco_decoration: true
 

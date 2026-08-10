@@ -106,7 +106,7 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
                     )
         
         
-    if "FullLep" in flags.Analysis.channels or "SemiLep" in flags.Analysis.channels:
+    if "FullLep" in flags.Analysis.channels:
         if flags.Analysis.UseVBFRNN:
             vbftagger = CompFactory.VBFTagger(
                 "VBFTaggerTool", modelTag="VBFRNNv2p3p2"
@@ -155,6 +155,54 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
                         )
                     )
 
+    if "SemiLep" in flags.Analysis.channels:
+        # For now, always run VBSJetSelectorAlg and allow VBFRNN to also be run alongside to store both
+        if flags.Analysis.UseVBFRNN:
+            vbftagger = CompFactory.VBFTagger(
+                "VBFTaggerTool", modelTag="VBFRNNv2p3p0"
+            )
+            # VBF-RNN tagger: boosted
+            cfg.addEventAlgo(
+                CompFactory.VBFTaggerAlgSys(
+                    "VBFTaggerAlg_boosted",
+                    VBFTagger=vbftagger,
+                    containerAllJetsKey="vbshiggsAnalysisJets_%SYS%",
+                    containerSigLargeRJetsKey="vbshiggsAnalysisLargeJets_%SYS%",
+                    pTCut=20.e3,
+                    nMaxJets=2,
+                    DecTag="_boostedCategory"
+                )
+            )
+        if flags.Analysis.do_resolved:
+            # set jets container labels
+            if flags.Analysis.UseVBFRNN:
+                # use full small-R jets pool to select signal jets
+                SignalJetsLabel = "vbshiggsAnalysisJets_%SYS%"
+            else:
+                # use the small-R jets after selecting tagging jets
+                SignalJetsLabel = "vbshiggsAnalysisSignalJets_%SYS%"
+            # signal jets selection
+            cfg.addEventAlgo(
+                CompFactory.VBSHIGGS.HiggsSelectorAlg(
+                    "HiggsSelectorAlg",
+                    jets=SignalJetsLabel,
+                    bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
+                )
+            )
+
+            if flags.Analysis.UseVBFRNN:
+                cfg.addEventAlgo(
+                    CompFactory.VBFTaggerAlgSys(
+                        "VBFTaggerAlg_resolved",
+                        VBFTagger=vbftagger,
+                        containerAllJetsKey="vbshiggsAnalysisJets_%SYS%",
+                        containerSigJetsKey="vbshiggsAnalysisHJets_%SYS%",
+                        pTCut=20.e3,
+                        nMaxJets=2,
+                        DecTag="_resolvedCategory"
+                    )
+                )
+
     from EasyjetHub.algs.postprocessing.trigger_matching import TriggerMatchingToolCfg
 
     trigger_branches = [
@@ -174,6 +222,9 @@ def vbshiggs_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey):
                 eleTriggerSF=get_trigger_legs_scale_factor_list(flags, 'Electron'),
                 muTriggerSF=get_trigger_legs_scale_factor_list(flags, 'Muon'),
                 saveHighLevelVariables=flags.Analysis.save_high_level_variables,
+                # FullLep only evaluates single-lepton (SLT) triggers; its
+                # triggerLists (trigger-lep.yaml) doesn't carry DLT/ASLT chains
+                doDiLeptonTrigger="SemiLep" in flags.Analysis.channels,
             )
         )
     

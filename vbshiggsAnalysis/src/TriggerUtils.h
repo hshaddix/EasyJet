@@ -20,9 +20,31 @@ namespace VBSHIGGS
     void getSingleMuTriggers(int year, const xAOD::EventInfo* event,
 			     const runBoolReadDecoMap& runBoolDecos,
 			     std::vector<std::string>& single_mu_paths);
+
+    void getDiEleTriggers(int year, const xAOD::EventInfo* event,
+			     const runBoolReadDecoMap& runBoolDecos,
+			     std::vector<std::string>& di_ele_paths);
+
+    void getDiMuTriggers(int year, const xAOD::EventInfo* event,
+			     const runBoolReadDecoMap& runBoolDecos,
+                    std::vector<std::string>& di_mu_paths);
+     
+    void getAsymLep2Triggers(int year, const xAOD::EventInfo* event,
+			     const runBoolReadDecoMap& runBoolDecos, 
+                    std::vector<std::string>& asym_lepton_paths);
+
+    void getAsymLep1emTriggers(int year, const xAOD::EventInfo* event,
+			     const runBoolReadDecoMap& runBoolDecos,
+                    std::vector<std::string>& asym_lepton_paths);
+
+    void getAsymLep1meTriggers(int year, const xAOD::EventInfo* event,
+			     const runBoolReadDecoMap& runBoolDecos,
+                    std::vector<std::string>& asym_lepton_paths);
+
     void getSingleLargeJetTriggers(int year, const xAOD::EventInfo* event,
          const runBoolReadDecoMap& runBoolDecos,
          std::vector<std::string>& single_large_jet_paths);
+
     void getSingleSmallJetTriggers(int year, const xAOD::EventInfo* event,
          const runBoolReadDecoMap& runBoolDecos,
          std::vector<std::string>& single_small_jet_paths);

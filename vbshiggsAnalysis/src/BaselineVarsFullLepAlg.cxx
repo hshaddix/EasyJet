@@ -448,7 +448,7 @@ namespace VBSHIGGS{
 
             for(unsigned int j=0; j<std::min(size_t(2),RNNJets_container->size()); j++) {
               std::string prefix = "Jet"+std::to_string(j+1);
-              const xAOD::Jet* RNNJet = RNNJets_container->at(0);
+              const xAOD::Jet* RNNJet = RNNJets_container->at(j);
 
               m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_m").set(*event, RNNJet->m(), sys);
               m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_pt").set(*event, RNNJet->pt(), sys);

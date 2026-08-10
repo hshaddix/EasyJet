@@ -42,7 +42,9 @@ namespace VBSHIGGS{
         CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{ this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large R Jet container to read"};
 
         CP::SysReadHandle<xAOD::JetContainer> m_vbsJetHandle{ this, "vbsJets", "vbshiggsAnalysisVBSJets_%SYS%",   "VBS Jet container to read" };
-        
+
+        CP::SysReadHandle<xAOD::JetContainer> m_RNNjetBoostedHandle{ this, "RNNJets_boosted", "RNNJets_boostedCategory_%SYS%", "input RNN jets container for boosted 20 GeV" };
+
         CP::SysReadHandle<xAOD::ElectronContainer> m_vbsElectronHandle{ this, "vbsElectrons", "vbshiggsAnalysisElectrons_%SYS%",   "Electron container to read" };
         CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
 
@@ -56,6 +58,7 @@ namespace VBSHIGGS{
 
         Gaudi::Property<bool> m_isMC { this, "isMC", false, "Is this simulation?" };
 
+        bool m_hasEleSF = false;
         Gaudi::Property<std::string> m_eleWPName { this, "eleWP", "","Electron ID + Iso working point" };
         CP::SysReadDecorHandle<float> m_ele_SF{"", this};
 
@@ -90,6 +93,8 @@ namespace VBSHIGGS{
         std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
 
         std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
+
+        Gaudi::Property<bool> m_UseVBFRNN { this, "UseVBFRNN", false, "Not use VBS tagging jets or yes (i.e. use VBF-RNN jets or not)" };
 
     };
 }

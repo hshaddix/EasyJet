@@ -17,10 +17,23 @@ def semiLep_cfg(flags, muonkey, electronkey,
 
     cfg = ComponentAccumulator()
 
+    # set jets container labels
+    if flags.Analysis.UseVBFRNN:
+        # vbs tagging jets no more
+        VBSJetsLabel = ""
+        # use full small-R jets pool to select signal jets
+        SignalJetsLabel = "vbshiggsAnalysisJets_%SYS%"
+    else:
+        # use vbs tagging jets
+        VBSJetsLabel = "vbshiggsAnalysisVBSJets_%SYS%"
+        # use the small-R jets after selecting tagging jets
+        SignalJetsLabel = "vbshiggsAnalysisSignalJets_%SYS%"
     # Selection
     cfg.addEventAlgo(
         CompFactory.VBSHIGGS.SemiLepSelectorAlg(
             "SemiLepSelectorAlg",
+            signaljets=SignalJetsLabel,
+            UseVBFRNN=flags.Analysis.UseVBFRNN,
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             eventDecisionOutputDecoration="vbshiggs_pass_sr_%SYS%",
             cutList=flags.Analysis.CutList,
@@ -36,6 +49,8 @@ def semiLep_cfg(flags, muonkey, electronkey,
     cfg.addEventAlgo(
         CompFactory.VBSHIGGS.BaselineVarsSemiLepAlg(
             "FinalVarsSemiLepAlg",
+            UseVBFRNN=flags.Analysis.UseVBFRNN,
+            signaljets=SignalJetsLabel,
             isMC=flags.Input.isMC,
             muons=muonkey, muonWP=MuonWPLabel,
             electrons=electronkey, eleWP=ElectronWPLabel,
@@ -56,7 +71,6 @@ def get_BaselineVarsSemiLepAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
 
-    obj = "LargeJet1"
     wtag_type = flags.Analysis.Large_R_jet.wtag_type
     wtag_wp = flags.Analysis.Large_R_jet.wtag_wp
     for obj in ["LargeJet1", "LargeJet2"]:
@@ -75,10 +89,13 @@ def get_BaselineVarsSemiLepAlg_variables(flags):
         for var in ["pcbt", "truthLabel"]:
             int_variable_names.append(f"{obj}_{var}")
 
-    for obj in ["Hdijet", "resolvedWCandidate1",
-                "resolvedWCandidate2", "boostedWCandidate1",
-                "boostedWCandidate2", "boostedWdijet", "resolvedWdijet",
-                "VBSJ1", "VBSJ2", "VBSdijet"]:
+    objects = ["Hdijet", "resolvedWCandidate1", "resolvedWCandidate2",
+           "boostedWCandidate1", "boostedWCandidate2", "boostedWdijet",
+           "resolvedWdijet", "VBSJ1", "VBSJ2", "VBSdijet"]
+    if flags.Analysis.UseVBFRNN:
+        objects += ["RNNJets_boostedCategory_Jet1", "RNNJets_boostedCategory_Jet2"]
+
+    for obj in objects:
         for var in ["m", "pt", "eta", "phi"]:
             float_variable_names.append(f"{obj}_{var}")
 
@@ -129,12 +146,19 @@ def semiLep_branches(flags):
     branches += object_level_branches
     branches += ["EventInfo.vbshiggs_pass_sr_%SYS% -> pass_SR_%SYS%"]
 
+    if flags.Analysis.UseVBFRNN:
+        vars = ['RNNScore', 'nRNNJets']
+        regs = ['boostedCategory']
+        for var in vars:
+            for reg in regs:
+                branches += [f'EventInfo.{var}_{reg}_%SYS% -> {var}_{reg}_%SYS%']
+
     if (flags.Analysis.save_cutflow):
         cutList = flags.Analysis.CutList
         for cut in cutList:
             branches += [f"EventInfo.{cut}_%SYS% -> {cut}_%SYS%"]
 
-    for cat in ["SLT"]:
+    for cat in ["SLT", "DLT", "ASLT1_em", "ASLT1_me", "ASLT2"]:
         branches += \
             [f"EventInfo.pass_trigger_{cat}_%SYS% -> pass_trigger_{cat}"
              + flags.Analysis.systematics_suffix_separator + "%SYS%"]

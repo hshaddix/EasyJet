@@ -13,6 +13,10 @@ namespace VBSHIGGS
   enum TriggerChannel
   {
     SLT,
+    DLT,
+    ASLT1_em,
+    ASLT1_me,
+    ASLT2,
     JET,
   };
 
@@ -28,6 +32,7 @@ namespace VBSHIGGS
 
   enum RunBooleans
   {
+    is17_periodB5_B8,
     is22_75bunches,
     is23_75bunches,
     is23_400bunches,

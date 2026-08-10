@@ -17,11 +17,17 @@ namespace VBSHIGGS{
       ATH_CHECK (m_vbsLRJetHandle.initialize(m_systematicsList));
       ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
       ATH_CHECK (m_HCandHandle.initialize(m_systematicsList));
-      ATH_CHECK (m_vbsJetHandle.initialize(m_systematicsList));
       ATH_CHECK (m_vbsElectronHandle.initialize(m_systematicsList));
       ATH_CHECK (m_vbsMuonHandle.initialize(m_systematicsList));
       ATH_CHECK (m_metHandle.initialize(m_systematicsList));
       ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
+
+      if(m_UseVBFRNN) {
+        ATH_CHECK (m_RNNjetBoostedHandle.initialize(m_systematicsList));
+      }
+      else {
+        ATH_CHECK (m_vbsJetHandle.initialize(m_systematicsList));
+      }
 
       if(m_isMC){
         ATH_CHECK (m_ele_truthOrigin.initialize(m_systematicsList, m_vbsElectronHandle));
@@ -30,8 +36,11 @@ namespace VBSHIGGS{
         ATH_CHECK (m_mu_truthType.initialize(m_systematicsList, m_vbsMuonHandle));
 
         ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
-        m_ele_SF = CP::SysReadDecorHandle<float>("effSF_"+m_eleWPName+"_%SYS%", this);
-        ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
+        m_hasEleSF = m_eleWPName.find("DNN") == std::string::npos;
+        if(m_hasEleSF){
+          m_ele_SF = CP::SysReadDecorHandle<float>("effSF_"+m_eleWPName+"_%SYS%", this);
+          ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
+        }
 
         ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
         m_mu_SF = CP::SysReadDecorHandle<float>("effSF_"+m_muWPName+"_%SYS%", this);
@@ -95,7 +104,13 @@ namespace VBSHIGGS{
         ANA_CHECK (m_HCandHandle.retrieve (HJets, sys, ctx));
 
         const xAOD::JetContainer *vbsjets = nullptr;
-        ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys, ctx));
+        const xAOD::JetContainer *RNNJets_boosted= nullptr;
+        if(m_UseVBFRNN) {
+          ANA_CHECK (m_RNNjetBoostedHandle.retrieve (RNNJets_boosted, sys, ctx));
+        }
+        else {
+          ANA_CHECK (m_vbsJetHandle.retrieve (vbsjets, sys, ctx));
+        }
 
         const xAOD::MuonContainer *muons = nullptr;
         ANA_CHECK (m_vbsMuonHandle.retrieve (muons, sys, ctx));
@@ -122,10 +137,10 @@ namespace VBSHIGGS{
         bool WPgiven = !m_isBtag.empty();
         bool PCBTgiven = !m_PCBT.empty();
 
-        auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
         int nCentralJets = 0;
-        int nForwardJets = vbsjets->size();
-        // number of central jets
+        int nForwardJets = 0;
+
+        auto bjets = std::make_unique<ConstDataVector<xAOD::JetContainer>> (SG::VIEW_ELEMENTS);
         for(const xAOD::Jet* jet : *signalJets) {
           // count central jets
           if (std::abs(jet->eta())<2.5) nCentralJets++;
@@ -137,10 +152,18 @@ namespace VBSHIGGS{
         }
         int n_bjets = bjets->size();
         int n_Signaljets = signalJets->size();
-        int nJet = signalJets->size() + vbsjets->size();
+
+        int nJet = signalJets->size();
+        if (!m_UseVBFRNN) {
+          nJet += vbsjets->size();
+          for(const xAOD::Jet* vbsjet : *vbsjets) {
+            if (std::abs(vbsjet->eta())<2.5) nCentralJets++;
+            else nForwardJets++;
+          }
+        }
 
         m_Ibranches.at("nJets").set(*event, nJet, sys); //total jets fwd+central
-        m_Ibranches.at("nSigJets").set(*event, n_Signaljets, sys); // total jets exculding vbs tag jets
+        m_Ibranches.at("nSigJets").set(*event, n_Signaljets, sys); // total jets excluding vbs tag jets
         m_Ibranches.at("nBJets").set(*event, n_bjets, sys);
         m_Ibranches.at("nCentralJets").set(*event, nCentralJets, sys);
         m_Ibranches.at("nForwardJets").set(*event, nForwardJets, sys);
@@ -157,7 +180,7 @@ namespace VBSHIGGS{
         for(const xAOD::Electron* electron : *electrons) {
           signal_lepton = electron;
           if(m_isMC){
-                signal_lepton_SF = m_ele_SF.get(*electron, sys);
+                signal_lepton_SF = m_hasEleSF ? m_ele_SF.get(*electron, sys) : 1.0f;
           }
           signal_lepton_charge = electron->charge();
           signal_lepton_id = signal_lepton_charge > 0 ? -11 : 11;
@@ -342,29 +365,50 @@ namespace VBSHIGGS{
 
 
         // VBS jets candidates
-        if ( vbsjets->size() >= 2 ){
-          const xAOD::Jet* vbsJet1 = vbsjets->at(0);
-          const xAOD::Jet* vbsJet2 = vbsjets->at(1);
+        //kinematics of RNN jets
+        if ( m_UseVBFRNN ){
+          std::vector<const xAOD::JetContainer*> RNNJets = {RNNJets_boosted};
+          std::vector<std::string> RNNJets_names = {"RNNJets_boostedCategory"};
+          for(unsigned int i=0; i<RNNJets.size(); i++) {
+            const xAOD::JetContainer *RNNJets_container = RNNJets[i];
+            const std::string& RNNJets_container_name = RNNJets_names[i];
 
-          TLorentzVector vbs_jj = vbsJet1->p4() + vbsJet2->p4();
-          
-          m_Fbranches.at("VBSJ1_m").set(*event, vbsJet1->m(), sys);
-          m_Fbranches.at("VBSJ1_pt").set(*event, vbsJet1->pt(), sys);
-          m_Fbranches.at("VBSJ1_eta").set(*event, vbsJet1->eta(), sys);
-          m_Fbranches.at("VBSJ1_phi").set(*event, vbsJet1->phi(), sys);
+            for(unsigned int j=0; j<std::min(size_t(2),RNNJets_container->size()); j++) {
+              std::string prefix = "Jet"+std::to_string(j+1);
+              const xAOD::Jet* RNNJet = RNNJets_container->at(j);
 
-          m_Fbranches.at("VBSJ2_m").set(*event, vbsJet2->m(), sys);
-          m_Fbranches.at("VBSJ2_pt").set(*event, vbsJet2->pt(), sys);
-          m_Fbranches.at("VBSJ2_eta").set(*event, vbsJet2->eta(), sys);
-          m_Fbranches.at("VBSJ2_phi").set(*event, vbsJet2->phi(), sys);
+              m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_m").set(*event, RNNJet->m(), sys);
+              m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_pt").set(*event, RNNJet->pt(), sys);
+              m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_eta").set(*event, RNNJet->eta(), sys);
+              m_Fbranches.at(RNNJets_container_name+"_"+prefix+"_phi").set(*event, RNNJet->phi(), sys);
+            }
+          }
+        }
+        else {
+          if ( vbsjets->size() >= 2 ){
+            const xAOD::Jet* vbsJet1 = vbsjets->at(0);
+            const xAOD::Jet* vbsJet2 = vbsjets->at(1);
 
-          m_Fbranches.at("VBSdijet_m").set(*event, vbs_jj.M(), sys);
-          m_Fbranches.at("VBSdijet_pt").set(*event, vbs_jj.Pt(), sys);
-          m_Fbranches.at("VBSdijet_eta").set(*event, vbs_jj.Eta(), sys);
-          m_Fbranches.at("VBSdijet_phi").set(*event, vbs_jj.Phi(), sys);
-          m_Fbranches.at("dRVBSjj").set(*event, (vbsJet1->p4()).DeltaR(vbsJet2->p4()), sys);
-          m_Fbranches.at("dEtaVBSjj").set(*event, (vbsJet1->eta())-vbsJet2->eta(), sys);
-          m_Fbranches.at("dPhiVBSjj").set(*event, (vbsJet1->p4()).DeltaPhi(vbsJet2->p4()), sys);
+            TLorentzVector vbs_jj = vbsJet1->p4() + vbsJet2->p4();
+            
+            m_Fbranches.at("VBSJ1_m").set(*event, vbsJet1->m(), sys);
+            m_Fbranches.at("VBSJ1_pt").set(*event, vbsJet1->pt(), sys);
+            m_Fbranches.at("VBSJ1_eta").set(*event, vbsJet1->eta(), sys);
+            m_Fbranches.at("VBSJ1_phi").set(*event, vbsJet1->phi(), sys);
+
+            m_Fbranches.at("VBSJ2_m").set(*event, vbsJet2->m(), sys);
+            m_Fbranches.at("VBSJ2_pt").set(*event, vbsJet2->pt(), sys);
+            m_Fbranches.at("VBSJ2_eta").set(*event, vbsJet2->eta(), sys);
+            m_Fbranches.at("VBSJ2_phi").set(*event, vbsJet2->phi(), sys);
+
+            m_Fbranches.at("VBSdijet_m").set(*event, vbs_jj.M(), sys);
+            m_Fbranches.at("VBSdijet_pt").set(*event, vbs_jj.Pt(), sys);
+            m_Fbranches.at("VBSdijet_eta").set(*event, vbs_jj.Eta(), sys);
+            m_Fbranches.at("VBSdijet_phi").set(*event, vbs_jj.Phi(), sys);
+            m_Fbranches.at("dRVBSjj").set(*event, (vbsJet1->p4()).DeltaR(vbsJet2->p4()), sys);
+            m_Fbranches.at("dEtaVBSjj").set(*event, (vbsJet1->eta())-vbsJet2->eta(), sys);
+            m_Fbranches.at("dPhiVBSjj").set(*event, (vbsJet1->p4()).DeltaPhi(vbsJet2->p4()), sys);
+          }
         }
       }//syst
 

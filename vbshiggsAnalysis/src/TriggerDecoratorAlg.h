@@ -67,15 +67,25 @@ namespace VBSHIGGS
       Gaudi::Property<bool> m_saveHighLevelVariables
       { this, "saveHighLevelVariables", false, "Flag to save high level variables"};
 
+      Gaudi::Property<bool> m_doDiLeptonTrigger
+      { this, "doDiLeptonTrigger", true,
+        "Evaluate di-lepton and asymmetric-lepton triggers (DLT/ASLT) in addition to single-lepton (SLT); "
+        "disable for channels (e.g. FullLep) whose triggerLists only contain SLT chains"};
+
       std::unordered_map<VBSHIGGS::TriggerChannel, CP::SysWriteDecorHandle<char> > m_trig_branches;
       std::unordered_map<VBSHIGGS::TriggerChannel, bool> m_trig_bools;
       std::unordered_map<VBSHIGGS::TriggerChannel, std::string> m_triggerChannels = 
       {
         {VBSHIGGS::SLT, "SLT"},
+        {VBSHIGGS::DLT, "DLT"},
+        {VBSHIGGS::ASLT1_em, "ASLT1_em"},
+        {VBSHIGGS::ASLT1_me, "ASLT1_me"},
+        {VBSHIGGS::ASLT2, "ASLT2"},
       };
 
       std::unordered_map<VBSHIGGS::RunBooleans, std::string> m_runBooleans =
       {
+        {VBSHIGGS::is17_periodB5_B8, "is2017_periodB5_B8"},
         {VBSHIGGS::is22_75bunches, "is2022_75bunches"},
         {VBSHIGGS::is23_75bunches, "is2023_75bunches"},
         {VBSHIGGS::is23_400bunches, "is2023_400bunches"},
@@ -94,6 +104,16 @@ namespace VBSHIGGS
 	{"mu0_passSMT_%SYS%", this};
       CP::SysWriteDecorHandle<char> m_mu1_passSMT_decor
 	{"mu1_passSMT_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_diele_passDET_decor
+	{"diele_passDET_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_dimu_passDMT_decor
+	{"dimu_passDMT_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_elemu_passASLT1em_decor
+	{"elemu_passASLT1em_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_elemu_passASLT1me_decor
+	{"elemu_passASLT1me_%SYS%", this};
+      CP::SysWriteDecorHandle<char> m_elemu_passASLT2_decor
+	{"elemu_passASLT2_%SYS%", this};
 
       CP::SysWriteDecorHandle<std::vector<std::string>> m_ele0_trigPassed_decor
 	{"ele0_trigPassed_%SYS%", this};
@@ -113,6 +133,20 @@ namespace VBSHIGGS
       CP::SysWriteDecorHandle<std::vector<std::string>> m_mu1_trigMatched_decor
 	{"mu1_trigMatched_%SYS%", this};
 
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_diele_trigPassed_decor
+	{"diele_trigPassed_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_diele_trigMatched_decor
+	{"diele_trigMatched_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_dimu_trigPassed_decor
+	{"dimu_trigPassed_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_dimu_trigMatched_decor
+	{"dimu_trigMatched_%SYS%", this};
+
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_elemu_trigPassed_decor
+	{"elemu_trigPassed_%SYS%", this};
+      CP::SysWriteDecorHandle<std::vector<std::string>> m_elemu_trigMatched_decor
+	{"elemu_trigMatched_%SYS%", this};
+
       void evaluateTriggerCuts(const xAOD::EventInfo *event,
 			       const runBoolReadDecoMap& runBoolDecos,
 			       const xAOD::ElectronContainer *electrons ,
@@ -127,6 +161,25 @@ namespace VBSHIGGS
 				       std::vector<std::string>& ele_trigMatched,
 				       std::vector<std::string>& mu_trigMatched,
 				       bool& ele_passSET, bool& mu_passSMT);
+      void evaluateDiLeptonTrigger(const xAOD::EventInfo* event,
+				       const runBoolReadDecoMap& runBoolDecos,
+				       const xAOD::Electron *ele0, const xAOD::Electron *ele1,
+                               const xAOD::Muon *mu0, const xAOD::Muon *mu1,
+				       const CP::SystematicSet& sys, 
+				       std::vector<std::string>& diele_trigPassed,
+				       std::vector<std::string>& dimu_trigPassed,
+				       std::vector<std::string>& diele_trigMatched,
+				       std::vector<std::string>& dimu_trigMatched,
+				       bool& diele_passDET, bool& dimu_passDMT);
+      void evaluateAsymmetricLeptonTrigger(const xAOD::EventInfo* event,
+                               const runBoolReadDecoMap& runBoolDecos,
+					 const xAOD::Electron* ele, const xAOD::Muon* mu,
+					 const CP::SystematicSet& sys,
+                               std::vector<std::string>& elemu_trigPassed,
+                               std::vector<std::string>& elemu_trigMatched,
+                               bool& elemu_passASLT1em, bool& elemu_passASLT1me,
+                               bool& elemu_passASLT2);
+
       void setThresholds(const xAOD::EventInfo* event,
 			 const runBoolReadDecoMap& runBoolDecos,
 			 const CP::SystematicSet& sys);

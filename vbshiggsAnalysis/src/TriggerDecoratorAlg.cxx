@@ -55,6 +55,19 @@ namespace VBSHIGGS
       ANA_CHECK(m_ele1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
       ANA_CHECK(m_mu0_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
       ANA_CHECK(m_mu1_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+
+      ANA_CHECK(m_diele_passDET_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_dimu_passDMT_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_diele_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_diele_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_dimu_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_dimu_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
+
+      ANA_CHECK(m_elemu_passASLT1em_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_elemu_passASLT1me_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_elemu_passASLT2_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_elemu_trigPassed_decor.initialize(m_systematicsList, m_eventHandle));
+      ANA_CHECK(m_elemu_trigMatched_decor.initialize(m_systematicsList, m_eventHandle));
     }
 
     ATH_CHECK (m_systematicsList.initialize());
@@ -114,6 +127,11 @@ namespace VBSHIGGS
     bool ele1_passSET = false;
     bool mu0_passSMT = false;
     bool mu1_passSMT = false;
+    bool diele_passDET = false;
+    bool dimu_passDMT = false;
+    bool elemu_passASLT1em = false;
+    bool elemu_passASLT1me = false;
+    bool elemu_passASLT2 = false;
 
     std::vector<std::string> ele0_trigPassed;
     std::vector<std::string> ele1_trigPassed;
@@ -124,6 +142,14 @@ namespace VBSHIGGS
     std::vector<std::string> ele1_trigMatched;
     std::vector<std::string> mu0_trigMatched;
     std::vector<std::string> mu1_trigMatched;
+
+    std::vector<std::string> diele_trigPassed;
+    std::vector<std::string> dimu_trigPassed;
+    std::vector<std::string> diele_trigMatched;
+    std::vector<std::string> dimu_trigMatched;
+
+    std::vector<std::string> elemu_trigPassed;
+    std::vector<std::string> elemu_trigMatched;
     
     // Based on decision of group, only SLT will remain in the analysis code
     if (ele0 || mu0)
@@ -136,6 +162,15 @@ namespace VBSHIGGS
 				  ele1_trigPassed, mu1_trigPassed,
 				  ele1_trigMatched, mu1_trigMatched,
 				  ele1_passSET, mu1_passSMT);
+    if (m_doDiLeptonTrigger && ((ele0 && ele1) || (mu0 && mu1)))
+      evaluateDiLeptonTrigger(event, runBoolDecos, ele0, ele1, mu0, mu1, sys,
+          diele_trigPassed, dimu_trigPassed,
+          diele_trigMatched, dimu_trigMatched,
+          diele_passDET, dimu_passDMT);
+    if (m_doDiLeptonTrigger && ele0 && mu0)
+      evaluateAsymmetricLeptonTrigger(event, runBoolDecos, ele0, mu0, sys,
+          elemu_trigPassed, elemu_trigMatched,
+          elemu_passASLT1em, elemu_passASLT1me, elemu_passASLT2);
 
     if(m_saveHighLevelVariables) {
       // Store the output as decorators which will be written into the nTuples
@@ -153,6 +188,14 @@ namespace VBSHIGGS
       m_ele1_trigMatched_decor.set(*event, ele1_trigMatched, sys);
       m_mu0_trigMatched_decor.set(*event, mu0_trigMatched, sys);
       m_mu1_trigMatched_decor.set(*event, mu1_trigMatched, sys);
+
+      m_diele_trigPassed_decor.set(*event, diele_trigPassed, sys);
+      m_dimu_trigPassed_decor.set(*event, dimu_trigPassed, sys);
+      m_diele_trigMatched_decor.set(*event, diele_trigMatched, sys);
+      m_dimu_trigMatched_decor.set(*event, dimu_trigMatched, sys);
+
+      m_diele_passDET_decor.set(*event, diele_passDET, sys);
+      m_dimu_passDMT_decor.set(*event, dimu_passDMT, sys);
     }
   }
 
@@ -181,7 +224,6 @@ namespace VBSHIGGS
         }
       }
       trigPassed_SET &= ele->pt() > m_pt_threshold[VBSHIGGS::SLT][VBSHIGGS::ele];
-      ele_passSET = trigPassed_SET;
     }
 
     // Check single muon triggers
@@ -200,12 +242,147 @@ namespace VBSHIGGS
         }
       }
       trigPassed_SMT &= mu->pt() > m_pt_threshold[VBSHIGGS::SLT][VBSHIGGS::mu];
-      mu_passSMT = trigPassed_SMT;
-
     }
+
+    ele_passSET = trigPassed_SET;
+    mu_passSMT = trigPassed_SMT;
 
     if(trigPassed_SET || trigPassed_SMT){
       m_trig_bools.at(VBSHIGGS::SLT) = true;
+    }
+  }
+
+  void TriggerDecoratorAlg::evaluateDiLeptonTrigger
+  (const xAOD::EventInfo* event, const runBoolReadDecoMap& runBoolDecos,
+	 const xAOD::Electron *ele0, const xAOD::Electron *ele1,
+   const xAOD::Muon *mu0, const xAOD::Muon *mu1,
+	 const CP::SystematicSet& sys, 
+	 std::vector<std::string>& diele_trigPassed, std::vector<std::string>& dimu_trigPassed,
+	 std::vector<std::string>& diele_trigMatched, std::vector<std::string>& dimu_trigMatched,
+	 bool& diele_passDET, bool& dimu_passDMT)
+  {
+    // Check di-electron trigger
+    std::vector<std::string> di_ele_paths;
+
+    int year = m_year.get(*event, sys);
+    getDiEleTriggers(year, event, runBoolDecos, di_ele_paths);
+
+    bool trigPassed_DET = false;
+    if (ele0 && ele1) {
+      for (const auto &trig : di_ele_paths){
+        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        if (pass) {
+          if(m_saveHighLevelVariables) diele_trigPassed.push_back(trig); // Record trigger name if it is passed for the di-electron
+          bool match = m_matchingTool->match({ele0, ele1}, trig);
+          if (match && m_saveHighLevelVariables) diele_trigMatched.push_back(trig); // Record trigger name if it is matched for the di-electron
+          trigPassed_DET |= match;
+        }
+      }
+      trigPassed_DET &= ele0->pt() > m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingele];
+      trigPassed_DET &= ele1->pt() > m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingele];
+    }
+
+    // Check di-muon triggers
+    std::vector<std::string> di_mu_paths;
+    getDiMuTriggers(year, event, runBoolDecos, di_mu_paths);
+
+    bool trigPassed_DMT = false;
+    if (mu0 && mu1) {
+      for (const auto &trig : di_mu_paths){
+        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        if (pass) {
+          if(m_saveHighLevelVariables) dimu_trigPassed.push_back(trig); // Record trigger name if it is passed for the di-muon
+          bool match = m_matchingTool->match({mu0, mu1}, trig);
+          if (match && m_saveHighLevelVariables) dimu_trigMatched.push_back(trig); // Record trigger name if it is matched for the di-muon
+          trigPassed_DMT |= match;
+        }
+      }
+      trigPassed_DMT &= mu0->pt() > m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingmu];
+      trigPassed_DMT &= mu1->pt() > m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingmu];
+    }
+
+    diele_passDET = trigPassed_DET;
+    dimu_passDMT = trigPassed_DMT;
+
+    if(trigPassed_DET || trigPassed_DMT){
+      m_trig_bools.at(VBSHIGGS::DLT) = true;
+    }
+  }
+
+  void TriggerDecoratorAlg::evaluateAsymmetricLeptonTrigger
+  (const xAOD::EventInfo *event, const runBoolReadDecoMap& runBoolDecos,
+   const xAOD::Electron *ele, const xAOD::Muon *mu,
+   const CP::SystematicSet& sys,
+   std::vector<std::string>& elemu_trigPassed, std::vector<std::string>& elemu_trigMatched,
+	 bool& elemu_passASLT1em, bool& elemu_passASLT1me, bool& elemu_passASLT2)
+  {
+    int year = m_year.get(*event, sys);
+
+    bool trigPassed_ASLT1_em = false;
+    bool trigPassed_ASLT1_me = false;
+    bool trigPassed_ASLT2 = false;
+    if (ele && mu) {
+
+      std::vector<std::string> asym_lepton_paths;
+      getAsymLep2Triggers(year, event, runBoolDecos, asym_lepton_paths);
+
+      for(const auto& trig : asym_lepton_paths){
+        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        if (pass){
+          if(m_saveHighLevelVariables) elemu_trigPassed.push_back(trig); // Record trigger name if it is passed for the electron-muon trigger
+          bool match = m_matchingTool->match(*ele, trig) && m_matchingTool->match(*mu, trig);
+          if (match && m_saveHighLevelVariables) elemu_trigMatched.push_back(trig); // Record trigger name if it is matched for the electron-muon trigger
+          trigPassed_ASLT2 |= match;
+        }
+      }
+      trigPassed_ASLT2 &= ele->pt() > m_pt_threshold[VBSHIGGS::ASLT2][VBSHIGGS::leadingele];
+      trigPassed_ASLT2 &= mu->pt() > m_pt_threshold[VBSHIGGS::ASLT2][VBSHIGGS::leadingmu];
+      if (ele->pt() > mu->pt()) {
+        asym_lepton_paths = {};
+        getAsymLep1emTriggers(year, event, runBoolDecos, asym_lepton_paths);
+        
+        for(const auto& trig : asym_lepton_paths){
+          bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+          if (pass){
+            if(m_saveHighLevelVariables) elemu_trigPassed.push_back(trig); // Record trigger name if it is passed for the electron-muon trigger
+            bool match = m_matchingTool->match(*ele, trig) && m_matchingTool->match(*mu, trig);
+            if (match && m_saveHighLevelVariables) elemu_trigMatched.push_back(trig); // Record trigger name if it is matched for the electron-muon trigger
+            trigPassed_ASLT1_em |= match;
+          }
+        }
+        trigPassed_ASLT1_em &= ele->pt() > m_pt_threshold[VBSHIGGS::ASLT1_em][VBSHIGGS::leadingele];
+        trigPassed_ASLT1_em &= mu->pt() > m_pt_threshold[VBSHIGGS::ASLT1_em][VBSHIGGS::leadingmu];
+      } 
+      else {
+        asym_lepton_paths = {};
+        getAsymLep1meTriggers(year, event, runBoolDecos, asym_lepton_paths);
+
+        for(const auto& trig : asym_lepton_paths){
+          bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+          if (pass){
+            if(m_saveHighLevelVariables) elemu_trigPassed.push_back(trig); // Record trigger name if it is passed for the electron-muon trigger
+            bool match = m_matchingTool->match(*ele, trig) && m_matchingTool->match(*mu, trig);
+            if (match && m_saveHighLevelVariables) elemu_trigMatched.push_back(trig); // Record trigger name if it is matched for the electron-muon trigger
+            trigPassed_ASLT1_me |= match;
+          }
+        }
+        trigPassed_ASLT1_me &= ele->pt() > m_pt_threshold[VBSHIGGS::ASLT1_me][VBSHIGGS::leadingele];
+        trigPassed_ASLT1_me &= mu->pt() > m_pt_threshold[VBSHIGGS::ASLT1_me][VBSHIGGS::leadingmu];
+      }
+    }
+
+    elemu_passASLT1em = trigPassed_ASLT1_em;
+    elemu_passASLT1me = trigPassed_ASLT1_me;
+    elemu_passASLT2 = trigPassed_ASLT2;
+
+    if(trigPassed_ASLT1_em){
+      m_trig_bools.at(VBSHIGGS::ASLT1_em) = true;
+    }
+    if(trigPassed_ASLT1_me){
+      m_trig_bools.at(VBSHIGGS::ASLT1_me) = true;
+    }
+    if(trigPassed_ASLT2){
+      m_trig_bools.at(VBSHIGGS::ASLT2) = true;
     }
   }
 
@@ -229,5 +406,45 @@ namespace VBSHIGGS
       m_pt_threshold[VBSHIGGS::SLT][VBSHIGGS::mu] = 27. * Athena::Units::GeV;
     else
       m_pt_threshold[VBSHIGGS::SLT][VBSHIGGS::mu] = 25. * Athena::Units::GeV;
+
+    //Di-lepton triggers
+    //ee
+    if(year==2015) {
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingele] = 13. * Athena::Units::GeV;
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingele] = 13. * Athena::Units::GeV;
+    }
+    // prescaled periods B5-B8
+    // https://twiki.cern.ch/twiki/bin/view/Atlas/TrigEgammaRecommendedTriggers2017
+    else if(runBoolDecos.at(VBSHIGGS::is17_periodB5_B8)(*event)) {
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingele] = 25. * Athena::Units::GeV;
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingele] = 25. * Athena::Units::GeV;
+    } else {
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingele] = 18. * Athena::Units::GeV;
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingele] = 18. * Athena::Units::GeV;
+    }
+
+    //mm
+    if(year==2015) {
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingmu] = 19. * Athena::Units::GeV;
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingmu] = 10. * Athena::Units::GeV;
+    }
+    else if(year<=2016 && year<=2018) {
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingmu] = 24. * Athena::Units::GeV;
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingmu] = 10. * Athena::Units::GeV;
+    } else {
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::leadingmu] = 15. * Athena::Units::GeV;
+      m_pt_threshold[VBSHIGGS::DLT][VBSHIGGS::subleadingmu] = 15. * Athena::Units::GeV;
+    }
+
+    m_pt_threshold[VBSHIGGS::ASLT1_em][VBSHIGGS::leadingele] = 27. * Athena::Units::GeV;
+    m_pt_threshold[VBSHIGGS::ASLT1_em][VBSHIGGS::leadingmu] = 9. * Athena::Units::GeV;
+
+    m_pt_threshold[VBSHIGGS::ASLT1_me][VBSHIGGS::leadingmu] = 26. * Athena::Units::GeV;
+    m_pt_threshold[VBSHIGGS::ASLT1_me][VBSHIGGS::leadingele] = 9. * Athena::Units::GeV;
+
+    //Configuration 2
+    m_pt_threshold[VBSHIGGS::ASLT2][VBSHIGGS::leadingele] = 18. * Athena::Units::GeV;
+    m_pt_threshold[VBSHIGGS::ASLT2][VBSHIGGS::leadingmu] = 15. * Athena::Units::GeV;
+
   }
 }

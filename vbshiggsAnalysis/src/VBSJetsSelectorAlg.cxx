@@ -61,10 +61,14 @@ namespace VBSHIGGS{
             for(unsigned int i=0; i<jets->size(); i++){
                 const xAOD::Jet* jet1 = jets->at(i);
 
+                bool overlapsLargeJet = false;
                 for (const xAOD::Jet* largeJet : *largeJets){
-                    if( jet1->p4().DeltaR(largeJet->p4()) < m_mindR ) 
-                        continue;
+                    if( jet1->p4().DeltaR(largeJet->p4()) < m_mindR ) {
+                        overlapsLargeJet = true;
+                        break;
+                    }
                 }
+                if (overlapsLargeJet) continue;
                 
                 // non b-tagged jets
                 if ( !m_isBtag.empty() && m_isBtag.get(*jet1, sys) ) continue;
