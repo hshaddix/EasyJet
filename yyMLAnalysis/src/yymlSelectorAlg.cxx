@@ -196,7 +196,7 @@ namespace HHYYML
     bool pass_trigger_diphoton = false;
 
     for (const std::string &trigger : photonTriggers) {
-
+      if (pass_trigger_diphoton) break;
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
       SG::ReadDecorHandle<xAOD::EventInfo, bool> triggerDecorHandle(triggerDecorKey, ctx);
       pass_trigger_diphoton = triggerDecorHandle(event);
@@ -214,6 +214,7 @@ namespace HHYYML
     if (photons->size() >= 2 ) {
 
       for (const std::string &trigger : photonTriggers) {
+        if (pass_matching_trigger_diphoton) break;
         pass_matching_trigger_diphoton = m_matchingTool->match({photons->at(0), photons->at(1)}, trigger);
       }
 
