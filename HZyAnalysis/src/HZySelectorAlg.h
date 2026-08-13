@@ -75,7 +75,6 @@ private:
         const xAOD::EventInfo *event, 
         const CP::SystematicSet &sys);
 
-    std::vector<HZY::Booleans> m_inputCutKeys;
 
     CP::SysListHandle m_systematicsList{this};
 
@@ -100,7 +99,6 @@ private:
     CP::SysWriteDecorHandle<char> m_passallcuts{"Pass_allcuts_%SYS%", this};
 
     // Set the Gaudi properties that are transferred from the inputs
-    Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
     Gaudi::Property<bool> m_bypass{this, "bypass", false, "Run the selector algorithm in run-through mode (DEBUG)"};
     Gaudi::Property<std::vector<std::string>> m_leptonTriggers{this, "triggerLists", {}, "Name list of triggers"};
 

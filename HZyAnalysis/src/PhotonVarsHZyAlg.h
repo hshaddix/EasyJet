@@ -44,7 +44,11 @@ private:
         this, "event", "EventInfo", "EventInfo container to read"};
 
     CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonHandle{
-        this, "HZyPhotons", "HZyAnalysisPhotons_%SYS%", "HZy Photon container to read"};
+        this, "HZyPhotons", "HZyAnalysisPhotons_%SYS%", "HZy Photon container to read (for decorations)"};
+
+    /// Photons after overlap removal with Z-candidate leptons (produced by LeptonVarsHZyAlg)
+    CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonORInHandle{
+        this, "HZyPhotonsOR_LepIn", "HZyPhotonsOR_Lep_%SYS%", "HZy Photons after OR with Z-cand leptons (from LeptonVarsHZyAlg)"};
 
     CP::SysReadHandle<xAOD::JetContainer> m_HZyJetHandle{
         this, "HZyJets", "HZyAnalysisJets_%SYS%", "HZy Jet container to read"};
@@ -71,6 +75,15 @@ private:
 
     CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_HZyJetORHandle{
         this, "HZyJetsOR", "HZyJetsOR_%SYS%", "HZy Jets passing OR with leptons and photons"};
+
+    /// Extra-lepton containers: Z cand leptons + highest-pT extra lepton
+    CP::SysWriteHandle<ConstDataVector<xAOD::ElectronContainer>> m_HZyElORPhotonsExtraHandle{
+        this, "HZyElOR_Photons_Extra", "HZyElOR_Photons_Extra_%SYS%", "Z cand electrons + extra electron (if any)"};
+    CP::SysWriteHandle<ConstDataVector<xAOD::MuonContainer>> m_HZyMuORPhotonsExtraHandle{
+        this, "HZyMuOR_Photons_Extra", "HZyMuOR_Photons_Extra_%SYS%", "Z cand muons + extra muon (if any)"};
+    /// Jets after OR with Z cand leptons, photons, and the extra lepton
+    CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_HZyJetORExtraHandle{
+        this, "HZyJetsOR_Extra", "HZyJetsOR_Extra_%SYS%", "HZy Jets after OR with Z cand leptons, photons and extra lepton"};
 
     Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
     Gaudi::Property<double> m_dR_Ph_El{this, "dR_Ph_El", 0.3, "deltaR cut for Photon/Electron OR"};

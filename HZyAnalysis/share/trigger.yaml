@@ -7,9 +7,9 @@ selection:
       - "HLT_e120_lhloose"
       - "HLT_2e12_lhloose_L12EM10VH"
       # muon
-      - "HLT_mu26_imedium"
-      - "HLT_mu50"
-      - "HLT_mu22_mu8noL1"
+      - "HLT_mu20_iloose_L1MU15"
+      - "HLT_mu40"
+      - "HLT_2mu10"
     "2016":
       # electron
       - "HLT_e26_lhtight_nod0_ivarloose"
@@ -17,7 +17,6 @@ selection:
       - "HLT_e140_lhloose_nod0"
       - "HLT_2e17_lhvloose_nod0"
       # muon
-      - "HLT_mu26_imedium"
       - "HLT_mu26_ivarmedium"
       - "HLT_mu50"
       - "HLT_mu22_mu8noL1"
@@ -84,24 +83,24 @@ scale_factor:
   do_trigger_match: true
   use_analysis_objects: true
   Electron:
-    container: "HZyElectronsOR_ZCand_%SYS%"
+    container: "HZyElOR_Photons_Extra_%SYS%"
     ID_Run2: "LooseBLayer"
     Iso_Run2: "Loose_VarRad"
     ID_Run3: "LooseBLayer"
     Iso_Run3: "Loose_VarRad"
   Muon:
-    container: "HZyMuonsOR_ZCand_%SYS%"
+    container: "HZyMuOR_Photons_Extra_%SYS%"
     ID: "Medium"
   chains:
     "2015":
       - "HLT_e24_lhmedium_L1EM20VH || HLT_e60_lhmedium || HLT_e120_lhloose"
       - "HLT_2e12_lhloose_L12EM10VH"
-      - "HLT_mu26_imedium || HLT_mu50"
-      - "HLT_mu22_mu8noL1"
+      - "HLT_mu20_iloose_L1MU15 || HLT_mu40"
+      - "HLT_2mu10"
     "2016":
       - "HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0"
       - "HLT_2e17_lhvloose_nod0"
-      - "HLT_mu26_imedium || HLT_mu26_ivarmedium || HLT_mu50"
+      - "HLT_mu26_ivarmedium || HLT_mu50"
       - "HLT_mu22_mu8noL1"
     "2017":
       - "HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0"
@@ -111,8 +110,7 @@ scale_factor:
     "2018":
       - "HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0"
       - "HLT_2e24_lhvloose_nod0"
-      - "HLT_mu26_ivarmedium"
-      - "HLT_mu50"
+      - "HLT_mu26_ivarmedium || HLT_mu50"
       - "HLT_mu22_mu8noL1"
     "2022":
       - "HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI"

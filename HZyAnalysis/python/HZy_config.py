@@ -140,18 +140,14 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             useConstrainedZMass=flags.Analysis.useConstrainedZMass,
             mllWindowInfsr=flags.Analysis.fsr_selections.mll_window_infsr,
             mllFsrThreshold=flags.Analysis.fsr_selections.mll_fsr_threshold,
+            dR_Ph_El=flags.Analysis.HZy_OR.phjet_thr.dR_Ph_El,
+            dR_Ph_CaloMu=flags.Analysis.HZy_OR.phjet_thr.dR_Ph_CaloMu,
+            dR_Ph_StacoMu=flags.Analysis.HZy_OR.phjet_thr.dR_Ph_StacoMu,
             floatVariableList=float_variables['leptons'],
             intVariableList=int_variables['leptons'],
             doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
-
-    # Trigger matching / trigger SF using the selected Z-candidate leptons.
-    # This must run after LeptonVarsHZyAlg creates:
-    #   HZyElectronsOR_ZCand_%SYS% and HZyMuonsOR_ZCand_%SYS%
-    # and before HZySelectorAlg reads:
-    #   globalTriggerMatch_%SYS%
-    cfg.merge(HZy_TriggerSFCfg(flags))
 
     cfg.addEventAlgo(
         CompFactory.HZY.PhotonVarsHZyAlg(
@@ -169,6 +165,13 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
+    
+    # Trigger matching / trigger SF using the selected Z-candidate leptons + possible third leptons.
+    # This must run after PhotonVarsHZyAlg creates:
+    # HZyElOR_Photons_Extra_%SYS% and HZyMuOR_Photons_Extra_%SYS%
+    # and before HZySelectorAlg reads:
+    # globalTriggerMatch_%SYS%
+    cfg.merge(HZy_TriggerSFCfg(flags))
 
     cfg.addEventAlgo(
         CompFactory.HZY.BaselineVarsHZyAlg(
@@ -204,12 +207,16 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
         )
     )
 
+    # Add per-jet vector variable support
+    jet_floatvec_variables = get_JetVarsHZyAlg_floatvec_variables(flags)
     cfg.addEventAlgo(
         CompFactory.HZY.JetVarsHZyAlg(
             "JetVarsHZyAlg",
             floatVariableList=float_variables['jets'],
             intVariableList=int_variables['jets'],
+            floatVecVariableList=jet_floatvec_variables,
             doSystematics=flags.Analysis.do_CP_systematics,
+            bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
         )
     )
 
@@ -219,11 +226,21 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
 def get_PhotonVarsHZyAlg_variables(flags):
     float_variable_names = [
         "Photon_effSF", "Ph_Pt_Raw", "Ph_Eta_Raw", "Ph_Phi_Raw",
+        "ExtraLep_Pt", "ExtraLep_Eta", "ExtraLep_Phi",
+        # Isolation variables
+        "Ph_topoetcone20", "Ph_topoetcone30", "Ph_topoetcone40",
+        "Ph_ptcone20",
+        # Shower shapes, for possible R&D with non-PHYS-DAOD
+        "Ph_Reta", "Ph_Rhad", "Ph_Rhad1", "Ph_Rphi",
+        "Ph_f1", "Ph_f3",
+        "Ph_weta1", "Ph_weta2", "Ph_wtots1",
+        "Ph_Eratio", "Ph_fracs1", "Ph_DeltaE",
     ]
     int_variable_names = [
         "nPhotons_LIdNIso", "nPhotonsOR_LIdNIso", "nPhotonsOR_TIdNIso",
         "nPhotonsOR_TIdLIso", "Ph_ConvType", "Ph_isEMTight",
-        "nElectronsIdIso_ORPh", "nMuonsIdIso_ORPh"]
+        "nElectronsIdIso_ORPh", "nMuonsIdIso_ORPh",
+        "ExtraLep_Label"]
 
     return float_variable_names, int_variable_names
 
@@ -240,14 +257,19 @@ def get_LeptonVarsHZyAlg_variables(flags):
     int_variable_names = [
         "Lep_Channel", "LepLepZ_Size", "Muon_hasFsr", "Muon_Index_Fsr",
         "nElectrons_LIdNIso", "nMuons_MIdNIso",
-        "nElectrons_LIdLIso", "nMuons_MIdLIso"]
+        "nElectrons_LIdLIso", "nMuons_MIdLIso",
+        "has4LepSwap"]
 
     return float_variable_names, int_variable_names
 
 
 def get_JetVarsHZyAlg_variables(flags):
-    float_variable_names = ["Mjj"]
-    int_variable_names = ["nJets"]
+    float_variable_names = [
+        "Mjj",
+        "leadBjet_Pt", "leadBjet_Eta", "leadBjet_Phi", "leadBjet_M",
+        "subBjet_Pt", "subBjet_Eta", "subBjet_Phi", "subBjet_M",
+    ]
+    int_variable_names = ["nJets", "nbJets"]
 
     return float_variable_names, int_variable_names
 
@@ -263,8 +285,11 @@ def get_BaselineVarsHZyAlg_variables(flags):
                 float_variable_names.append(f"{obj}_{var}_{suffix}")
 
     float_variable_names += [
+        # more VBF variables for R&D
+        "VBF_Yrel", "VBF_Yrel_ph", "VBF_ph_eta_center",
+        "VBF_Agap", "VBF_Agap_rapidity", "VBF_pt_balance",
         "LLGam_RelPhpT_Cstr", "VBF_Score_Run3",
-        "ggF_Score_Run3", "RelpT_Score_Run3"
+        "ggF_Score_Run3", "RelpT_Score_Run3",
     ]
 
     # MVA input feature names for ONNX inference
@@ -289,6 +314,14 @@ def get_BaselineVarsHZyAlg_variables(flags):
     int_variable_names = ["category_Run3"]
 
     return float_variable_names, int_variable_names
+
+
+def get_JetVarsHZyAlg_floatvec_variables(flags):
+    return [
+        "jets_pt", "jets_eta", "jets_phi", "jets_mass", "jets_e",
+        "jets_PartonTruthLabelID", "jets_QGScore",
+        "jets_NumTrkPt500", "jets_NumTrkPt1000", "jets_NTracks",
+    ]
 
 
 def HZy_branches(flags):
@@ -371,6 +404,12 @@ def HZy_branches(flags):
     branches += object_level_branches["leptons"]
     branches += object_level_branches["photons"]
     branches += object_level_branches["jets"]
+
+    # Per-jet vector variables
+    jet_vec_vars = get_JetVarsHZyAlg_floatvec_variables(flags)
+    for var in jet_vec_vars:
+        branches += [f"EventInfo.{var}_{sys_suffix} -> HZy_{var}"
+                     + flags.Analysis.systematics_suffix_separator + sys_suffix]
 
     s_name = flags.Analysis.selection_name
     branches += [f"EventInfo.Pass_{s_name}_{sys_suffix} -> HZy_pass_{s_name}"

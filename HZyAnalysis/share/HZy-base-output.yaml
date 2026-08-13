@@ -5,6 +5,7 @@ reco_outputs:
   photons: "container_names.output.photons"
   electrons: "container_names.output.electrons"
   muons: "container_names.output.muons"
+  met: "container_names.output.met"
 collection_options:
   small_R_jets:
     btag_details: true

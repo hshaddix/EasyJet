@@ -2,6 +2,7 @@
 Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
+#include <algorithm>
 #include "LeptonVarsHZyAlg.h"
 #include "HZyCommonUtils.h"
 #include <AthenaKernel/Units.h>
@@ -19,6 +20,9 @@ namespace HZY
     ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyElectronORHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuonORHandle.initialize(m_systematicsList));
+
+    ATH_CHECK(m_HZyPhotonHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
 
     ATH_CHECK(m_electronLIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyElectronHandle));
     ATH_CHECK(m_muonMIdLIsoDecorHandle.initialize(m_systematicsList, m_HZyMuonHandle));
@@ -94,6 +98,9 @@ namespace HZY
 
       const xAOD::MuonContainer *HZyMuonOR = nullptr;
       ANA_CHECK(m_HZyMuonORHandle.retrieve(HZyMuonOR, sys, ctx));
+
+      const xAOD::PhotonContainer *HZyPhotons = nullptr;
+      ANA_CHECK(m_HZyPhotonHandle.retrieve(HZyPhotons, sys, ctx));
 
       const xAOD::ElectronContainer *correctedSTEP3Electrons = nullptr;
       ANA_CHECK(m_electronsSTEP3Handle.retrieve(correctedSTEP3Electrons, sys, ctx));
@@ -198,19 +205,121 @@ namespace HZY
       // Save number of ll candidates
       m_Ibranches.at("LepLepZ_Size").set(*event, static_cast<int>(ll_candidates.size()), sys);
 
-      // Select best candidate based on Z mass proximity (using constrained mass if FSR applied, otherwise raw mass)
-      const double Z_MASS = 91187.6; // PDG Z mass in GeV
-      const LLCandidate *bestCand = nullptr;
-      double minDiff = std::numeric_limits<double>::max();
-      for (const auto &cand : ll_candidates)
-      {
-        const double mass_for_sort = m_useConstrainedZMass ? cand.mll_constrained : cand.mll_raw;
-        const double diff = std::abs(mass_for_sort - Z_MASS);
-        if (diff < minDiff){
-          minDiff = diff;
-          bestCand = &cand;
+      // Sort candidates by proximity to Z mass (closest first)
+      const double Z_MASS = 91187.6; // MeV
+      std::sort(ll_candidates.begin(), ll_candidates.end(),
+          [&](const LLCandidate &a, const LLCandidate &b) {
+            const double mA = m_useConstrainedZMass ? a.mll_constrained : a.mll_raw;
+            const double mB = m_useConstrainedZMass ? b.mll_constrained : b.mll_raw;
+            return std::abs(mA - Z_MASS) < std::abs(mB - Z_MASS);
+          });
+
+      // ------------------------------------------------------------
+      // Check if we have 2 disjoint Z candidates with raw m(ll)
+      // in [81, 101] GeV — the "4-lepton swap" condition.
+      // ------------------------------------------------------------
+      bool has4Lep = false;
+      const LLCandidate *candA = nullptr;
+      const LLCandidate *candB = nullptr;
+      if (ll_candidates.size() > 0) 
+          candA = ll_candidates.data();
+      if (ll_candidates.size() > 1) {
+        candB = ll_candidates.data() + 1;
+        if (candA->l1 && candA->l2 && candB->l1 && candB->l2) {
+          // Check disjoint leptons
+          if (candA->l1 != candB->l1 && candA->l1 != candB->l2 &&
+              candA->l2 != candB->l1 && candA->l2 != candB->l2) {
+            // Both raw masses in [81, 101] GeV
+            const double mllA = candA->mll_raw / Athena::Units::GeV;
+            const double mllB = candB->mll_raw / Athena::Units::GeV;
+            if (mllA >= 81. && mllA <= 101. && mllB >= 81. && mllB <= 101.) {
+              has4Lep = true;
+            }
+          }
         }
       }
+
+      // ------------------------------------------------------------
+      // Photon — lepton overlap removal (always performed).
+      // For the 4-lepton case preformed with all four leptons; 
+      // otherwise only the 2 Z-cand leptons
+      // ------------------------------------------------------------
+      auto photonsView = std::make_unique<ConstDataVector<xAOD::PhotonContainer>>(SG::VIEW_ELEMENTS);
+      for (const xAOD::Photon *ph : *HZyPhotons)
+        photonsView->push_back(ph);
+      
+      // Collect leptons to OR against
+      auto lepElView = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
+      auto lepCaloMuView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+      auto lepStacoMuView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+
+      auto addLepton = [&](const xAOD::IParticle *p) {
+        if (!p) return;
+        const auto *el = dynamic_cast<const xAOD::Electron *>(p);
+        if (el) { lepElView->push_back(el); return; }
+        const auto *mu = dynamic_cast<const xAOD::Muon *>(p);
+        if (mu) {
+          if (mu->muonType() == xAOD::Muon::MuonType::CaloTagged)
+            lepCaloMuView->push_back(mu);
+          else
+            lepStacoMuView->push_back(mu);
+        }
+      };
+
+      if (has4Lep) {
+        addLepton(candA->l1); addLepton(candA->l2);
+        addLepton(candB->l1); addLepton(candB->l2);
+        // 4Lep case we need photon after OR to calculate llm
+        // to sort the ll pairs, so preform OR first
+      } else {
+        // Use Z-mass winner, since we have sort by ll mass, use candA
+        if (candA){
+          addLepton(candA->l1); addLepton(candA->l2);
+        }
+      }
+
+      safeRemoveOverlap(*photonsView, *lepElView, m_dR_Ph_El);
+      safeRemoveOverlap(*photonsView, *lepCaloMuView, m_dR_Ph_CaloMu);
+      safeRemoveOverlap(*photonsView, *lepStacoMuView, m_dR_Ph_StacoMu);
+
+      // Get leading photon from OR'd view (pT highest, default ID/Iso requirement)
+      const xAOD::Photon *leadPhoton = nullptr;
+      for (const xAOD::Photon *ph : *photonsView) {
+        if (!ph) continue;
+        if (!leadPhoton || ph->pt() > leadPhoton->pt())
+          leadPhoton = ph;
+      }
+
+      // ------------------------------------------------------------
+      // Select best candidate for 4 lepton case and 2 lepton case
+      // ------------------------------------------------------------
+      const double H_MASS = 125090.;   // MeV
+      const LLCandidate *bestCand = nullptr;
+      int has4LepSwap = 0; // 0=no 4-lepton, 1=4-lepton no swap, 2=4-lepton swapped
+      if (has4Lep && leadPhoton) {
+        // 4-lepton swap mode: pick candidate whose m(llγ) is closer to 125.09 GeV
+        const TLorentzVector phP4 = leadPhoton->p4();
+        double mllgA = (candA->c1_fit + candA->c2_fit + phP4).M();
+        double mllgB = (candB->c1_fit + candB->c2_fit + phP4).M();
+        double diffA = std::abs(mllgA - H_MASS);
+        double diffB = std::abs(mllgB - H_MASS);
+
+        if (diffA <= diffB) {
+          bestCand = candA;
+          has4LepSwap = 1;
+        } else {
+          bestCand = candB;
+          has4LepSwap = 2;
+        }
+      } else {
+        // Standard Z-mass ordering
+        bestCand = candA;
+      }
+
+      m_Ibranches.at("has4LepSwap").set(*event, has4LepSwap, sys);
+
+      // Record photon OR container (consumed by PhotonVarsHZyAlg)
+      ATH_CHECK(m_HZyPhotonORHandle.record(std::move(photonsView), sys, ctx));
 
       auto fsrView = std::make_unique<ConstDataVector<xAOD::IParticleContainer>>(SG::VIEW_ELEMENTS);
       auto electrons_ZCand = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);

@@ -115,6 +115,12 @@ useConstrainedZMass: true
 # when the config file set the high level variables
 store_high_level_variables: true
 
+# Common cp algs have "Expert" variables. These will potentially throw
+# a warning if used. Allowed values are explained in the python docs
+# https://docs.python.org/3/library/warnings.html#warning-filter
+# A value of false or an empty string will keep the default value.
+expert_mode_warning_level: default
+
 # flag that toggles run-through mode in SelectorAlg
 bypass: false
 
@@ -141,3 +147,6 @@ PileupReweighting:
 
 ttree_output:
   include: HZyAnalysis/HZy-base-output.yaml
+
+#for 603798 to used weight index 88 
+always_do_CBK_systematics: true

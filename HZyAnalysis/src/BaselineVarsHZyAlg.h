@@ -137,8 +137,8 @@ private:
     CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonHandle{
         this, "HZyMuons", "HZyAnalysisMuons_%SYS%", "HZy Muon container to read"};
 
-    CP::SysReadHandle<xAOD::JetContainer> m_HZyJetORHandle{
-        this, "HZyJetsOR", "HZyJetsOR_%SYS%", "HZy Jet container with photon and leptons overlap-removal"};
+    CP::SysReadHandle<xAOD::JetContainer> m_HZyJetORExtraHandle{
+        this, "HZyJetsOR_Extra", "HZyJetsOR_Extra_%SYS%", "HZy Jet container after OR with all objs"};
 
     CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonORHandle{
         this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photon container with LooseIDnonISO after photons and jets OR"};

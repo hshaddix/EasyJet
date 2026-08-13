@@ -20,6 +20,7 @@ Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 #include <xAODMuon/MuonContainer.h>
 #include <xAODEgamma/PhotonContainer.h>
 #include <xAODBase/IParticleContainer.h>
+#include <xAODMuon/Muon.h>
 
 #include <AsgTools/AnaToolHandle.h>
 #include <AsgTools/ToolHandle.h>
@@ -95,6 +96,13 @@ private:
     CP::SysReadHandle<xAOD::MuonContainer> m_HZyMuonORHandle{
         this, "HZyMuonsOR", "HZyMuonsOR_%SYS%", "HZy Muon OR container with Electrons to read"};
 
+    // Photon container for pre-selection photon OR in Z-candidate sorting
+    CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonHandle{
+        this, "HZyPhotonsIn", "HZyAnalysisPhotons_%SYS%", "HZy Photon container to read for Z cand sorting"};
+    /// Photons after overlap removal with Z-candidate leptons (produced here, consumed by PhotonVarsHZyAlg)
+    CP::SysWriteHandle<ConstDataVector<xAOD::PhotonContainer>> m_HZyPhotonORHandle{
+        this, "HZyPhotonsOR_Lep", "HZyPhotonsOR_Lep_%SYS%", "Photons after OR with Z-candidate leptons"};
+
     // Store leptons for building candidate Z to be used in HZyPhotonJetORAlg
     CP::SysWriteHandle<ConstDataVector<xAOD::ElectronContainer>> m_ZCandElectronsHandle{
         this, "HZyElectronsOR_ZCand", "HZyElectronsOR_ZCand_%SYS%", "Electrons to form ZCand container"};
@@ -133,11 +141,16 @@ private:
                             float &dR_fsr_out, FSR::FsrCandidate &fsrCand_out);
 
     Gaudi::Property<bool> m_useConstrainedZMass {
-        this, "useConstrainedZMass", true, "Use constrained Z mass to select the best candidate (if false, use raw mass)." 
+        this, "useConstrainedZMass", true, "Use constrained Z mass to select the best candidate (if false, use raw mass)."
           "Constrained mass will be set to raw mass if fit fails."};
     Gaudi::Property<std::vector<double>> m_mllWindow{
         this, "mllWindowInfsr", {66.0, 89.0}, "Allowed mll window [GeV] for FSR correction"};
     Gaudi::Property<double> m_mllFsrThre{this, "mllFsrThreshold", 100.0, "Allowed FSR mll window [GeV]"};
+
+    /// Photon-lepton overlap removal dR thresholds (same as PhotonVarsHZyAlg / phjet_thr)
+    Gaudi::Property<double> m_dR_Ph_El{this, "dR_Ph_El", 0.3, "deltaR cut for Photon/Electron OR"};
+    Gaudi::Property<double> m_dR_Ph_CaloMu{this, "dR_Ph_CaloMu", 0.3, "deltaR cut for Photon/CaloMuon OR"};
+    Gaudi::Property<double> m_dR_Ph_StacoMu{this, "dR_Ph_StacoMu", 0.3, "deltaR cut for Photon/StacoMuon OR"};
 
     Gaudi::Property<std::vector<std::string>> m_floatVariables
     {this, "floatVariableList", {}, "Name list of floating variables"};

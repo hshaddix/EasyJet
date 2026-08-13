@@ -16,7 +16,7 @@ namespace HZY
     ATH_MSG_INFO("*********************************\n");
 
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_HZyJetORHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyJetORExtraHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyPhotonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyElectronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
@@ -129,7 +129,7 @@ namespace HZY
       ANA_CHECK(m_HZyMuonHandle.retrieve(HZyMuons, sys, ctx));
 
       const xAOD::JetContainer *HZyJetOR = nullptr;
-      ANA_CHECK(m_HZyJetORHandle.retrieve(HZyJetOR, sys, ctx));
+      ANA_CHECK(m_HZyJetORExtraHandle.retrieve(HZyJetOR, sys, ctx));
 
       const xAOD::PhotonContainer *HZyPhotonOR = nullptr;
       ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys, ctx));
@@ -155,10 +155,12 @@ namespace HZY
         features[name] = -99.f;
 
       // PhPy8EG_PDF4LHC21_ggH_NNLOPS with DSID 603798: nominal weight is at index 88
-      const auto &w = event->mcEventWeights();
-      size_t i = event->mcChannelNumber() == 603798 ? 88u : 0u;
-      m_Fbranches.at("MC_Weight").set(*event, w.size() > i ? w[i] : (w.empty() ? 1.0f : w[0]), sys);
-      m_Fbranches.at("BeamSpotWeight").set(*event, event->beamSpotWeight(), sys);
+      if (m_isMC){
+        const auto &w = event->mcEventWeights();
+        size_t i = event->mcChannelNumber() == 603798 ? 88u : 0u;
+        m_Fbranches.at("MC_Weight").set(*event, w.size() > i ? w[i] : (w.empty() ? 1.0f : w[0]), sys);
+        m_Fbranches.at("BeamSpotWeight").set(*event, event->beamSpotWeight(), sys);
+      }
 
       // Reconstruct dilepton and photon final state
       TLorentzVector llRawP4;
@@ -398,60 +400,121 @@ namespace HZY
       FeatureMap& features)
   {
     // --- VBF topology variables ---
-      const int nJets = static_cast<int>(HZyJetOR->size());
-      setFloatAndFeature(event, "VBF_N_j", static_cast<float>(nJets), sys, features);
+    const int nJets = static_cast<int>(HZyJetOR->size());
+    setFloatAndFeature(event, "VBF_N_j", static_cast<float>(nJets), sys, features);
 
-      if (nJets >= 1)
-      {
-        const auto *j1 = HZyJetOR->at(0);
-        setFloatAndFeature(event, "VBF_pT_j1", j1->pt() / Athena::Units::GeV, sys, features);
-        setFloatAndFeature(event, "VBF_eta_j1", j1->eta(), sys, features);
-        setFloatAndFeature(event, "VBF_phi_j1", j1->phi(), sys, features);
-        setFloatAndFeature(event, "VBF_mass_j1", j1->m() / Athena::Units::GeV, sys, features);
-        setFloatAndFeature(event, "Zy_Dphi_j1", std::abs(TVector2::Phi_mpi_pi(llgRawP4.Phi() - j1->phi())), sys, features);
-      }
-
-      if (nJets >= 2)
-      {
-        const auto *j1 = HZyJetOR->at(0);
-        const auto *j2 = HZyJetOR->at(1);
-        const TLorentzVector pJJ = j1->p4() + j2->p4();
-
-        setFloatAndFeature(event, "VBF_m_jj", pJJ.M() / Athena::Units::GeV, sys, features);
-        setFloatAndFeature(event, "VBF_Dy_j_j", std::abs(j1->rapidity() - j2->rapidity()), sys, features);
-        setFloatAndFeature(event, "VBF_pT_jj", pJJ.Pt() / Athena::Units::GeV, sys, features);
-        setFloatAndFeature(event, "VBF_pT_j2", j2->pt() / Athena::Units::GeV, sys, features);
-        setFloatAndFeature(event, "VBF_eta_j2", j2->eta(), sys, features);
-        setFloatAndFeature(event, "VBF_mass_j2", j2->m() / Athena::Units::GeV, sys, features);
-
-        // Zeppenfeld variable: |η(Zy) - 0.5*(η_j1 + η_j2)|
-        setFloatAndFeature(event, "VBF_Zepp", std::abs(llgRawP4.Eta() - 0.5f * (j1->eta() + j2->eta())), sys, features);
-        // Dphi between Zy and dijet system
-        setFloatAndFeature(event, "VBF_Dphi_Zy_jj_Fullrange", std::abs(TVector2::Phi_mpi_pi(llgRawP4.Phi() - pJJ.Phi())), sys, features);
-      }
-
+    if (nJets >= 1)
+    {
+      const auto *j1 = HZyJetOR->at(0);
+      setFloatAndFeature(event, "VBF_pT_j1", j1->pt() / Athena::Units::GeV, sys, features);
+      setFloatAndFeature(event, "VBF_eta_j1", j1->eta(), sys, features);
+      setFloatAndFeature(event, "VBF_phi_j1", j1->phi(), sys, features);
+      setFloatAndFeature(event, "VBF_mass_j1", j1->m() / Athena::Units::GeV, sys, features);
+      setFloatAndFeature(event, "Zy_Dphi_j1", std::abs(TVector2::Phi_mpi_pi(llgRawP4.Phi() - j1->phi())), sys, features);
+      
       // VBF_DRmin_y_j = min(DeltaR(Z,jets), DeltaR(y,jets))
-      if (nJets >= 1)
+      float DRmin = 1e9f;
+      for (const auto *jet : *HZyJetOR)
       {
-        float DRmin = 1e9f;
-        for (const auto *jet : *HZyJetOR)
-        {
-          if (!jet)
-            continue;
-          const float dR_Z = static_cast<float>(llRawP4.DeltaR(jet->p4()));
-          const float dR_Gamma = static_cast<float>(photonP4.DeltaR(jet->p4()));
-          DRmin = fmin(DRmin, std::min(dR_Z, dR_Gamma));
-        }
-        setFloatAndFeature(event, "VBF_DRmin_y_j", DRmin, sys, features);
+        if (!jet) continue;
+        const float dR_Z = static_cast<float>(llRawP4.DeltaR(jet->p4()));
+        const float dR_Gamma = static_cast<float>(photonP4.DeltaR(jet->p4()));
+        DRmin = fmin(DRmin, std::min(dR_Z, dR_Gamma));
       }
+      setFloatAndFeature(event, "VBF_DRmin_y_j", DRmin, sys, features);
+    }
+
+    if (nJets >= 2)
+    {
+      const auto *j1 = HZyJetOR->at(0);
+      const auto *j2 = HZyJetOR->at(1);
+      const TLorentzVector pJJ = j1->p4() + j2->p4();
+
+      setFloatAndFeature(event, "VBF_m_jj", pJJ.M() / Athena::Units::GeV, sys, features);
+      setFloatAndFeature(event, "VBF_Dy_j_j", std::abs(j1->rapidity() - j2->rapidity()), sys, features);
+      setFloatAndFeature(event, "VBF_pT_jj", pJJ.Pt() / Athena::Units::GeV, sys, features);
+      setFloatAndFeature(event, "VBF_pT_j2", j2->pt() / Athena::Units::GeV, sys, features);
+      setFloatAndFeature(event, "VBF_eta_j2", j2->eta(), sys, features);
+      setFloatAndFeature(event, "VBF_mass_j2", j2->m() / Athena::Units::GeV, sys, features);
+
+      // Zeppenfeld variable: |η(Zy) - 0.5*(η_j1 + η_j2)|
+      setFloatAndFeature(event, "VBF_Zepp", std::abs(llgRawP4.Eta() - 0.5f * (j1->eta() + j2->eta())), sys, features);
+      // Dphi between Zy and dijet system
+      setFloatAndFeature(event, "VBF_Dphi_Zy_jj_Fullrange", std::abs(TVector2::Phi_mpi_pi(llgRawP4.Phi() - pJJ.Phi())), sys, features);
+      // Yrel = (j1_eta - llg_eta) * (j2_eta - llg_eta)
+      const float Yrel = (j1->eta() - llgRawP4.Eta()) * (j2->eta() - llgRawP4.Eta());
+      m_Fbranches.at("VBF_Yrel").set(*event, Yrel, sys);
+
+      // Yrel_ph = (j1_eta - ph_eta) * (j2_eta - ph_eta)
+      const float Yrel_ph = (j1->eta() - photonP4.Eta()) * (j2->eta() - photonP4.Eta());
+      m_Fbranches.at("VBF_Yrel_ph").set(*event, Yrel_ph, sys);
+
+      // |ph_eta - (j1_eta + j2_eta)/2|
+      m_Fbranches.at("VBF_ph_eta_center").set(*event,
+          std::abs(photonP4.Eta() - 0.5f * (j1->eta() + j2->eta())), sys);
+
+      // Agap (eta-based gap): sum of pT_jk * exp(-(jk_eta - center)^2 / 2) for jets in the gap
+      float Agap = 0;
+      const float eta_center = 0.5f * (j1->eta() + j2->eta());
+      const float eta_min = std::min(j1->eta(), j2->eta());
+      const float eta_max = std::max(j1->eta(), j2->eta());
+      for (const auto *jet : *HZyJetOR)
+      {
+        if (jet == j1 || jet == j2) continue;
+        const float j_eta = jet->eta();
+        if (j_eta > eta_min && j_eta < eta_max)
+        {
+          const float dEta = j_eta - eta_center;
+          Agap += (jet->pt() / Athena::Units::GeV) * std::exp(-0.5f * dEta * dEta);
+        }
+      }
+      m_Fbranches.at("VBF_Agap").set(*event, Agap, sys);
+
+      // Agap_rapidity
+      float Agap_rap = 0;
+      const float y_jj = 0.5f * (j1->rapidity() + j2->rapidity());
+      const float y_min = std::min(j1->rapidity(), j2->rapidity());
+      const float y_max = std::max(j1->rapidity(), j2->rapidity());
+      for (const auto *jet : *HZyJetOR)
+      {
+        if (jet == j1 || jet == j2) continue;
+        const float j_y = jet->rapidity();
+        if (j_y > y_min && j_y < y_max)
+        {
+          const float dEta = jet->eta() - y_jj;
+          Agap_rap += (jet->pt() / Athena::Units::GeV) * std::exp(-0.5f * dEta * dEta);
+        }
+      }
+      m_Fbranches.at("VBF_Agap_rapidity").set(*event, Agap_rap, sys);
+
+    }
 
     // VBF_pTt_Zy = 2 * |pT(Z) x pT(y)| / |pT(Z - y)|  (in GeV)
+    const double cross = llRawP4.Px() * photonP4.Py() - llRawP4.Py() * photonP4.Px();
+    const double deltaPt = (llRawP4 - photonP4).Pt();
+    const float VBF_pTt_Zy = deltaPt > 0 ? 2.0f * std::abs(cross) / deltaPt / Athena::Units::GeV : 0.f;
+    setFloatAndFeature(event, "VBF_pTt_Zy", VBF_pTt_Zy, sys, features);
+
+    // pt_balance = |sum(pT_vec)| / sum(pT_scalar) for ll+gamma+jets
+    float sum_px = 0, sum_py = 0, sum_pt = 0;
+    for (const auto *jet : *HZyJetOR)
     {
-      const double cross = llRawP4.Px() * photonP4.Py() - llRawP4.Py() * photonP4.Px();
-      const double deltaPt = (llRawP4 - photonP4).Pt();
-      const float VBF_pTt_Zy = deltaPt > 0 ? 2.0f * std::abs(cross) / deltaPt / Athena::Units::GeV : 0.f;
-      setFloatAndFeature(event, "VBF_pTt_Zy", VBF_pTt_Zy, sys, features);
+      if (!jet) continue;
+      const float pt = jet->pt() / Athena::Units::GeV;
+      sum_px += pt * std::cos(jet->phi());
+      sum_py += pt * std::sin(jet->phi());
+      sum_pt += pt;
     }
+    sum_px += llRawP4.Pt() / Athena::Units::GeV * std::cos(llRawP4.Phi());
+    sum_py += llRawP4.Pt() / Athena::Units::GeV * std::sin(llRawP4.Phi());
+    sum_pt += llRawP4.Pt() / Athena::Units::GeV;
+    sum_px += photonP4.Pt() / Athena::Units::GeV * std::cos(photonP4.Phi());
+    sum_py += photonP4.Pt() / Athena::Units::GeV * std::sin(photonP4.Phi());
+    sum_pt += photonP4.Pt() / Athena::Units::GeV;
+    const float pt_balance = sum_pt > 0
+        ? std::sqrt(sum_px * sum_px + sum_py * sum_py) / sum_pt : -1.f;
+    m_Fbranches.at("VBF_pt_balance").set(*event, pt_balance, sys);
+    
   }
 
   void BaselineVarsHZyAlg::loadModel(ModelFamily family,

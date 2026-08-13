@@ -54,3 +54,7 @@
   weightIndex: 105
   weightName: " PDF set = 90400 "
   sysWeightName: "GEN_PDF_90400"
+- DSID: 603798 # ggFH(Zy) mc23
+  weightIndex: 88
+  weightName: "combine_nnlo_and_0"
+  sysWeightName: "GEN_combine_nnlo_and_0"

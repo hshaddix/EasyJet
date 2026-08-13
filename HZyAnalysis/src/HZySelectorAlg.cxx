@@ -126,10 +126,9 @@ namespace HZY
       // Photon ID and Isolation selections
       evaluateEventSelections(event, sys);
 
-      bool passedall = !m_inputCutKeys.empty();
-      for (const auto &cut : m_inputCutKeys)
-      {
-        passedall = passedall && m_bools.at(cut);
+      bool passedall = !m_bools.empty();
+      for (const auto& [key, value]: m_boolnames){
+        passedall = passedall && m_bools.at(key);
       }
       m_passallcuts.set(*event, passedall, sys);
 
