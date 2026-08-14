@@ -102,7 +102,7 @@ namespace HHH6B
     std::map<triggerSFType, SG::WriteDecorHandleKey<xAOD::EventInfo>> m_trigSFDecoratorKeys;
 
     typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::EventInfo, bool> > trigReadDecoMap;
-    typedef std::unordered_map<HHH6B::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, bool> > passWriteDecoMap;
+    typedef std::unordered_map<HHH6B::TriggerChannel, SG::WriteDecorHandle<xAOD::EventInfo, char> > passWriteDecoMap;
     typedef std::unordered_map<int, std::unordered_map<HHH6B::TriggerChannel, std::vector<std::string>>> triggerMap;
 
     void evaluateTriggerCuts(const xAOD::EventInfo* eventInfo, const std::vector<std::string> &Triggers,

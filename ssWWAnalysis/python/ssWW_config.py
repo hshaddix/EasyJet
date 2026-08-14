@@ -448,8 +448,8 @@ def ssWW_branches(flags):
             truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
             for cut in truthcutList:
                 branches += [f"EventInfo.{cut} \
-                            -> ssWW_{cut}"]
-            branches += ["EventInfo.PassTruthCuts -> ssWW_PassTruthCuts"]
+                            -> ssWW_{cut} type=char"]
+            branches += ["EventInfo.PassTruthCuts -> ssWW_PassTruthCuts type=char"]
 
     # trigger variables do not need to be added to variable_names
     # as it is written out in ssWWSelectorAlg
