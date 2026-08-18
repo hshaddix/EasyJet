@@ -180,7 +180,7 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
     cfg.addEventAlgo(
         CompFactory.HHBBYY.BaselineVarsbbyyAlg(
             "BaselineVarsbbyyAlg",
-            KFJets="bbyyAnalysisKF2Jets_%SYS%" if flags.Analysis.do_KinematicFit else "",
+            KFJets="bbyyAnalysisKF1Jets_%SYS%" if flags.Analysis.do_KinematicFit else "",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
             do_nonresonant_BDTs=flags.Analysis.do_nonresonant_BDTs,
