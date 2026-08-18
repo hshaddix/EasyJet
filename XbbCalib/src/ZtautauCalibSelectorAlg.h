@@ -96,7 +96,7 @@ namespace XBBCALIB
       /// Set to (-99,-99,-99,-99) for data, or for MC events with no truth
       /// jet within truthMatchMaxDeltaR.
       CP::SysWriteDecorHandle<xAOD::JetFourMom_t>
-      m_zcandTruthJetHandle{this,"TruthJet","TruthLRJet","Truth matched Z candidate jet"};
+      m_zcandTruthJetHandle{this,"TruthJet","TruthLRJet_%SYS%","Truth matched Z candidate jet"};
     
       CP::SysFilterReporterParams m_filterParams {this, "XbbCalib selection"};
 

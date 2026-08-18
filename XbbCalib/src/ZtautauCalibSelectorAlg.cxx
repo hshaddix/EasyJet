@@ -21,8 +21,8 @@ namespace XBBCALIB
     ATH_CHECK (m_metHandle.initialize(m_systematicsList));
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK (m_outHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_zcandMetMassHandle.initialize(m_systematicsList, m_lRjetHandle));
-    ATH_CHECK (m_zcandTruthJetHandle.initialize(m_systematicsList, m_lRjetHandle));
+    ATH_CHECK (m_zcandMetMassHandle.initialize(m_systematicsList, m_outHandle));
+    ATH_CHECK (m_zcandTruthJetHandle.initialize(m_systematicsList, m_outHandle));
     if (m_isMC) {
       ATH_CHECK (m_truthJetHandle.initialize(m_systematicsList));
     }

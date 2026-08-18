@@ -70,7 +70,7 @@ private:
     /// the Z-candidate jet (MC only), decorated as a single JetFourMom_t
     /// block directly onto the Zcand jet
     CP::SysReadDecorHandle<xAOD::JetFourMom_t>
-    m_zcandTruthJetDecor{this,"zcandTruthJetDecor","TruthLRJet","Truth matched Z candidate jet"};
+    m_zcandTruthJetDecor{this,"zcandTruthJetDecor","TruthLRJet_%SYS%","Truth matched Z candidate jet"};
 
     CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };

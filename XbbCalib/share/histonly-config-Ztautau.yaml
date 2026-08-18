@@ -10,7 +10,7 @@ output:
       blinding:
         enable: false
 
-do_CP_systematics: false
+do_CP_systematics: true
 systematics_regex: [".*"]
 
 grid:

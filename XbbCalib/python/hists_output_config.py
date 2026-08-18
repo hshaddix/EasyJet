@@ -132,6 +132,12 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
         mass_var = str(md.mass_var)
         wp_decos = [""] + [f"{md.wp_prefix}_{wp}" for wp in tag_wps]
 
+        truthPtVar = ""
+        truthPtEdges = ""
+        if "truth_pt_var" in md and flags.Input.isMC:
+            truthPtVar = md.truth_pt_var
+            truthPtEdges = md.truth_pt_edges
+
         cfg.addEventAlgo(
             CompFactory.XBBCALIB.ZbbHistogramAlg(
                 f"ZbbHistogramAlg_{name}",
@@ -140,12 +146,12 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
                 selectionDecoration=selection_flag,
                 massVar=mass_var,
                 ptVar=str(md.pt_var),
-                truthPtVar=str(md.truth_pt_var if "truth_pt_var" in md else ""),
+                truthPtVar=str(truthPtVar),
                 massBins=int(md.mass_n_bins),
                 massLower=float(md.mass_lower),
                 massUpper=float(md.mass_upper),
                 ptEdges=list(md.pt_edges),
-                truthPtEdges=list(md.truth_pt_edges if "truth_pt_edges" in md else ""),
+                truthPtEdges=list(truthPtEdges),
                 wpDecorations=wp_decos,
                 groupName=name,
                 histName="mass_pt_wp_sys",
