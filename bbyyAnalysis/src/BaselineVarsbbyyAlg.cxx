@@ -79,6 +79,18 @@ namespace HHBBYY
       }
     }
 
+    // Load transformer categorisation model
+    if(m_doTransformer_categorisation)
+    {
+      if(!m_doKF){
+        ANA_MSG_WARNING("doTransformer_categorisation is set but doKF=false (model inputs are KF vars) -- "
+                        <<"disabling transformer categorisation, Transformer_* branches will be filled with -99.");
+        m_doTransformer_categorisation = false;
+      } else {
+        ATH_CHECK(m_transformerTool.retrieve());
+      }
+    }
+
     // convert string to enum (VBFjetsMethod)
     m_vbfjets_method = stringToVBFjetsMethod(m_vbfjets_method_str);
 
@@ -425,6 +437,15 @@ namespace HHBBYY
               m_Fbranches.at("KF_corr_with2024_bdtSel_score").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score_KF_corr_with2024), sys);
               m_Ibranches.at("KF_corr_with2024_bdtSel_category").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category_KF_corr_with2024), sys);
             }
+          }
+
+          // Transformer-based event categorisation execute
+          if (m_doTransformer_categorisation && n_photons >= 2 && Hbb_KFJet1 && Hbb_KFJet2) {
+            runTransformerCategorisation(KF_HT,
+                                 eventFloats.at(HHBBYY::Var::sphericityT_KF),
+                                 eventFloats.at(HHBBYY::Var::planarFlow_KF),
+                                 jets, KFJets, ph1, ph2,
+                                 event, sys);
           }
       }
 
@@ -863,6 +884,86 @@ namespace HHBBYY
     }
 
     return GNN_jets;
+  }
+
+  // Transformer based categorization implementation.
+  //
+  // Model specific details like tensor names, shapes, feature order and output classes
+  // are defined in m_transformerTool IOConfig JSON. To use another model,
+  // only the .onnx file and JSON config need to be changed.
+  //
+  // The three lambdas below translate configured feature names such as
+  // pt, pcbt or ptOverMyy into values from the framework
+  void BaselineVarsbbyyAlg::runTransformerCategorisation(float KF_HT, float KF_sphericityT, float KF_planarFlow,
+                                                const xAOD::JetContainer *jets, const xAOD::JetContainer *KFJets,
+                                                const TLorentzVector& ph1, const TLorentzVector& ph2,
+                                                const xAOD::EventInfo *event, const auto &sys) {
+
+    auto eventFeatureValue = [&](const std::string &name) -> float {
+      if (name == "HT")          return KF_HT;
+      if (name == "sphericityT") return KF_sphericityT;
+      if (name == "planarFlow")  return KF_planarFlow;
+      ANA_MSG_ERROR("Unknown event feature '" << name << "' requested by the transformer categorisation IOConfig.");
+      return -99.f;
+    };
+
+    auto jetFeatureValue = [&](const std::string &name, std::size_t i) -> float {
+      TLorentzVector j = KFJets->at(i)->p4();
+      if (name == "pt")   return static_cast<float>(j.Pt());
+      if (name == "eta")  return static_cast<float>(j.Eta());
+      if (name == "phi")  return static_cast<float>(j.Phi());
+      if (name == "E")    return static_cast<float>(j.E());
+      if (name == "pcbt") return static_cast<float>(m_PCBT.get(*jets->at(i), sys));
+      ANA_MSG_ERROR("Unknown jet feature '" << name << "' requested by the transformer categorisation IOConfig.");
+      return -99.f;
+    };
+
+    const TLorentzVector H_yy = ph1 + ph2;
+    const std::array<TLorentzVector, 2> photons = {ph1, ph2};
+    auto photonFeatureValue = [&](const std::string &name, std::size_t i) -> float {
+      const TLorentzVector &ph = photons[i];
+      if (name == "eta")       return static_cast<float>(ph.Eta());
+      if (name == "phi")       return static_cast<float>(ph.Phi());
+      if (name == "ptOverMyy") return static_cast<float>(ph.Pt() / H_yy.M());
+      ANA_MSG_ERROR("Unknown photon feature '" << name << "' requested by the transformer categorisation IOConfig.");
+      return -99.f;
+    };
+
+    const std::size_t n_jets = std::min({jets->size(), KFJets->size(), m_transformerTool->maxObjects("jet_features")});
+    const std::size_t n_photons = std::min(photons.size(), m_transformerTool->maxObjects("photon_features"));
+
+    std::map<std::string, std::pair<std::vector<float>, int64_t>> inputs;
+
+    const std::vector<std::string> &eventFeatures = m_transformerTool->inputFeatures("event_features");
+    std::vector<float> eventBuf;
+    eventBuf.reserve(eventFeatures.size());
+    for (const std::string &feature : eventFeatures) eventBuf.push_back(eventFeatureValue(feature));
+    inputs["event_features"] = {eventBuf, 1};
+
+    const std::vector<std::string> &jetFeatures = m_transformerTool->inputFeatures("jet_features");
+    std::vector<float> jetBuf;
+    jetBuf.reserve(n_jets * jetFeatures.size());
+    for (std::size_t i = 0; i < n_jets; i++)
+      for (const std::string &feature : jetFeatures) jetBuf.push_back(jetFeatureValue(feature, i));
+    inputs["jet_features"] = {jetBuf, static_cast<int64_t>(n_jets)};
+
+    const std::vector<std::string> &photonFeatures = m_transformerTool->inputFeatures("photon_features");
+    std::vector<float> photonBuf;
+    photonBuf.reserve(n_photons * photonFeatures.size());
+    for (std::size_t i = 0; i < n_photons; i++)
+      for (const std::string &feature : photonFeatures) photonBuf.push_back(photonFeatureValue(feature, i));
+    inputs["photon_features"] = {photonBuf, static_cast<int64_t>(n_photons)};
+
+    std::map<std::string, float> outputs;
+    if (m_transformerTool->run(inputs, outputs).isFailure()) {
+      ANA_MSG_ERROR("ONNXInferenceTool::run failed for transformer categorisation; "
+                    << "Transformer_* branches will keep their default (-99) values this event.");
+      return;
+    }
+
+    for (const auto &[key, value] : outputs) {
+      if (m_Fbranches.contains(key)) m_Fbranches.at(key).set(*event, value, sys);
+    }
   }
 
   float BaselineVarsbbyyAlg::compute_Topness(const xAOD::JetContainer *jets, const auto &sys){

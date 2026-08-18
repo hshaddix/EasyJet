@@ -44,6 +44,7 @@ atlas_add_component(bbyyAnalysis
   TriggerMatchingToolLib
   MVAUtils
   KinematicFitToolLib
+  ONNXInferenceToolLib
 )
 
 # Install python modules, joboptions, and share content

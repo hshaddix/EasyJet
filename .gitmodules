@@ -7,3 +7,6 @@
 [submodule "TruthWeightTools"]
 	path = TruthWeightTools
 	url = https://gitlab.cern.ch/atlas_higgs_combination/software/TruthWeightTools.git
+[submodule "ONNXInferenceTool"]
+	path = ONNXInferenceTool
+	url = https://gitlab.cern.ch/r3hh-public/ONNXInferenceTool.git

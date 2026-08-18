@@ -165,6 +165,18 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
         )
     )
 
+    transformer_tool_kwargs = {}
+    if flags.Analysis.do_Transformer_categorisation:
+        from ONNXInferenceTool.ONNXInferenceTool_config import ONNXInferenceTool_Cfg
+        transformer_tool_kwargs["TransformerCategorisationTool"] = cfg.popToolsAndMerge(
+            ONNXInferenceTool_Cfg(
+                flags,
+                "TransformerCategorisationTool",
+                ModelPath=flags.Analysis.Transformer_categorisation_path,
+                IOConfigPath=flags.Analysis.Transformer_categorisation_io_path,
+            )
+        )
+
     cfg.addEventAlgo(
         CompFactory.HHBBYY.BaselineVarsbbyyAlg(
             "BaselineVarsbbyyAlg",
@@ -176,6 +188,8 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
             doGNN_tagging=flags.Analysis.do_GNN2bjetSelection,
             GNN_path=(flags.Analysis.GNN_path_run2 if flags.Analysis.Run == 2 else
                       flags.Analysis.GNN_path_run3),
+            doTransformer_categorisation=flags.Analysis.do_Transformer_categorisation,
+            **transformer_tool_kwargs,
             VBFjetsMethod=flags.Analysis.VBFjetsMethod,
             save_VBF_vars=flags.Analysis.save_VBF_vars,
             isMC=flags.Input.isMC,
@@ -400,6 +414,11 @@ def get_BaselineVarsbbyyAlg_variables(flags):
             float_variable_names += ["GNN_" + c + "_Jet_vbf_jj_m",
                                      "GNN_" + c + "_Jet_vbf_jj_deta"]
             int_variable_names += ["GNN_" + c + "_bdtSel_category"]
+
+    # Transformer-based event categorisation and process probabilities
+    if (flags.Analysis.do_Transformer_categorisation):
+        float_variable_names += ["Transformer_pggFHH", "Transformer_pVBFHH", "Transformer_pZH",
+                                 "Transformer_pyyjets", "Transformer_psingleH"]
 
     # save extra variables which may be useful, but are
     # not necessary for barebones SHbbyy analysis

@@ -24,7 +24,11 @@
 
 #include "MVAUtils/BDT.h"
 
+#include "ONNXInferenceTool/ONNXInferenceTool.h"
+
 #include <onnxruntime_cxx_api.h>
+
+#include <array>
 
 namespace HHBBYY
 {
@@ -208,6 +212,14 @@ namespace HHBBYY
     std::vector<const xAOD::Jet*> getHbb_GNN_ggFTarget(const xAOD::JetContainer *jets, const TLorentzVector& ph1, const TLorentzVector& ph2, float& max_score, float pile_up, const auto &sys);
     std::vector<const xAOD::Jet*> getHbb_GNN_VBFTarget(const xAOD::JetContainer *jets, const TLorentzVector& ph1, const TLorentzVector& ph2, float& max_score, float pile_up, const auto &sys);
 
+    // Builds the tensors defined in m_transformerTool IOConfig and stores
+    // the model scores in m_Fbranches. The only non-configurable part is mapping
+    // feature names like pt, pcbt and ptOverMyy to their values.
+    void runTransformerCategorisation(float KF_HT, float KF_sphericityT, float KF_planarFlow,
+                              const xAOD::JetContainer *jets, const xAOD::JetContainer *KFJets,
+                              const TLorentzVector& ph1, const TLorentzVector& ph2,
+                              const xAOD::EventInfo *event, const auto &sys);
+
     /// \brief Setup syst-aware input container handles
     CP::SysListHandle m_systematicsList {this};
 
@@ -271,6 +283,12 @@ namespace HHBBYY
 
     Gaudi::Property<std::vector<std::string>> m_GNNs_path
       {this, "GNN_path", {}, "Path to GNN model"};
+
+    Gaudi::Property<bool> m_doTransformer_categorisation
+      { this, "doTransformer_categorisation", false, "Do Transformer-based event categorisation?" };
+
+    ToolHandle<ONNXInferenceTool> m_transformerTool
+      {this, "TransformerCategorisationTool", "", "Generic ONNX inference tool configured for the transformer categorisation model"};
 
     Gaudi::Property<std::string> m_vbfjets_method_str
       {this, "VBFjetsMethod", "", "VBF jets selection method"};

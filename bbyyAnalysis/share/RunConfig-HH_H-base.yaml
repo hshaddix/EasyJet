@@ -55,6 +55,11 @@ GNN_path_run3:
   - "bbyyAnalysis/GNN_ggFTarget_run3.onnx"
   - "bbyyAnalysis/GNN_VBFTarget_run3.onnx"
 
+# Transformer-based event categorisation model
+do_Transformer_categorisation: true
+Transformer_categorisation_path: "bbyyAnalysis/bbyyTransformerV01.onnx"
+Transformer_categorisation_io_path: "bbyyAnalysis/bbyyTransformerV01_io.json"
+
 #  choose VBF jets selection method
 
 save_detailed_Input_variables: true

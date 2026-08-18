@@ -135,6 +135,12 @@ BDT_path: []
 GNN_path_run2: []
 GNN_path_run3: []
 
+# Transformer-based event categorisation model
+# requires do_KinematicFit: true, since the inputs are KF vars
+do_Transformer_categorisation: false
+Transformer_categorisation_path: ""
+Transformer_categorisation_io_path: ""
+
 do_nonresonant_BDTs: false
 save_VBF_vars: false
 save_extra_vars: false
