@@ -18,23 +18,30 @@ def resolved_trigger_SF_cfg(flags):
                  or flags.Analysis.Small_R_jet.doL1Matching)):
         # temporary solution for boosted trigger
         resolved_chain = [t for t in flags.Analysis.TriggerChains if "_a10" not in t]
+
+        from TrigDecisionTool.TrigDecisionToolConfig import TrigDecisionToolCfg
+        trigDecisionTool = cfg.getPrimaryAndMerge(TrigDecisionToolCfg(flags))
+
         if flags.Analysis.Small_R_jet.doL1Matching:
             cfg.addEventAlgo(
                 CompFactory.HH4B.SmallRJetTriggerSFAlg(
                     "SmallRJetL1SFAlg",
                     containerInKey="smallRJetsForTriggerMatching",
                     containerOutKey="trigL1MatchedSmallRJets",
+                    TrigDecisionTool=trigDecisionTool,
                     triggers=resolved_chain,
                     years=flags.Analysis.Years,
                     matchingLevel="L1"
                 )
             )
+
         if flags.Analysis.Small_R_jet.doHLTMatching:
             cfg.addEventAlgo(
                 CompFactory.HH4B.SmallRJetTriggerSFAlg(
                     "SmallRJetHLTSFAlg",
                     containerInKey="smallRJetsForTriggerMatching",
                     containerOutKey="trigHLTMatchedSmallRJets",
+                    TrigDecisionTool=trigDecisionTool,
                     triggers=resolved_chain,
                     years=flags.Analysis.Years,
                     matchingLevel="HLT"
@@ -46,7 +53,7 @@ def resolved_trigger_SF_cfg(flags):
 
 def resolved_trigger_bucket_cfg(flags):
     cfg = ComponentAccumulator()
-
+    
     # calculate trigger buckets
     cfg.addEventAlgo(
         CompFactory.HH4B.TriggerDecoratorAlg(
@@ -211,11 +218,11 @@ def resolved_trigger_SF_branches(flags):
                         f'->{jet_coll}_NoBJetCalibMomentum_eta type=float',
                         f'{jet_coll}.NoBJetCalibMomentum_phi'
                         f'->{jet_coll}_NoBJetCalibMomentum_phi type=float',
-                        f'{jet_coll}.match{trig}_{matchLevel}pt'
+                        f'{jet_coll}.match{trig}_{matchLevel}pt_NOSYS'
                         f'->{jet_coll}_{trig}_{matchLevel}pt type=float',
-                        f'{jet_coll}.match{trig}_{matchLevel}eta'
+                        f'{jet_coll}.match_{trig}_{matchLevel}eta_NOSYS'
                         f'->{jet_coll}_{trig}_{matchLevel}eta type=float',
-                        f'{jet_coll}.match{trig}_{matchLevel}phi'
+                        f'{jet_coll}.match_{trig}_{matchLevel}phi_NOSYS'
                         f'->{jet_coll}_{trig}_{matchLevel}phi type=float',
                         f'{jet_coll}.{trig}_{matchLevel}threshold_NOSYS'
                         f'->{jet_coll}_{trig}_{matchLevel}threshold type=int',

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
   JetDecoratorAlg:
   An alg that copies jet information to aux decorations so can be
@@ -12,12 +12,7 @@
 
 #include <AthenaBaseComps/AthReentrantAlgorithm.h>
 
-#include <xAODTrigger/JetRoIContainer.h>
 #include <xAODJet/JetContainer.h>
-#include <TrigDecisionTool/TrigDecisionTool.h>
-#include <TrigBtagEmulationTool/ITrigBtagEmulationTool.h>
-
-#include <StoreGate/WriteDecorHandleKeyArray.h>
 
 #include <AthenaKernel/Units.h>
 
@@ -60,41 +55,6 @@ namespace Easyjet
     Gaudi::Property<bool> m_isMC{
       this, "isMC", false, "is this simulation?"
     };
-
-    Gaudi::Property<bool> m_doL1Matching{this, "doL1Matching", false, "do trigger L1 matching?" };
-    Gaudi::Property<bool> m_doHLTMatching{this, "doHLTMatching", false, "do trigger HLT matching?" };
-
-    PublicToolHandle<Trig::TrigDecisionTool> m_trigDecTool{
-      this, "TrigDecisionTool", "", "Trigger decision tool"
-    };
-
-    ToolHandle<Trig::ITrigBtagEmulationTool> m_emulationTool {this, "trigBtagEmulationTool", "", ""};
-
-    Gaudi::Property<std::vector<std::string>> m_triggers{
-      this, "triggerList", {}, "List of triggers to match"
-    };
-
-    SG::ReadHandleKey<xAOD::JetRoIContainer> m_L1JetsInKey{
-      this, "L1Jets", "LVL1JetRoIs", "L1 jet container"
-    };
-
-    SG::ReadHandleKey<xAOD::JetContainer> m_HLTJetsInKey {
-      this, "HLTJets", "HLT_AntiKt4EMPFlowJets_subresjesgscIS_ftf_bJets", "HLT jet container"
-    };
-
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, std::vector<int>> m_jetL1ThresholdsDecorKeys{this,"L1ThresholdKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetL1EtDecorKeys{this,"L1EtKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetL1EtaDecorKeys{this,"L1EtaKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetL1PhiDecorKeys{this,"L1PhiKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetL1DRDecorKeys{this,"L1DRKeys",{},"DO NOT CONFIGURE"};
-
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, std::vector<int> > m_jetHLTThresholdsDecorKeys{this,"HLTThresholdKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetHLTPtDecorKeys{this,"HLTPtKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetHLTEtaDecorKeys{this,"HLTEtaKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetHLTPhiDecorKeys{this,"HLTPhiKeys",{},"DO NOT CONFIGURE"};
-    SG::WriteDecorHandleKeyArray<xAOD::JetContainer, float> m_jetHLTDRDecorKeys{this,"HLTDRKeys",{},"DO NOT CONFIGURE"};
-
-    bool isSameJet(const xAOD::IParticle *jet1, const xAOD::IParticle *jet2) const;
 
   };
 

@@ -163,28 +163,24 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
             if flags.Analysis.Small_R_jet.doL1Matching:
                 # float variables
                 small_R_jet_branches.variables += [
-                    (f"match{trig}_L1{var}", "float")
+                    (f"match_{trig}_L1{var}_%SYS%", "float")
                     for var in ["et", "eta", "phi", "dr"]
                 ]
                 # vector<int> decoration
                 small_R_jet_branches.variables += [
-                    (f"match{trig}_L1thresholds", "vector_int")
+                    (f"match_{trig}_L1thresholds_%SYS%", "vector_int")
                 ]
-            if flags.Analysis.Small_R_jet.doHLTMatching:
-                if (
-                    (flags.GeoModel.Run is LHCPeriod.Run2)
-                    and not flags.Analysis.Small_R_jet.doRun2HLTEmulation
-                ):
-                    # In Run 2, only do HLT matching with emulation
-                    continue
+            if flags.Analysis.Small_R_jet.doHLTMatching and (
+                    flags.GeoModel.Run >= LHCPeriod.Run3 or
+                    flags.Analysis.Small_R_jet.doRun2HLTEmulation):
                 # float variables
                 small_R_jet_branches.variables += [
-                    (f"match{trig}_HLT{var}", "float")
+                    (f"match_{trig}_HLT{var}_%SYS%", "float")
                     for var in ["pt", "eta", "phi", "dr"]
                 ]
                 # vector<int> decoration
                 small_R_jet_branches.variables += [
-                    (f"match{trig}_HLTthresholds", "vector_int")
+                    (f"match_{trig}_HLTthresholds_%SYS%", "vector_int")
                 ]
 
     # ftag scores pb, pc, pl

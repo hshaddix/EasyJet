@@ -22,7 +22,6 @@ def HHbbttTriggerDecoratorCfg(flags, **kwargs):
                       cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)))
 
     if flags.Analysis.do_bbtt_analysis:
-        kwargs.setdefault("jets", flags.Analysis.container_names.input.reco4PFlowJet)
         cfg.addEventAlgo(
             CompFactory.HHBBTT.TriggerDecoratorAlg(
                 "HHbbttTriggerDecoratorAlg",

@@ -1,5 +1,6 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
+from AthenaConfiguration.Enums import LHCPeriod
 from EasyjetHub.steering.analysis_configuration import get_trigger_chains_scale_factor
 
 
@@ -136,10 +137,13 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
 
     isSmallRJet = "AntiKt4" in kwargs["containerInKey"]
     isLargeRJet = "AntiKt10" in kwargs["containerInKey"]
+    smallR_flags = flags.Analysis.Small_R_jet
+    largeR_flags = flags.Analysis.Large_R_jet
+
     if kwargs.get("bTagWPDecorName", ""):
-        kwargs.setdefault("bjetAmount", flags.Analysis.Small_R_jet.amount_bjet)
-    if (isSmallRJet and flags.Analysis.Small_R_jet.runBJetPtCalib) or \
-       (not isSmallRJet and flags.Analysis.Large_R_jet.runMuonJetPtCorr):
+        kwargs.setdefault("bjetAmount", smallR_flags.amount_bjet)
+    if (isSmallRJet and smallR_flags.runBJetPtCalib) or \
+       (isLargeRJet and largeR_flags.runMuonJetPtCorr):
         kwargs.setdefault("nmuons", "n_muons_%SYS%")
 
     # b-jet matching decoration
@@ -151,10 +155,23 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
                 flags, 'bjet')
             for triggerChains in triggerChainsPerYear.values():
                 for chain in triggerChains:
-                    bjet_triggers.append(chain)
+                    bjet_triggers.append(chain.replace('-', '_').replace('.', 'p'))
         kwargs.setdefault("bJetTriggerLists", bjet_triggers)
 
-    if isLargeRJet and not flags.Analysis.Large_R_jet.do_thinning:
+        jet_triggers = []
+        sf_config = flags.Analysis.Trigger.scale_factor
+        if sf_config.doSF and hasattr(sf_config, 'jet'):
+            triggerChainsPerYear = get_trigger_chains_scale_factor(
+                flags, 'jet')
+            for triggerChains in triggerChainsPerYear.values():
+                for chain in triggerChains:
+                    jet_triggers.append(chain.replace('-', '_').replace('.', 'p'))
+        kwargs.setdefault("jetTriggerLists", jet_triggers)
+        kwargs.setdefault("doL1Matching", smallR_flags.doL1Matching)
+        kwargs.setdefault("doHLTMatching", smallR_flags.doHLTMatching and (
+            flags.GeoModel.Run >= LHCPeriod.Run3 or smallR_flags.doRun2HLTEmulation))
+
+    if isLargeRJet and not largeR_flags.do_thinning:
         kwargs.setdefault("baselineSelectionName", "")
 
     cfg.addEventAlgo(CompFactory.Easyjet.JetSelectorAlg(name, **kwargs))

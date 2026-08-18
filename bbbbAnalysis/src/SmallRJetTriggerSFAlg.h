@@ -1,12 +1,11 @@
 /*
-  Copyright (C) 2002-2024 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 #ifndef HH4BANALYSIS_SMALLRJETTRIGGERSFALG
 #define HH4BANALYSIS_SMALLRJETTRIGGERSFALG
 
 #include <AthenaBaseComps/AthHistogramAlgorithm.h>
-#include <AsgDataHandles/ReadDecorHandleKey.h>
 #include <AsgDataHandles/WriteDecorHandle.h>
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysWriteHandle.h>
@@ -47,6 +46,7 @@ private:
     CP::SysReadHandle<xAOD::JetContainer> m_inJetHandle{ this, "containerInKey", "", "Input jet container to read"};
     CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_outJetHandle{this, "containerOutKey", "", "Output jet container to write"};
 
+
     PublicToolHandle<Trig::TrigDecisionTool> m_trigDecTool{this, "TrigDecisionTool", "TrigDecisionTool", "Trigger decision tool"};
 
     Gaudi::Property<std::vector<std::string>> m_triggers{ this, "triggers", {}, "List of triggers"};
@@ -54,7 +54,7 @@ private:
     Gaudi::Property<std::string> m_matchingLevel{this, "matchingLevel", "HLT", "do L1 or HLT matching and SF"};
 
     std::unordered_map<std::string, std::vector<int>> m_triggerLegThresholds;
-    std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_ThresholdsDecorKey; // list of matched thresholds from JetDecoratorAlg
+    std::unordered_map<std::string, CP::SysReadDecorHandle<std::vector<int>>> m_ThresholdsDecor; // list of matched thresholds from CP::JetTriggerDecoratorAlg
     std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Threshold; // single matched threshold for each jet after event-level ambituity resolution
     std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Thresholdread; // read handle for single matched threshold for each jet
 

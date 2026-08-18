@@ -74,10 +74,20 @@ private:
 
     std::vector<CP::SysReadDecorHandle<char>> m_bTagTrigMatching_in;
     std::vector<CP::SysWriteDecorHandle<char>> m_bTagTrigMatching_out;
-    
-    Gaudi::Property<std::vector<std::string>> m_triggers
-      { this, "bJetTriggerLists", {}, "Name list of trigger" };
+    Gaudi::Property<std::vector<std::string>> m_bJetTriggers
+      { this, "bJetTriggerLists", {}, "List of triggers for b-jet trigger matching" };
 
+    std::vector<CP::SysReadDecorHandle<float>> m_jetTrigMatching_in;
+    std::vector<CP::SysWriteDecorHandle<float>> m_jetTrigMatching_out;
+    std::vector<CP::SysReadDecorHandle<std::vector<int>>> m_jetTrigMatching_thresh_in;
+    std::vector<CP::SysWriteDecorHandle<std::vector<int>>> m_jetTrigMatching_thresh_out;
+    Gaudi::Property<std::vector<std::string>> m_jetTriggers
+      { this, "jetTriggerLists", {}, "List of triggers for jet trigger matching"};
+    Gaudi::Property<bool> m_doL1Matching{this, "doL1Matching", false,
+	"do trigger L1 matching?" };
+    Gaudi::Property<bool> m_doHLTMatching{this, "doHLTMatching", false,
+	"do trigger HLT matching?" };
+    
     Gaudi::Property<float> m_minPt            {this, "minPt", 25e3, "Minimum pT of jets"};
     Gaudi::Property<float> m_maxPt            {this, "maxPt", -1, "Maximum pT of jets"};
     Gaudi::Property<float> m_maxEta           {this, "maxEta", 4.5, "Maximum eta of jets"}; // default is central jets

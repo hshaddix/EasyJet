@@ -29,12 +29,17 @@ def resolved_trigger_SF_cfg(flags, smalljetkey):
             t for t in flags.Analysis.TriggerChains
             if "_a10" not in t
         ]
+
+        from TrigDecisionTool.TrigDecisionToolConfig import TrigDecisionToolCfg
+        trigDecisionTool = cfg.getPrimaryAndMerge(TrigDecisionToolCfg(flags))
+
         if flags.Analysis.Small_R_jet.doL1Matching:
             cfg.addEventAlgo(
                 CompFactory.HHH6B.SmallRJetTriggerSFAlg(
                     "SmallRJetL1SFAlg",
                     containerInKey="smallRJetsForTriggerMatching",
                     containerOutKey="trigL1MatchedSmallRJets",
+                    TrigDecisionTool=trigDecisionTool,
                     triggers=resolved_chain,
                     years=flags.Analysis.Years,
                     matchingLevel="L1",
@@ -48,6 +53,7 @@ def resolved_trigger_SF_cfg(flags, smalljetkey):
                     "SmallRJetHLTSFAlg",
                     containerInKey="smallRJetsForTriggerMatching",
                     containerOutKey="trigHLTMatchedSmallRJets",
+                    TrigDecisionTool=trigDecisionTool,
                     triggers=resolved_chain,
                     years=flags.Analysis.Years,
                     matchingLevel="HLT",
@@ -67,7 +73,7 @@ def resolved_trigger_bucket_cfg(flags):
 
     cfg.addEventAlgo(
         CompFactory.HHH6B.TriggerDecoratorAlg(
-            "HH4bTriggerDecoratorAlg",
+            "HHH6bTriggerDecoratorAlg",
             jets=jets_name,
             triggerLists=flags.Analysis.TriggerChains,
             doL1SF=flags.Analysis.Small_R_jet.doL1Matching,

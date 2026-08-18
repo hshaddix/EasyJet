@@ -15,7 +15,7 @@ namespace HH4B
     ATH_CHECK(m_inJetHandle.initialize(m_systematicsList));
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK(m_outJetHandle.initialize(m_systematicsList));
-
+ 
     if (m_matchingLevel == "L1") m_matchingLevelEnum = TrigMatchingLevel::L1;
     else if (m_matchingLevel == "HLT") m_matchingLevelEnum = TrigMatchingLevel::HLT;
     else
@@ -43,14 +43,12 @@ namespace HH4B
       std::replace(modifiedTrigName.begin(), modifiedTrigName.end(), '-', '_');
       std::replace(modifiedTrigName.begin(), modifiedTrigName.end(), '.', 'p');
       // initialize the read handle to read a list of matched thresholds
-      m_ThresholdsDecorKey.emplace(
-            trig, m_inJetHandle.getNamePattern() + ".match" +
-                      modifiedTrigName + "_" + m_matchingLevel + "thresholds");
-      ATH_CHECK(m_ThresholdsDecorKey.at(trig).initialize());
+      m_ThresholdsDecor.emplace(
+         trig, CP::SysReadDecorHandle<std::vector<int>>("match_" + modifiedTrigName + "_" + m_matchingLevel + "thresholds_%SYS%", this));
+      ATH_CHECK(m_ThresholdsDecor.at(trig).initialize(m_systematicsList, m_inJetHandle));
       // initialize write handle to write a single matched threshold after event-level ambiguity resolution
       m_Threshold.emplace(
-          trig, CP::SysWriteDecorHandle<int>(
-              modifiedTrigName + "_" + m_matchingLevel + "threshold_%SYS%", this));
+         trig, CP::SysWriteDecorHandle<int>(modifiedTrigName + "_" + m_matchingLevel + "threshold_%SYS%", this));
       ATH_CHECK(m_Threshold.at(trig).initialize(m_systematicsList, m_outJetHandle));
       // initialize read handle to read back the single matched threshold
       m_Thresholdread.emplace(
@@ -178,12 +176,13 @@ namespace HH4B
       m_loadedTriggerSFs = true;
     }
 
-    std::unordered_map< std::string, SG::ReadDecorHandle<xAOD::JetContainer, std::vector<int>>> jetThresholds;
     std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>> eventSF, eventSFStatsUp, eventSFSystUp;
     for (auto &trig : m_triggers)
     {
-      jetThresholds.emplace(trig, m_ThresholdsDecorKey.at(trig));
-      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSF(m_eventSFKey.at(trig), ctx);      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFStatsUp(m_eventSFStatsUpKey.at(trig), ctx);      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFSystUp(m_eventSFSystUpKey.at(trig), ctx);      eventSF.emplace(trig, wdh_eventSF);
+      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSF(m_eventSFKey.at(trig), ctx);
+      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFStatsUp(m_eventSFStatsUpKey.at(trig), ctx);
+      SG::WriteDecorHandle<xAOD::EventInfo, float> wdh_eventSFSystUp(m_eventSFSystUpKey.at(trig), ctx);
+      eventSF.emplace(trig, wdh_eventSF);
       eventSFStatsUp.emplace(trig, wdh_eventSFStatsUp);
       eventSFSystUp.emplace(trig, wdh_eventSFSystUp);
     }
@@ -208,7 +207,7 @@ namespace HH4B
           m_jetSF.at(trig).set(*jet, 1, sys);
           m_jetSFStatsUp.at(trig).set(*jet, 1, sys);
           m_jetSFSystUp.at(trig).set(*jet, 1, sys);
-          if (jetThresholds.at(trig)(*jet).empty())
+          if (m_ThresholdsDecor.at(trig).get(*jet, sys).empty())
             m_Threshold.at(trig).set(*jet, -99, sys);
           else {
             m_Threshold.at(trig).set(*jet, 0, sys);
@@ -256,10 +255,9 @@ namespace HH4B
             // In other cases, do the matching: Check if the jet is matched to the current leg threshold
             //   Yes - Matching is done. Break and continue to the next leg threshold.
             //   No - Continue to try the next jet for the same leg threshold.
-            if ( std::find(jetThresholds.at(trig)(*jet).begin(),
-                        jetThresholds.at(trig)(*jet).end(),
-                        legThreshold) !=
-                  jetThresholds.at(trig)(*jet).end())
+            std::vector<int> jetThresholds = m_ThresholdsDecor.at(trig).get(*jet, sys);
+            if ( std::find(jetThresholds.begin(), jetThresholds.end(),
+			   legThreshold) != jetThresholds.end())
             {
               // in L1 matching, if the jet has been assigned a threshold,
               // consider the matching successful but keep the previously matched threshold and SF.

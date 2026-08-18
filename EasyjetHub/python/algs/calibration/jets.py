@@ -6,7 +6,7 @@ from AthenaConfiguration.Enums import LHCPeriod
 from AthenaCommon.Utils.unixtools import find_datafile
 
 from EasyjetHub.steering.utils.name_helper import drop_sys
-from EasyjetHub.steering.analysis_configuration import get_trigger_chains_scale_factor
+from EasyjetHub.steering.analysis_configuration import get_trigger_chains, get_trigger_chains_scale_factor
 
 
 def jet_sequence(
@@ -214,6 +214,16 @@ def jet_sequence(
             configSeq.setOptionValue('.jetPreselection', jet_flags.btag_wp)
             configSeq.setOptionValue('.muonPreselection', "forBJetCalib")
 
+    if jet_flags.doL1Matching or jet_flags.doHLTMatching:
+        configSeq += makeConfig('Jets.TriggerMatching')
+        configSeq.setOptionValue('.containerName', output_name)
+        configSeq.setOptionValue('.runL1Matching', jet_flags.doL1Matching)
+        configSeq.setOptionValue('.runHLTMatching', jet_flags.doHLTMatching and (
+            flags.GeoModel.Run >= LHCPeriod.Run3 or jet_flags.doRun2HLTEmulation))
+        configSeq.setOptionValue('.triggerChainsPerYear',
+                                 get_trigger_chains_scale_factor(flags, 'jet'))
+        configSeq.setOptionValue('.removeHLTPrefix', False)
+        
     # Apply kinematic selection
     configSeq += makeConfig('Jets.PtEtaSelection')
     configSeq.setOptionValue('.containerName', output_name)

@@ -70,6 +70,29 @@ def bbtt_ObjectSelectorAlgCfg(flags, smalljetkey, muonkey, electronkey, taukey):
 
     return cfg
 
+def bbtt_JetTriggerDecoratorAlgCfg(flags, **kwargs):
+    cfg = ComponentAccumulator()
+
+    # jet matching decoration
+    jet_triggers = []
+    sf_config = flags.Analysis.Trigger.scale_factor
+    if sf_config.doSF and hasattr(sf_config, 'jet'):
+        triggerChainsPerYear = get_trigger_chains_scale_factor(
+            flags, 'jet')
+        for triggerChains in triggerChainsPerYear.values():
+            for chain in triggerChains:
+                jet_triggers.append(chain.replace('-', '_').replace('.', 'p'))
+
+    cfg.addEventAlgo(
+        CompFactory.HHBBTT.JetTriggerDecoratorAlg(
+            "JetTriggerDecoratorAlg",
+            triggerLists=jet_triggers,
+            **kwargs
+        )
+    )
+
+    return cfg
+
 
 def bbtt_BJetTriggerDecoratorAlgCfg(flags):
     cfg = ComponentAccumulator()
@@ -254,6 +277,7 @@ def bbtt_cfg(flags, smalljetkey, muonkey, electronkey, taukey,
     cfg.merge(bbtt_ObjectSelectorAlgCfg(
         flags, smalljetkey, muonkey, electronkey, taukey))
 
+    cfg.merge(bbtt_JetTriggerDecoratorAlgCfg(flags, jets=smalljetkey))
     cfg.merge(bbtt_BJetTriggerDecoratorAlgCfg(flags))
 
     cfg.merge(bbtt_SelectorAlgCfg(flags))
@@ -385,14 +409,14 @@ def bbtt_branches(flags):
     )
     syst_suff = flags.Analysis.systematics_suffix_separator + "%SYS%"
     branches += [
-        (f"{smalljetkey}.trigMatch_L1_online{var}"
+        (f"{smalljetkey}.trigMatch_L1_online{var}_%SYS%"
          + f"->{small_R_prefix}_trigMatch_L1_online{var}" + syst_suff
          + " type=float")
         for var in ["pt", "eta"]
     ]
     if flags.GeoModel.Run is LHCPeriod.Run3:
         branches += [
-            f"{smalljetkey}.trigMatch_HLT_onlinept"
+            f"{smalljetkey}.trigMatch_HLT_onlinept_%SYS%"
             + f"->{small_R_prefix}_trigMatch_HLT_onlinept" + syst_suff
             + " type=float"
         ]

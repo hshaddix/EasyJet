@@ -60,7 +60,11 @@ Photon:
 
 # list of triggers per year to consider
 Trigger:
-  include: [bbbbAnalysis/triggers-HH4b.yaml]
+  selection:
+    include: [bbbbAnalysis/triggers-HH4b.yaml]
+  scale_factor:
+    jet:
+      include: [bbbbAnalysis/triggers-HH4b.yaml]
 
 # can alternatively use the CutList to filter events to get trigger eff
 do_trigger_filtering: true

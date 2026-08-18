@@ -40,7 +40,11 @@ add_BadBatman_jet_cleaning: false
 
 # list of triggers per year to consider
 Trigger:
-  include: [bbbbAnalysis/triggers-SH4b-ResolvedMixed.yaml]
+  selection:
+    include: [bbbbAnalysis/triggers-SH4b-ResolvedMixed.yaml]
+  scale_factor:
+    jet:
+      include: [bbbbAnalysis/triggers-SH4b-ResolvedMixed.yaml]
 
 # can alternatively use the CutList to filter events to get trigger eff
 do_trigger_filtering: true

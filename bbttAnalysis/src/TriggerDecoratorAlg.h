@@ -106,9 +106,6 @@ namespace HHBBTT
     SG::ReadHandleKey<xAOD::TauJetContainer> m_tausKey
       { this, "taus", "", "Tau container" };
 
-    SG::ReadHandleKey<xAOD::JetContainer> m_jetsKey
-      { this, "jets", "", "Jet container" };
-
     Gaudi::Property<std::vector<std::string>> m_triggers 
       { this, "triggerLists", {}, "Name list of trigger" };
     std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::EventInfo> >
@@ -123,10 +120,6 @@ namespace HHBBTT
       SG::WriteDecorHandleKey<xAOD::ElectronContainer> > m_ele_trigMatch_DecorKey;
     std::unordered_map<HHBBTT::TriggerChannel,
       SG::WriteDecorHandleKey<xAOD::TauJetContainer> > m_tau_trigMatch_DecorKey;
-    std::unordered_map<HHBBTT::TriggerChannel,
-      SG::WriteDecorHandleKey<xAOD::JetContainer> > m_jet_trigMatch_OnlinePtKey;
-    std::unordered_map<HHBBTT::TriggerChannel,
-      SG::WriteDecorHandleKey<xAOD::JetContainer> > m_jet_trigMatch_OnlineEtaKey;
 
     ToolHandle<Trig::IMatchingTool> m_matchingTool
       { this, "trigMatchingTool", "", "Trigger matching tool"};
@@ -140,13 +133,7 @@ namespace HHBBTT
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::MuonContainer, char> > muTrigMatchWriteDecoMap;
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::ElectronContainer, char> > eleTrigMatchWriteDecoMap;
     typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::TauJetContainer, char> > tauTrigMatchWriteDecoMap;
-    typedef std::unordered_map<HHBBTT::TriggerChannel, SG::WriteDecorHandle<xAOD::JetContainer, float> > jetTrigMatchOnlineFloatMap;
-    typedef std::unordered_map<std::string, SG::ReadDecorHandle<xAOD::JetContainer, float> > jetReadTrigMatchfloatMap;
 
-    std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_HLTPTDecorKey;
-
-    std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_L1ETDecorKey;
-    std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_L1EtaDecorKey;
 
     void checkSingleMuTriggers
       (int year, const xAOD::EventInfo* eventInfo,
@@ -192,23 +179,12 @@ namespace HHBBTT
        const runBoolReadDecoMap& runBoolDecos, const trigReadDecoMap& triggerdecos,
        passWriteDecoMap& pass_decos,
        const xAOD::TauJetContainer* taus,
-       tauTrigMatchWriteDecoMap& tau_trigMatchDecos,
-       const xAOD::JetContainer* jets,
-       jetTrigMatchOnlineFloatMap& jet_trigMatchOnlinePt,
-       jetTrigMatchOnlineFloatMap& jet_trigMatchOnlineEta,
-       jetReadTrigMatchfloatMap& jetL1ET,
-       jetReadTrigMatchfloatMap& jetL1Eta) const;
+       tauTrigMatchWriteDecoMap& tau_trigMatchDecos) const;
 
      void checkDiBJetTriggers
       (int year, const xAOD::EventInfo* eventInfo,
        const runBoolReadDecoMap& runBoolDecos, const trigReadDecoMap& triggerdecos,
-       passWriteDecoMap& pass_decos,
-       const xAOD::JetContainer* jets,
-       jetTrigMatchOnlineFloatMap& jet_trigMatchOnlinePt,
-       jetTrigMatchOnlineFloatMap& jet_trigMatchOnlineEta,
-       jetReadTrigMatchfloatMap& jetHLTPT,
-       jetReadTrigMatchfloatMap& jetL1ET,
-       jetReadTrigMatchfloatMap& jetL1Eta) const;
+       passWriteDecoMap& pass_decos) const;
 
     void checkLargeRJetsTriggers
       (int year, 

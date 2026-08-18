@@ -6,7 +6,6 @@
 #define HHH6BANALYSIS_SMALLRJETTRIGGERSFALG
 
 #include <AthenaBaseComps/AthHistogramAlgorithm.h>
-#include <AsgDataHandles/ReadDecorHandleKey.h>
 #include <AsgDataHandles/WriteDecorHandle.h>
 #include <SystematicsHandles/SysReadHandle.h>
 #include <SystematicsHandles/SysWriteHandle.h>
@@ -56,7 +55,7 @@ private:
     Gaudi::Property<std::string> m_matchingLevel{this, "matchingLevel", "HLT", "do L1 or HLT matching and SF"};
 
     std::unordered_map<std::string, std::vector<int>> m_triggerLegThresholds;
-    std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_ThresholdsDecorKey; // list of matched thresholds from JetDecoratorAlg
+    std::unordered_map<std::string, CP::SysReadDecorHandle<std::vector<int>>> m_ThresholdsDecor; // list of matched thresholds from CP::JetTriggerDecoratorAlg
     std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Threshold; // single matched threshold for each jet after event-level ambituity resolution
     std::unordered_map<std::string, CP::SysReadDecorHandle<int>> m_Thresholdread; // read handle for single matched threshold for each jet
 

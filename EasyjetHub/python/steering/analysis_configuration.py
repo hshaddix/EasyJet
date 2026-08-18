@@ -180,10 +180,6 @@ def get_trigger_chains(flags, type="selection"):
 
 
 def get_trigger_chains_scale_factor(flags, obj=None):
-    if not flags.Analysis.Trigger.scale_factor.doSF \
-            and not flags.Analysis.Trigger.scale_factor.do_trigger_match:
-        return {}
-
     if obj:
         if not hasattr(flags.Analysis.Trigger.scale_factor, obj):
             return {}

@@ -2,8 +2,6 @@
   Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
-/// @author Frederic Renner
-
 #include "JetSelectorAlg.h"
 
 namespace Easyjet
@@ -56,7 +54,7 @@ namespace Easyjet
       ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_inHandle));
     }
 
-    for (const auto& trig : m_triggers) {
+    for (const auto& trig : m_bJetTriggers) {
       m_bTagTrigMatching_in.emplace_back("ftag_bTagTrigMatching_" + trig + "_%SYS%", this);
       m_bTagTrigMatching_out.emplace_back("ftag_bTagTrigMatching_" + trig + "_%SYS%", this);
     }
@@ -65,6 +63,40 @@ namespace Easyjet
       ATH_CHECK(handle.initialize(m_systematicsList, m_inHandle, SG::AllowEmpty));
     for(auto& handle : m_bTagTrigMatching_out)
       ATH_CHECK(handle.initialize(m_systematicsList, m_outHandle, SG::AllowEmpty));
+
+    std::vector<std::string> vars;
+    std::vector<std::string> vars_thresh;
+    if(m_doL1Matching){
+      vars.insert(vars.end(), {"L1et", "L1eta", "L1phi", "L1dr"});
+      vars_thresh.push_back("L1thresholds");
+    }
+    if(m_doHLTMatching) {
+      vars.insert(vars.end(), {"HLTpt", "HLTeta", "HLTphi", "HLTdr"});
+      vars_thresh.push_back("HLTthresholds");
+    }
+
+    for (const auto& trig : m_jetTriggers) {
+      for (const auto& var : vars){
+	std::string trig_var = "match_" + trig + "_" + var + "_%SYS%";
+	m_jetTrigMatching_in.emplace_back(trig_var, this);
+	m_jetTrigMatching_out.emplace_back(trig_var, this);
+      }
+      for (const auto& var : vars_thresh){
+	std::string trig_var = "match_" + trig + "_" + var + "_%SYS%";
+	m_jetTrigMatching_thresh_in.emplace_back(trig_var, this);
+	m_jetTrigMatching_thresh_out.emplace_back(trig_var, this);
+      }
+    }
+
+    for(auto& handle : m_jetTrigMatching_in)
+      ATH_CHECK(handle.initialize(m_systematicsList, m_inHandle, SG::AllowEmpty));
+    for(auto& handle : m_jetTrigMatching_out)
+      ATH_CHECK(handle.initialize(m_systematicsList, m_outHandle, SG::AllowEmpty));
+    for(auto& handle : m_jetTrigMatching_thresh_in)
+      ATH_CHECK(handle.initialize(m_systematicsList, m_inHandle, SG::AllowEmpty));
+    for(auto& handle : m_jetTrigMatching_thresh_out)
+      ATH_CHECK(handle.initialize(m_systematicsList, m_outHandle, SG::AllowEmpty));
+
 
     if (!m_rawinHandle.empty()) {
       ATH_CHECK (m_isSelectedJet.initialize(m_systematicsList,m_rawinHandle));
@@ -161,8 +193,14 @@ namespace Easyjet
         m_isSelectedJet.set(*jet, isSelected, sys);
 
         // For some reason this decoration needs to be explicitly copied
-        for(unsigned int i=0; i<m_triggers.size(); i++){
+        for(unsigned int i=0; i<m_bJetTriggers.size(); i++){
           m_bTagTrigMatching_out[i].set(*jet, m_bTagTrigMatching_in[i].get(*jet,sys), sys);
+        }
+	for(unsigned int i=0; i<m_jetTrigMatching_in.size(); i++){
+          m_jetTrigMatching_out[i].set(*jet, m_jetTrigMatching_in[i].get(*jet,sys), sys);
+        }
+	for(unsigned int i=0; i<m_jetTrigMatching_thresh_in.size(); i++){
+          m_jetTrigMatching_thresh_out[i].set(*jet, m_jetTrigMatching_thresh_in[i].get(*jet,sys), sys);
         }
       }
       

@@ -16,9 +16,6 @@ splitOutputTree: true
 Trigger:
   selection:
     include: [trigger_boosted.yaml]
-  # TODO: __BOOSTED__ for the moment no SF are avalailable
-  scale_factor:
-    doSF: false
 
 # Update output configs for large-R jets
 ttree_output:
