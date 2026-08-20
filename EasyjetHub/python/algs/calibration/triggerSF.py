@@ -8,6 +8,13 @@ from EasyjetHub.steering.analysis_configuration import get_trigger_chains_scale_
 from EasyjetHub.steering.utils.log_helper import log
 
 
+def useGlobalTriggerSF(flags):
+    trig_flg = flags.Analysis.Trigger.scale_factor
+    return trig_flg.doSF and (
+            hasattr(trig_flg, 'Electron') or hasattr(trig_flg, 'Muon')
+            or hasattr(trig_flg, 'Photon'))
+
+
 def triggerSF_sequence(flags):
 
     trigSF_flags = flags.Analysis.Trigger.scale_factor

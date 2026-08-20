@@ -60,6 +60,8 @@ Small_R_jet:
   btag_extra_wps: []
   runBJetPtCalib: true
   useFJvt: False
+  # flag to save per-jet scale factor for FTag CP and bjet-trigger CP
+  savePerJetFTagSF: False
   doL1Matching: False
   doHLTMatching: False
   # necessary when using b-jet trigger in Run2

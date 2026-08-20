@@ -26,7 +26,9 @@ from EasyjetHub.algs.calibration.selection_decoration import (
     selection_decoration_sequence)
 from EasyjetHub.algs.postprocessing.overlap_removal import overlap_sequence
 from EasyjetHub.algs.postprocessing.thinning import thinning_sequence
-from EasyjetHub.algs.calibration.triggerSF import triggerSF_sequence
+from EasyjetHub.algs.calibration.triggerSF import (
+    triggerSF_sequence, useGlobalTriggerSF
+)
 from EasyjetHub.steering.utils.log_helper import log
 
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
@@ -151,7 +153,7 @@ def cpalgs_cfg(flags):
         configSeq += overlap_sequence(flags)
 
     if not flags.Analysis.disable_calib and \
-            ((flags.Input.isMC and flags.Analysis.Trigger.scale_factor.doSF)
+            ((flags.Input.isMC and useGlobalTriggerSF(flags))
                 or flags.Analysis.Trigger.scale_factor.do_trigger_match) and \
                     (not flags.Analysis.Trigger.scale_factor.use_analysis_objects):
         configSeq += triggerSF_sequence(flags)

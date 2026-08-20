@@ -92,9 +92,11 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
                 for wp in btag_wps:
                     if "FixedCutBEff" in wp:
                         continue
-                    small_R_jet_branches.variables += [
-                        (f"ftag_effSF_{wp}_%SYS%", None)
-                    ]
+                    if flags.Analysis.Small_R_jet.savePerJetFTagSF:
+                        small_R_jet_branches.variables += [
+                            (f"ftag_effSF_{wp}_%SYS%", None)
+                        ]
+
 
                     # Add trigger SF
                     trigSF_flags = flags.Analysis.Trigger.scale_factor
@@ -107,6 +109,10 @@ def get_small_R_jet_branches(flags, tree_flags, input_container, output_prefix):
                                     (f"ftag_jetTrigMatching_{chain}_%SYS%", None),
                                     (f"ftag_bTagTrigMatching_{chain}_%SYS%", None)
                                 ]
+                                if flags.Analysis.Small_R_jet.savePerJetFTagSF:
+                                    small_R_jet_branches.variables += [
+                                        (f"ftag_effSF_{wp}_{chain}_%SYS%", None)
+                                    ]
 
         if flags.Analysis.Small_R_jet.runBJetPtCalib:
             if jet_output_flags.no_bjet_calib_p4:

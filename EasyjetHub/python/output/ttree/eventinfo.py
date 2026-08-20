@@ -3,6 +3,7 @@ from AthenaConfiguration.Enums import LHCPeriod
 from EasyjetHub.steering.sample_metadata import is_at_least
 from EasyjetHub.steering.sample_metadata import STXS_info
 from EasyjetHub.steering.analysis_configuration import get_trigger_chains_scale_factor
+from EasyjetHub.algs.calibration.triggerSF import useGlobalTriggerSF
 
 
 def get_event_info_branches(flags, tree_flags, trigger_chains):
@@ -119,7 +120,7 @@ def get_event_info_branches(flags, tree_flags, trigger_chains):
 
     # Event-level scale factors
     trg_vars = []
-    if flags.Input.isMC and flags.Analysis.Trigger.scale_factor.doSF:
+    if (flags.Input.isMC and useGlobalTriggerSF(flags)):
         trg_vars.append(("globalTriggerEffSF_%SYS%", "float"))
     if flags.Analysis.Trigger.scale_factor.do_trigger_match:
         trg_vars.append(("globalTriggerMatch_%SYS%", None))
