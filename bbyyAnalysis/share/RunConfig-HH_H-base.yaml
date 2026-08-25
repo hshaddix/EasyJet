@@ -46,6 +46,8 @@ BDT_path:
   - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run2_highMass.root"
   - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run3_lowMass.root"
   - "bbyyAnalysis/bdt_HH2025_no_KF_no_corr_no_Data2024_run3_highMass.root"
+  - "bbyyAnalysis/bdt_HH2026_no_KF_corr_Data2024_run23_lowMass.root" # Updated v3p1 non-KF Run23 models (2026), added as a new category
+  - "bbyyAnalysis/bdt_HH2026_no_KF_corr_Data2024_run23_highMass.root"
 
 GNN_path_run2:
   - "bbyyAnalysis/GNN_ggFTarget_run2.onnx"
@@ -55,10 +57,17 @@ GNN_path_run3:
   - "bbyyAnalysis/GNN_ggFTarget_run3.onnx"
   - "bbyyAnalysis/GNN_VBFTarget_run3.onnx"
 
-# Transformer-based event categorisation model
+# Transformer-based event categorisation models
+# Paths are positional, matching TRANSFORMER_MODEL_SUFFIXES in bbyy_base_config.py
 do_Transformer_categorisation: true
-Transformer_categorisation_path: "bbyyAnalysis/bbyyTransformerV01.onnx"
-Transformer_categorisation_io_path: "bbyyAnalysis/bbyyTransformerV01_io.json"
+Transformer_categorisation_paths:
+  - "bbyyAnalysis/bbyyTransformerHMV01.onnx"
+  - "bbyyAnalysis/bbyyTransformerLMV01.onnx"
+  - "bbyyAnalysis/bbyyTransformerAMV01.onnx"
+Transformer_categorisation_io_paths:
+  - "bbyyAnalysis/bbyyTransformerHMV01_io.json"
+  - "bbyyAnalysis/bbyyTransformerLMV01_io.json"
+  - "bbyyAnalysis/bbyyTransformerAMV01_io.json"
 
 #  choose VBF jets selection method
 

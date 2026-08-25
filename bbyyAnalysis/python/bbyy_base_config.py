@@ -12,6 +12,14 @@ from EasyjetHub.output.ttree.selected_objects import (
 import AthenaCommon.SystemOfUnits as Units
 from itertools import chain
 
+# Suffixes of the configured transformer categorisation models matching
+# flags.Analysis.Transformer_categorisation_paths io_paths
+# Output classes are shared across models. Branch output will be like 
+# TransformerHMV01_pggFHH and etc
+TRANSFORMER_MODEL_SUFFIXES = ["HMV01", "LMV01", "AMV01"]
+TRANSFORMER_OUTPUT_CLASSES = ["pggFHH", "pVBFHH", "pZH", "potherSH",
+                              "pyyjets", "pttH", "pggFH_bbH"]
+
 
 def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
              float_variables=None, int_variables=None):
@@ -168,19 +176,27 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
     transformer_tool_kwargs = {}
     if flags.Analysis.do_Transformer_categorisation:
         from ONNXInferenceTool.ONNXInferenceTool_config import ONNXInferenceTool_Cfg
-        transformer_tool_kwargs["TransformerCategorisationTool"] = cfg.popToolsAndMerge(
-            ONNXInferenceTool_Cfg(
-                flags,
-                "TransformerCategorisationTool",
-                ModelPath=flags.Analysis.Transformer_categorisation_path,
-                IOConfigPath=flags.Analysis.Transformer_categorisation_io_path,
+        transformer_tool_kwargs["TransformerCategorisationTools"] = [
+            cfg.popToolsAndMerge(
+                ONNXInferenceTool_Cfg(
+                    flags,
+                    f"TransformerCategorisationTool_{tf_suffix}",
+                    ModelPath=model_path,
+                    IOConfigPath=io_path,
+                )
             )
-        )
+            for tf_suffix, model_path, io_path in zip(
+                TRANSFORMER_MODEL_SUFFIXES,
+                flags.Analysis.Transformer_categorisation_paths,
+                flags.Analysis.Transformer_categorisation_io_paths,
+            )
+        ]
 
     cfg.addEventAlgo(
         CompFactory.HHBBYY.BaselineVarsbbyyAlg(
             "BaselineVarsbbyyAlg",
             KFJets="bbyyAnalysisKF1Jets_%SYS%" if flags.Analysis.do_KinematicFit else "",
+            recoJets=smalljetkey if flags.Analysis.do_Transformer_categorisation else "",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
             do_nonresonant_BDTs=flags.Analysis.do_nonresonant_BDTs,
@@ -283,7 +299,7 @@ def get_BaselineVarsbbyyAlg_variables(flags):
     # Number of objects
     int_variable_names += ["nJets", "nCentralJets", "nBJets"]
     if flags.Analysis.do_nonresonant_BDTs:
-        int_variable_names += ["bdtSel_category"]
+        int_variable_names += ["bdtSel_category", "bdtSel_category_2026"]
 
     # Reconstructed Higgses
     float_variable_names += ["mbb", "pTbb", "Etabb", "Phibb", "dRbb"]
@@ -312,7 +328,7 @@ def get_BaselineVarsbbyyAlg_variables(flags):
     float_variable_names += ["mbbyy", "mbbyy_star", "pTbbyy", "Etabbyy",
                              "Phibbyy", "dRbbyy"]
     if flags.Analysis.do_nonresonant_BDTs:
-        float_variable_names += ["bdtSel_score"]
+        float_variable_names += ["bdtSel_score", "bdtSel_score_2026"]
 
     if (flags.Analysis.save_extra_vars):
         float_variable_names += ["DeltaPhi_bb_yy_cm_bbyy"]
@@ -417,8 +433,8 @@ def get_BaselineVarsbbyyAlg_variables(flags):
 
     # Transformer-based event categorisation and process probabilities
     if (flags.Analysis.do_Transformer_categorisation):
-        float_variable_names += ["Transformer_pggFHH", "Transformer_pVBFHH", "Transformer_pZH",
-                                 "Transformer_pyyjets", "Transformer_psingleH"]
+        for tf_suffix in TRANSFORMER_MODEL_SUFFIXES[:len(flags.Analysis.Transformer_categorisation_paths)]:
+            float_variable_names += [f"Transformer{tf_suffix}_{tf_class}" for tf_class in TRANSFORMER_OUTPUT_CLASSES]
 
     # save extra variables which may be useful, but are
     # not necessary for barebones SHbbyy analysis

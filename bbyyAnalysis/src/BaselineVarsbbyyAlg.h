@@ -49,7 +49,9 @@ namespace HHBBYY
     HH2025_low_mass_Run2 = 13,
     HH2025_high_mass_Run2 = 14,
     HH2025_low_mass_Run3 = 15,
-    HH2025_high_mass_Run3 = 16
+    HH2025_high_mass_Run3 = 16,
+    HH2026_low_mass_Run23 = 17,
+    HH2026_high_mass_Run23 = 18
   };
 
   enum GNN {
@@ -122,6 +124,8 @@ namespace HHBBYY
     bbyy_mStar_KF,
     bbyy_mStar_GNN,
     bb_m_KF_unconstrained,
+    bdt_sel_score_2026,
+    bdt_sel_category_2026,
     size_enum,
   };
 
@@ -212,11 +216,17 @@ namespace HHBBYY
     std::vector<const xAOD::Jet*> getHbb_GNN_ggFTarget(const xAOD::JetContainer *jets, const TLorentzVector& ph1, const TLorentzVector& ph2, float& max_score, float pile_up, const auto &sys);
     std::vector<const xAOD::Jet*> getHbb_GNN_VBFTarget(const xAOD::JetContainer *jets, const TLorentzVector& ph1, const TLorentzVector& ph2, float& max_score, float pile_up, const auto &sys);
 
-    // Builds the tensors defined in m_transformerTool IOConfig and stores
-    // the model scores in m_Fbranches. The only non-configurable part is mapping
-    // feature names like pt, pcbt and ptOverMyy to their values.
-    void runTransformerCategorisation(float KF_HT, float KF_sphericityT, float KF_planarFlow,
-                              const xAOD::JetContainer *jets, const xAOD::JetContainer *KFJets,
+    // Builds the tensors defined in the IOConfig of m_transformerTools and
+    // for each configured model stores its scores in m_Fbranches. The only
+    // non-configurable part is mapping feature names like pt, pcbt and ptOverMyy
+    // to their values.
+    // Jets are recojets, sorted by pT. pt_KinFit and E_KinFit are substituted onto the
+    // up 4 leading PCBT-ranked jets from KFJets
+    void runTransformerCategorisation(float KF_HT, float topness, float KF_sphericityT, float KF_planarFlow,
+                              float KF_pTBalance, float KF_mbb, float dRyy,
+                              float met, float met_phi,
+                              const xAOD::JetContainer *jets,
+                              const xAOD::JetContainer *KFJets,
                               const TLorentzVector& ph1, const TLorentzVector& ph2,
                               const xAOD::EventInfo *event, const auto &sys);
 
@@ -225,6 +235,10 @@ namespace HHBBYY
 
     CP::SysReadHandle<xAOD::JetContainer>
       m_bbyyJetHandle{ this, "bbyyJets", "bbyyAnalysisJets_%SYS%", "Jet container to read" };
+
+    // recoJet container is used
+    CP::SysReadHandle<xAOD::JetContainer>
+      m_recoJetHandle{ this, "recoJets", "", "recoJet container to read for transformer categorisation" };
 
     CP::SysReadDecorHandle<char>
     m_isBtag {this, "bTagWPDecorName", "", "Name of input decorator for b-tagging"};
@@ -287,8 +301,8 @@ namespace HHBBYY
     Gaudi::Property<bool> m_doTransformer_categorisation
       { this, "doTransformer_categorisation", false, "Do Transformer-based event categorisation?" };
 
-    ToolHandle<ONNXInferenceTool> m_transformerTool
-      {this, "TransformerCategorisationTool", "", "Generic ONNX inference tool configured for the transformer categorisation model"};
+    ToolHandleArray<ONNXInferenceTool> m_transformerTools
+      {this, "TransformerCategorisationTools", {}, "Generic ONNX inference tools (one per transformer categorisation model)"};
 
     Gaudi::Property<std::string> m_vbfjets_method_str
       {this, "VBFjetsMethod", "", "VBF jets selection method"};

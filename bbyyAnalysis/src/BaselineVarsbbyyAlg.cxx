@@ -15,6 +15,8 @@
 
 #include <AthenaKernel/Units.h>
 
+#include <algorithm>
+
 namespace HHBBYY
 {
   StatusCode BaselineVarsbbyyAlg::initialize()
@@ -83,11 +85,12 @@ namespace HHBBYY
     if(m_doTransformer_categorisation)
     {
       if(!m_doKF){
-        ANA_MSG_WARNING("doTransformer_categorisation is set but doKF=false (model inputs are KF vars) -- "
+        ANA_MSG_WARNING("doTransformer_categorisation is set but doKF=false (model inputs include KF vars), "
                         <<"disabling transformer categorisation, Transformer_* branches will be filled with -99.");
         m_doTransformer_categorisation = false;
       } else {
-        ATH_CHECK(m_transformerTool.retrieve());
+        ATH_CHECK(m_transformerTools.retrieve());
+        ATH_CHECK(m_recoJetHandle.initialize(m_systematicsList));
       }
     }
 
@@ -148,6 +151,11 @@ namespace HHBBYY
         ANA_CHECK (m_KFJetHandle.retrieve (KFJets, sys, ctx));
       }
 
+      const xAOD::JetContainer *recoJets = nullptr;
+      if(m_doTransformer_categorisation){
+        ANA_CHECK (m_recoJetHandle.retrieve (recoJets, sys, ctx));
+      }
+
       // initialize
       TLorentzVector H_bb(0.,0.,0.,0.);
       TLorentzVector H_yy(0.,0.,0.,0.);
@@ -177,6 +185,7 @@ namespace HHBBYY
       int nCentralJets = 0;
       double HT = 0.; // scalar sum of jet pT
       double KF_HT = 0;
+      float KF_pTBalance = -99.;
 
       bool WPgiven = !m_isBtag.empty();
       bool PCBTgiven = !m_PCBT.empty();
@@ -287,22 +296,26 @@ namespace HHBBYY
       }
 
       // More global variables
-      if(m_save_nonresonant_BDTInput_variables){
-        float topness = compute_Topness(jets, sys);
+      float topness = -99., sphericityT = -99., planarFlow = -99., pTBalance = -99.;
+      if(m_save_nonresonant_BDTInput_variables || m_doTransformer_categorisation){
+        topness = compute_Topness(jets, sys);
         m_Fbranches.at("topness").set(*event, topness, sys);
 
         std::vector<float> eventShapes = compute_EventShapes(Hbb_Jet1, Hbb_Jet2, Hyy_photons, n_photons);
-        m_Fbranches.at("sphericityT").set(*event, eventShapes[0], sys);
-        m_Fbranches.at("planarFlow").set(*event, eventShapes[1], sys);
+        sphericityT = eventShapes[0];
+        planarFlow = eventShapes[1];
+        m_Fbranches.at("sphericityT").set(*event, sphericityT, sys);
+        m_Fbranches.at("planarFlow").set(*event, planarFlow, sys);
 
-        eventFloats.at(HHBBYY::Var::sphericityT) = eventShapes[0];
-        eventFloats.at(HHBBYY::Var::planarFlow) = eventShapes[1];
+        eventFloats.at(HHBBYY::Var::sphericityT) = sphericityT;
+        eventFloats.at(HHBBYY::Var::planarFlow) = planarFlow;
         eventFloats.at(HHBBYY::Var::topness) = topness;
 
-        float pTBalance = compute_pTBalance(Hbb_Jet1, Hbb_Jet2, Hyy_photons, n_photons);
+        pTBalance = compute_pTBalance(Hbb_Jet1, Hbb_Jet2, Hyy_photons, n_photons);
         m_Fbranches.at("pTBalance").set(*event, pTBalance, sys);
         m_Fbranches.at("HT").set(*event, HT, sys);
       }
+
       m_Ibranches.at("nJets").set(*event, jets->size(), sys);
       m_Ibranches.at("nCentralJets").set(*event, nCentralJets, sys);
       m_Ibranches.at("nBJets").set(*event, bjets->size(), sys);
@@ -314,9 +327,12 @@ namespace HHBBYY
       if(m_do_nonresonant_BDTs){
         if (n_photons >= 2 && Hbb_Jet1 && Hbb_Jet2) {
           performCategorisationBDT(ph1, ph2, Hbb_Jet1, Hbb_Jet2, jets, metCont, sys, eventFloats, eventInts, false, false, false, false, year);
+          performCategorisationBDT(ph1, ph2, Hbb_Jet1, Hbb_Jet2, jets, metCont, sys, eventFloats, eventInts, false, false, true, true, year);
         }
         m_Fbranches.at("bdtSel_score").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score), sys);
         m_Ibranches.at("bdtSel_category").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category), sys);
+        m_Fbranches.at("bdtSel_score_2026").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score_2026), sys);
+        m_Ibranches.at("bdtSel_category_2026").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category_2026), sys);
       }
 
       //KF jets sector
@@ -407,7 +423,7 @@ namespace HHBBYY
           //mva variables
           float KF_topness = compute_Topness(KFJets, sys);
           std::vector<float> KF_eventShapes = compute_EventShapes(Hbb_KFJet1, Hbb_KFJet2, Hyy_photons, n_photons);
-          float KF_pTBalance = compute_pTBalance(Hbb_KFJet1, Hbb_KFJet2, Hyy_photons, n_photons);
+          KF_pTBalance = compute_pTBalance(Hbb_KFJet1, Hbb_KFJet2, Hyy_photons, n_photons);
           m_Fbranches.at("KF_topness").set(*event, KF_topness, sys);
           m_Fbranches.at("KF_sphericityT").set(*event, KF_eventShapes[0], sys);
           m_Fbranches.at("KF_planarFlow").set(*event, KF_eventShapes[1], sys);
@@ -439,14 +455,17 @@ namespace HHBBYY
             }
           }
 
-          // Transformer-based event categorisation execute
-          if (m_doTransformer_categorisation && n_photons >= 2 && Hbb_KFJet1 && Hbb_KFJet2) {
-            runTransformerCategorisation(KF_HT,
-                                 eventFloats.at(HHBBYY::Var::sphericityT_KF),
-                                 eventFloats.at(HHBBYY::Var::planarFlow_KF),
-                                 jets, KFJets, ph1, ph2,
-                                 event, sys);
-          }
+      }
+
+      // Transformer-based event categorisation execute (recojet_antikt4PFlow container sorted by pT,
+      // pt/E of the leading PCBT-ranked jets substituted with their KinFit versions)
+      if (m_doTransformer_categorisation && n_photons >= 2 && Hbb_Jet1 && Hbb_Jet2) {
+        float dRyy = ph1.DeltaR(ph2);
+        runTransformerCategorisation(KF_HT, topness, eventFloats.at(HHBBYY::Var::sphericityT_KF),
+                             eventFloats.at(HHBBYY::Var::planarFlow_KF), KF_pTBalance,
+                             eventFloats.at(HHBBYY::Var::bb_m_KF_unconstrained), dRyy,
+                             met->met(), met->phi(),
+                             recoJets, KFJets, ph1, ph2, event, sys);
       }
 
       //GNN Implementation
@@ -889,31 +908,70 @@ namespace HHBBYY
   // Transformer based categorization implementation.
   //
   // Model specific details like tensor names, shapes, feature order and output classes
-  // are defined in m_transformerTool IOConfig JSON. To use another model,
-  // only the .onnx file and JSON config need to be changed.
+  // are defined independently in each m_transformerTools entry IOConfig JSON, so
+  // different models may use different inputs.
+  // Jets are recojets, sorted by pT before going to the model max_objects("jet_features")
   //
   // The three lambdas below translate configured feature names such as
   // pt, pcbt or ptOverMyy into values from the framework
-  void BaselineVarsbbyyAlg::runTransformerCategorisation(float KF_HT, float KF_sphericityT, float KF_planarFlow,
-                                                const xAOD::JetContainer *jets, const xAOD::JetContainer *KFJets,
+  void BaselineVarsbbyyAlg::runTransformerCategorisation(float KF_HT, float topness, float KF_sphericityT, float KF_planarFlow,
+                                                float KF_pTBalance, float KF_mbb, float dRyy,
+                                                float met, float met_phi,
+                                                const xAOD::JetContainer *jets,
+                                                const xAOD::JetContainer *KFJets,
                                                 const TLorentzVector& ph1, const TLorentzVector& ph2,
                                                 const xAOD::EventInfo *event, const auto &sys) {
 
     auto eventFeatureValue = [&](const std::string &name) -> float {
-      if (name == "HT")          return KF_HT;
-      if (name == "sphericityT") return KF_sphericityT;
-      if (name == "planarFlow")  return KF_planarFlow;
+      if (name == "HT_KF")          return KF_HT;
+      if (name == "met")            return met;
+      if (name == "met_phi")        return met_phi;
+      if (name == "topness")        return topness;
+      if (name == "sphericityT_KF") return KF_sphericityT;
+      if (name == "planarFlow_KF")  return KF_planarFlow;
+      if (name == "pTBalance_KF")   return KF_pTBalance;
+      if (name == "mbb_KF")         return KF_mbb;
+      if (name == "dRyy")           return dRyy;
       ANA_MSG_ERROR("Unknown event feature '" << name << "' requested by the transformer categorisation IOConfig.");
       return -99.f;
     };
 
+    std::vector<const xAOD::Jet*> sortedJets(jets->begin(), jets->end());
+    std::sort(sortedJets.begin(), sortedJets.end(), [](const xAOD::Jet *a, const xAOD::Jet *b) { return a->pt() > b->pt(); });
+
+    // pt_KinFit and E_KinFit start from the plain reco kinematics, then substitute in the KF-corrected
+    // pt/E for up 4 leading PCBT-ranked jets. This reproduces r2h5 getPCBTOrderedIndices + replaceJetVecWithKF
+    std::vector<float> jetPtKinFit(sortedJets.size());
+    std::vector<float> jetEKinFit(sortedJets.size());
+    for (std::size_t i = 0; i < sortedJets.size(); i++) {
+      jetPtKinFit[i] = static_cast<float>(sortedJets[i]->pt());
+      jetEKinFit[i]  = static_cast<float>(sortedJets[i]->e());
+    }
+    if (KFJets) {
+      std::vector<std::size_t> pcbtOrderedIdx;
+      for (std::size_t i = 0; i < sortedJets.size(); i++) {
+        if (m_PCBT.get(*sortedJets[i], sys) != -1) pcbtOrderedIdx.push_back(i);
+      }
+      std::stable_sort(pcbtOrderedIdx.begin(), pcbtOrderedIdx.end(), [&](std::size_t a, std::size_t b) {
+        return m_PCBT.get(*sortedJets[a], sys) > m_PCBT.get(*sortedJets[b], sys);
+      });
+      if (pcbtOrderedIdx.size() > 4) pcbtOrderedIdx.resize(4);
+      for (std::size_t k = 0; k < pcbtOrderedIdx.size() && k < KFJets->size(); k++) {
+        jetPtKinFit[pcbtOrderedIdx[k]] = static_cast<float>(KFJets->at(k)->pt());
+        jetEKinFit[pcbtOrderedIdx[k]]  = static_cast<float>(KFJets->at(k)->e());
+      }
+    }
+
     auto jetFeatureValue = [&](const std::string &name, std::size_t i) -> float {
-      TLorentzVector j = KFJets->at(i)->p4();
-      if (name == "pt")   return static_cast<float>(j.Pt());
-      if (name == "eta")  return static_cast<float>(j.Eta());
-      if (name == "phi")  return static_cast<float>(j.Phi());
-      if (name == "E")    return static_cast<float>(j.E());
-      if (name == "pcbt") return static_cast<float>(m_PCBT.get(*jets->at(i), sys));
+      const xAOD::Jet *jet = sortedJets[i];
+      TLorentzVector j = jet->p4();
+      if (name == "pt")        return static_cast<float>(j.Pt());
+      if (name == "eta")       return static_cast<float>(j.Eta());
+      if (name == "phi")       return static_cast<float>(j.Phi());
+      if (name == "E")         return static_cast<float>(j.E());
+      if (name == "pt_KinFit") return jetPtKinFit[i];
+      if (name == "E_KinFit")  return jetEKinFit[i];
+      if (name == "pcbt")      return static_cast<float>(m_PCBT.get(*jet, sys));
       ANA_MSG_ERROR("Unknown jet feature '" << name << "' requested by the transformer categorisation IOConfig.");
       return -99.f;
     };
@@ -929,40 +987,42 @@ namespace HHBBYY
       return -99.f;
     };
 
-    const std::size_t n_jets = std::min({jets->size(), KFJets->size(), m_transformerTool->maxObjects("jet_features")});
-    const std::size_t n_photons = std::min(photons.size(), m_transformerTool->maxObjects("photon_features"));
+    for (const ToolHandle<ONNXInferenceTool> &tool : m_transformerTools) {
+      const std::size_t n_jets = std::min(sortedJets.size(), tool->maxObjects("jet_features"));
+      const std::size_t n_photons = std::min(photons.size(), tool->maxObjects("photon_features"));
 
-    std::map<std::string, std::pair<std::vector<float>, int64_t>> inputs;
+      std::map<std::string, std::pair<std::vector<float>, int64_t>> inputs;
 
-    const std::vector<std::string> &eventFeatures = m_transformerTool->inputFeatures("event_features");
-    std::vector<float> eventBuf;
-    eventBuf.reserve(eventFeatures.size());
-    for (const std::string &feature : eventFeatures) eventBuf.push_back(eventFeatureValue(feature));
-    inputs["event_features"] = {eventBuf, 1};
+      const std::vector<std::string> &eventFeatures = tool->inputFeatures("event_features");
+      std::vector<float> eventBuf;
+      eventBuf.reserve(eventFeatures.size());
+      for (const std::string &feature : eventFeatures) eventBuf.push_back(eventFeatureValue(feature));
+      inputs["event_features"] = {eventBuf, 1};
 
-    const std::vector<std::string> &jetFeatures = m_transformerTool->inputFeatures("jet_features");
-    std::vector<float> jetBuf;
-    jetBuf.reserve(n_jets * jetFeatures.size());
-    for (std::size_t i = 0; i < n_jets; i++)
-      for (const std::string &feature : jetFeatures) jetBuf.push_back(jetFeatureValue(feature, i));
-    inputs["jet_features"] = {jetBuf, static_cast<int64_t>(n_jets)};
+      const std::vector<std::string> &jetFeatures = tool->inputFeatures("jet_features");
+      std::vector<float> jetBuf;
+      jetBuf.reserve(n_jets * jetFeatures.size());
+      for (std::size_t i = 0; i < n_jets; i++)
+        for (const std::string &feature : jetFeatures) jetBuf.push_back(jetFeatureValue(feature, i));
+      inputs["jet_features"] = {jetBuf, static_cast<int64_t>(n_jets)};
 
-    const std::vector<std::string> &photonFeatures = m_transformerTool->inputFeatures("photon_features");
-    std::vector<float> photonBuf;
-    photonBuf.reserve(n_photons * photonFeatures.size());
-    for (std::size_t i = 0; i < n_photons; i++)
-      for (const std::string &feature : photonFeatures) photonBuf.push_back(photonFeatureValue(feature, i));
-    inputs["photon_features"] = {photonBuf, static_cast<int64_t>(n_photons)};
+      const std::vector<std::string> &photonFeatures = tool->inputFeatures("photon_features");
+      std::vector<float> photonBuf;
+      photonBuf.reserve(n_photons * photonFeatures.size());
+      for (std::size_t i = 0; i < n_photons; i++)
+        for (const std::string &feature : photonFeatures) photonBuf.push_back(photonFeatureValue(feature, i));
+      inputs["photon_features"] = {photonBuf, static_cast<int64_t>(n_photons)};
 
-    std::map<std::string, float> outputs;
-    if (m_transformerTool->run(inputs, outputs).isFailure()) {
-      ANA_MSG_ERROR("ONNXInferenceTool::run failed for transformer categorisation; "
-                    << "Transformer_* branches will keep their default (-99) values this event.");
-      return;
-    }
+      std::map<std::string, float> outputs;
+      if (tool->run(inputs, outputs).isFailure()) {
+        ANA_MSG_ERROR("ONNXInferenceTool::run failed for transformer categorisation tool '" << tool.name()
+                      << "'; its Transformer*_* branches will keep their default -99 values this event.");
+        continue;
+      }
 
-    for (const auto &[key, value] : outputs) {
-      if (m_Fbranches.contains(key)) m_Fbranches.at(key).set(*event, value, sys);
+      for (const auto &[key, value] : outputs) {
+        if (m_Fbranches.contains(key)) m_Fbranches.at(key).set(*event, value, sys);
+      }
     }
   }
 
@@ -1439,8 +1499,8 @@ namespace HHBBYY
                                                      std::map<HHBBYY::Var, float> &eventFloats,
                                                      std::map<HHBBYY::Var, int> &eventInts, bool isKFvariables, bool isGNNvariables, bool isCorrelatedModel, bool is2024Model, int year) {
 
-    if (m_bdts.size()!=17){
-      ANA_MSG_ERROR("17 BDTs are required");
+    if (m_bdts.size()!=19){
+      ANA_MSG_ERROR("19 BDTs are required");
       return;
     }
 
@@ -1458,7 +1518,7 @@ namespace HHBBYY
     std::vector<float> vars = makeXGBoostDMatrixLegacyNonres(ph1, ph2,  cat_jets, met, sys, eventFloats, isKFvariables, isGNNvariables);
 
     // High mass channel Selection
-    if (!isKFvariables){
+    if (!isKFvariables && !is2024Model){
       if (eventFloats.at(isGNNvariables ? HHBBYY::Var::bbyy_mStar_GNN : HHBBYY::Var::bbyy_mStar) >= 350 * Athena::Units::GeV) {
         // get BDT score
         float score = -99;
@@ -1528,6 +1588,38 @@ namespace HHBBYY
       }
       eventInts.at(isGNNvariables ? HHBBYY::Var::bdt_sel_category_GNN : HHBBYY::Var::bdt_sel_category) = XGBoostCat;
       eventFloats.at(isGNNvariables ? HHBBYY::Var::bdt_sel_score_GNN : HHBBYY::Var::bdt_sel_score) = XGBoostScore;
+    } else if (!isKFvariables && is2024Model) {
+      if (eventFloats.at(isGNNvariables ? HHBBYY::Var::bbyy_mStar_GNN : HHBBYY::Var::bbyy_mStar) >= 350 * Athena::Units::GeV) {
+        float score = m_bdts.at(HHBBYY::BDT::HH2026_high_mass_Run23)->GetClassification(vars);
+
+        if (score >= 0.96) {
+          XGBoostCat = 4003;
+        } else if (score >= 0.92) {
+          XGBoostCat = 4002;
+        } else if (score >= 0.77) {
+          XGBoostCat = 4001;
+        } else {
+          XGBoostCat = 4000;
+        }
+        XGBoostScore = score;
+      } else {
+        float score = m_bdts.at(HHBBYY::BDT::HH2026_low_mass_Run23)->GetClassification(vars);
+
+        if (score >= 0.985) {
+          XGBoostCat = 5004;
+        } else if (score >= 0.96) {
+          XGBoostCat = 5003;
+        } else if (score >= 0.9) {
+          XGBoostCat = 5002;
+        } else if (score >= 0.63) {
+          XGBoostCat = 5001;
+        } else {
+          XGBoostCat = 5000;
+        }
+        XGBoostScore = score;
+      }
+      eventInts.at(HHBBYY::Var::bdt_sel_category_2026) = XGBoostCat;
+      eventFloats.at(HHBBYY::Var::bdt_sel_score_2026) = XGBoostScore;
     } else { //KF models
       if (!isCorrelatedModel) { //uncorrelated model
         if (!is2024Model) { //uncorrelated model without 2024
