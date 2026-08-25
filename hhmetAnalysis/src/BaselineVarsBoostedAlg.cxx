@@ -21,17 +21,13 @@ namespace HHMET
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
 
     ATH_CHECK(m_R10TruthLabel.initialize(m_systematicsList, m_largeRjetHandle));
-    ATH_CHECK(m_GN2Xv01_phbb.initialize(m_systematicsList, m_largeRjetHandle));
-    ATH_CHECK(m_GN2Xv01_phcc.initialize(m_systematicsList, m_largeRjetHandle));
-    ATH_CHECK(m_GN2Xv01_pqcd.initialize(m_systematicsList, m_largeRjetHandle));
-    ATH_CHECK(m_GN2Xv01_ptop.initialize(m_systematicsList, m_largeRjetHandle));
     ATH_CHECK(m_Tau2_wta.initialize(m_systematicsList, m_largeRjetHandle));
     ATH_CHECK(m_Tau3_wta.initialize(m_systematicsList, m_largeRjetHandle));
 
     // make decorators
     for (const std::string &var: m_vars)
     {
-      std::string deco_var = var + m_bTagWP;
+      std::string deco_var = var + "_" + m_bTagWP;
       CP::SysWriteDecorHandle<float> deco{deco_var+"_%SYS%", this};
       m_decos.emplace(deco_var, deco);
       ATH_CHECK (m_decos.at(deco_var).initialize(m_systematicsList, m_eventHandle));
@@ -63,14 +59,12 @@ namespace HHMET
       ANA_CHECK (m_largeRjetHandle.retrieve (largeRjets, sys, ctx));
       std::size_t n_largeRjets = largeRjets->size();
 
-      ATH_MSG_VERBOSE("set containers");
-
       // set defaults
 
       for (const std::string& var : m_vars)
       {
-        std::string deco_var = var + m_bTagWP;
-        m_decos.at(deco_var).set(*eventInfo, -1, sys);
+        std::string deco_var = var + "_" + m_bTagWP;
+        m_decos.at(deco_var).set(*eventInfo, -10, sys);
       }
       for (const std::string& var : m_largeR_vars)
       {
@@ -101,32 +95,15 @@ namespace HHMET
         m_decos.at("boosted_hh_deltaEta_" + m_bTagWP).set(*eventInfo, h1.Eta() - h2.Eta(), sys);
         m_decos.at("boosted_hh_deltaPhi_" + m_bTagWP).set(*eventInfo, h1.DeltaPhi(h2), sys);
 
+        std::string prefix = "boosted_h1";
 
-        for (std::size_t i=0; i < n_largeRjets; i++){
+        float tau32 = m_Tau3_wta.get(*largeRjets->at(0),sys) /
+            m_Tau2_wta.get(*largeRjets->at(0),sys);
+        m_decos.at(prefix+"_Tau32_wta").set(*eventInfo, tau32, sys);
 
-          std::string prefix = "boosted_h"+std::to_string(i+1);
-
-          float tau32 = m_Tau3_wta.get(*largeRjets->at(i),sys) /
-	            m_Tau2_wta.get(*largeRjets->at(i),sys);
-          m_decos.at(prefix+"_Tau32_wta").set(*eventInfo, tau32, sys);
-
-          float phbb_score = m_GN2Xv01_phbb.get(*largeRjets->at(i), sys);
-          float pqcd_score = m_GN2Xv01_pqcd.get(*largeRjets->at(i), sys);
-          float phcc_score = m_GN2Xv01_phcc.get(*largeRjets->at(i), sys);
-          float ptop_score = m_GN2Xv01_ptop.get(*largeRjets->at(i), sys);
-
-          m_decos.at(prefix+"_GN2Xv01_phbb").set(*eventInfo, phbb_score, sys);
-          m_decos.at(prefix+"_GN2Xv01_pqcd").set(*eventInfo, pqcd_score, sys);
-          m_decos.at(prefix+"_GN2Xv01_phcc").set(*eventInfo, phcc_score, sys);
-          m_decos.at(prefix+"_GN2Xv01_ptop").set(*eventInfo, ptop_score, sys);
-
-          float hbb_disc = calculateGN2Xv01_disc(phbb_score, pqcd_score, phcc_score, ptop_score);
-          m_decos.at(prefix+"_GN2Xv01_disc").set(*eventInfo, hbb_disc, sys);
-
-          if (m_isMC){
-            int truthLabel_i = m_R10TruthLabel.get(*largeRjets->at(i), sys);
-            m_decos.at(prefix+"_truthLabel").set(*eventInfo, truthLabel_i, sys);
-          }
+        if (m_isMC){
+          int truthLabel_i = m_R10TruthLabel.get(*largeRjets->at(0), sys);
+          m_decos.at(prefix+"_truthLabel").set(*eventInfo, truthLabel_i, sys);
         }
 
       }

@@ -58,10 +58,10 @@ def hhmet_job_cfg():
     # custom BranchManagers
     hhmet_branches = []
     if flags.Analysis.do_boosted_dihiggs:
-        hhmet_extra_branches, float_variable_names = boosted_branches(flags)
+        hhmet_extra_branches, _ = boosted_branches(flags)
         hhmet_branches += hhmet_extra_branches
     if flags.Analysis.do_resolved_dihiggs:
-        hhmet_extra_branches, float_variable_names = resolved_branches(flags)
+        hhmet_extra_branches, _ = resolved_branches(flags)
         hhmet_branches += hhmet_extra_branches
     if len(flags.Analysis.CutList) > 0:
         hhmet_branches += pass_branches(flags)

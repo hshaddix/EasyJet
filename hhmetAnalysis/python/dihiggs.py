@@ -26,7 +26,6 @@ def dihiggs_cfg(
     if flags.Analysis.do_small_R_jets:
         smalljetkey = flags.Analysis.container_names.output.reco4PFlowJet
         couting_jet_container = "resolvedAnalysisSmallRjets_%SYS%"
-#        couting_rnnjet_container = "hhmetAnalysisSmallRRNNjets_%SYS%"
         couting_bjet_container = "hhmetAnalysisSmallRBjets_%SYS%"
         if flags.Analysis.Small_R_jet.btag_wp != "":
             btag_name = f"ftag_select_{flags.Analysis.Small_R_jet.btag_wp}"
@@ -121,7 +120,7 @@ def dihiggs_cfg(
                 largeRjetToCount=couting_lRjet_container,
                 electronToCount=couting_electron_container,
                 muonToCount=couting_muon_container,
-                btagSelDecor=btag_name,
+                btagSelDecor=btag_name
             )
         )
 

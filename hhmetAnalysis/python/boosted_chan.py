@@ -113,10 +113,7 @@ def boosted_branches(flags):
     boosted_h_vars = []
     largeR_vars = [
         "m", "pt", "eta", "phi", "E",
-        "Tau32_wta", "GN2Xv01_disc",
-        "GN2Xv01_phbb", "GN2Xv01_pqcd",
-        "GN2Xv01_phcc", "GN2Xv01_ptop",
-        "truthLabel"
+        "Tau32_wta", "truthLabel"
     ]
 
     for var in largeR_vars:

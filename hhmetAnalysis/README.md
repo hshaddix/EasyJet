@@ -1,4 +1,4 @@
-Analysis Package for Analysis Package for the $HH + MET$ dark matter analyis
+Analysis Package for the $HH + MET$ dark matter analyis
 =========================
 
 # Setup scripts
@@ -26,7 +26,9 @@ example script to run a local test, put in your run directory:
   - `triggers*.yaml`: list of triggers to use;
 - `src/`: C++ code
   - `hhmetSelectorAlg`: pre-select events to reduce the file size;
-  - `BaselineVarsBoostedAlg` / `BaselineVarsResolvedAlg`: compute some variables that aren't produced centrally;
+  - `BaselineVarsResolvedAlg`: compute some variables that aren't produced centrally, specific to the resolved analysis;
+  - `BaselineVarsBoostedAlg`: compute some variables that aren't produced centrally, specific to the boosted analysis;
+  - `BaselineVarsCommonAlg`: compute some variables that aren't produced centrally and are common to both the boosted/resolved analyses.
 - `datasets/`: input DAOD samples for grid submission
 - `scripts/`: grid submission scripts
 
@@ -57,8 +59,10 @@ If these run properly, your outputs files should contain a TTree `AnalysisMiniTr
     * jets (implemented as a vector): `truthjet_antikt4_X`, `truthjet_antikt10_X`.
 * Reconstructed objects:
     * jet kinematics (implemented as a vector): `recojet_antikt4PFlow_X___NOSYS`, `recojet_antikt10UFO_X___NOSYS`.
+    * paired higgs bosons: `hhmet_resolved_<algorithm>_<btagWP>_X_<SYS>`
 
 # Main developers
 
 The main developments have been performed by (non extensive list, feel free to add your name):
-Holly Pacey, using the bbbbAnalysis code as a starting point (thanks!).
+- Holly Pacey & Ruben Hönscheid
+We used the bbbbAnalysis code as a starting point: thanks!
