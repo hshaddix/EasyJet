@@ -571,4 +571,10 @@ def bbyy_branches(flags):
                 + flags.Analysis.systematics_suffix_separator + sys_suffix
             ]
 
+    for var in ["pt", "eta", "phi", "m"]:
+        branches += [
+            flags.Analysis.container_names.output.reco4PFlowJet + f".{var} -> bbyy_defaultOrderJets_{var}"
+            + flags.Analysis.systematics_suffix_separator + "%SYS%"
+        ]
+
     return branches, float_variable_names, int_variable_names
