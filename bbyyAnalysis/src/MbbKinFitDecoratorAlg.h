@@ -63,15 +63,29 @@ namespace HHBBYY {
     CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>>
     m_jetOutHandle_KF2{ this, "jetContainerOutKey_KF2", "bbyyAnalysisKF2Jets_%SYS%", "Jet container to write" };
 
+    CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>>
+    m_jetOutHandle_TF_KF1{ this, "jetContainerOutKey_TF_KF1", "bbyyAnalysisTF_KF1Jets_%SYS%", "TransformerTagger-selected KF iteration 1 jet container to write" };
+
+    CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>>
+    m_jetOutHandle_TF_KF2{ this, "jetContainerOutKey_TF_KF2", "bbyyAnalysisTF_KF2Jets_%SYS%", "TransformerTagger-selected KF iteration 2 jet container to write" };
+
     CP::SysWriteDecorHandle<float> m_KF_MBB{"KF_mbb_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_TF_KF_MBB{"TF_KF_mbb_%SYS%", this};
     CP::SysWriteDecorHandle<float> m_LH_KF1{"LH_KF1_%SYS%", this};
     CP::SysWriteDecorHandle<float> m_LH_KF2{"LH_KF2_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_LH_TF_KF1{"LH_TF_KF1_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_LH_TF_KF2{"LH_TF_KF2_%SYS%", this};
     CP::SysWriteDecorHandle<int> m_Conv_KF1{"Conv_KF1_%SYS%", this};
     CP::SysWriteDecorHandle<int> m_Conv_KF2{"Conv_KF2_%SYS%", this};
+    CP::SysWriteDecorHandle<int> m_Conv_TF_KF1{"Conv_TF_KF1_%SYS%", this};
+    CP::SysWriteDecorHandle<int> m_Conv_TF_KF2{"Conv_TF_KF2_%SYS%", this};
 
     /// \brief Steerable properties
     Gaudi::Property<bool> m_doSystematics
       { this, "doSystematics", false, "Run on all systematics" };
+
+    Gaudi::Property<bool> m_doTF_KF
+      { this, "doTF_KF", false, "Run an additional kinematic fit with TransformerTagger-selected b-jet indices" };
 
     ToolHandle<KinematicFitTool> m_KFTool{this, "KinFitTool", ""};
 
@@ -79,6 +93,12 @@ namespace HHBBYY {
     Gaudi::Property<float> m_Jet_Min_Pt{this, "JetMinPt", 20.*Athena::Units::GeV, "Minimum pT of jets"};
 
     CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "ftag_select_GN2v00LegacyWP_FixedCutBEff_77", "Name of input decorator for b-tagging"};
+
+    CP::SysReadDecorHandle<int> m_TFJet1Idx
+      {this, "TFJet1IndexDecorName", "TransformerTagger_jet1_idx_%SYS%", "TransformerTagger-selected first b-jet index"};
+
+    CP::SysReadDecorHandle<int> m_TFJet2Idx
+      {this, "TFJet2IndexDecorName", "TransformerTagger_jet2_idx_%SYS%", "TransformerTagger-selected second b-jet index"};
 
   };
 }

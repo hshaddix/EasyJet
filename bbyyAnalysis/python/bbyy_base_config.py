@@ -23,7 +23,7 @@ TRANSFORMER_OUTPUT_CLASSES = ["pggFHH", "pVBFHH", "pZH", "potherSH",
 
 def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
              float_variables=None, int_variables=None):
-    keys = ["baseline", "photons", "leptons", "jets", "photonjets"]
+    keys = ["baseline", "photons", "leptons", "jets", "photonjets", "transformer_tagger"]
     if not float_variables:
         float_variables = {key: [] for key in keys}
     if not int_variables:
@@ -107,6 +107,30 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
         )
     )
 
+    if flags.Analysis.do_TransformerTagger:
+        from ONNXInferenceTool.ONNXInferenceTool_config import ONNXInferenceTool_Cfg
+        transformer_tagger_tool = cfg.popToolsAndMerge(
+            ONNXInferenceTool_Cfg(
+                flags,
+                "TransformerTaggerTool",
+                ModelPath=flags.Analysis.TransformerTagger_path,
+                IOConfigPath=flags.Analysis.TransformerTagger_io_path,
+            )
+        )
+        cfg.addEventAlgo(
+            CompFactory.HHBBYY.TransformerTaggerAlg(
+                "TransformerTaggerAlg",
+                jets="bbyyAnalysisJets_%SYS%",
+                photons="bbyyAnalysisPhotons_%SYS%",
+                bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
+                PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
+                TransformerTaggerTool=transformer_tagger_tool,
+                floatVariableList=float_variables['transformer_tagger'],
+                intVariableList=int_variables['transformer_tagger'],
+                doSystematics=flags.Analysis.do_CP_systematics,
+            )
+        )
+
     from KinematicFitTool.KinematicFit_config import KinematicFitTool_bbyy_Cfg
     if flags.Analysis.do_KinematicFit:
         kinematic_fit_tool = cfg.popToolsAndMerge(
@@ -122,6 +146,9 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
                 doSystematics=flags.Analysis.do_CP_systematics,
                 jetContainerOutKey_KF1="bbyyAnalysisKF1Jets_%SYS%",
                 jetContainerOutKey_KF2="bbyyAnalysisKF2Jets_%SYS%",
+                jetContainerOutKey_TF_KF1="bbyyAnalysisTF_KF1Jets_%SYS%",
+                jetContainerOutKey_TF_KF2="bbyyAnalysisTF_KF2Jets_%SYS%",
+                doTF_KF=flags.Analysis.do_TransformerTagger,
                 bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             )
         )
@@ -196,6 +223,9 @@ def bbyy_cfg(flags, smalljetkey, photonkey, muonkey, electronkey, largeRjetkey,
         CompFactory.HHBBYY.BaselineVarsbbyyAlg(
             "BaselineVarsbbyyAlg",
             KFJets="bbyyAnalysisKF1Jets_%SYS%" if flags.Analysis.do_KinematicFit else "",
+            TF_KFJets=("bbyyAnalysisTF_KF2Jets_%SYS%" if
+                        flags.Analysis.do_KinematicFit and flags.Analysis.do_TransformerTagger else ""),
+            doTF_KF=flags.Analysis.do_KinematicFit and flags.Analysis.do_TransformerTagger,
             recoJets=smalljetkey if flags.Analysis.do_Transformer_categorisation else "",
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
             PCBTDecorName="ftag_quantile_" + flags.Analysis.Small_R_jet.btag_extra_wps[0],  # noqa
@@ -378,6 +408,31 @@ def get_BaselineVarsbbyyAlg_variables(flags):
                 for var in ["pt", "phi", "eta", "E"]:
                     float_variable_names += [f"KF_HbbCandidate_Jet{i}_" + var]
 
+        if flags.Analysis.do_TransformerTagger:
+            float_variable_names += ["TF_KF_pTbb", "TF_KF_Etabb", "TF_KF_Phibb",
+                                     "TF_KF_mbbyy", "TF_KF_dRbb",
+                                     "TF_KF_mbbyy_star", "TF_KF_pTbbyy",
+                                     "TF_KF_Etabbyy", "TF_KF_Phibbyy",
+                                     "TF_KF_dRHH", "TF_KF_HT",
+                                     "TF_KF_topness", "TF_KF_sphericityT",
+                                     "TF_KF_planarFlow", "TF_KF_pTBalance"]
+            float_variable_names += ["TF_KF_bdtSel_score",
+                                     "TF_KF_corr_bdtSel_score",
+                                     "TF_KF_with2024_bdtSel_score",
+                                     "TF_KF_corr_with2024_bdtSel_score"]
+            int_variable_names += ["TF_KF_bdtSel_category",
+                                   "TF_KF_corr_bdtSel_category",
+                                   "TF_KF_with2024_bdtSel_category",
+                                   "TF_KF_corr_with2024_bdtSel_category"]
+            for i in range(1, 5):
+                for var in ["pt", "phi", "eta", "E"]:
+                    float_variable_names += [f"TF_KF_Jet{i}_" + var]
+                int_variable_names += [f"TF_KF_Jet{i}_pcbt"]
+            if flags.Analysis.save_HbbCand_vars:
+                for i in range(1, 3):
+                    for var in ["pt", "phi", "eta", "E"]:
+                        float_variable_names += [f"TF_KF_HbbCandidate_Jet{i}_" + var]
+
     # VBFJets
     if flags.Analysis.save_VBF_vars:
         for i in range(1, 3):
@@ -385,14 +440,20 @@ def get_BaselineVarsbbyyAlg_variables(flags):
                 float_variable_names += [f"Jet_vbf_j{i}_" + var]
                 if (flags.Analysis.do_KinematicFit):
                     float_variable_names += [f"KF_Jet_vbf_j{i}_" + var]
+                    if flags.Analysis.do_TransformerTagger:
+                        float_variable_names += [f"TF_KF_Jet_vbf_j{i}_" + var]
         for var in ["m", "deta"]:
             float_variable_names += ["Jet_vbf_jj_" + var]
             if (flags.Analysis.do_KinematicFit):
                 float_variable_names += ["KF_Jet_vbf_jj_" + var]
+                if flags.Analysis.do_TransformerTagger:
+                    float_variable_names += ["TF_KF_Jet_vbf_jj_" + var]
         if ("BDT" in flags.Analysis.VBFjetsMethod):
             float_variable_names += ["Jet_vbf_jj_maxscore"]
             if (flags.Analysis.do_KinematicFit):
                 float_variable_names += ["KF_Jet_vbf_jj_maxscore"]
+                if flags.Analysis.do_TransformerTagger:
+                    float_variable_names += ["TF_KF_Jet_vbf_jj_maxscore"]
 
     # GNN HbbCandidate jets
     if (flags.Analysis.do_GNN2bjetSelection):
@@ -445,6 +506,21 @@ def get_BaselineVarsbbyyAlg_variables(flags):
 
     return float_variable_names, int_variable_names
 
+def get_TransformerTaggerAlg_variables(flags):
+    float_variable_names = []
+    int_variable_names = []
+    if flags.Analysis.do_TransformerTagger:
+        float_variable_names += [
+            "TransformerTagger_H_score",
+            "TransformerTagger_HH_score",
+            "TransformerTagger_edge_score",
+        ]
+        int_variable_names += [
+            "TransformerTagger_jet1_idx",
+            "TransformerTagger_jet2_idx",
+        ]
+    return float_variable_names, int_variable_names
+
 
 def get_BoostedVarsbbyyAlg(flags):
     boosted_float_variables = []
@@ -465,7 +541,8 @@ def bbyy_branches(flags):
             "photons",
             "leptons",
             "jets",
-            "photonjets"]
+            "photonjets",
+            "transformer_tagger"]
 
     float_variable_names = {key: [] for key in keys}
     int_variable_names = {key: [] for key in keys}
@@ -481,6 +558,8 @@ def bbyy_branches(flags):
         = get_LeptonVarsbbyyAlg_variables(flags)
     photonjet_float_variables, photonjet_int_variables \
         = get_PhotonJetVarsAlg_variables(flags)
+    transformer_float_variables, transformer_int_variables \
+        = get_TransformerTaggerAlg_variables(flags)
 
     float_variable_names['baseline'] += baseline_float_variables
     int_variable_names['baseline'] += baseline_int_variables
@@ -492,14 +571,20 @@ def bbyy_branches(flags):
     int_variable_names['jets'] += jet_int_variables
     float_variable_names['photonjets'] += photonjet_float_variables
     int_variable_names['photonjets'] += photonjet_int_variables
+    float_variable_names['transformer_tagger'] += transformer_float_variables
+    int_variable_names['transformer_tagger'] += transformer_int_variables
 
     if flags.Analysis.do_KinematicFit:
         # do not append KF_mbb variables to float_variable_names['baseline']
         # as they are stored by the KF algorithm not BaselineVarsbbyyAlg
         all_baseline_variable_names += ["KF_mbb", "LH_KF1", "LH_KF2"]
+        if flags.Analysis.do_TransformerTagger:
+            all_baseline_variable_names += ["TF_KF_mbb", "LH_TF_KF1", "LH_TF_KF2"]
 
         if flags.Analysis.extra_KinematicFit_variables:
             all_baseline_variable_names += ["Conv_KF1", "Conv_KF2"]
+            if flags.Analysis.do_TransformerTagger:
+                all_baseline_variable_names += ["Conv_TF_KF1", "Conv_TF_KF2"]
 
     # Here are some variables which can be stored for the boosted case
     if flags.Analysis.do_Boosted:
@@ -586,6 +671,15 @@ def bbyy_branches(flags):
                 f"bbyyAnalysisKF2Jets_{sys_suffix}.{var} -> bbyy_KF2Jets_{var}"
                 + flags.Analysis.systematics_suffix_separator + sys_suffix
             ]
+            if flags.Analysis.do_TransformerTagger:
+                branches += [
+                    f"bbyyAnalysisTF_KF1Jets_{sys_suffix}.{var} -> bbyy_TF_KF1Jets_{var}"
+                    + flags.Analysis.systematics_suffix_separator + sys_suffix
+                ]
+                branches += [
+                    f"bbyyAnalysisTF_KF2Jets_{sys_suffix}.{var} -> bbyy_TF_KF2Jets_{var}"
+                    + flags.Analysis.systematics_suffix_separator + sys_suffix
+                ]
 
     for var in ["pt", "eta", "phi", "m"]:
         branches += [

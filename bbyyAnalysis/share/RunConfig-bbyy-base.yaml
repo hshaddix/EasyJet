@@ -19,6 +19,9 @@ do_photons: true
 do_met: true
 do_Boosted: false
 do_GNN2bjetSelection: false
+do_TransformerTagger: true
+TransformerTagger_path: "bbyyAnalysis/HbbTagger.onnx"
+TransformerTagger_io_path: "bbyyAnalysis/HbbTagger_io.json"
 
 ## Kinematic fit
 do_KinematicFit: false

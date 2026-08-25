@@ -253,8 +253,20 @@ namespace HHBBYY
     CP::SysReadHandle<xAOD::JetContainer>
     m_KFJetHandle{this, "KFJets", "", "KF Jet container to read"};
 
+    CP::SysReadHandle<xAOD::JetContainer>
+    m_TF_KFJetHandle{this, "TF_KFJets", "", "TransformerTagger-selected KF Jet container to read"};
+
     CP::SysReadDecorHandle<float> m_KF_MBB
       {"KF_mbb_%SYS%", this};
+
+    CP::SysReadDecorHandle<float> m_TF_KF_MBB
+      {"TF_KF_mbb_%SYS%", this};
+
+    CP::SysReadDecorHandle<int> m_TFJet1Idx
+      {this, "TFJet1IndexDecorName", "TransformerTagger_jet1_idx_%SYS%", "TransformerTagger-selected first b-jet index"};
+
+    CP::SysReadDecorHandle<int> m_TFJet2Idx
+      {this, "TFJet2IndexDecorName", "TransformerTagger_jet2_idx_%SYS%", "TransformerTagger-selected second b-jet index"};
   
 
     CP::SysReadHandle<xAOD::MissingETContainer>
@@ -275,6 +287,9 @@ namespace HHBBYY
 
     Gaudi::Property<bool> m_doKF
       { this, "doKF", false, "Do Kinematic Fit?" };
+
+    Gaudi::Property<bool> m_doTF_KF
+      { this, "doTF_KF", false, "Do TransformerTagger-selected Kinematic Fit variables?" };
 
 //Possible flag to add optional calculations for extra KF variables
 //    Gaudi::Property<bool> m_extraKF_variables

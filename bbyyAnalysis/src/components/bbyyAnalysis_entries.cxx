@@ -10,6 +10,7 @@
 #include "../PhotonJetVarsAlg.h"
 #include "../TopRecoAlg.h"
 #include "../HyyHHbbyyMVAAlg.h"
+#include "../TransformerTaggerAlg.h"
 #include "../bbyyFilterggHBjetsAlg.h"
 
 DECLARE_COMPONENT(HHBBYY::MbbKinFitDecoratorAlg)
@@ -25,3 +26,4 @@ DECLARE_COMPONENT(HHBBYY::JetVarsAlg)
 DECLARE_COMPONENT(HHBBYY::PhotonJetVarsAlg)
 DECLARE_COMPONENT(HHBBYY::TopRecoAlg)
 DECLARE_COMPONENT(HHBBYY::HyyHHbbyyMVAAlg)
+DECLARE_COMPONENT(HHBBYY::TransformerTaggerAlg)

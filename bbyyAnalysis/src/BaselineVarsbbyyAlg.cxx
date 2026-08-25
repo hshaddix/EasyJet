@@ -46,6 +46,12 @@ namespace HHBBYY
       ATH_CHECK (m_KFJetHandle.initialize(m_systematicsList));
       ATH_CHECK (m_KF_MBB.initialize(m_systematicsList, m_eventHandle));
     }
+    if(m_doTF_KF){
+      ATH_CHECK (m_TF_KFJetHandle.initialize(m_systematicsList));
+      ATH_CHECK (m_TF_KF_MBB.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK (m_TFJet1Idx.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK (m_TFJet2Idx.initialize(m_systematicsList, m_eventHandle));
+    }
 
     ATH_CHECK(m_gn3_pb.initialize(m_systematicsList, m_bbyyJetHandle));
     ATH_CHECK(m_gn3_pc.initialize(m_systematicsList, m_bbyyJetHandle));
@@ -466,6 +472,107 @@ namespace HHBBYY
                              eventFloats.at(HHBBYY::Var::bb_m_KF_unconstrained), dRyy,
                              met->met(), met->phi(),
                              recoJets, KFJets, ph1, ph2, event, sys);
+      }
+
+      // TransformerTagger-selected KF jets sector. This mirrors the standard KF outputs with
+      // an TF_KF_ prefix and uses the TransformerTagger-selected jet indices as the Hbb pair.
+      if (m_doTF_KF) {
+        const xAOD::JetContainer *TF_KFJets = nullptr;
+        ANA_CHECK (m_TF_KFJetHandle.retrieve (TF_KFJets, sys, ctx));
+
+        double TF_KF_HT = 0.;
+        const int tfJet1Idx = m_TFJet1Idx.get(*event, sys);
+        const int tfJet2Idx = m_TFJet2Idx.get(*event, sys);
+        const bool validTF_KFPair =
+          tfJet1Idx >= 0 && tfJet2Idx >= 0 && tfJet1Idx != tfJet2Idx &&
+          static_cast<std::size_t>(tfJet1Idx) < TF_KFJets->size() &&
+          static_cast<std::size_t>(tfJet2Idx) < TF_KFJets->size();
+
+        if (validTF_KFPair) {
+          for(const xAOD::Jet* TF_KFjet : *TF_KFJets) {
+            TF_KF_HT += TF_KFjet->pt();
+          }
+          m_Fbranches.at("TF_KF_HT").set(*event, TF_KF_HT, sys);
+          eventFloats.at(HHBBYY::Var::jets_HT_KF) = TF_KF_HT;
+
+          const xAOD::Jet* Hbb_TF_KFJet1 = TF_KFJets->at(tfJet1Idx);
+          const xAOD::Jet* Hbb_TF_KFJet2 = TF_KFJets->at(tfJet2Idx);
+          ConstDataVector<xAOD::JetContainer> TF_KF_cat_jets = categorisation_jets(Hbb_TF_KFJet1, Hbb_TF_KFJet2, TF_KFJets);
+
+          for (std::size_t i=0; i<std::min(TF_KF_cat_jets.size(),(std::size_t)4); i++){
+            const xAOD::Jet* jet = TF_KF_cat_jets.at(i);
+            TLorentzVector j = jet->p4();
+            m_Fbranches.at("TF_KF_Jet"+std::to_string(i+1)+"_pt").set(*event, j.Pt(), sys);
+            m_Fbranches.at("TF_KF_Jet"+std::to_string(i+1)+"_eta").set(*event, j.Eta(), sys);
+            m_Fbranches.at("TF_KF_Jet"+std::to_string(i+1)+"_phi").set(*event, j.Phi(), sys);
+            m_Fbranches.at("TF_KF_Jet"+std::to_string(i+1)+"_E").set(*event, j.E(), sys);
+            m_Ibranches.at("TF_KF_Jet"+std::to_string(i+1)+"_pcbt").set(*event, m_PCBT.get(*jet, sys), sys);
+          }
+
+          std::vector<TLorentzVector> Hbb_TF_KFcandidates = {Hbb_TF_KFJet1->p4(), Hbb_TF_KFJet2->p4()};
+
+          if (m_save_HbbCand_vars){
+            for(unsigned int i=0; i<2; i++){
+              std::string prefix = "TF_KF_HbbCandidate_Jet"+std::to_string(i+1);
+              m_Fbranches.at(prefix+"_pt").set(*event, Hbb_TF_KFcandidates[i].Pt(), sys);
+              m_Fbranches.at(prefix+"_eta").set(*event, Hbb_TF_KFcandidates[i].Eta(), sys);
+              m_Fbranches.at(prefix+"_phi").set(*event, Hbb_TF_KFcandidates[i].Phi(), sys);
+              m_Fbranches.at(prefix+"_E").set(*event, Hbb_TF_KFcandidates[i].E(), sys);
+            }
+          }
+
+          TLorentzVector H_bb_TF_KF = Hbb_TF_KFcandidates[0] + Hbb_TF_KFcandidates[1];
+          float TF_KF_dRbb = Hbb_TF_KFcandidates[0].DeltaR(Hbb_TF_KFcandidates[1]);
+
+          m_Fbranches.at("TF_KF_pTbb").set(*event, H_bb_TF_KF.Pt(), sys);
+          m_Fbranches.at("TF_KF_Etabb").set(*event, H_bb_TF_KF.Eta(), sys);
+          m_Fbranches.at("TF_KF_Phibb").set(*event, H_bb_TF_KF.Phi(), sys);
+          m_Fbranches.at("TF_KF_dRbb").set(*event, TF_KF_dRbb, sys);
+
+          double Higgs_mass = 125. * Athena::Units::GeV;
+          TLorentzVector HH_TF_KF = H_yy + H_bb_TF_KF;
+          float TF_KF_bbyy_mStar = HH_TF_KF.M() - (H_bb_TF_KF.M() - Higgs_mass)-(H_yy.M() - Higgs_mass);
+          eventFloats.at(HHBBYY::Var::bbyy_mStar_KF) = TF_KF_bbyy_mStar;
+          m_Fbranches.at("TF_KF_mbbyy").set(*event, HH_TF_KF.M(), sys);
+          m_Fbranches.at("TF_KF_mbbyy_star").set(*event, TF_KF_bbyy_mStar, sys);
+          m_Fbranches.at("TF_KF_pTbbyy").set(*event, HH_TF_KF.Pt(), sys);
+          m_Fbranches.at("TF_KF_Etabbyy").set(*event, HH_TF_KF.Eta(), sys);
+          m_Fbranches.at("TF_KF_Phibbyy").set(*event, HH_TF_KF.Phi(), sys);
+          m_Fbranches.at("TF_KF_dRHH").set(*event, H_yy.DeltaR(H_bb_TF_KF), sys);
+
+          ATH_CHECK(vbf_calculations(ph1,ph2,n_photons,Hbb_TF_KFJet1, Hbb_TF_KFJet2, TF_KFJets, TF_KF_HT, HH_TF_KF, "TF_KF_Jet_vbf_j", "TF_KF_Jet_vbf_jj", eventFloats, event, sys));
+
+          float TF_KF_topness = compute_Topness(TF_KFJets, sys);
+          std::vector<float> TF_KF_eventShapes = compute_EventShapes(Hbb_TF_KFJet1, Hbb_TF_KFJet2, Hyy_photons, n_photons);
+          float TF_KF_pTBalance = compute_pTBalance(Hbb_TF_KFJet1, Hbb_TF_KFJet2, Hyy_photons, n_photons);
+          m_Fbranches.at("TF_KF_topness").set(*event, TF_KF_topness, sys);
+          m_Fbranches.at("TF_KF_sphericityT").set(*event, TF_KF_eventShapes[0], sys);
+          m_Fbranches.at("TF_KF_planarFlow").set(*event, TF_KF_eventShapes[1], sys);
+          m_Fbranches.at("TF_KF_pTBalance").set(*event, TF_KF_pTBalance, sys);
+          eventFloats.at(HHBBYY::Var::sphericityT_KF) = TF_KF_eventShapes[0];
+          eventFloats.at(HHBBYY::Var::planarFlow_KF) = TF_KF_eventShapes[1];
+          eventFloats.at(HHBBYY::Var::topness_KF) = TF_KF_topness;
+
+          if(m_do_nonresonant_BDTs){
+            eventFloats.at(HHBBYY::Var::bb_m_KF_unconstrained) = m_TF_KF_MBB.get(*event, sys);
+
+            performCategorisationBDT(ph1, ph2, Hbb_TF_KFJet1, Hbb_TF_KFJet2, TF_KFJets, metCont, sys, eventFloats, eventInts, true, false, false, false, year);
+            m_Fbranches.at("TF_KF_bdtSel_score").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score_KF), sys);
+            m_Ibranches.at("TF_KF_bdtSel_category").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category_KF), sys);
+
+            performCategorisationBDT(ph1, ph2, Hbb_TF_KFJet1, Hbb_TF_KFJet2, TF_KFJets, metCont, sys, eventFloats, eventInts, true, false, true, false, year);
+            m_Fbranches.at("TF_KF_corr_bdtSel_score").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score_KF_corr), sys);
+            m_Ibranches.at("TF_KF_corr_bdtSel_category").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category_KF_corr), sys);
+
+            performCategorisationBDT(ph1, ph2, Hbb_TF_KFJet1, Hbb_TF_KFJet2, TF_KFJets, metCont, sys, eventFloats, eventInts, true, false, false, true, year);
+            m_Fbranches.at("TF_KF_with2024_bdtSel_score").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score_KF_with2024), sys);
+            m_Ibranches.at("TF_KF_with2024_bdtSel_category").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category_KF_with2024), sys);
+
+            performCategorisationBDT(ph1, ph2, Hbb_TF_KFJet1, Hbb_TF_KFJet2, TF_KFJets, metCont, sys, eventFloats, eventInts, true, false, true, true, year);
+            m_Fbranches.at("TF_KF_corr_with2024_bdtSel_score").set(*event, eventFloats.at(HHBBYY::Var::bdt_sel_score_KF_corr_with2024), sys);
+            m_Ibranches.at("TF_KF_corr_with2024_bdtSel_category").set(*event, eventInts.at(HHBBYY::Var::bdt_sel_category_KF_corr_with2024), sys);
+          }
+        }
       }
 
       //GNN Implementation
@@ -1224,7 +1331,6 @@ namespace HHBBYY
     // event level jet variables
     if (isKFvariables && !isGNNvariables){
       if(categorisation_jets.size()==4){
-        //Use non-KF variables for VBF to get closure with local training for now
         vars[HHBBYY::Var::vbfjj_dEta] = eventFloats.at(HHBBYY::Var::vbfjj_dEta_KF);
         vars[HHBBYY::Var::vbfjj_m] = eventFloats.at(HHBBYY::Var::vbfjj_m_KF);
       }else{
@@ -1292,8 +1398,9 @@ namespace HHBBYY
 
   vbf_jj = vbf_j[0] + vbf_j[1];
   yybbjj = vbf_jj + HH;
-  eventFloats.at((prefix_jj == "KF_Jet_vbf_jj") ? HHBBYY::Var::vbfjj_m_KF : HHBBYY::Var::vbfjj_m) = vbf_jj.M();
-  eventFloats.at((prefix_jj == "KF_Jet_vbf_jj") ? HHBBYY::Var::vbfjj_dEta_KF : HHBBYY::Var::vbfjj_dEta) = std::fabs(vbf_j[0].Eta() - vbf_j[1].Eta());
+  const bool isKFPrefix = prefix_jj == "KF_Jet_vbf_jj" || prefix_jj == "TF_KF_Jet_vbf_jj";
+  eventFloats.at(isKFPrefix ? HHBBYY::Var::vbfjj_m_KF : HHBBYY::Var::vbfjj_m) = vbf_jj.M();
+  eventFloats.at(isKFPrefix ? HHBBYY::Var::vbfjj_dEta_KF : HHBBYY::Var::vbfjj_dEta) = std::fabs(vbf_j[0].Eta() - vbf_j[1].Eta());
       }
     }
 
