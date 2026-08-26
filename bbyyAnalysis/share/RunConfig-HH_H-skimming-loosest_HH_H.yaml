@@ -9,18 +9,23 @@ selection_name: "loosest"
 # removing trigger matching for now
 CutList :
       - PASS_TRIGGER
+      - TWO_LOOSE_PHOTONS
+      - PASS_TRIGGER_MATCHING
       - DIPHOTON_MASS
+      - AT_LEAST_TWO_JETS
 
 save_cutflow: true
 
 Small_R_jet:
   gn3_scores: true
+  savePerJetFTagSF: true
+
 Truth:
   do_STXS: false
 
 ttree_output:
   reco_outputs:
-      small_R_jets: 'container_names.output.reco4PFlowJet'
+      small_R_jets: 'bbyyAnalysisJets_%SYS%'
   collection_options:
     small_R_jets:
       no_bjet_calib_p4: true

@@ -12,7 +12,7 @@ for arg in "$@"; do
 done
 $submit_yyjets_data || $submit_HH_H || { submit_yyjets_data=true; submit_HH_H=true; }
 
-ptag=p7018
+ptag=p7266
 campaign=v4p1
 dir_samples="../easyjet/bbyyAnalysis/datasets/PHYS/nominal/"
 mc_campaign="mc20_13TeV"
@@ -23,10 +23,9 @@ hh_h_mc_list=(
     "$mc_campaign.ggFHH_bbyy_BSM.$ptag.txt"
     "$mc_campaign.VBFHH_bbyy_BSM.$ptag.txt"
     "$mc_campaign.SingleHyy.$ptag.txt"
-    "$mc_campaign.yyBkg.$ptag.txt"
 )
 yyjets_mc_list=(
-    "$mc_campaign.yyjets.$ptag.txt"
+    "$mc_campaign.yyBkg.$ptag.txt"
 )
 
 if $submit_HH_H; then
