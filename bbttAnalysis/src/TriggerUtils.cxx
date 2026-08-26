@@ -30,6 +30,12 @@ namespace HHBBTT
       };
       single_mu_SF_path = "mu24_ivarmedium_L1MU14FCH_OR_mu50_L1MU14FCH";
     }
+    else if(year==2024){
+      single_mu_paths = {
+	"HLT_mu24_ivarmedium_L1MU14FCH", "HLT_mu50_L1MU14FCH"
+      };
+      single_mu_SF_path = "mu24_ivarmedium_L1MU14FCH_OR_mu50_L1MU14FCH";
+    }
   }
 
   void getSingleEleTriggers(int year, const xAOD::EventInfo* eventInfo,
@@ -79,6 +85,13 @@ namespace HHBBTT
 	"HLT_e300_etcut_L1eEM26M"
       };
       single_ele_SF_path = "e26_lhtight_ivarloose_L1eEM26M_OR_e60_lhmedium_L1eEM26M_OR_e140_lhloose_L1eEM26M_OR_e300_etcut_L1eEM26M";
+    }
+    else if(year==2024){
+      single_ele_paths = {
+	"HLT_e26_lhtight_ivarloose_L1eEM26M", "HLT_e60_lhmedium_L1eEM26M",
+	"HLT_e140_lhloose_L1eEM26M"
+      };
+      single_ele_SF_path = "e26_lhtight_ivarloose_L1eEM26M_OR_e60_lhmedium_L1eEM26M_OR_e140_lhloose_L1eEM26M";
     }
   }
 
