@@ -38,4 +38,5 @@ output:
   taus:                AnalysisTauJets_%SYS%
   ditaus:              AnalysisDiTauJets_%SYS%
   met:                 AnalysisMET_%SYS%
+  metnet:              AnalysisMETNet_%SYS%
   truthHHParticles:    TruthDiHiggsParticles

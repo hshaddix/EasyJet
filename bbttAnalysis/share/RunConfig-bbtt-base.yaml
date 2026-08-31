@@ -31,6 +31,17 @@ do_taus: true
 do_met : true
 do_mmc : true
 
+# Experimental NN-based MET, saved alongside the standard MET
+# for comparison
+Met:
+  doMETNet: true
+
+# METNet requires a photon term; photons are not otherwise used in bbtt,
+# so this working point only defines the METNet photon input
+Photon:
+  ID: "Tight"
+  Iso: "FixedCutTight"
+
 GRL:
   store_decoration: true
   years:
@@ -141,6 +152,7 @@ ttree_output:
     electrons: 'container_names.output.electrons'
     taus: 'container_names.output.taus'
     met : 'container_names.output.met'
+    metnet : 'container_names.output.metnet'
   collection_options:
     small_R_jets:
       btag_info: true

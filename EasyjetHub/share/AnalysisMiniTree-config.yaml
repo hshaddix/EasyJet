@@ -15,6 +15,7 @@ reco_outputs:
   taus: ''
   ditaus: ''
   met: ''
+  metnet: ''
   tracks: ''
 
 collection_options:

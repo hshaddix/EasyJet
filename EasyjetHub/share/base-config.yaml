@@ -222,6 +222,12 @@ Met:
   setMuonJetEMScale: true
   saveSignificance: false
   addExtraSignificanceVars: false
+  # Experimental NN-based MET estimate, produced in addition to the
+  # standard MET for comparison
+  doMETNet: false
+  # Override the METNet ONNX model. The default is the run-dependent
+  # JetETMiss network picked by the MissingET config block.
+  METNetFile: ""
 
 Track:
   min_pT: 0.5e+3  # 500 MeV

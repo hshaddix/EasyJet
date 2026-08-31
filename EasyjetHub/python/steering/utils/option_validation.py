@@ -131,6 +131,13 @@ def validate_do_write_obj_flags(flags, tree_flags):
                 "B-jet momentum correction requires muon and b-jet CP algs"
             )
 
+    if getattr(tree_flags.reco_outputs, 'metnet', ''):
+        if not (flags.Analysis.do_met and flags.Analysis.Met.doMETNet):
+            raise RuntimeError(
+                f'{tree_flags.tree_name}.reco_outputs.metnet defined'
+                ' when do_met=False or Met.doMETNet=False'
+            )
+
 
 def validate_file_format(flags):
     if flags.Input.isPHYSLITE:

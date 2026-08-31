@@ -27,6 +27,7 @@ ttree_output:
     taus: 'container_names.output.taus'
     ditaus: 'container_names.output.ditaus'
     met : 'container_names.output.met'
+    metnet : 'container_names.output.metnet'
   collection_options:
     large_R_jets:
       substructure_info: true

@@ -20,7 +20,7 @@ from EasyjetHub.algs.calibration.electrons import electron_sequence
 from EasyjetHub.algs.calibration.photons import photon_sequence
 from EasyjetHub.algs.calibration.taus import tau_sequence
 from EasyjetHub.algs.calibration.ditaus import ditau_sequence
-from EasyjetHub.algs.calibration.met import met_sequence
+from EasyjetHub.algs.calibration.met import met_sequence, metnet_sequence
 from EasyjetHub.algs.calibration.tracks import track_sequence
 from EasyjetHub.algs.calibration.selection_decoration import (
     selection_decoration_sequence)
@@ -142,6 +142,10 @@ def cpalgs_cfg(flags):
         if flags.Analysis.do_met:
             log.info("Adding MET seq")
             configSeq += met_sequence(flags, configAccumulator)
+
+            if flags.Analysis.Met.doMETNet:
+                log.info("Adding METNet seq")
+                configSeq += metnet_sequence(flags, configAccumulator)
 
     ########################################################################
     # Begin postprocessing
