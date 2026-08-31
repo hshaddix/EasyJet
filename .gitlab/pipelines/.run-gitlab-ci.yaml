@@ -438,12 +438,6 @@ ntupler_bbtt_mc23_boosted:
   script:
     - easyjet-test bbtt-mc23-boosted
 
-ntupler_bbtt_mc23e_boosted:
-  extends: .ntupler
-  <<: *changes_bbtt
-  script:
-    - easyjet-test bbtt-mc23e-boosted
-
 ntupler_bbVV_mc23:
   extends: .ntupler
   <<: *changes_bbVV
