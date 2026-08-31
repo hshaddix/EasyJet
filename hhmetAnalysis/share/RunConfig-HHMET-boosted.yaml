@@ -7,33 +7,11 @@ do_boosted_dihiggs: true
 splitOutputTree: false
 
 #==========================================
-# Sort out basic event recording (Triggers, GRL, PRW)
-#==========================================
-
-Trigger:
-  include: hhmetAnalysis/triggers_MET.yaml
-GRL:
-  store_decoration: false
-  years:
-    include: grl_years.yaml
-  files:
-    include: grl_files.yaml
-lumicalc_files:
-  include: lumicalc_files.yaml
-prw_files:
-  include: prw_files.yaml
-
-#==========================================
 # Object reconstruction & selection
 #==========================================
-# TODO ADD ALL THE ARGS PROPERLY
 
 # Toggles for object types
-do_small_R_jets: true
 do_large_R_UFO_jets: true
-do_muons: true
-do_electrons: true
-do_met: true
 
 # calibrate & select large-R jets
 Large_R_jet:
@@ -61,29 +39,6 @@ OverlapRemoval:
   do_small_R_jet_large_R_jet: false
   do_large_R_jets: false
 
-
-#==========================================
-# Event cleaning & selections
-#==========================================
-
-do_event_cleaning: true
-add_BadBatman_jet_cleaning: false
-do_trigger_filtering: true
-save_cutflow: true
-bypass: false # what does this do????
-selection_name: "preselection"
-#TODO SPLIT UP CUTS MORE FINELY
-
-
-#==========================================
-# Systematics set up
-#==========================================
-
-do_CP_systematics: false
-systematics_regex: [".*"]
-systematics_suffix_separator: "_"
-
-
 #==========================================
 # TTree output setup
 #==========================================
@@ -97,8 +52,6 @@ ttree_output:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
-    #muons: 'container_names.output.muons'
-    #electrons: 'container_names.output.electrons'
   collection_options:
     small_R_jets:
       truth_parent_info: true
@@ -113,16 +66,8 @@ ttree_output:
       no_bjet_calib_p4: true
       run_selection: true
       bjet_regression: true
-#    electrons:
-#      id_variables: false
-#      iso_variables: false
-#      run_selection: true
-#      truth_parent_info: true
-#    muons:
-#      iso_variables: false
-#      run_selection: true
-#      truth_parent_info: true
   truth_outputs:
     small_R_jets: 'container_names.input.truth4Jet'
     large_R_jets: 'container_names.input.truth10SoftDropJet'
     higgs_particle: 'container_names.output.truthHHParticles'
+    met: 'container_names.input.truthmet'

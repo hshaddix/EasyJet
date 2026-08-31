@@ -22,6 +22,8 @@
 #include <xAODJet/JetContainer.h>
 #include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
+#include <xAODEgamma/PhotonContainer.h>
+#include <xAODMissingET/MissingETContainer.h>
 
 #include <EasyjetHub/CutManager.h>
 
@@ -53,7 +55,10 @@ namespace HHMET
           "AT_LEAST_FOUR_JETS",
           "AT_LEAST_TWO_BJETS",
           "ZERO_LEPTONS",
-          "AT_LEAST_FOUR_JETS_THREE_BJETS_OR_AT_LEAST_TWO_JETS_ONE_LRJET"
+          "AT_LEAST_FOUR_JETS_THREE_BJETS_OR_AT_LEAST_TWO_JETS_ONE_LRJET",
+          "MET_150",
+          "MET_50",
+          "ExtraSUSY"
       };
 
       void evaluateTriggerCuts(const xAOD::EventInfo& event, 
@@ -61,6 +66,10 @@ namespace HHMET
       void evaluateJetCuts(const int nBoostedJets, const int nResolvedJets, const int nBJets, CutManager& hhmetCuts);
 
       void evaluateLeptonCuts(const int nElectrons, const int nMuons, CutManager& hhmetCuts);
+
+      void evaluateExtraSUSYCuts(const int nPhotons, CutManager& hhmetCuts);
+
+      void evaluateMetCuts(const xAOD::MissingET* met, CutManager& hhmetCuts);
 
       StatusCode initialiseCutflow();
 
@@ -76,7 +85,10 @@ namespace HHMET
   
       CP::SysReadHandle<xAOD::MuonContainer>
         m_muonHandle{ this, "muonToCount", "", "Muon container to count" };
-        
+
+      CP::SysReadHandle<xAOD::PhotonContainer>
+        m_photonHandle{ this, "photonToCount", "", "Photon container to count" };
+
       CP::SysReadHandle<xAOD::JetContainer>
         m_lRjetHandle{ this, "largeRjetToCount", "", "Large-R jet container to count" };
   
@@ -84,7 +96,12 @@ namespace HHMET
         m_jetHandle{ this, "smallRjetToCount", "", "Small-R jet container to count" }; // For counting only
 
       CP::SysReadDecorHandle<char>
-	m_isBtag {this, "btagSelDecor", "", "Name of input dectorator for b-tagging"};
+	      m_isBtag { this, "btagSelDecor", "", "Name of input dectorator for b-tagging" };
+
+      CP::SysReadHandle<xAOD::MissingETContainer>
+        m_metHandle{ this, "met", "", "MET container to read" };
+
+
 
       Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
 
@@ -109,7 +126,7 @@ namespace HHMET
 
       CP::SysReadDecorHandle<float>
         m_generatorWeight{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
-
+  
   };
 
 }

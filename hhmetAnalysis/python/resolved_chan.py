@@ -1,7 +1,6 @@
+import AthenaCommon.SystemOfUnits as Units
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
-import AthenaCommon.SystemOfUnits as Units
-
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import JetSelectorAlgCfg
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches,
@@ -114,8 +113,8 @@ def resolved_cfg(flags, smalljetkey, float_variables=None):
                 containerOutKey="resolvedAnalysisSmallRjets_" + btag_sys,
                 bTagWPDecorName=btag_name,
                 selectBjet=True,
-                minPt=20 * Units.GeV,
-                maxEta=2.5,
+                minPt=float(flags.Analysis.Small_R_jet.min_pT),
+                maxEta=float(flags.Analysis.Small_R_jet.max_eta),
                 truncateAtAmount=4,  # -1 means keep all
                 minimumAmount=3
             )

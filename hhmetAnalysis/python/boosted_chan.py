@@ -14,6 +14,19 @@ def boosted_cfg(flags, largejetkey, smalljetkey, float_variables=None):
 
     cfg = ComponentAccumulator()
 
+    cfg.merge(
+        JetSelectorAlgCfg(
+            flags,
+            name="boostedLargeRjetSelectorAlg",
+            containerInKey=largejetkey,
+            containerOutKey="boostedAnalysisLargeRjets_%SYS%",
+            bTagWPDecorName="",
+            selectBjet=False,
+            minPt=float(flags.Analysis.Large_R_jet.min_pT),
+            maxEta=float(flags.Analysis.Large_R_jet.max_eta)
+        )
+    )  # -1 means ignores this
+
     btag_wps = [flags.Analysis.Small_R_jet.btag_wp]
     btag_wps += flags.Analysis.Small_R_jet.btag_extra_wps
     for btag_wp in btag_wps:
@@ -28,8 +41,8 @@ def boosted_cfg(flags, largejetkey, smalljetkey, float_variables=None):
                 containerOutKey="boostedAnalysisSmallRjets_" + btag_sys,
                 bTagWPDecorName="ftag_select_" + btag_wp,
                 selectBjet=True,
-                minPt=20 * Units.GeV,
-                maxEta=2.5,
+                minPt=float(flags.Analysis.Small_R_jet.min_pT),
+                maxEta=float(flags.Analysis.Small_R_jet.max_eta),
                 truncateAtAmount=2,  # -1 means keep all
                 minimumAmount=2
             )

@@ -30,17 +30,28 @@ namespace HHMET
     if (!m_electronHandle.empty()) {
       ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
     }
-    
+   
     if (!m_muonHandle.empty()) {
       ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
     }
+
+    if (!m_photonHandle.empty()) {
+      ATH_CHECK (m_photonHandle.initialize(m_systematicsList));
+    }
+
     if (!m_isBtag.empty()) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_jetHandle));
     }
+
+    if (!m_metHandle.empty()) {
+      ATH_CHECK(m_metHandle.initialize(m_systematicsList));
+    }
+
     
     if (m_saveCutFlow) ATH_CHECK (m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
 
-    //Initialize trigger decorations
+
+    //Initialize decorations
     for (const std::string &trig : m_Triggers)
     {
       std::string triggerDecorName = "trigPassed_"+trig;
@@ -73,16 +84,16 @@ namespace HHMET
       CP::SysFilterReporter filter (filterCombiner, sys);
 
       // Retrive inputs
-      const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
+      const xAOD::EventInfo *eventInfo = nullptr;
+      ANA_CHECK (m_eventHandle.retrieve (eventInfo, sys, ctx));
 
       // reset all cut flags to default=false
       for (CutEntry& cut : m_hhmetCuts) {
         cut.passed = false;
-        m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
+        m_Bbranches.at(cut.name).set(*eventInfo, cut.passed, sys);
       }
-    
-      evaluateTriggerCuts(*event, m_Triggers, m_hhmetCuts, ctx);
+
+      evaluateTriggerCuts(*eventInfo, m_Triggers, m_hhmetCuts, ctx);
       
       // Get number of jets
       int n_boosted_jets = 0;
@@ -123,10 +134,30 @@ namespace HHMET
 
       evaluateLeptonCuts(n_electrons, n_muons, m_hhmetCuts);
 
+      const xAOD::MissingETContainer *metCont = nullptr;
+      ANA_CHECK(m_metHandle.retrieve(metCont, sys, ctx));
+      const xAOD::MissingET* met = (*metCont)["Final"];
+      if (!met) {
+        ATH_MSG_ERROR("Could not retrieve MET");
+        return StatusCode::FAILURE;
+      }
+
+      int n_photons = 0;
+      if (!m_photonHandle.empty()) {
+        const xAOD::PhotonContainer *photons = nullptr;
+        ANA_CHECK (m_photonHandle.retrieve (photons, sys, ctx));
+        n_photons = photons->size();
+      }
+
+      evaluateExtraSUSYCuts(n_photons, m_hhmetCuts);
+
+      evaluateMetCuts(met, m_hhmetCuts);
+
+
       bool passedall = true;
       for (CutEntry& cut : m_hhmetCuts) {
         passedall = passedall && cut.passed;
-        m_Bbranches.at(cut.name).set(*event, cut.passed, sys);
+        m_Bbranches.at(cut.name).set(*eventInfo, cut.passed, sys);
       }
 
       // Global event filter true if any syst passes and controls
@@ -138,14 +169,14 @@ namespace HHMET
 
         // Compute total_events
         m_total_events+=1;
-        if (m_isMC) m_total_mcEventWeight+= m_generatorWeight.get(*event, sys);
+        if (m_isMC) m_total_mcEventWeight+= m_generatorWeight.get(*eventInfo, sys);
 
         // Count how many cuts the event passed and increase the relative counter
         for (const auto &cut : m_inputCutList) {
           if(m_hhmetCuts.exists(cut)) {
             if (m_hhmetCuts(cut).passed) {
               m_hhmetCuts(cut).counter += 1;
-              if (m_isMC) m_hhmetCuts(cut).w_counter += m_generatorWeight.get(*event, sys);
+              if (m_isMC) m_hhmetCuts(cut).w_counter += m_generatorWeight.get(*eventInfo, sys);
             }
           }
         }
@@ -161,7 +192,7 @@ namespace HHMET
         // I think this is an elegant way to do it :) . Considering the difficulties a configurable cut list imposes. 
         for (unsigned int i=0; i < consecutive_cuts; i++) {
           m_hhmetCuts[i].relativeCounter += 1;
-          if (m_isMC) m_hhmetCuts[i].w_relativeCounter += m_generatorWeight.get(*event, sys);
+          if (m_isMC) m_hhmetCuts[i].w_relativeCounter += m_generatorWeight.get(*eventInfo, sys);
         }
       }
 
@@ -192,7 +223,7 @@ namespace HHMET
 
   }
 
-  void hhmetSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& event, const std::vector<std::string> &Triggers, 
+  void hhmetSelectorAlg::evaluateTriggerCuts(const xAOD::EventInfo& eventInfo, const std::vector<std::string> &Triggers, 
                                             CutManager& hhmetCuts, const EventContext& ctx) {
     if (!hhmetCuts.exists("PASS_TRIGGER"))
         return;
@@ -203,7 +234,7 @@ namespace HHMET
     {
       SG::ReadDecorHandleKey<xAOD::EventInfo>& triggerDecorKey = m_triggerDecorKeys.at(trigger);
       SG::ReadDecorHandle<xAOD::EventInfo, bool> m_triggerDecorHandle(triggerDecorKey, ctx);    // OR between triggers
-      pass_trigger |= m_triggerDecorHandle(event);     
+      pass_trigger |= m_triggerDecorHandle(eventInfo);     
     }
     hhmetCuts("PASS_TRIGGER").passed = pass_trigger;
   }
@@ -219,6 +250,21 @@ namespace HHMET
   {
     if (nElectrons == 0 && nMuons == 0 && hhmetCuts.exists("ZERO_LEPTONS"))
       hhmetCuts("ZERO_LEPTONS").passed = true;
+  }
+
+      
+  void hhmetSelectorAlg::evaluateExtraSUSYCuts(const int nPhotons, CutManager& hhmetCuts)
+  {
+    if (nPhotons == 0 && hhmetCuts.exists("ExtraSUSY"))
+      hhmetCuts("ExtraSUSY").passed = true;
+  }
+    
+  void hhmetSelectorAlg::evaluateMetCuts(const xAOD::MissingET* met, CutManager& hhmetCuts)
+  {
+    if (met->met() > 50. * Athena::Units::GeV && hhmetCuts.exists("MET_50"))
+      hhmetCuts("MET_50").passed = true;
+    if (met->met() > 150. * Athena::Units::GeV && hhmetCuts.exists("MET_150"))
+      hhmetCuts("MET_150").passed = true;
   }
 
   StatusCode hhmetSelectorAlg::initialiseCutflow(){

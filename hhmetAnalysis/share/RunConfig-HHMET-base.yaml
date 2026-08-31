@@ -5,6 +5,7 @@ do_resolved_dihiggs: true
 do_boosted_dihiggs: false
 
 splitOutputTree: false
+expert_mode_warning_level: ignore
 
 #==========================================
 # Sort out basic event recording (Triggers, GRL, PRW)
@@ -26,13 +27,13 @@ prw_files:
 #==========================================
 # Object reconstruction & selection
 #==========================================
-# TODO ADD ALL THE ARGS PROPERLY
 
 # Toggles for object types
 do_small_R_jets: true
 do_large_R_UFO_jets: false
 do_muons: true
 do_electrons: true
+do_photons: true
 do_met: true
 
 # calibrate & select small-R jets
@@ -81,12 +82,12 @@ Small_R_jet:
   variables_int_ljets: []
   variables_int_allJets: []
 
-# calibrate & select muons
+# calibrate & veto muons
 Muon:
-  min_pT: 8.0e+3
+  min_pT: 3.e+3
   max_eta: 2.7
-  ID: "Loose"
-  Iso: "PflowLoose_VarRad"
+  ID: "Medium" #"Loose"
+  Iso: "NonIso" #"PflowLoose_VarRad"
   maxD0Significance: 3
   maxDeltaZ0SinTheta: 0.5
   do_thinning: true
@@ -97,17 +98,15 @@ Muon:
   do_IFF_decoration: false
   do_reco_decoration: false
   amount: 0
-  variables: ["pt", "eta", "phi", "E", "effSF"]
-  variables_int: []
   extra_wps: []
 
-# calibrate & select electrons
+# calibrate & veto electrons
 Electron:
-  min_pT: 8.0e+3
+  min_pT: 4.5e+3
   max_eta: 2.47
   crackVeto: true
   ID: "LooseBLayerLH"
-  Iso: "Loose_VarRad"
+  Iso: "NonIso" #"Loose_VarRad"
   correlationModelId: "TOTAL"
   maxD0Significance: 5.
   maxDeltaZ0SinTheta: 0.5
@@ -119,13 +118,23 @@ Electron:
   do_IFF_decoration: false
   do_reco_decoration: false
   amount: 0
-  variables: ["pt", "eta", "phi", "E", "effSF"]
-  variables_int: []
   correlationModelScale: "1NP_v1"
   correlationModelIso: "TOTAL"
   correlationModelReco: "TOTAL"
   extra_wps: []
   forceFullSimConfig: false
+
+# calibrate and veto photons
+Photon:
+  crackVeto: True # Remove photons with 1.37 < |eta| < 1.52 (LAr crack)
+  minPt: 10.e+3
+  maxEta: 2.37
+  ID: 'Loose'
+  Iso: 'NonIso'
+  do_thinning: true
+  amount: 0
+  correlationModelScale: "1NP_v1"
+  extra_wps: []
 
 # calibrate & select met
 Met:
@@ -154,14 +163,14 @@ do_event_cleaning: true
 add_BadBatman_jet_cleaning: false
 do_trigger_filtering: true
 save_cutflow: true
-bypass: false # what does this do????
+bypass: false
 selection_name: "preselection"
 CutList:
   - PASS_TRIGGER
+  #- ZERO_LEPTONS
+  #- ExtraSUSY
   - AT_LEAST_FOUR_JETS_THREE_BJETS_OR_AT_LEAST_TWO_JETS_ONE_LRJET
-  - ZERO_LEPTONS
-#TODO SPLIT UP CUTS MORE FINELY
-
+  - MET_50
 
 #==========================================
 # Systematics set up
@@ -184,8 +193,6 @@ ttree_output:
   reco_outputs:
     small_R_jets: 'container_names.output.reco4PFlowJet'
     met: 'container_names.output.met'
-    #muons: 'container_names.output.muons'
-    #electrons: 'container_names.output.electrons'
   collection_options:
     small_R_jets:
       truth_parent_info: true
@@ -193,16 +200,7 @@ ttree_output:
       JVT_details: true
       no_bjet_calib_p4: true
       btag_details: true
-#      gn3_scores: false
-#    electrons:
-#      id_variables: false
-#      iso_variables: false
-#      run_selection: true
-#      truth_parent_info: true
-#    muons:
-#      iso_variables: false
-#      run_selection: true
-#      truth_parent_info: true
   truth_outputs:
     small_R_jets: 'container_names.input.truth4Jet'
     higgs_particle: 'container_names.output.truthHHParticles'
+    met: 'container_names.input.truthmet'
