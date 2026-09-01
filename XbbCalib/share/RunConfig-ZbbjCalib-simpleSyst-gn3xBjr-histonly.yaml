@@ -15,7 +15,16 @@
 # doing so would produce e.g. ['.*', '.*'] or leak an extra pattern. We set ONLY
 # the scalar flag. `do_CP_systematics: true` is already inherited from the parent
 # chain (RunConfig-ZbbjCalib-simpleSyst.yaml).
-include: [XbbCalib/RunConfig-ZbbjCalib-simpleSyst-histonly.yaml]
+#
+# Base is the UNBLINDED histonly variant (RunConfig-ZbbjCalib-simpleSyst-
+# histonly-unblinded.yaml), NOT the framework-default blinded
+# RunConfig-ZbbjCalib-simpleSyst-histonly.yaml. This calibration needs the
+# Z->bb peak (74-106 GeV BJR mass) POPULATED in data to be fittable — see plan
+# 54. YAML `include` concatenates lists, so un-blinding cannot be done by
+# appending blinding-Zbbj-off.yaml on top of the blinded base; instead this
+# config points at a base that only ever includes the -off blinding config.
+# The framework default stays blinded for other users.
+include: [XbbCalib/RunConfig-ZbbjCalib-simpleSyst-histonly-unblinded.yaml]
 
 # Register + populate the synthetic BJR scale systematics on top of the Simple
 # set. Gated by (do_CP_systematics AND do_bjr_kinematic_shift_syst) in
