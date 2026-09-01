@@ -15,13 +15,11 @@
 #include <xAODJet/JetContainer.h>
 
 #include <string>
-#include <vector>
 
 namespace Easyjet
 {
-  // Customs are registered downstream of the jet sequence, so no
-  // per-systematic container exists for them without this copy;
-  // SysReadHandle would return NOSYS and corrupt the nominal jets.
+  // Customs are registered here, after the jet sequence, so only this copy
+  // gives them a container of their own (SysReadHandle would yield NOSYS).
   class BJRKinematicShiftSystAlg final : public AthHistogramAlgorithm
   {
   public:
@@ -56,16 +54,6 @@ namespace Easyjet
     SG::Decorator<float> m_bjrPtDec{"bJR10v01_pt"};
     SG::ConstAccessor<float> m_bjrMass{"bJR10v01_mass"};
     SG::ConstAccessor<float> m_bjrPt{"bJR10v01_pt"};
-
-    // Indexed like m_systematicsList.systematicsVector(); non-custom
-    // entries have apply == false.
-    struct ShiftSpec
-    {
-      bool apply;
-      float massFactor;
-      float ptFactor;
-    };
-    std::vector<ShiftSpec> m_specs;
   };
 }
 
