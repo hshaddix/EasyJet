@@ -10,6 +10,9 @@ from XbbCalib.hists_output_config import hists_output_cfg
 
 from .vars_to_copy import lrj_floats_to_copy, lrj_gn3x_working_points
 from .zdecay_label_config import ZDecayTruthLabelAlgCfg, truth_z_decay_int_vars, is_zqq_sample
+from EasyjetHub.algs.calibration.bjr_kinematic_shift_config import (
+    BJRKinematicShiftSystCfg,
+)
 
 copiedVariablePrefix0 = "Zcand0_"
 copiedVariablePrefix1 = "Zcand1_"
@@ -61,6 +64,17 @@ def ZbbjCalib_cfg(flags, largejetkey,
             copiedVariablePrefix1 =copiedVariablePrefix1
         )
     )
+
+    # Synthetic BJR mass/pT-shift systematics: register the custom CP
+    # systematics and populate their shifted Zcand decorations. MUST run
+    # after BaselineVarsZbbjCalibAlg (whose SystVariableCopier writes the
+    # nominal Zcand{0,1}_bJR10v01_{mass,pt}_%SYS%) and before the histogram
+    # algs scheduled by hists_output_cfg below.
+    if (
+        flags.Analysis.do_CP_systematics
+        and flags.Analysis.do_bjr_kinematic_shift_syst
+    ):
+        cfg.merge(BJRKinematicShiftSystCfg(flags))
 
     out_path = (
         flags.Analysis.h5_output

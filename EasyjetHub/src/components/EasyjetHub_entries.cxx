@@ -31,6 +31,7 @@
 #include "../FileMetaDataStrTool.h"
 #include "../JetNeutrinoDecoratorAlg.h"
 #include "../BJRSystPropagationAlg.h"
+#include "../BJRKinematicShiftSystAlg.h"
 
 using namespace Easyjet;
 
@@ -67,3 +68,4 @@ DECLARE_COMPONENT(GNXLargeJetDecoratorAlg)
 DECLARE_COMPONENT(EventInfoDecorLockAlg)
 DECLARE_COMPONENT(FileMetaDataStrTool)
 DECLARE_COMPONENT(BJRSystPropagationAlg)
+DECLARE_COMPONENT(BJRKinematicShiftSystAlg)

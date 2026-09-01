@@ -349,6 +349,16 @@ do_CP_systematics: false
 # produce a frozen baseline from the same build. The BJR regression OUTPUT is
 # unaffected.
 do_bjr_syst_propagation: true
+# Whether to register the synthetic GN3X BJR mass/pT-shift "template-morph"
+# systematics (Easyjet::BJRKinematicShiftSystAlg) in the Zbbj-calib histogram
+# dump. When True, 2 nuisance parameters (XBB_BJR_MASS_SHIFT and
+# XBB_BJR_PT_SHIFT, 4 up/down CP::SystematicVariations) scale the binned
+# bJR10v01 mass or pT by a fixed fraction, keeping selection, working point
+# and event weight at their nominal values. Shift sizes default to 2% (mass)
+# and 1% (pT) on the alg and can be overridden. Intended to be run with
+# systematics_regex narrowed to NOSYS + the customs (['XBB_BJR_.*']).
+# Default off.
+do_bjr_kinematic_shift_syst: false
 systematics_regex: []
 systematics_suffix_separator: "_"
 # CutBookKeeper histPattern
