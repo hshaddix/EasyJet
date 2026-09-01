@@ -7,6 +7,9 @@ from AthenaCommon.Utils.unixtools import find_datafile
 
 from EasyjetHub.steering.utils.name_helper import drop_sys
 from EasyjetHub.steering.analysis_configuration import get_trigger_chains, get_trigger_chains_scale_factor
+from EasyjetHub.algs.calibration.bjr_syst_propagation_config import (
+    BJRSystPropagationConfig,
+)
 
 
 def jet_sequence(
@@ -290,6 +293,25 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
         configSeq.setOptionValue(
             '.uncertToolMCType', jet_flags.uncertToolMCType
         )
+
+    # bJR10v01 runs nominal-only in the derivation, so CP systematics must be
+    # applied to the BJR mass/pT by hand -- see Easyjet::BJRSystPropagationAlg.
+    # ORDERING IS LOAD-BEARING: append AFTER makeConfig('Jets') (which provides
+    # the calibrated container the ufo_sys/ufo_nom ratio needs) and BEFORE
+    # Jets.XbbTagging (the flat-mass WP reads the BJR decorations via a raw
+    # accessor the dependency reorderer cannot see, so order follows append
+    # position, not declared dependencies).
+    lr_output_flags = (
+        flags.Analysis.ttree_output.collection_options.large_R_jets
+    )
+    if (
+        lr_jet_type == "UFO"
+        and lr_output_flags.bjet_regression
+        and flags.Analysis.do_CP_systematics
+        and flags.Analysis.do_bjr_syst_propagation
+    ):
+        configSeq.append(BJRSystPropagationConfig())
+        configSeq.setOptionValue('.containerName', output_name)
 
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
         jsonCalibFile = find_datafile(tagger_cfg['file'])

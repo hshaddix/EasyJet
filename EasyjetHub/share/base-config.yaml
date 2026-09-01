@@ -343,6 +343,12 @@ PileupReweighting:
 disable_calib: false
 # Whether to activate CP alg systematic variations
 do_CP_systematics: false
+# Whether to propagate CP systematics onto the bJR10v01 (BJR) large-R mass/pT
+# by hand via Easyjet::BJRSystPropagationAlg. When False the alg is not
+# scheduled, so the BJR branches are present but frozen (== NOSYS) -- used to
+# produce a frozen baseline from the same build. The BJR regression OUTPUT is
+# unaffected.
+do_bjr_syst_propagation: true
 systematics_regex: []
 systematics_suffix_separator: "_"
 # CutBookKeeper histPattern
