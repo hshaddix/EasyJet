@@ -15,18 +15,8 @@ namespace Easyjet
   StatusCode BJRSystPropagationAlg::initialize()
   {
     ATH_CHECK(m_jetHandle.initialize(m_systematicsList));
-    // The nominal handle is configured with a NOSYS container name (no
-    // %SYS% token), so it resolves to the same container for every
-    // systematic. It still has to be registered with the systematics
-    // list so it can be retrieved inside the per-systematic loop.
     ATH_CHECK(m_nominalJetHandle.initialize(m_systematicsList));
 
-    // The bJR outputs are plain SG::Decorators that overwrite the existing
-    // bare bJR10v01_mass/_pt aux in place on each per-systematic jet; they are
-    // not systematics-aware write handles, so there is nothing to initialize
-    // against the systematics list here.
-
-    // Initialise syst list (must come after all syst-aware inputs/outputs)
     ATH_CHECK(m_systematicsList.initialize());
 
     return StatusCode::SUCCESS;
@@ -43,17 +33,6 @@ namespace Easyjet
 
     for (const auto &sys : m_systematicsList.systematicsVector())
     {
-      // Overwrite the bare bJR10v01_mass/_pt aux IN PLACE on this systematic's
-      // jet shallow copy. Each systematic has its own shallow copy, so writing
-      // the (non-varying) bare aux name per copy yields per-systematic values.
-      // The downstream SystVariableCopier reads this same bare aux off the jet
-      // and snapshots it into Zcand0/1_bJR10v01_mass, so the histogram/Zcand
-      // path picks up the variation with no copier change. For NOSYS the ratio
-      // is 1 (ufo_sys == ufo_nom), so we write back the frozen nominal value --
-      // a self-consistent reference. The nominal container is only ever read
-      // (its NOSYS write is the identity), so reading bjr_nom off it stays the
-      // frozen value regardless of systematic ordering.
-
       const xAOD::JetContainer *jets = nullptr;
       ANA_CHECK(m_jetHandle.retrieve(jets, sys, ctx));
 

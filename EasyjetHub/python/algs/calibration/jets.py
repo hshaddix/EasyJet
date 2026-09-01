@@ -266,15 +266,6 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq.setOptionValue('.minMass', jet_flags.min_mass)
     configSeq.setOptionValue('.maxMass', jet_flags.max_mass)
 
-    # Forward the large-R systematic-model knobs onto the single 'Jets' block.
-    # On this AnalysisBase release the 'Jets' (LargeRJetAnalysisConfig) block
-    # auto-applies the jet uncertainties itself -- there is no separate
-    # 'Jets.Uncertainties' block any more (cf. the small-R jet_sequence above,
-    # which likewise sets .systematicsModelJES/JER + uncertTool* directly on
-    # makeConfig("Jets")). The defaults in base-config.yaml preserve previous
-    # behaviour (Full JER/JMS/JMR, auto path selection -> the full ~210-NP
-    # large-R set). RunConfigs override these to select the JetEtMiss "Simple"
-    # (reduced) R10 set.
     configSeq.setOptionValue('.systematicsModelJER', jet_flags.systModelJER)
     configSeq.setOptionValue('.systematicsModelJMS', jet_flags.systModelJMS)
     configSeq.setOptionValue('.systematicsModelJMR', jet_flags.systModelJMR)
@@ -294,13 +285,6 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
             '.uncertToolMCType', jet_flags.uncertToolMCType
         )
 
-    # bJR10v01 runs nominal-only in the derivation, so CP systematics must be
-    # applied to the BJR mass/pT by hand -- see Easyjet::BJRSystPropagationAlg.
-    # ORDERING IS LOAD-BEARING: append AFTER makeConfig('Jets') (which provides
-    # the calibrated container the ufo_sys/ufo_nom ratio needs) and BEFORE
-    # Jets.XbbTagging (the flat-mass WP reads the BJR decorations via a raw
-    # accessor the dependency reorderer cannot see, so order follows append
-    # position, not declared dependencies).
     lr_output_flags = (
         flags.Analysis.ttree_output.collection_options.large_R_jets
     )

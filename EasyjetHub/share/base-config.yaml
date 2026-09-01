@@ -138,13 +138,6 @@ Large_R_jet:
     GN2X:
       file: EasyjetHub/Xbb_GN2Xv01.json
       wps: []
-  # Uncertainty model knobs forwarded via lr_jet_sequence:
-  #   systModelJER / systModelJMS / uncertToolConfigPath / uncertToolCalibArea
-  #   / uncertToolMCType  → 'Jets.Uncertainties' (JetUncertaintiesConfig)
-  #   systModelJMR / uncertToolConfigPathJMR → 'Jets' (LargeRJetAnalysisConfig)
-  # Defaults preserve previous behaviour (Full everywhere, auto path
-  # selection). Override in a RunConfig to use the JetEtMiss "simpler" R10
-  # set (Summer2025_PreRec).
   systModelJER: "Full"
   systModelJMS: "Full"
   systModelJMR: "Full"
@@ -343,21 +336,8 @@ PileupReweighting:
 disable_calib: false
 # Whether to activate CP alg systematic variations
 do_CP_systematics: false
-# Whether to propagate CP systematics onto the bJR10v01 (BJR) large-R mass/pT
-# by hand via Easyjet::BJRSystPropagationAlg. When False the alg is not
-# scheduled, so the BJR branches are present but frozen (== NOSYS) -- used to
-# produce a frozen baseline from the same build. The BJR regression OUTPUT is
-# unaffected.
+# True by default, but only runs if BJR and CP systematics are enabled.
 do_bjr_syst_propagation: true
-# Whether to register the synthetic GN3X BJR mass/pT-shift "template-morph"
-# systematics (Easyjet::BJRKinematicShiftSystAlg) in the Zbbj-calib histogram
-# dump. When True, 2 nuisance parameters (XBB_BJR_MASS_SHIFT and
-# XBB_BJR_PT_SHIFT, 4 up/down CP::SystematicVariations) scale the binned
-# bJR10v01 mass or pT by a fixed fraction, keeping selection, working point
-# and event weight at their nominal values. Shift sizes default to 2% (mass)
-# and 1% (pT) on the alg and can be overridden. Intended to be run with
-# systematics_regex narrowed to NOSYS + the customs (['XBB_BJR_.*']).
-# Default off.
 do_bjr_kinematic_shift_syst: false
 systematics_regex: []
 systematics_suffix_separator: "_"
