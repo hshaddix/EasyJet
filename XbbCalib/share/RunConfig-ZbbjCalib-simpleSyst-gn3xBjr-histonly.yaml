@@ -1,0 +1,23 @@
+# Simple-scheme + synthetic GN3X BJR mass/pT-shift systematics, histonly.
+#
+# Includes the validated Simple-scheme histonly config and ADDITIONALLY turns on
+# the synthetic GN3X BJR mass/pT-shift template-morph systematics
+# (Easyjet::BJRKinematicShiftSystAlg — 2 NPs / 4 up/down slices).
+#
+# Difference vs RunConfig-ZbbjCalib-gn3xBjrScale-histonly.yaml (which dumps the
+# customs ONLY, via a narrow regex): this config keeps the inherited
+# `systematics_regex: ['.*']` from the parent, so the H5 `sys` axis carries BOTH
+# the standard JES/JER/JMS/JMR/GEN systematics AND the 4 XBB_BJR_* custom
+# slices in one dump.
+#
+# IMPORTANT: easyjet's YAML `include` CONCATENATES list values (local += parent),
+# so this file MUST NOT re-declare `systematics_regex` (or any other list key) —
+# doing so would produce e.g. ['.*', '.*'] or leak an extra pattern. We set ONLY
+# the scalar flag. `do_CP_systematics: true` is already inherited from the parent
+# chain (RunConfig-ZbbjCalib-simpleSyst.yaml).
+include: [XbbCalib/RunConfig-ZbbjCalib-simpleSyst-histonly.yaml]
+
+# Register + populate the synthetic BJR scale systematics on top of the Simple
+# set. Gated by (do_CP_systematics AND do_bjr_kinematic_shift_syst) in
+# XbbCalib/python/ZbbjCalib_config.py.
+do_bjr_kinematic_shift_syst: true

@@ -1,0 +1,11 @@
+# Blinding DISABLED for the Zbbj calibration data dump. The data code path in
+# hists_output_config.py reads hists_cfg.blinding.enable unconditionally (no
+# 'blinding' in hists_cfg guard), so a blinding block MUST be present even when
+# we don't want to blind — hence enable: false here (rather than omitting the
+# block, which crashes on data with AttributeError). enable: false => the
+# Z->bb peak (74-106 GeV) is kept; the data is UNBLINDED. variable/min/max are
+# retained for completeness but are not read when enable is false.
+enable: false
+variable: "Zcand0_bJR10v01_mass"
+min: 74.e+3
+max: 106.e+3

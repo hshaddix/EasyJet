@@ -1,0 +1,23 @@
+# Histonly variant of RunConfig-ZbbjCalib-simpleSyst.yaml — produces only
+# an HDF5 of histograms (no ROOT ntuple). Inherits the SimpleJER+SimpleJMS
+# +SimpleJMR large-R syst overrides from the parent.
+include: [XbbCalib/RunConfig-ZbbjCalib-simpleSyst.yaml]
+
+# Output ALL scheduled systematics (inherits the parent's '.*'). The large-R
+# NP reduction is handled by the Simple model knobs in the parent config, not
+# by this regex, so '.*' keeps the reduced large-R set and retains every other
+# systematic (small-R JES, b-tag/pileup/lepton weights) on the calibration
+# histograms.
+do_CP_systematics: true
+systematics_regex: [".*"]
+
+# Turn on the histogram H5 output (mass_pt_wp_sys per group).
+output:
+  h5:
+    hists:
+      enable: true
+      include:
+        - XbbCalib/hists-config-Zbbj.yaml
+      blinding:
+        include:
+          - XbbCalib/blinding-Zbbj.yaml

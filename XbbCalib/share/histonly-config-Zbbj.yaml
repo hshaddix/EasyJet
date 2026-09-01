@@ -10,7 +10,7 @@ output:
       blinding:
         variable: "Zcand0_bJR10v01_mass"
         include:
-          - XbbCalib/blinding.yaml
+          - XbbCalib/blinding-Zbbj.yaml
 
 do_CP_systematics: true
 systematics_regex: [".*"]

@@ -1,0 +1,10 @@
+# Zbbj blinding: blind the Z->bb peak in the BJR (b-jet regression) mass of
+# the LEADING Z candidate — the variable the Zbbj calibration is measured in
+# (see hists-config-Zbbj.yaml multidim.leading.mass_var). Distinct from the
+# shared blinding.yaml, which targets the Zbby calorimeter mass "Zcand_0_m"
+# (Zbby spelling); the Zbbj path decorates "Zcand0" (no underscore) and the
+# measurement is BJR, not calo. Blinding is applied to data only.
+enable: true
+variable: "Zcand0_bJR10v01_mass"
+min: 74.e+3   # lower bound (exclusive)
+max: 106.e+3  # upper bound (exclusive)

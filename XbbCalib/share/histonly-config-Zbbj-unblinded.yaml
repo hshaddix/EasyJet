@@ -1,0 +1,31 @@
+# UNBLINDED Zbbj histonly config — same as histonly-config-Zbbj.yaml but WITHOUT
+# the blinding block, so the Z->bb peak (74-106 GeV BJR mass) is NOT removed.
+# Blinding is data-only (hists_output_config.py gates it on `not isMC`), so the
+# default histonly-config-Zbbj.yaml silently blinds the DATA in the signal
+# window — wrong for a Z->bb calibration, which needs the data peak. Use THIS
+# config for the calibration data dump. (MC was never blinded either way.)
+include:
+  - XbbCalib/RunConfig_ZbbjCalib.yaml
+
+output:
+  h5:
+    hists:
+      enable: true
+      include:
+        - XbbCalib/hists-config-Zbbj.yaml
+      # Blinding block present but DISABLED (enable: false) — the data code path
+      # reads hists_cfg.blinding.enable unconditionally, so the block must exist;
+      # enable: false keeps the Z->bb peak (data UNBLINDED).
+      blinding:
+        include:
+          - XbbCalib/blinding-Zbbj-off.yaml
+
+do_CP_systematics: true
+systematics_regex: [".*"]
+
+# Data is NOSYS-only (light jobs — no per-event systematic recompute), so we do
+# NOT use the MC's small n_files_per_job (=2, needed only because full-syst MC
+# jobs are heavy). A larger value gives far fewer/bigger jobs → fewer tiny grid
+# outputs to download + merge, and less hdf5-merge fragmentation.
+grid:
+  n_files_per_job: 20

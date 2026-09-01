@@ -12,11 +12,12 @@ weights:
   run2:
     - beamSpotWeight
 multidim:
+  # BJR-pT-binned views (mass binned at 1 GeV: 100 bins over 50-150 GeV).
   leading:
     mass_var: Zcand0_bJR10v01_mass
     mass_lower: 50000
     mass_upper: 150000
-    mass_n_bins: 50
+    mass_n_bins: 100
     pt_var: Zcand0_bJR10v01_pt
     pt_edges: [450000., 500000., 600000., 1000000.]
     wp_prefix: Zcand0
@@ -24,7 +25,26 @@ multidim:
     mass_var: Zcand1_bJR10v01_mass
     mass_lower: 50000
     mass_upper: 150000
-    mass_n_bins: 50
+    mass_n_bins: 100
     pt_var: Zcand1_bJR10v01_pt
+    pt_edges: [450000., 500000., 600000., 1000000.]
+    wp_prefix: Zcand1
+  # UFO-pT-binned views: SAME BJR mass observable, sliced by the UFO large-R
+  # jet's own pT (Zcand{0,1}_pt, written by FourVectorOutBlock) instead of the
+  # BJR-regression pT. Same mass range/binning and pt_edges as above.
+  leading_ufopt:
+    mass_var: Zcand0_bJR10v01_mass
+    mass_lower: 50000
+    mass_upper: 150000
+    mass_n_bins: 100
+    pt_var: Zcand0_pt
+    pt_edges: [450000., 500000., 600000., 1000000.]
+    wp_prefix: Zcand0
+  subleading_ufopt:
+    mass_var: Zcand1_bJR10v01_mass
+    mass_lower: 50000
+    mass_upper: 150000
+    mass_n_bins: 100
+    pt_var: Zcand1_pt
     pt_edges: [450000., 500000., 600000., 1000000.]
     wp_prefix: Zcand1
