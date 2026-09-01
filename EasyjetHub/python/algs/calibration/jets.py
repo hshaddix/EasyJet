@@ -263,6 +263,34 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq.setOptionValue('.minMass', jet_flags.min_mass)
     configSeq.setOptionValue('.maxMass', jet_flags.max_mass)
 
+    # Forward the large-R systematic-model knobs onto the single 'Jets' block.
+    # On this AnalysisBase release the 'Jets' (LargeRJetAnalysisConfig) block
+    # auto-applies the jet uncertainties itself -- there is no separate
+    # 'Jets.Uncertainties' block any more (cf. the small-R jet_sequence above,
+    # which likewise sets .systematicsModelJES/JER + uncertTool* directly on
+    # makeConfig("Jets")). The defaults in base-config.yaml preserve previous
+    # behaviour (Full JER/JMS/JMR, auto path selection -> the full ~210-NP
+    # large-R set). RunConfigs override these to select the JetEtMiss "Simple"
+    # (reduced) R10 set.
+    configSeq.setOptionValue('.systematicsModelJER', jet_flags.systModelJER)
+    configSeq.setOptionValue('.systematicsModelJMS', jet_flags.systModelJMS)
+    configSeq.setOptionValue('.systematicsModelJMR', jet_flags.systModelJMR)
+    if jet_flags.uncertToolConfigPath and jet_flags.uncertToolCalibArea:
+        configSeq.setOptionValue(
+            '.uncertToolConfigPath', jet_flags.uncertToolConfigPath
+        )
+        configSeq.setOptionValue(
+            '.uncertToolCalibArea', jet_flags.uncertToolCalibArea
+        )
+    if jet_flags.uncertToolConfigPathJMR:
+        configSeq.setOptionValue(
+            '.uncertToolConfigPathJMR', jet_flags.uncertToolConfigPathJMR
+        )
+    if jet_flags.uncertToolMCType:
+        configSeq.setOptionValue(
+            '.uncertToolMCType', jet_flags.uncertToolMCType
+        )
+
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
         jsonCalibFile = find_datafile(tagger_cfg['file'])
 
