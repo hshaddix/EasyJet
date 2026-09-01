@@ -27,6 +27,8 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
     cfg = ComponentAccumulator()
 
     selected_large_r_jets = "XbbCalibLRJets_%SYS%"
+    bjr_ordered_large_r = "XbbCalibBJROrderedLRJets_%SYS%"
+    
     cfg.merge(
         JetSelectorAlgCfg(
             flags,
@@ -48,15 +50,6 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
 
     cfg.merge(ZDecayTruthLabelAlgCfg(flags))
 
-    cfg.addEventAlgo(
-        CompFactory.XBBCALIB.ZbbyCalibSelectorAlg(
-            "ZbbyCalibSelectorAlg",
-            lrjets=selected_large_r_jets,
-            photons=selected_photons,
-            eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
-            remove_zcc_overlap=flags.Analysis.remove_zcc_overlap and is_zqq_sample(flags),
-        )
-    )
     # signal jets selection
     # ZcandSelectorAlg: photon pT enforced upstream; only dR cut remains
     z_candidate_jets = "ZcandLRJets_%SYS%"
@@ -68,11 +61,23 @@ def ZbbyCalib_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey, photonk
             zCandidateJets=z_candidate_jets,
         )
     )
-
+    
+    cfg.addEventAlgo(
+        CompFactory.XBBCALIB.ZbbyCalibSelectorAlg(
+            "ZbbyCalibSelectorAlg",
+            lrjets=z_candidate_jets,
+            bjrOrderedJets=bjr_ordered_large_r,
+            photons=selected_photons,
+            eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
+            bypass=flags.Analysis.bypass,
+            remove_zcc_overlap=flags.Analysis.remove_zcc_overlap and is_zqq_sample(flags),
+        )
+    )
+    
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.BaselineVarsZbbyCalibAlg(
             "BaselineVarsZbbyCalibAlg",
-            lrjets=z_candidate_jets,
+            lrjets=bjr_ordered_large_r,
             photons=selected_photons,
             floatsToCopy=lrj_floats_to_copy(flags),
             intsToCopy=lrj_gn3x_working_points(flags),

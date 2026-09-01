@@ -123,22 +123,25 @@ SMALL_TTBAR_MC23=p7017/daod/DAOD_PHYS.601229.e8514_e8528_s4159_s4114_r15530_r155
 SMALL_ZBBY_MC23=p7017/daod/DAOD_PHYS.701286.e8582_e8586_s4369_s4370_r16083_r15970_p6697.small.pool.root
 SMALL_ZBBY_MC23_P7017=p7017/daod/DAOD_PHYS.701286.e8582_e8586_s4369_s4370_r16083_r15970_p7017.small.pool.root
 SMALL_ZBB_MC20_P7018=p7018/daod/DAOD_PHYS.700855.e8536_s3681_r13144_p7018.small.pool.root
-SMALL_ZBBY_DATA_P7019=p7019v2/daod/DAOD_PHYS.periodAllYear.grp22_v01_p7019.j250y200.pool.root
+SMALL_ZBBY_DATA_P7019=p7019v4/daod/DAOD_PHYS.periodAllYear.grp22_v01_p7019.j500y150.pool.root
+SMALL_ZBBY_MC20_P7019=p7019v3/daod/DAOD_PHYS.700353.e8312_s3681_r13145_p7018.j500y150.pool.root
+SMALL_ZBBY_MC23_P7019=p7019v3/daod/DAOD_PHYS.701286.e8582_s4159_r15530_p7017.j500y150.pool.root
+
 declare -A SMALL_DATAFILES=(
     # this zbby sample also works fine to pass the jet selection
     [zbbjcalib-mc20]=${SMALL_ZBB_MC20_P7018}
-    [zbbycalib-mc20]=${SMALL_ZBB_MC20_P7018}
+    [zbbycalib-mc20]=${SMALL_ZBBY_MC20_P7019}
     [zbbjcalib-mc23]=${SMALL_ZBBY_MC23_P7017}
-    [zbbycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [zbbycalib-mc23]=${SMALL_ZBBY_MC23_P7019}
     [zlljcalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [zllycalib-mc23]=${SMALL_ZBBY_MC23_P7017}
     [h5-fast-mc23]=${SMALL_TTBAR_MC23}
     [hist-syst-Zbbj-mc23]=${SMALL_ZBBY_MC23_P7017}
-    [hist-syst-Zbby-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [hist-syst-Zbby-mc23]=${SMALL_ZBBY_MC23_P7019}
     [hist-Zbbj-data]=${SMALL_ZBBY_DATA_P7019}
     [hist-Zbby-data]=${SMALL_ZBBY_DATA_P7019}
     [aod-fast-Zbbj-mc23]=${SMALL_ZBBY_MC23_P7017}
-    [aod-fast-Zbby-mc23]=${SMALL_ZBBY_MC23_P7017}
+    [aod-fast-Zbby-mc23]=${SMALL_ZBBY_MC23_P7019}
     [aod-fast-bbbb-mc23]=${SMALL_TTBAR_MC23}
     [hist-syst-bbbb-mc23]=${SMALL_TTBAR_MC23}
 )
