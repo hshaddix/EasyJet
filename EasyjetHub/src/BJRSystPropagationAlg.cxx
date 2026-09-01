@@ -24,10 +24,7 @@ namespace Easyjet
 
   StatusCode BJRSystPropagationAlg::execute(const EventContext& ctx)
   {
-    // Retrieve the nominal (NOSYS) jet container once. The nominal handle
-    // has no %SYS% token, so retrieving it with the empty systematic set
-    // gives the single NOSYS container; it is the same for every loop
-    // iteration below.
+    // Empty set on the untokenised nominal handle gives the NOSYS container.
     const xAOD::JetContainer *nomJets = nullptr;
     ANA_CHECK(m_nominalJetHandle.retrieve(nomJets, CP::SystematicSet(), ctx));
 
@@ -36,9 +33,7 @@ namespace Easyjet
       const xAOD::JetContainer *jets = nullptr;
       ANA_CHECK(m_jetHandle.retrieve(jets, sys, ctx));
 
-      // Per-systematic and nominal containers are shallow copies made at
-      // the same point in the sequence (before any selection / reordering),
-      // so they are index-aligned and the same size. Fail loudly if not.
+      // Shallow copies of one container: index-aligned by construction.
       if (jets->size() != nomJets->size())
       {
         ATH_MSG_ERROR(
@@ -63,9 +58,7 @@ namespace Easyjet
         const float bjr_m_nom = m_bjrMass(*nom);
         const float bjr_pt_nom = m_bjrPt(*nom);
 
-        // Guard against a zero/negative nominal UFO four-vector (large-R
-        // UFO mass can be ~0); fall back to the frozen nominal value so the
-        // decoration is always written.
+        // UFO mass can be ~0: fall back to the nominal BJR value.
         const float out_m =
             (ufo_m_nom > 0.f) ? bjr_m_nom * (ufo_m_sys / ufo_m_nom)
                               : bjr_m_nom;

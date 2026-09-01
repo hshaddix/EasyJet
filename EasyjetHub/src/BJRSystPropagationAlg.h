@@ -15,11 +15,8 @@
 
 namespace Easyjet
 {
-  /// Propagate large-R UFO jet systematic variations onto the bJR10v01
-  /// regressed mass and pT, which the derivation produces nominal-only:
-  ///
-  ///   bjr_mass_sys = bjr_mass_nom * (ufo_mass_sys / ufo_mass_nom)
-  ///   bjr_pt_sys   = bjr_pt_nom   * (ufo_pt_sys   / ufo_pt_nom)
+  // Scales the derivation's nominal-only bJR10v01 mass/pT by the
+  // per-systematic UFO ratio: bjr_sys = bjr_nom * ufo_sys / ufo_nom.
   class BJRSystPropagationAlg final : public AthHistogramAlgorithm
   {
   public:
