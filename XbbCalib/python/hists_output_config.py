@@ -159,9 +159,7 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
             )
         )
 
-    # MetadataAlg pulls in PMGTruthWeightTool (generator-weight metadata),
-    # which is MC-only — on data there is no TruthMetaData and the tool fails
-    # to initialize. Guard on isMC, mirroring the generator-weight block above.
+    # MetadataAlg needs PMGTruthWeightTool, which is MC-only.
     if flags.Input.isMC and not hists_cfg.disable_metadata:
         cfg.merge(MetadataAlgCfg(flags, h5_output_hists=h5_svc))
     return cfg

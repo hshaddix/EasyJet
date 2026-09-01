@@ -1,4 +1,6 @@
+# Syst fragment first: on scalar conflicts the earlier include wins.
 include:
+  - XbbCalib/syst-Zbbj-simple.yaml
   - XbbCalib/RunConfig_ZbbjCalib.yaml
 
 output:
@@ -8,12 +10,7 @@ output:
       include:
         - XbbCalib/hists-config-Zbbj.yaml
       blinding:
-        variable: "Zcand0_bJR10v01_mass"
-        include:
-          - XbbCalib/blinding-Zbbj.yaml
-
-do_CP_systematics: true
-systematics_regex: [".*"]
+        enable: false
 
 grid:
   n_files_per_job: 2

@@ -1,0 +1,6 @@
+include: [XbbCalib/syst-Zbbj-full.yaml]
+
+Large_R_jet:
+  systModelJER: "Simple"
+  systModelJMS: "Simple"
+  systModelJMR: "Simple"
