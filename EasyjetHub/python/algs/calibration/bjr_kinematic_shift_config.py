@@ -1,24 +1,22 @@
 # Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 
-from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
-from AthenaConfiguration.ComponentFactory import CompFactory
+from AnalysisAlgorithmsConfig.ConfigBlock import ConfigBlock
 
 
-def BJRKinematicShiftSystCfg(flags, **kwargs):
-    """Schedule Easyjet::BJRKinematicShiftSystAlg.
+class BJRKinematicShiftConfig(ConfigBlock):
+    """ConfigBlock for Easyjet::BJRKinematicShiftSystAlg."""
 
-    The shift table defaults live on the algorithm itself (massShifts /
-    ptShifts in BJRKinematicShiftSystAlg.h) -- pass them as kwargs to override.
+    def __init__(self):
+        super(BJRKinematicShiftConfig, self).__init__()
+        self.setBlockName('BJRKinematicShift')
+        self.addOption('containerName', '', type=str,
+                       noneAction='error',
+                       info="the name of the input large-R jet container.")
 
-    Must be scheduled after BaselineVarsZbbjCalibAlg and before the
-    ZbbHistogramAlg instances; the caller (ZbbjCalib_cfg) owns that ordering.
-    """
-    cfg = ComponentAccumulator()
-    cfg.addEventAlgo(
-        CompFactory.Easyjet.BJRKinematicShiftSystAlg(
-            "BJRKinematicShiftSystAlg",
-            event="EventInfo",
-            **kwargs,
-        )
-    )
-    return cfg
+    def makeAlgs(self, config):
+        alg = config.createAlgorithm(
+            'Easyjet::BJRKinematicShiftSystAlg',
+            'BJRKinematicShiftSystAlg')
+
+        alg.jets = config.readName(self.containerName)
+        alg.jetsOut = config.copyName(self.containerName)

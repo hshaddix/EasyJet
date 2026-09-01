@@ -24,15 +24,8 @@ namespace Easyjet
       return StatusCode::FAILURE;
     }
 
-    ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_zcand0Mass.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_zcand0Pt.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_zcand1Mass.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_zcand1Pt.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_jetHandle.initialize(m_systematicsList));
 
-    // Register our four variations (mass up/down, pT up/down) as both
-    // recommended and affecting -- they are their own affecting set. Must
-    // precede m_systematicsList.initialize().
     CP::SystematicSet customs;
     for (int sign : {1, -1})
     {
@@ -42,55 +35,58 @@ namespace Easyjet
     ATH_CHECK(m_systematicsList.addSystematics(customs, customs));
     ATH_CHECK(m_systematicsList.initialize());
 
-    const std::string sfx = "_" + m_nominalSuffix.value();
-    m_zcand0MassNom.emplace("Zcand0_bJR10v01_mass" + sfx);
-    m_zcand0PtNom.emplace("Zcand0_bJR10v01_pt" + sfx);
-    m_zcand1MassNom.emplace("Zcand1_bJR10v01_mass" + sfx);
-    m_zcand1PtNom.emplace("Zcand1_bJR10v01_pt" + sfx);
+    const std::string massUp =
+        CP::SystematicVariation(m_massSystName, 1).name();
+    const std::string massDn =
+        CP::SystematicVariation(m_massSystName, -1).name();
+    const std::string ptUp =
+        CP::SystematicVariation(m_ptSystName, 1).name();
+    const std::string ptDn =
+        CP::SystematicVariation(m_ptSystName, -1).name();
+    const float mUp = 1.f + static_cast<float>(m_massShift.value());
+    const float mDn = 1.f - static_cast<float>(m_massShift.value());
+    const float pUp = 1.f + static_cast<float>(m_ptShift.value());
+    const float pDn = 1.f - static_cast<float>(m_ptShift.value());
 
-    // Keep only our four -- the copier owns every other slice. sign = +1 is
-    // "__1up" (x[1+frac]), -1 is "__1down" (x[1-frac]).
+    std::size_t nCustom = 0;
     for (const auto &sys : m_systematicsList.systematicsVector())
     {
-      for (int sign : {1, -1})
-      {
-        const std::string massVar =
-            CP::SystematicVariation(m_massSystName, sign).name();
-        const std::string ptVar =
-            CP::SystematicVariation(m_ptSystName, sign).name();
-        const float mf = 1.f + sign * static_cast<float>(m_massShift.value());
-        const float pf = 1.f + sign * static_cast<float>(m_ptShift.value());
-
-        if (sys.name() == massVar)
-          m_specs.push_back({sys, mf, 1.f});
-        else if (sys.name() == ptVar)
-          m_specs.push_back({sys, 1.f, pf});
-      }
+      ShiftSpec spec{false, 1.f, 1.f};
+      if (sys.name() == massUp)
+        spec = {true, mUp, 1.f};
+      else if (sys.name() == massDn)
+        spec = {true, mDn, 1.f};
+      else if (sys.name() == ptUp)
+        spec = {true, 1.f, pUp};
+      else if (sys.name() == ptDn)
+        spec = {true, 1.f, pDn};
+      if (spec.apply)
+        ++nCustom;
+      m_specs.push_back(spec);
     }
 
-    ATH_MSG_INFO("registered " << m_specs.size()
+    ATH_MSG_INFO("registered " << nCustom
                  << " custom BJR kinematic-shift variations");
     return StatusCode::SUCCESS;
   }
 
   StatusCode BJRKinematicShiftSystAlg::execute(const EventContext& ctx)
   {
-    // EventInfo has no %SYS% token, so it is the same object for every
-    // systematic; retrieve it once with the NOSYS set.
-    const xAOD::EventInfo *event = nullptr;
-    ANA_CHECK(m_eventHandle.retrieve(event, CP::SystematicSet(), ctx));
-
-    const float m0 = (*m_zcand0MassNom)(*event);
-    const float p0 = (*m_zcand0PtNom)(*event);
-    const float m1 = (*m_zcand1MassNom)(*event);
-    const float p1 = (*m_zcand1PtNom)(*event);
-
-    for (const auto &spec : m_specs)
+    const auto &sysVec = m_systematicsList.systematicsVector();
+    for (std::size_t i = 0; i < sysVec.size(); ++i)
     {
-      m_zcand0Mass.set(*event, m0 * spec.massFactor, spec.sys);
-      m_zcand0Pt.set(*event, p0 * spec.ptFactor, spec.sys);
-      m_zcand1Mass.set(*event, m1 * spec.massFactor, spec.sys);
-      m_zcand1Pt.set(*event, p1 * spec.ptFactor, spec.sys);
+      xAOD::JetContainer *jets = nullptr;
+      ANA_CHECK(m_jetHandle.getCopy(jets, sysVec[i], ctx));
+
+      const ShiftSpec &spec = m_specs[i];
+      if (!spec.apply)
+        continue;
+
+      for (xAOD::Jet *jet : *jets)
+      {
+        m_bjrMassDec(*jet) = m_bjrMass(*jet) * spec.massFactor;
+        m_bjrPtDec(*jet) = m_bjrPt(*jet) * spec.ptFactor;
+      }
     }
     return StatusCode::SUCCESS;
   }

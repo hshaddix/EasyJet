@@ -10,6 +10,9 @@ from EasyjetHub.steering.analysis_configuration import get_trigger_chains, get_t
 from EasyjetHub.algs.calibration.bjr_syst_propagation_config import (
     BJRSystPropagationConfig,
 )
+from EasyjetHub.algs.calibration.bjr_kinematic_shift_config import (
+    BJRKinematicShiftConfig,
+)
 
 
 def jet_sequence(
@@ -295,6 +298,17 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
         and flags.Analysis.do_bjr_syst_propagation
     ):
         configSeq.append(BJRSystPropagationConfig())
+        configSeq.setOptionValue('.containerName', output_name)
+
+    # Must run after BJRSystPropagation: otherwise the custom shifts'
+    # unchanged UFO four-vector gives ratio 1 and gets overwritten.
+    if (
+        lr_jet_type == "UFO"
+        and lr_output_flags.bjet_regression
+        and flags.Analysis.do_CP_systematics
+        and flags.Analysis.do_bjr_kinematic_shift_syst
+    ):
+        configSeq.append(BJRKinematicShiftConfig())
         configSeq.setOptionValue('.containerName', output_name)
 
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
