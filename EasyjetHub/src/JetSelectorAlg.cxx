@@ -26,32 +26,62 @@ namespace Easyjet
     if (!m_isBtag.empty()) {
       ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_inHandle));
     }
+    if (!m_pass_boosted_hbb.empty()) {
+      ATH_CHECK (m_pass_boosted_hbb.initialize(m_systematicsList, m_inHandle));
+    }
+    if (!m_pass_boosted_htt.empty()) {
+      ATH_CHECK (m_pass_boosted_htt.initialize(m_systematicsList, m_inHandle));
+    }
     if (!m_PCBT.empty()) {
       ATH_CHECK (m_PCBT.initialize(m_systematicsList, m_inHandle));
     }
 
-    std::vector<std::string> bleadBranches_keys{};
-    for(int i=0; i<m_bjetAmount; i++){
-      bleadBranches_keys.emplace_back("isbjet"+std::to_string(i+1)+"_%SYS%");
+    std::vector<std::string> bLeadBranches_keys{};
+    for(int i=0; i<m_bJetAmount; i++){
+      bLeadBranches_keys.emplace_back("isbjet"+std::to_string(i+1)+"_%SYS%");
     }
-    m_bleadBranches = CP::SysWriteDecorHandleArray<char>(bleadBranches_keys, this);
+    m_bLeadBranches = CP::SysWriteDecorHandleArray<char>(bLeadBranches_keys, this);
     if (!m_rawinHandle.empty()) {
-      ATH_CHECK(m_bleadBranches.initialize(m_systematicsList,m_rawinHandle));
+      ATH_CHECK(m_bLeadBranches.initialize(m_systematicsList,m_rawinHandle));
     }
     else{
-      ATH_CHECK(m_bleadBranches.initialize(m_systematicsList,m_inHandle));
+      ATH_CHECK(m_bLeadBranches.initialize(m_systematicsList,m_inHandle));
     }
 
-    std::vector<std::string> jleadBranches_keys{};
-    for(int i=0; i<m_jetAmount; i++){
-      jleadBranches_keys.emplace_back("isjet"+std::to_string(i+1)+"_%SYS%");
+    std::vector<std::string> hbbLeadBranches_keys{};
+    for(int i=0; i<m_hbbJetAmount; i++){
+      hbbLeadBranches_keys.emplace_back("ishbb_jet"+std::to_string(i+1)+"_%SYS%");
     }
-    m_jleadBranches = CP::SysWriteDecorHandleArray<char> (jleadBranches_keys, this);
+    m_hbbLeadBranches = CP::SysWriteDecorHandleArray<char>(hbbLeadBranches_keys, this);
     if (!m_rawinHandle.empty()) {
-      ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_rawinHandle));
+      ATH_CHECK(m_hbbLeadBranches.initialize(m_systematicsList,m_rawinHandle));
     }
     else{
-      ATH_CHECK(m_jleadBranches.initialize(m_systematicsList,m_inHandle));
+      ATH_CHECK(m_hbbLeadBranches.initialize(m_systematicsList,m_inHandle));
+    }
+
+    std::vector<std::string> httLeadBranches_keys{};
+    for(int i=0; i<m_httJetAmount; i++){
+      httLeadBranches_keys.emplace_back("ishtt_jet"+std::to_string(i+1)+"_%SYS%");
+    }
+    m_httLeadBranches = CP::SysWriteDecorHandleArray<char>(httLeadBranches_keys, this);
+    if (!m_rawinHandle.empty()) {
+      ATH_CHECK(m_httLeadBranches.initialize(m_systematicsList,m_rawinHandle));
+    }
+    else{
+      ATH_CHECK(m_httLeadBranches.initialize(m_systematicsList,m_inHandle));
+    }
+
+    std::vector<std::string> jLeadBranches_keys{};
+    for(int i=0; i<m_jetAmount; i++){
+      jLeadBranches_keys.emplace_back("isjet"+std::to_string(i+1)+"_%SYS%");
+    }
+    m_jLeadBranches = CP::SysWriteDecorHandleArray<char> (jLeadBranches_keys, this);
+    if (!m_rawinHandle.empty()) {
+      ATH_CHECK(m_jLeadBranches.initialize(m_systematicsList,m_rawinHandle));
+    }
+    else{
+      ATH_CHECK(m_jLeadBranches.initialize(m_systematicsList,m_inHandle));
     }
 
     for (const auto& trig : m_bJetTriggers) {
@@ -131,9 +161,19 @@ namespace Easyjet
       return StatusCode::FAILURE;
     }
 
-    // check if if m_bjetAmount is positive and there is no WPgiven
-    if(m_bjetAmount>0 && m_isBtag.empty()){
+    // check if if m_XXjetAmount is positive and there is no WPgiven
+    if(m_bJetAmount>0 && m_isBtag.empty()){
       ATH_MSG_ERROR("required bjet amount is positive but btag wp is empty");
+      return StatusCode::FAILURE;
+    }
+
+    if(m_hbbJetAmount>0 && m_pass_boosted_hbb.empty()){
+      ATH_MSG_ERROR("required hbb-jet amount is positive but hbb wp is empty");
+      return StatusCode::FAILURE;
+    }
+
+    if(m_httJetAmount>0 && m_pass_boosted_htt.empty()){
+      ATH_MSG_ERROR("required htt-jet amount is positive but htt wp is empty");
       return StatusCode::FAILURE;
     }
     return StatusCode::SUCCESS;
@@ -157,7 +197,6 @@ namespace Easyjet
             SG::VIEW_ELEMENTS);
 
       // check if a btag wp is given
-      bool WPgiven = !m_isBtag.empty();
       bool PCBTaggiven = !m_PCBT.empty();
 
       // define jets_pcbt as a map of jets to their pcbt
@@ -240,23 +279,42 @@ namespace Easyjet
         workContainer->erase(workContainer->begin() + nKeep, workContainer->end());
       }
 
-      for (int njet{0}, nbjet{0}; const xAOD::Jet *jet : *workContainer) {
+      for (int njet{0}, nbjet{0}, nhbbjet{0}, nhttjet{0};
+	   const xAOD::Jet *jet : *workContainer) {
         bool dojet = m_jetAmount > 0 && njet<m_jetAmount;
-        bool dobjet = m_bjetAmount > 0 && nbjet<m_bjetAmount;
-        if(!dojet && !dobjet) {break;}
+        bool dobjet = m_bJetAmount > 0 && nbjet<m_bJetAmount;
+        bool dohbbjet = m_hbbJetAmount > 0 && nhbbjet<m_hbbJetAmount;
+        bool dohttjet = m_httJetAmount > 0 && nhttjet<m_httJetAmount;
+        if(!dojet && !dobjet && !dohbbjet && !dohttjet) {break;}
+
         //lead/sublead jet
         if(dojet){
-          m_jleadBranches.at(njet).set(*jet, true, sys);
+          m_jLeadBranches.at(njet).set(*jet, true, sys);
         }
+        njet++;
+
         //lead/sublead bjet
         if(dobjet){
           float eta = m_useRapidity ? jet->rapidity() : jet->eta();
-          if (WPgiven &&  m_isBtag.get(*jet, sys) && std::abs(eta)<2.5){
-              m_bleadBranches.at(nbjet).set(*jet, true, sys);
+          if (m_isBtag.get(*jet, sys) && std::abs(eta)<2.5){
+              m_bLeadBranches.at(nbjet).set(*jet, true, sys);
               nbjet++;
           }
         }
-        njet++;
+
+        if(dohbbjet){
+          if(m_pass_boosted_hbb.get(*jet, sys)){
+            m_hbbLeadBranches.at(nhbbjet).set(*jet, true, sys);
+            nhbbjet++;
+          }
+        }
+
+        if(dohttjet){
+          if(m_pass_boosted_htt.get(*jet, sys)){
+            m_httLeadBranches.at(nhttjet).set(*jet, true, sys);
+            nhttjet++;
+          }
+        }
       }
 
       // Write to eventstore

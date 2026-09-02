@@ -129,11 +129,11 @@ def bbtt_SelectorAlgCfg(flags):
     muon_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Muon.extra_wps]
     ele_WPs = [f'{wp[0]}_{wp[1]}' for wp in flags.Analysis.Electron.extra_wps]
     if flags.Analysis.do_large_R_UFO_jets:
-        fms = flags.Analysis.Large_R_jet.flat_mass_selections
-        GN3XPV01_hbb_bjr_WP = f"xbb_select_GN3XPV01_hbb_bjr_{fms.GN3XPV01_hbb_bjr.wps[-1]}"
-        GN3XPV01_htt_WP = f"xbb_select_GN3XPV01_htt_{fms.GN3XPV01_htt.wps[-1]}"
+        GN3XPV01_hbb_bjr_WP = flags.Analysis.Large_R_jet.hbb_tag_wp
+        GN3XPV01_htt_WP = flags.Analysis.Large_R_jet.htt_tag_wp
     else:
-        GN3XPV01_hbb_bjr_WP = GN3XPV01_htt_WP = ""
+        GN3XPV01_hbb_bjr_WP = ""
+        GN3XPV01_htt_WP = ""
     cfg.addEventAlgo(
         CompFactory.HHBBTT.HHbbttSelectorAlg(
             "HHbbttSelectorAlg",

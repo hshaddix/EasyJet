@@ -141,7 +141,7 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
     largeR_flags = flags.Analysis.Large_R_jet
 
     if kwargs.get("bTagWPDecorName", ""):
-        kwargs.setdefault("bjetAmount", smallR_flags.amount_bjet)
+        kwargs.setdefault("bJetAmount", smallR_flags.amount_bjet)
     if (isSmallRJet and smallR_flags.runBJetPtCalib) or \
        (isLargeRJet and largeR_flags.runMuonJetPtCorr):
         kwargs.setdefault("nmuons", "n_muons_%SYS%")
@@ -171,8 +171,13 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
         kwargs.setdefault("doHLTMatching", smallR_flags.doHLTMatching and (
             flags.GeoModel.Run >= LHCPeriod.Run3 or smallR_flags.doRun2HLTEmulation))
 
-    if isLargeRJet and not largeR_flags.do_thinning:
-        kwargs.setdefault("baselineSelectionName", "")
+    if isLargeRJet:
+        if not largeR_flags.do_thinning:
+            kwargs.setdefault("baselineSelectionName", "")
+        kwargs.setdefault("hbbWPDecorName", largeR_flags.hbb_tag_wp)
+        kwargs.setdefault("httWPDecorName", largeR_flags.htt_tag_wp)
+        kwargs.setdefault("hbbJetAmount", largeR_flags.amount_hbb_leadingjet)
+        kwargs.setdefault("httJetAmount", largeR_flags.amount_htt_leadingjet)
 
     cfg.addEventAlgo(CompFactory.Easyjet.JetSelectorAlg(name, **kwargs))
     return cfg

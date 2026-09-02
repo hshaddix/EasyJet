@@ -41,6 +41,15 @@ def get_large_R_jet_branches(
             large_R_jet_branches.variables += [
                 (f"isjet{index+1}_%SYS%", "char")
             ]
+        for index in range(flags.Analysis.Large_R_jet.amount_hbb_leadingjet):
+            large_R_jet_branches.variables += [
+                (f"ishbb_jet{index+1}_%SYS%", "char")
+            ]
+        for index in range(flags.Analysis.Large_R_jet.amount_htt_leadingjet):
+            large_R_jet_branches.variables += [
+                (f"ishtt_jet{index+1}_%SYS%", "char")
+            ]
+
     else:
         if flags.Analysis.do_overlap_removal:
             large_R_jet_branches.variables += [

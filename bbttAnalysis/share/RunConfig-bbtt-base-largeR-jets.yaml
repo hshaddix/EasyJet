@@ -20,11 +20,15 @@ Large_R_jet:
   # correction for the b-jet correction
   # adding back muon pt inside the large-R jet. 
   runMuonJetPtCorr: true
-  # Use the most loose working point for selection here.
   flat_mass_selections:
     include: [
       EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml, 
       EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml,
       EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml,
     ]
+  # Use the loosest working point for selection here.
+  hbb_tag_wp: "xbb_select_GN3XPV01_hbb_bjr_FlatMassQCDEff_0p6"
+  htt_tag_wp: "xbb_select_GN3XPV01_htt_FlatMassQCDEff_0p01"
   amount_leadingjet: 2
+  amount_hbb_leadingjet: 2
+  amount_htt_leadingjet: 2

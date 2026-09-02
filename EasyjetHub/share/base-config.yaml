@@ -108,12 +108,6 @@ Small_R_jet:
 
 
 Large_R_jet:
-  flat_mass_selections: 
-  
-    GN2X: 
-      file: EasyjetHub/Xbb_GN2Xv01.json
-      wps: []
-  
   min_pT: 200.e+3
   max_pT: -1
   max_eta: 100
@@ -122,8 +116,13 @@ Large_R_jet:
   runMuonJetPtCorr: false
   do_thinning: true
   do_parent_decoration: true
+  # nominal tagging working points
+  hbb_tag_wp: ""
+  htt_tag_wp: ""
   amount: 0
   amount_leadingjet: 0
+  amount_hbb_leadingjet: 0
+  amount_htt_leadingjet: 0
   variables: []
   variables_int: []
   wtag_type: ""
@@ -132,6 +131,10 @@ Large_R_jet:
   variables_in_ptag:
     include: [xbb-vars-in-ptag.yaml]
   lundnet_type: ""
+  flat_mass_selections:
+    GN2X:
+      file: EasyjetHub/Xbb_GN2Xv01.json
+      wps: []
 
 Photon:
   min_pT: 10.e+3

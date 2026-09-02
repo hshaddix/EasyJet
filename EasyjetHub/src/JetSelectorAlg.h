@@ -54,9 +54,15 @@ private:
     CP::SysReadDecorHandle<char> m_select
       {this, "baselineSelectionName", "baselineSelection_outputSelect_thin_%SYS%", "Name of baseline selection decorator"};
     
-    CP::SysReadDecorHandle<char> m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
+    CP::SysReadDecorHandle<char> m_isBtag
+      {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
+    CP::SysReadDecorHandle<int> m_PCBT
+      {this, "PCBTDecorName", "", "Name of pseudo-continuous b-tagging decorator"};
 
-    CP::SysReadDecorHandle<int> m_PCBT {this, "PCBTDecorName", "", "Name of pseudo-continuous b-tagging decorator"};
+    CP::SysReadDecorHandle<int> m_pass_boosted_hbb
+      {this, "hbbWPDecorName", "", "Boosted Hbb-tagging working point"};
+    CP::SysReadDecorHandle<int> m_pass_boosted_htt
+      {this, "httWPDecorName", "", "Boosted Htt-tagging working point"};
 
     CP::SysReadDecorHandle<int> m_nmuons_in{this, "nmuons", "",
 	"Number of muons from muon-in-jet correction"};
@@ -101,12 +107,16 @@ private:
     Gaudi::Property<bool>  m_useRapidity      {this, "useRapidity", false, "Use rapidity instead of eta"};
 
     Gaudi::Property<bool>  m_selectBjet       {this, "selectBjet", false, "Apply bjet selection"};
-    Gaudi::Property<int>   m_bjetAmount       {this, "bjetAmount", -1, "Number of jets to consider for isbjetXX decoration"};
-    CP::SysWriteDecorHandleArray<char> m_bleadBranches {{}, this};
+    Gaudi::Property<int>   m_bJetAmount       {this, "bJetAmount", -1, "Number of jets to consider for isbjetXX decoration"};
+    CP::SysWriteDecorHandleArray<char> m_bLeadBranches {{}, this};
 
     Gaudi::Property<int>   m_jetAmount        {this, "jetAmount", -1, "Number of jets to consider for isjetXX decoration"};
-    CP::SysWriteDecorHandleArray<char> m_jleadBranches {{}, this};
+    CP::SysWriteDecorHandleArray<char> m_jLeadBranches {{}, this};
 
+    Gaudi::Property<int>   m_hbbJetAmount     {this, "hbbJetAmount", -1, "Number of jets to consider for ishbb_jetXX decoration"};
+    CP::SysWriteDecorHandleArray<char> m_hbbLeadBranches {{}, this};
+    Gaudi::Property<int>   m_httJetAmount     {this, "httJetAmount", -1, "Number of jets to consider for ishtt_jetXX decoration"};
+    CP::SysWriteDecorHandleArray<char> m_httLeadBranches {{}, this};
   };
 }
 
