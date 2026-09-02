@@ -128,6 +128,9 @@ Large_R_jet:
   wtag_type: ""
   wtag_wp: ""
   wtag_extra_wps: []
+  toptag_type: ""
+  toptag_wp: ""
+  toptag_extra_wps: []
   variables_in_ptag:
     include: [xbb-vars-in-ptag.yaml]
   lundnet_type: ""

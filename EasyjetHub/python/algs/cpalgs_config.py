@@ -6,6 +6,7 @@ from AthenaConfiguration.ComponentFactory import CompFactory
 from EasyjetHub.algs.calibration.jets import (
     jet_sequence, lr_jet_sequence, rc_jet_sequence)
 from EasyjetHub.output.ttree.wtag_decor_config import wtag_decor_cfg
+from EasyjetHub.output.ttree.toptag_decor_config import toptag_decor_cfg
 from EasyjetHub.output.ttree.lundnet_decor_config import lundnet_decor_cfg
 from EasyjetHub.output.ttree.tau_decor_config import tau_decor_cfg
 from EasyjetHub.output.ttree.jet_decor_config import (
@@ -79,6 +80,9 @@ def cpalgs_cfg(flags):
 
     if flags.Analysis.Large_R_jet.wtag_type and flags.Analysis.Large_R_jet.wtag_wp:
         cfg.merge(wtag_decor_cfg(flags))
+
+    if flags.Analysis.Large_R_jet.toptag_type and flags.Analysis.Large_R_jet.toptag_wp:
+        cfg.merge(toptag_decor_cfg(flags))
 
     if flags.Analysis.Large_R_jet.lundnet_type:
         cfg.merge(lundnet_decor_cfg(flags))

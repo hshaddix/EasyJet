@@ -99,6 +99,13 @@ def get_large_R_jet_branches(
     ):
         large_R_jet_branches.variables += get_wtag_branches(flags)
 
+    if (
+        lr_jet_type == "UFO"
+        and flags.Analysis.Large_R_jet.toptag_type
+        and flags.Analysis.Large_R_jet.toptag_wp
+    ):
+        large_R_jet_branches.variables += get_toptag_branches(flags)
+
     if flags.Analysis.Large_R_jet.lundnet_type:
         large_R_jet_branches.variables += get_lundnet_branches(flags)
 
@@ -249,6 +256,22 @@ def get_wtag_branches(flags):
         ]
 
     return wtag_branches
+
+
+def get_toptag_branches(flags):
+    toptag_branches = []
+    
+    toptag_type = flags.Analysis.Large_R_jet.toptag_type
+    toptag_wp = flags.Analysis.Large_R_jet.toptag_wp
+    toptag_extra_wps = list(flags.Analysis.Large_R_jet.toptag_extra_wps or [])
+
+    for wp in [toptag_wp] + toptag_extra_wps:
+        toptag_branches += [
+            (f"{toptag_type}{wp}_Tagged", "char"),
+            (f"{toptag_type}{wp}_Score", "float")
+        ]
+
+    return toptag_branches
 
 
 def get_lundnet_branches(flags):

@@ -1,5 +1,6 @@
 #include "../DijetHSTPFilter.h"
 #include "../WTaggingDecoratorAlg.h"
+#include "../TopTaggingDecoratorAlg.h"
 #include "../EventCounterAlg.h"
 #include "../JetSelectorAlg.h"
 #include "../PhotonSelectorAlg.h"
@@ -34,6 +35,7 @@ using namespace Easyjet;
 
 DECLARE_COMPONENT(DijetHSTPFilter)
 DECLARE_COMPONENT(WTaggingDecoratorAlg)
+DECLARE_COMPONENT(TopTaggingDecoratorAlg)
 DECLARE_COMPONENT(EventCounterAlg)
 DECLARE_COMPONENT(JetSelectorAlg)
 DECLARE_COMPONENT(PhotonSelectorAlg)
