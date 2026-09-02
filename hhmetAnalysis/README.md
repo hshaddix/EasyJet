@@ -39,7 +39,7 @@ example script to run a local test, put in your run directory:
 2. Run the ntupler on those files:
     ```hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-base.yaml -o output_PHYS_hhmet_resolved_ntuple.root  ttbar_PHYS_10evt.root```
 
-3. Input PHYS samples can be found in the "datasets" directory. TODO: MAKE THESE FILE LISTS
+3. Input PHYS samples can be found in the "datasets" directory.
 
 4. Choose your run-config file.
 

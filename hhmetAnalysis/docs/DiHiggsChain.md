@@ -2,6 +2,9 @@
 
 The resolved and boosted analyses can be turned on/off from the [bbbbAnalysis/share/RunConfig.yaml](https://gitlab.cern.ch/easyjet/easyjet/-/tree/main/bbbbAnalysis/share/RunConfig.yaml). The Configuration and the stacking of the algorithms can be found in [bbbbAnalysis/python/config/dihiggs.py](https://gitlab.cern.ch/easyjet/easyjet/-/tree/main/bbbbAnalysis/python/config/dihiggs.py). The flow diagrams depict what is happening:
 
+### common
+
+
 ### resolved
 
 ```mermaid

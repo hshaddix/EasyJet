@@ -25,7 +25,7 @@ from EasyjetHub.output.xaod import get_xaod_cfg
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
 
 from hhmetAnalysis.opt_validation import validate_hhmet_analysis_prerequisites
-from hhmetAnalysis.dihiggs import dihiggs_cfg
+from hhmetAnalysis.dihiggs import dihiggs_cfg, common_branches
 from hhmetAnalysis.boosted_chan import boosted_branches
 from hhmetAnalysis.resolved_chan import resolved_branches
 from hhmetAnalysis.dihiggs import pass_branches
@@ -65,6 +65,7 @@ def hhmet_job_cfg():
         hhmet_branches += hhmet_extra_branches
     if len(flags.Analysis.CutList) > 0:
         hhmet_branches += pass_branches(flags)
+    hhmet_branches += common_branches()
 
     # Explicitly call the minituple config because we want to provide
     # additional branches, the list of which is generated dynamically

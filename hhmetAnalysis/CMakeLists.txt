@@ -13,6 +13,7 @@ add_compile_options(-Werror)
 
 # Build the Athena component library
 atlas_add_component(hhmetAnalysis
+  src/BaselineVarsCommonAlg.cxx
   src/BaselineVarsResolvedAlg.cxx
   src/BaselineVarsBoostedAlg.cxx
   src/hhmetSelectorAlg.cxx

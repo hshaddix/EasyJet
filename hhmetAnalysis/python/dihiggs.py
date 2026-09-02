@@ -136,6 +136,13 @@ def dihiggs_cfg(
             )
         )
 
+    # calculate final common vars
+    cfg.addEventAlgo(
+        CompFactory.HHMET.BaselineVarsCommonAlg(
+            "FinalVarsCommonAlg"
+        )
+    )
+
     if flags.Analysis.do_resolved_dihiggs:
         _, float_variable_names = resolved_branches(flags)
         cfg.merge(
@@ -182,5 +189,19 @@ def pass_branches(flags):
                 + f" -> hhmet_pass_{cut}"
                 + f"{flags.Analysis.systematics_suffix_separator}%SYS%"
             ]
+
+    return branches
+
+
+def common_branches():
+    branches = []
+
+    genvars = [
+        "GenFiltMET",
+        "GenFiltHT"
+    ]
+
+    for var in genvars:
+        branches += [f"EventInfo.{var} -> {var}"]
 
     return branches

@@ -87,6 +87,7 @@ Decorations per working point in the format `EventInfo.resolved_{variable}_{bTag
 
 &nbsp;
 &nbsp;
+
 #### BaselineVarsBoostedAlg
 ```mermaid
 flowchart LR
@@ -117,6 +118,22 @@ Decorations per working point in the format `EventInfo.boosted_{variable}_{bTagW
 | h2_dR_jets | delta R of the two leading jets  |
 | hh_m       | invariant mass of Dihiggs                    |
 
+
+&nbsp;
+&nbsp;
+
+#### BaselineVarsCommonAlg
+
+```mermaid
+flowchart LR
+A[xAOD::JetContainer] --> BaselineVarsCommonAlg
+subgraph BaselineVarsCommonAlg
+smallRContainerInKey\nbTagWP
+end
+BaselineVarsCommonAlg --> B[decorate Eventinfo: \ncommon_GenFiltMET\ncommon_GenFiltHT]
+```
+
+Calculate common variables for any channel e.g. GenFilt info needed for ttbar samples., potential also where other info for modelling systs. will be added.
 
 &nbsp;
 &nbsp;
