@@ -26,6 +26,19 @@ from EasyjetHub.output.ttree.selected_objects import (
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import JetSelectorAlgCfg, TauSelectorAlgCfg
 import AthenaCommon.SystemOfUnits as Units
 
+KAPPA_WEIGHT_DSIDS = {574909, 561968}
+KAPPA_WEIGHTS = [
+    "k3_0_k4_0",
+    "k3_1_k4_m1",
+    "k3_m1_k4_1",
+    "k3_1_k4_0",
+    "k3_0_k4_1",
+    "k3_m1_k4_0",
+    "k3_0_k4_m1",
+    "k3_0p5_k4_0",
+    "k3_m0p5_k4_0",
+]
+
 
 def trihiggs_cfg(
     flags,
@@ -240,27 +253,28 @@ def pass_branches(flags):
 
     selection_name = flags.Analysis.selection_name
     sfx = flags.Analysis.systematics_suffix_separator
+    sys = "%SYS%" if flags.Analysis.do_CP_systematics else "NOSYS"
     branches += [
-        f"EventInfo.pass_{selection_name}_%SYS%"
+        f"EventInfo.pass_{selection_name}_{sys}"
         + f" -> bbbbbb_pass_{selection_name}"
-        + sfx + "%SYS%"
+        + sfx + sys
     ]
 
     if flags.Analysis.save_cutflow:
         cutList = flags.Analysis.CutList
         for cut in cutList:
             branches += [
-                f"EventInfo.{cut}_%SYS%"
+                f"EventInfo.{cut}_{sys}"
                 + f" -> bbbbbb_pass_{cut}"
-                + sfx + "%SYS%"]
+                + sfx + sys]
 
     branches += [
-        "EventInfo.pass_4b_%SYS%"
-        " -> bbbbbb_pass_4b" + sfx + "%SYS%",
-        "EventInfo.pass_5b_%SYS%"
-        " -> bbbbbb_pass_5b" + sfx + "%SYS%",
-        "EventInfo.pass_6b_%SYS%"
-        " -> bbbbbb_pass_6b" + sfx + "%SYS%",
+        f"EventInfo.pass_4b_{sys}"
+        " -> bbbbbb_pass_4b" + sfx + sys,
+        f"EventInfo.pass_5b_{sys}"
+        " -> bbbbbb_pass_5b" + sfx + sys,
+        f"EventInfo.pass_6b_{sys}"
+        " -> bbbbbb_pass_6b" + sfx + sys,
     ]
 
     jet_count_vars = [
@@ -271,9 +285,9 @@ def pass_branches(flags):
     ]
     for var in jet_count_vars:
         branches += [
-            f"EventInfo.{var}_%SYS%"
+            f"EventInfo.{var}_{sys}"
             + f" -> bbbbbb_{var}"
-            + sfx + "%SYS%"
+            + sfx + sys
         ]
 
     return branches

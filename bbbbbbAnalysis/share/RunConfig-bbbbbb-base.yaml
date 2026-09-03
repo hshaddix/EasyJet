@@ -46,6 +46,7 @@ do_taus: false
 do_met: false
 
 Small_R_jet:
+  savePerJetFTagSF: true
   useFJvt: true
   btag_egReductionB: "Medium"
   btag_egReductionC: "Medium"

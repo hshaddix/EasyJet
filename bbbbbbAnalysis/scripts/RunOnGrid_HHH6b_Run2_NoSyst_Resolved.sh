@@ -1,36 +1,40 @@
-# Change to easyjet directory to avoid long path issues with cpack
-# cd /lustre/umt3/user/csuslu/HHH/easyjet || exit 1
+#!/bin/bash
+set -euo pipefail
+shopt -s dotglob nullglob
 
 runConfig="../bbbbbbAnalysis/share/RunConfig-HHH6b-Resolved.yaml"
 executable="bbbbbb-ntupler"
 campaignName="EJ_v1_0_HHH6b_NoSyst_Resolved" 
-# my_eos="/eos/user/c/csuslu/6b_ntuples"
 
 dir_samples="../bbbbbbAnalysis/datasets/HHH6b"
 mc_list=(
-    "$dir_samples/mc20_DAOD_PHYS_HHH6b_backgrounds.txt"
     "$dir_samples/mc20_DAOD_PHYS_HHH6b_SMHHH.txt"
+    "$dir_samples/mc23_DAOD_PHYS_HHH6b_SMHHH.txt"
 )
 
-# data
-easyjet-gridsubmit --data-list $dir_samples/data_DAOD_PHYS_Run2.txt \
+data_list=(
+    "$dir_samples/data_DAOD_PHYS_Run2.txt"
+    "$dir_samples/data_DAOD_PHYS_Run3.txt"
+)
+
+# data(Run2 and Run3)
+easyjet-gridsubmit --data-list <(cat "${data_list[@]}") \
     --run-config ${runConfig} \
     --exec ${executable} \
     --nGBperJob 4 \
     --campaign ${campaignName} \
-    --noTag #\
-    # --dest-se y_eos 
-    # --e 10
+    --noTag
 
-# rm -rf co*
+set -x
 
-#mc
+#mc(mc20 and mc23)
 easyjet-gridsubmit --mc-list <(cat "${mc_list[@]}") \
     --run-config ${runConfig} \
     --exec ${executable} \
     --nGBperJob 4 \
     --campaign ${campaignName} \
-    --noTag #\
-    # --dest-se my_eos 
+    --noTag
+
+set -x
 
 rm -rf co*

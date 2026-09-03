@@ -69,15 +69,12 @@ namespace HHH6B
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize());
 
-    if(m_saveCutFlow){
-      std::vector<std::string> boolNameList;
-      for (const auto& [key, value]: m_boolnames){
-        boolNameList.push_back(value);
-        m_nameToBool[value] = key;
-      }
-      ATH_CHECK (initialiseCutflow(boolNameList));
-      ATH_CHECK (initialiseJetCutflow());
+    std::vector<std::string> boolNameList;
+    for (const auto& [key, value] : m_boolnames) {
+      boolNameList.push_back(value);
+      m_nameToBool[value] = key;
     }
+    if (m_saveCutFlow) ATH_CHECK (initialiseCutflow(boolNameList));
 
     return StatusCode::SUCCESS;
   }
@@ -114,12 +111,6 @@ namespace HHH6B
             n_truth_jets_after_cuts++;
           }
         }
-        
-        // Only count for NOSYS to avoid double counting
-        if (sys.name()=="" && m_saveCutFlow) {
-          m_total_truth_jets += n_truth_jets;
-          m_truth_jets_after_cuts += n_truth_jets_after_cuts;
-        }
       }
       
       // Get number of jets before selection (for cutflow)
@@ -128,17 +119,6 @@ namespace HHH6B
         const xAOD::JetContainer *jetsBeforeSel = nullptr;
         ATH_CHECK (m_jetHandleBeforeSel.retrieve (jetsBeforeSel, sys, ctx));
         n_jets_before_selection = jetsBeforeSel->size();
-        
-        // Only count for NOSYS to avoid double counting
-        if (sys.name()=="" && m_saveCutFlow) {
-          m_total_jets_before_selection += n_jets_before_selection;
-          
-          // Fill jet kinematics before cuts
-          for (const xAOD::Jet* jet : *jetsBeforeSel) {
-            hist("Jet_pT_BeforeCuts")->Fill(jet->pt()/1000.);  // Convert to GeV
-            hist("Jet_eta_BeforeCuts")->Fill(jet->eta());
-          }
-        }
       }
       
       // Get number of jets
@@ -154,26 +134,11 @@ namespace HHH6B
         const xAOD::JetContainer *jets = nullptr;
         ATH_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
         n_resolved_jets = jets->size();
-        
-        // Only count for NOSYS to avoid double counting
-        if (sys.name()=="" && m_saveCutFlow) {
-          m_jets_after_selection += n_resolved_jets;
-          
-          // Fill jet kinematics after cuts
-          for (const xAOD::Jet* jet : *jets) {
-            hist("Jet_pT_AfterCuts")->Fill(jet->pt()/1000.);  // Convert to GeV
-            hist("Jet_eta_AfterCuts")->Fill(jet->eta());
-          }
-        }
-        
+
         // Count b-tagged jets
         if (!m_isBtag.empty()) {
           for (const xAOD::Jet *jet : *jets) {
             if (m_isBtag.get(*jet, sys)) n_b_jets++;
-          }
-          // Only count for NOSYS to avoid double counting
-          if (sys.name()=="" && m_saveCutFlow) {
-            m_bjets_after_selection += n_b_jets;
           }
         }
       }
@@ -206,11 +171,12 @@ namespace HHH6B
         ATH_CHECK (applyCutFlow(cutBools, mc_weight));
       }
 
-      bool passedall = true;
       for (auto& [key, var] : m_bools) {
-        passedall = passedall && var;
         m_Bbranches.at(key).set(*event, var, sys);
       }
+      bool passedall = true;
+      for (const auto& cut : m_inputCutList)
+        passedall &= m_bools.at(m_nameToBool.at(cut));
 
       // discard events not passing
       if (!m_bypass && !passedall) continue;
@@ -230,90 +196,6 @@ namespace HHH6B
 
     ATH_CHECK (m_filterParams.finalize ());
     ATH_CHECK (finaliseCutflow());
-
-    // Print and save jet cutflow summary
-    if(m_saveCutFlow) {
-      ATH_MSG_INFO("=================================================");
-      ATH_MSG_INFO("            JET CUTFLOW SUMMARY");
-      ATH_MSG_INFO("=================================================");
-      ATH_MSG_INFO("Total events processed:           " << m_total_events);
-      
-      if (m_isMC && !m_truthJetHandle.empty()) {
-        double avg_truth_jets = static_cast<double>(m_total_truth_jets) / m_total_events;
-        double avg_truth_jets_after = static_cast<double>(m_truth_jets_after_cuts) / m_total_events;
-        ATH_MSG_INFO("Total truth jets (all):           " << m_total_truth_jets 
-                     << "  (avg: " << avg_truth_jets << " truth jets/event)");
-        ATH_MSG_INFO("Truth jets after pT/eta cuts:     " << m_truth_jets_after_cuts 
-                     << "  (avg: " << avg_truth_jets_after << " truth jets/event)");
-      }
-      
-      if (!m_jetHandleBeforeSel.empty() && m_total_events > 0) {
-        double avg_jets_before = static_cast<double>(m_total_jets_before_selection) / m_total_events;
-        double avg_jets_after = static_cast<double>(m_jets_after_selection) / m_total_events;
-        double avg_bjets = static_cast<double>(m_bjets_after_selection) / m_total_events;
-        
-        ATH_MSG_INFO("Total reco jets before selection: " << m_total_jets_before_selection 
-                     << "  (avg: " << avg_jets_before << " jets/event)");
-        ATH_MSG_INFO("Total jets after pT+eta cuts:     " << m_jets_after_selection 
-                     << "  (avg: " << avg_jets_after << " jets/event)");
-        ATH_MSG_INFO("Jets lost to pT/eta cuts:         " << (m_total_jets_before_selection - m_jets_after_selection)
-                     << "  (" << 100.0 * (m_total_jets_before_selection - m_jets_after_selection) / m_total_jets_before_selection << "%)");
-        ATH_MSG_INFO("Total b-jets after selection:     " << m_bjets_after_selection 
-                     << "  (avg: " << avg_bjets << " b-jets/event)");
-        ATH_MSG_INFO("B-tagging efficiency:             " 
-                     << 100.0 * m_bjets_after_selection / m_jets_after_selection << "%");
-        
-        // Fill jet cutflow histograms
-        TH1* jetCutflow = hist("JetCutflow");
-        if (m_isMC && !m_truthJetHandle.empty()) {
-          jetCutflow->SetBinContent(1, m_total_truth_jets);
-          jetCutflow->SetBinContent(2, m_truth_jets_after_cuts);
-          jetCutflow->SetBinContent(3, m_total_jets_before_selection);
-          jetCutflow->SetBinContent(4, m_jets_after_selection);
-          jetCutflow->SetBinContent(5, m_bjets_after_selection);
-          jetCutflow->GetXaxis()->SetBinLabel(1, "Truth (all)");
-          jetCutflow->GetXaxis()->SetBinLabel(2, "Truth (pT/eta cuts)");
-          jetCutflow->GetXaxis()->SetBinLabel(3, "Reco (before cuts)");
-          jetCutflow->GetXaxis()->SetBinLabel(4, "Reco (after cuts)");
-          jetCutflow->GetXaxis()->SetBinLabel(5, "b-tagged");
-        } else {
-          jetCutflow->SetBinContent(1, m_total_jets_before_selection);
-          jetCutflow->SetBinContent(2, m_jets_after_selection);
-          jetCutflow->SetBinContent(3, m_bjets_after_selection);
-          jetCutflow->GetXaxis()->SetBinLabel(1, "Reco (before cuts)");
-          jetCutflow->GetXaxis()->SetBinLabel(2, "After pT/eta cuts");
-          jetCutflow->GetXaxis()->SetBinLabel(3, "b-tagged jets");
-        }
-        
-        TH1* jetCutflowPerEvent = hist("JetCutflowPerEvent");
-        if (m_isMC && !m_truthJetHandle.empty()) {
-          double avg_truth_jets = static_cast<double>(m_total_truth_jets) / m_total_events;
-          double avg_truth_jets_after = static_cast<double>(m_truth_jets_after_cuts) / m_total_events;
-          jetCutflowPerEvent->SetBinContent(1, avg_truth_jets);
-          jetCutflowPerEvent->SetBinContent(2, avg_truth_jets_after);
-          jetCutflowPerEvent->SetBinContent(3, avg_jets_before);
-          jetCutflowPerEvent->SetBinContent(4, avg_jets_after);
-          jetCutflowPerEvent->SetBinContent(5, avg_bjets);
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(1, "Truth (all)");
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(2, "Truth (pT/eta cuts)");
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(3, "Reco (before cuts)");
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(4, "Reco (after cuts)");
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(5, "b-tagged");
-        } else {
-          jetCutflowPerEvent->SetBinContent(1, avg_jets_before);
-          jetCutflowPerEvent->SetBinContent(2, avg_jets_after);
-          jetCutflowPerEvent->SetBinContent(3, avg_bjets);
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(1, "Reco (before cuts)");
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(2, "After pT/eta cuts");
-          jetCutflowPerEvent->GetXaxis()->SetBinLabel(3, "b-tagged jets");
-        }
-      } else {
-        ATH_MSG_INFO("Total jets after selection:       " << m_jets_after_selection);
-        ATH_MSG_INFO("Total b-jets after selection:     " << m_bjets_after_selection);
-      }
-      ATH_MSG_INFO("=================================================");
-      
-    }
 
     return StatusCode::SUCCESS;
 
@@ -339,6 +221,7 @@ namespace HHH6B
   {
     m_bools.at(HHH6B::AT_LEAST_FOUR_JETS) = nResolvedJets >= 4;
     m_bools.at(HHH6B::AT_LEAST_SIX_JETS) = nResolvedJets >= 6;
+    m_bools.at(HHH6B::AT_LEAST_THREE_BJETS) = nBJets >= 3;
     m_bools.at(HHH6B::AT_LEAST_FOUR_BJETS) = nBJets >= 4;
     m_bools.at(HHH6B::AT_LEAST_SIX_BJETS) = nBJets >= 6;
     m_bools.at(HHH6B::AT_LEAST_SIX_JETS_FOUR_BJETS) =
@@ -350,19 +233,6 @@ namespace HHH6B
     m_bools.at(HHH6B::AT_LEAST_TWO_JETS_AND_TWO_LRJETS) =
       (nBoostedJets == 2 && nResolvedJets >= 2);
     m_bools.at(HHH6B::AT_LEAST_THREE_LRJETS) = nBoostedJets >= 3;
-  }
-
-  StatusCode bbbbbbSelectorAlg::initialiseJetCutflow(){
-    // Book jet cutflow histograms
-    ATH_CHECK (book (TH1F("JetCutflow", "Jet Cutflow;Selection Stage;Number of Jets", 5, 0.5, 5.5)));
-    ATH_CHECK (book (TH1F("JetCutflowPerEvent", "Average Jets per Event;Selection Stage;Jets per Event", 5, 0.5, 5.5)));
-    
-    // Book jet kinematics histograms
-    ATH_CHECK (book (TH1F("Jet_pT_BeforeCuts", "Jet pT Before Cuts;pT [GeV];Jets", 100, 0, 500)));
-    ATH_CHECK (book (TH1F("Jet_eta_BeforeCuts", "Jet #eta Before Cuts;#eta;Jets", 100, -5, 5)));
-    ATH_CHECK (book (TH1F("Jet_pT_AfterCuts", "Jet pT After Cuts;pT [GeV];Jets", 100, 0, 500)));
-    ATH_CHECK (book (TH1F("Jet_eta_AfterCuts", "Jet #eta After Cuts;#eta;Jets", 100, -5, 5)));
-    return StatusCode::SUCCESS;
   }
 
 }

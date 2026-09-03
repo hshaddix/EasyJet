@@ -3,7 +3,7 @@ include: [bbbbbbAnalysis/RunConfig-bbbbbb-base.yaml]
 # Which analysis to consider
 # Current strategy could lead to super large output
 # with all syst on
-do_resolved_trihiggs: true
+do_resolved_trihiggs: false
 
 do_resolved_trigger_SF: true
 triggerSFBranchSaveStrategy: "simple" # detail, simple, both
@@ -49,19 +49,20 @@ Tau:
 # list of triggers per year to consider
 Trigger:
   selection:
-    include: [bbbbbbAnalysis/triggers-resolved.yaml]
+    include: [bbbbbbAnalysis/triggers-all.yaml]
   scale_factor:
     jet:
-      include: [bbbbbbAnalysis/triggers-resolved.yaml]
+      include: [bbbbbbAnalysis/triggers-all.yaml]
 
 # can alternatively use the CutList to filter events to get trigger eff
-do_trigger_filtering: true
+do_trigger_filtering: false
 bypass: false
 save_cutflow: true
 selection_name: "preselection"
 CutList:
-  - PASS_TRIGGER
   - AT_LEAST_SIX_JETS
+  - AT_LEAST_THREE_BJETS
+  # - PASS_TRIGGER
   # - AT_LEAST_FOUR_BJETS
   # - AT_LEAST_SIX_BJETS
   # - AT_LEAST_FOUR_JETS_OR_TWO_LRJETS

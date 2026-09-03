@@ -36,7 +36,7 @@ namespace HHH6B
       /// \brief Execute method, for actions to be taken in the event loop
       StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+      StatusCode finalize() override;
 
     private :
 
@@ -44,6 +44,7 @@ namespace HHH6B
           "PASS_TRIGGER",
           "AT_LEAST_FOUR_JETS",
           "AT_LEAST_SIX_JETS",
+          "AT_LEAST_THREE_BJETS",
           "AT_LEAST_FOUR_BJETS",
           "AT_LEAST_SIX_BJETS",
           "AT_LEAST_FOUR_JETS_OR_TWO_LRJETS",
@@ -59,8 +60,6 @@ namespace HHH6B
 			       const EventContext& ctx);
       void evaluateJetCuts(const int nBoostedJets, const int nResolvedJets,
 			   const int nBJets);
-
-      StatusCode initialiseJetCutflow();
 
       /// \brief Setup syst-aware input container handles
       CP::SysListHandle m_systematicsList {this};
@@ -87,13 +86,6 @@ namespace HHH6B
 
       std::unordered_map<std::string,  SG::ReadDecorHandleKey<xAOD::EventInfo>> m_triggerDecorKeys;
 
-      // Jet cutflow counters
-      long long int m_total_truth_jets{0};
-      long long int m_truth_jets_after_cuts{0};
-      long long int m_total_jets_before_selection{0};
-      long long int m_jets_after_selection{0};
-      long long int m_bjets_after_selection{0};
-
       CP::SysFilterReporterParams m_filterParams {this, "bbbb selection"};
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run the selector algorithm in run-through mode" };
@@ -105,14 +97,15 @@ namespace HHH6B
 	  {HHH6B::PASS_TRIGGER, "PASS_TRIGGER"},
 	  {HHH6B::AT_LEAST_FOUR_JETS, "AT_LEAST_FOUR_JETS"},
 	  {HHH6B::AT_LEAST_SIX_JETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_FOUR_BJETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_SIX_BJETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_FOUR_JETS_OR_TWO_LRJETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_SIX_JETS_FOUR_BJETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_TWO_JETS_AND_TWO_LRJETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_FOUR_JETS_AND_ONE_LRJET, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_THREE_LRJETS, "AT_LEAST_SIX_JETS"},
-	  {HHH6B::AT_LEAST_SIX_JETS_OR_THREE_LRJETS, "AT_LEAST_SIX_JETS"},
+	  {HHH6B::AT_LEAST_THREE_BJETS, "AT_LEAST_THREE_BJETS"},
+	  {HHH6B::AT_LEAST_FOUR_BJETS, "AT_LEAST_FOUR_BJETS"},
+	  {HHH6B::AT_LEAST_SIX_BJETS, "AT_LEAST_SIX_BJETS"},
+	  {HHH6B::AT_LEAST_FOUR_JETS_OR_TWO_LRJETS, "AT_LEAST_FOUR_JETS_OR_TWO_LRJETS"},
+	  {HHH6B::AT_LEAST_SIX_JETS_FOUR_BJETS, "AT_LEAST_SIX_JETS_FOUR_BJETS"},
+	  {HHH6B::AT_LEAST_TWO_JETS_AND_TWO_LRJETS, "AT_LEAST_TWO_JETS_AND_TWO_LRJETS"},
+	  {HHH6B::AT_LEAST_FOUR_JETS_AND_ONE_LRJET, "AT_LEAST_FOUR_JETS_AND_ONE_LRJET"},
+	  {HHH6B::AT_LEAST_THREE_LRJETS, "AT_LEAST_THREE_LRJETS"},
+	  {HHH6B::AT_LEAST_SIX_JETS_OR_THREE_LRJETS, "AT_LEAST_SIX_JETS_OR_THREE_LRJETS"},
 	};
       std::unordered_map<std::string, HHH6B::Booleans> m_nameToBool;
 

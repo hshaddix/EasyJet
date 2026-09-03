@@ -58,11 +58,12 @@ def boosted_branches(flags):
     # in the object configs.
     branches += get_selected_objects_branches(flags, "bbbbbb_boosted")
 
+    sys = "%SYS%" if flags.Analysis.do_CP_systematics else "NOSYS"
     for var in float_variable_names:
         branches += [
-            f"EventInfo.{var}_%SYS%"
+            f"EventInfo.{var}_{sys}"
             + f" -> bbbbbb_{var}"
-            + flags.Analysis.systematics_suffix_separator + "%SYS%"
+            + flags.Analysis.systematics_suffix_separator + sys
         ]
 
     return branches, float_variable_names

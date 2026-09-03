@@ -185,6 +185,7 @@ def resolved_branches(flags):
     branches += get_selected_objects_branches(
         flags, "bbbbbb_resolved")
 
+    sys = "%SYS%" if flags.Analysis.do_CP_systematics else "NOSYS"
     btag_wps = [flags.Analysis.Small_R_jet.btag_wp]
     btag_wps += flags.Analysis.Small_R_jet.btag_extra_wps
     for btag_wp in btag_wps:
@@ -211,11 +212,11 @@ def resolved_branches(flags):
                 deco_suffix = "mintargetmassPaired_"
 
             branches += [
-                f"EventInfo.resolved_{var}_{btag_wp}_%SYS%"
+                f"EventInfo.resolved_{var}_{btag_wp}_{sys}"
                 + " -> bbbbbb_resolved_"
                 + f"{deco_suffix}{btag_wp}_{var}"
                 + flags.Analysis.systematics_suffix_separator
-                + "%SYS%"
+                + sys
             ]
 
     return branches, float_variable_names

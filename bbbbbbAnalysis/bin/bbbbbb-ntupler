@@ -19,9 +19,11 @@ from EasyjetHub.output.ttree.minituple_config import check_ntuple_output_file
 from EasyjetHub.output.h5.h5_config import get_h5_cfg
 from EasyjetHub.output.xaod import get_xaod_cfg
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
-
 from bbbbbbAnalysis.utils.option_validation_6b import validate_hhh6b_analysis_prerequisites
-from bbbbbbAnalysis.config.trihiggs import trihiggs_cfg
+from bbbbbbAnalysis.config.trihiggs import (
+    KAPPA_WEIGHTS, KAPPA_WEIGHT_DSIDS,
+    trihiggs_cfg,
+)
 from bbbbbbAnalysis.config.resolved import resolved_branches, resolved_trigger_SF_branches, resolved_trigger_bucket_branches
 from bbbbbbAnalysis.config.semiresolved import semiresolved_branches
 from bbbbbbAnalysis.config.semiboosted import semiboosted_branches
@@ -29,6 +31,18 @@ from bbbbbbAnalysis.config.boosted import boosted_branches
 from bbbbbbAnalysis.config.trihiggs import pass_branches
 from EasyjetHub.algs.orthogonality.orth_config import orth_branches
 from EasyjetHub.algs.orthogonality.orth_config import orth_cfg
+from EasyjetHub.output.ttree import minituple_config
+
+_event_info_branches = minituple_config.get_event_info_branches
+
+
+def _sixb_event_info_branches(*args, **kwargs):
+    return [branch for branch in _event_info_branches(*args, **kwargs)
+            if "truth_HH_" not in branch]
+
+
+minituple_config.get_event_info_branches = _sixb_event_info_branches
+
 
 def hhh6b_parser():
     # Get and customise the parser
@@ -59,6 +73,14 @@ def hhh6b_job_cfg():
     # - build event info with calibrations etc
     seqname = "HHH6bSeq"
     cfg = default_sequence_cfg(flags, seqname)
+
+    if (flags.Input.isMC
+            and flags.Input.MCChannelNumber in KAPPA_WEIGHT_DSIDS
+            and not flags.Analysis.do_CP_systematics):
+        systematics_svc = cfg.getService("SystematicsSvc")
+        systematics_svc.sigmaRecommended = 1
+        systematics_svc.systematicsRegex = (
+            "(^$)|(^GEN_(" + "|".join(KAPPA_WEIGHTS) + ")$)")
 
     cfg.merge(
         trihiggs_cfg(flags),
