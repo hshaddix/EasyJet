@@ -55,6 +55,7 @@ namespace HHHBBBBTT
     is17PeriodB8_end,
     is18PeriodB_end,
     is18PeriodK_end,
+    is18_tau35_medium1,
     is22_75bunches,
     is23_75bunches,
     is23_400bunches,

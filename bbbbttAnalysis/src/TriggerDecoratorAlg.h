@@ -79,6 +79,7 @@ namespace HHHBBBBTT
 	{HHHBBBBTT::is17PeriodB8_end, "is2017_periodB8_end"},
 	{HHHBBBBTT::is18PeriodB_end, "is2018_periodB_end"},
 	{HHHBBBBTT::is18PeriodK_end, "is2018_periodK_end"},
+	{HHHBBBBTT::is18_tau35_medium1, "is2018_tau35_medium1"},
 	{HHHBBBBTT::is22_75bunches, "is2022_75bunches"},
 	{HHHBBBBTT::is23_75bunches, "is2023_75bunches"},
 	{HHHBBBBTT::is23_400bunches, "is2023_400bunches"},

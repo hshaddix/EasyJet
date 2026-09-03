@@ -493,9 +493,6 @@ void TriggerDecoratorAlg::checkDiBJetTriggers
       for(const auto& trig : paths){
 	bool pass = triggerdecos.at(trig)(*eventInfo);
 	mapDecisions.at(channel) |= pass;
-	if(pass){
-    //TO DO: implement b-jet matching
-	}
       }
 
       char& evtDeco_channel = pass_decos.at(channel)(*eventInfo);

@@ -52,6 +52,8 @@ Small_R_jet:
   btag_egReductionC: "Loose"
   btag_egReductionLight: "Loose"
   amount_bjet: 4
+  doHLTMatching: true
+  doL1Matching: true
   do_MCMC_dsid_fix: true
   MCMC_dsid_map:
     Herwig723: [601668, 603905, 603906, 346346, 346347, 346348]

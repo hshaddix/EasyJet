@@ -3,6 +3,7 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
 import AthenaCommon.SystemOfUnits as Units
+from AthenaConfiguration.Enums import LHCPeriod
 
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg,
@@ -56,6 +57,8 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
         selectBjet=False,
         minimumAmount=2))
 
+    if flags.GeoModel.Run is LHCPeriod.Run3:
+        cfg.merge(bbbbtt_JetTriggerDecoratorAlgCfg(flags, jets=smalljetkey))
     cfg.merge(bbbbtt_BJetTriggerDecoratorAlgCfg(
         flags,
         jetContainer="bbbbttAnalysisJets_%SYS%",
@@ -163,7 +166,15 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
 
     # include variables for kappa-reweighting
     if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HHH4b2tau_KappaReweight:
-        reweightVars = get_ReweightingVars()
+        reweightVars = get_ReweightingVars("HHH")
+        cfg.addEventAlgo(
+            CompFactory.HHHBBBBTT.KappaReweightingAlg(
+                "KappaReweighting",
+                reweightVars=reweightVars,
+            )
+        )
+    if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_ZHH_KappaReweight:
+        reweightVars = get_ReweightingVars("ZHH")
         cfg.addEventAlgo(
             CompFactory.HHHBBBBTT.KappaReweightingAlg(
                 "KappaReweighting",
@@ -182,18 +193,28 @@ def bbbbtt_cfg(flags, smalljetkey, muonkey, electronkey,
     return cfg
 
 
-def get_ReweightingVars():
-    reweightVars = [
-        "k3_0_k4_0",
-        "k3_1_k4_m1",
-        "k3_m1_k4_1",
-        "k3_1_k4_0",
-        "k3_0_k4_1",
-        "k3_m1_k4_0",
-        "k3_0_k4_m1",
-        "k3_0p5_k4_0",
-        "k3_m0p5_k4_0",
-    ]
+def get_ReweightingVars(sample_name):
+    if sample_name == "HHH":
+        reweightVars = [
+            "k3_0_k4_0",
+            "k3_1_k4_m1",
+            "k3_m1_k4_1",
+            "k3_1_k4_0",
+            "k3_0_k4_1",
+            "k3_m1_k4_0",
+            "k3_0_k4_m1",
+            "k3_0p5_k4_0",
+            "k3_m0p5_k4_0",
+        ]
+    elif sample_name == "ZHH":
+        reweightVars = [
+            "l1cvv1cv1",
+            "l1cvv1p5cv1",
+            "l2cvv1cv1",
+            "l10cvv1cv1",
+            "l1cvv1cv0p5",
+            "lm5cvv1cv0p5"
+        ]
 
     return reweightVars
 
@@ -227,6 +248,30 @@ def get_BaselineVarsbbbbttAlg_highlevelvariables(flags):
         ]
 
     return high_level_float_variables, high_level_int_variables
+
+
+def bbbbtt_JetTriggerDecoratorAlgCfg(flags, **kwargs):
+    cfg = ComponentAccumulator()
+
+    # jet matching decoration
+    jet_triggers = []
+    sf_config = flags.Analysis.Trigger.scale_factor
+    if sf_config.doSF and hasattr(sf_config, 'jet'):
+        triggerChainsPerYear = get_trigger_chains_scale_factor(
+            flags, 'jet')
+        for triggerChains in triggerChainsPerYear.values():
+            for chain in triggerChains:
+                jet_triggers.append(chain.replace('-', '_').replace('.', 'p'))
+
+    cfg.addEventAlgo(
+        CompFactory.HHHBBBBTT.JetTriggerDecoratorAlg(
+            "JetTriggerDecoratorAlg",
+            triggerLists=jet_triggers,
+            **kwargs
+        )
+    )
+
+    return cfg
 
 
 def bbbbtt_BJetTriggerDecoratorAlgCfg(flags, jetContainer="bbbbttAnalysisJets_%SYS%",
@@ -314,6 +359,25 @@ def bbbbtt_branches(flags):
     branches += ["EventInfo.bbbbtt_pass_presel_%SYS% -> bbbbtt_pass_presel"
                  + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
+    smalljetkey = flags.Analysis.container_names.output.reco4PFlowJet
+    small_R_prefix = (
+        "recojet_antikt4"
+        + flags.Analysis.Small_R_jet.jet_type.replace("reco4", "").replace("Jet", "")
+    )
+    syst_suff = flags.Analysis.systematics_suffix_separator + "%SYS%"
+    if flags.GeoModel.Run is LHCPeriod.Run3:
+        branches += [
+            (f"{smalljetkey}.trigMatch_L1_online{var}_%SYS%"
+            + f"->{small_R_prefix}_trigMatch_L1_online{var}" + syst_suff
+            + " type=float")
+            for var in ["pt", "eta"]
+        ]
+        branches += [
+            f"{smalljetkey}.trigMatch_HLT_onlinept_%SYS%"
+            + f"->{small_R_prefix}_trigMatch_HLT_onlinept" + syst_suff
+            + " type=float"
+        ]
+
     # trigger variables do not need to be added to variable_names
     # as it is written out in HHHbbbbttSelectorAlg
     for var in ["_trigger_", "_baseline_"]:
@@ -346,7 +410,11 @@ def bbbbtt_branches(flags):
                      + flags.Analysis.systematics_suffix_separator + "%SYS%"]
 
     if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_HHH4b2tau_KappaReweight:
-        reweight_vars = get_ReweightingVars()
+        reweight_vars = get_ReweightingVars("HHH")
+        for var in reweight_vars:
+            branches += [f"EventInfo.{var} -> KappaReweighting__{var} type=float"]
+    if flags.Input.MCChannelNumber in flags.Analysis.Truth.DSID_ZHH_KappaReweight:
+        reweight_vars = get_ReweightingVars("ZHH")
         for var in reweight_vars:
             branches += [f"EventInfo.{var} -> KappaReweighting__{var} type=float"]
 

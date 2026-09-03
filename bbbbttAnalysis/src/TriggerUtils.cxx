@@ -274,8 +274,10 @@ namespace HHHBBBBTT
     else if(year==2018){
       ditau_paths_L1Topo = {"HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1DR_TAU20ITAU12I_J25"};
       ditau_paths_4J12 = {"HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1TAU20IM_2TAU12IM_4J12p0ETA23"};
-      tau35_match_paths = {"HLT_tau35_medium1_tracktwoEF"};
-      tau25_match_paths = {"HLT_tau25_medium1_tracktwoEF"};
+      if(runBoolDecos.at(HHHBBBBTT::is18_tau35_medium1)(*eventInfo)){
+        tau35_match_paths = {"HLT_tau35_medium1_tracktwoEF"};
+        tau25_match_paths = {"HLT_tau25_medium1_tracktwoEF"};
+      }
 
       if(runBoolDecos.at(HHHBBBBTT::is18PeriodK_end)(*eventInfo)){
         ditau_paths_L1Topo.emplace_back("HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_L1DR_TAU20ITAU12I_J25");
