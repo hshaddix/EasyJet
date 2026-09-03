@@ -1,3 +1,4 @@
 do_CP_systematics: true
+do_bjr_syst_propagation: true
 do_bjr_kinematic_shift_syst: true
 systematics_regex: [".*"]

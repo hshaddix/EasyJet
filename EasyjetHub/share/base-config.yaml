@@ -336,8 +336,7 @@ PileupReweighting:
 disable_calib: false
 # Whether to activate CP alg systematic variations
 do_CP_systematics: false
-# True by default, but only runs if BJR and CP systematics are enabled.
-do_bjr_syst_propagation: true
+do_bjr_syst_propagation: false
 do_bjr_kinematic_shift_syst: false
 systematics_regex: []
 systematics_suffix_separator: "_"
