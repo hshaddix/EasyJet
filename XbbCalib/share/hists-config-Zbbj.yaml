@@ -3,29 +3,29 @@ selection:
   n_lrjets_min: 1
 variables:
   Zcand0_bJR10v01_mass:
-    lower: 50000
-    upper: 250000
-    n_bins: 100
+    lower: 40000
+    upper: 300000
+    n_bins: 260
 weights:
   all_runs:
     - PileupWeight_NOSYS
   run2:
     - beamSpotWeight
 multidim:
-  # BJR-pT-binned views (mass binned at 1 GeV: 100 bins over 50-150 GeV).
+  # BJR-pT-binned views (mass binned at 1 GeV: 260 bins over 40-300 GeV).
   leading:
     mass_var: Zcand0_bJR10v01_mass
-    mass_lower: 50000
-    mass_upper: 150000
-    mass_n_bins: 100
+    mass_lower: 40000
+    mass_upper: 300000
+    mass_n_bins: 260
     pt_var: Zcand0_bJR10v01_pt
     pt_edges: [450000., 500000., 600000., 1000000.]
     wp_prefix: Zcand0
   subleading:
     mass_var: Zcand1_bJR10v01_mass
-    mass_lower: 50000
-    mass_upper: 150000
-    mass_n_bins: 100
+    mass_lower: 40000
+    mass_upper: 300000
+    mass_n_bins: 260
     pt_var: Zcand1_bJR10v01_pt
     pt_edges: [450000., 500000., 600000., 1000000.]
     wp_prefix: Zcand1
@@ -34,17 +34,17 @@ multidim:
   # BJR-regression pT. Same mass range/binning and pt_edges as above.
   leading_ufopt:
     mass_var: Zcand0_bJR10v01_mass
-    mass_lower: 50000
-    mass_upper: 150000
-    mass_n_bins: 100
+    mass_lower: 40000
+    mass_upper: 300000
+    mass_n_bins: 260
     pt_var: Zcand0_pt
     pt_edges: [450000., 500000., 600000., 1000000.]
     wp_prefix: Zcand0
   subleading_ufopt:
     mass_var: Zcand1_bJR10v01_mass
-    mass_lower: 50000
-    mass_upper: 150000
-    mass_n_bins: 100
+    mass_lower: 40000
+    mass_upper: 300000
+    mass_n_bins: 260
     pt_var: Zcand1_pt
     pt_edges: [450000., 500000., 600000., 1000000.]
     wp_prefix: Zcand1
