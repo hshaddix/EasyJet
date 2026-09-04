@@ -27,6 +27,9 @@ Truth:
 do_small_R_jets: true
 do_muons: true
 do_electrons: true
+# Photons are needed for the METNet input, which requires
+# every hard-object type
+do_photons: true
 do_taus: true
 do_met : true
 do_mmc : true
@@ -36,8 +39,6 @@ do_mmc : true
 Met:
   doMETNet: true
 
-# METNet requires a photon term; photons are not otherwise used in bbtt,
-# so this working point only defines the METNet photon input
 Photon:
   ID: "Tight"
   Iso: "FixedCutTight"

@@ -3,7 +3,6 @@
 from AnalysisAlgorithmsConfig.ConfigSequence import ConfigSequence
 from AnalysisAlgorithmsConfig.ConfigFactory import ConfigFactory
 
-from EasyjetHub.algs.calibration.photons import photon_sequence
 from EasyjetHub.steering.utils.name_helper import drop_sys
 
 metnet_network_files = {
@@ -144,23 +143,15 @@ def metnet_sequence(flags, configAcc):
     makeConfig = config.makeConfig
 
     # Use the same input objects as the standard MET. The NN evaluation
-    # requires a configured container for every hard-object type, so if the
-    # analysis does not otherwise use photons, calibrate them here purely as
-    # METNet input (Photon.ID / Photon.Iso select the working point).
+    # requires a configured container for every hard-object type, so all
+    # four object types must be enabled in the analysis config.
     preMET_collections = get_preMET_collections(flags)
-    if 'photons' not in preMET_collections:
-        assert flags.Analysis.Photon.ID and flags.Analysis.Photon.Iso, (
-            "METNet requires a photon term: enable do_photons or set "
-            "Photon.ID and Photon.Iso for the MET-input photon selection"
-        )
-        configSeq += photon_sequence(flags, configAcc)
-        photon_wp = f"{flags.Analysis.Photon.ID}_{flags.Analysis.Photon.Iso}"
-        preMET_collections['photons'] = (
-            f"{drop_sys(container_names.output.photons)}.{photon_wp}"
-        )
-    missing = {'electrons', 'muons', 'taus'} - preMET_collections.keys()
+    missing = (
+        {'electrons', 'photons', 'muons', 'taus'} - preMET_collections.keys()
+    )
     assert not missing, (
-        f"METNet requires every hard-object type, missing: {sorted(missing)}"
+        "METNet requires every hard-object type, please enable: "
+        + ", ".join(sorted(f"do_{obj}" for obj in missing))
     )
 
     configSeq += makeConfig('MissingET')
