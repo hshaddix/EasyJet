@@ -7,9 +7,14 @@ variables:
 
 .rule_core_pkgs: &rule_core_pkgs
   if: "$CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'"
+  # kept in sync with core_regex in EasyjetTests/bin/easyjet-changed-packages
   changes:
     - "EasyjetHub/**/*"
     - "EasyjetTests/**/*"
+    - "KinematicFitTool/**/*"
+    - "VBFTagger/**/*"
+    - "TruthWeightTools/**/*"
+    - "ONNXInferenceTool/**/*"
     - ".gitlab-ci.yml"
 
 .changes_bbbb: &changes_bbbb
@@ -17,138 +22,184 @@ variables:
     - if: *if_to_central
       changes: ["bbbbAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbbbAnalysis
 
 .changes_bbbbtt: &changes_bbbbtt
   rules:
     - if: *if_to_central
       changes: ["bbbbttAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbbbttAnalysis
 
 .changes_bbbbbb: &changes_bbbbbb
   rules:
     - if: *if_to_central
       changes: ["bbbbbbAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbbbbbAnalysis
 
 .changes_hhmet: &changes_hhmet
   rules:
     - if: *if_to_central
       changes: ["hhmetAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: hhmetAnalysis
 
 .changes_bbll: &changes_bbll
   rules:
     - if: *if_to_central
       changes: ["bbllAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbllAnalysis
 
 .changes_bbtt: &changes_bbtt
   rules:
     - if: *if_to_central
       changes: ["bbttAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbttAnalysis
 
 .changes_bbVV: &changes_bbVV
   rules:
     - if: *if_to_central
       changes: ["bbVVAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbVVAnalysis
 
 .changes_bbyy: &changes_bbyy
   rules:
     - if: *if_to_central
       changes: ["bbyyAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: bbyyAnalysis
 
 .changes_HZallyy: &changes_HZallyy
   rules:
     - if: *if_to_central
       changes: ["HZallyyAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: HZallyyAnalysis
 
 .changes_jjjj: &changes_jjjj
   rules:
     - if: *if_to_central
       changes: ["jjjjAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: jjjjAnalysis
 
 .changes_lltt: &changes_lltt
   rules:
     - if: *if_to_central
       changes: ["llttAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: llttAnalysis
 
 .changes_monojet: &changes_monojet
   rules:
     - if: *if_to_central
       changes: ["monojetAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: monojetAnalysis
 
 .changes_multilepton: &changes_multilepton
   rules:
     - if: *if_to_central
       changes: ["multileptonAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: multileptonAnalysis
 
 .changes_ssWW: &changes_ssWW
   rules:
     - if: *if_to_central
       changes: ["ssWWAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: ssWWAnalysis
 
 .changes_ttHH: &changes_ttHH
   rules:
     - if: *if_to_central
       changes: ["ttHHAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: ttHHAnalysis
 
 .changes_vbshiggs: &changes_vbshiggs
   rules:
     - if: *if_to_central
       changes: ["vbshiggsAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: vbshiggsAnalysis
     
 .changes_vbssemilep: &changes_vbssemilep
   rules:
     - if: *if_to_central
       changes: ["vbssemilepAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: vbssemilepAnalysis
 
 .changes_VBSVV4q: &changes_VBSVV4q
   rules:
     - if: *if_to_central
       changes: ["VBSVV4qAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: VBSVV4qAnalysis
 
 .changes_XbbCalib: &changes_XbbCalib
   rules:
     - if: *if_to_central
       changes: ["XbbCalib/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: XbbCalib
 
 .changes_yyML: &changes_yyML
   rules:
     - if: *if_to_central
       changes: ["yyMLAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: yyMLAnalysis
 
 .changes_ZCharm: &changes_ZCharm
   rules:
     - if: *if_to_central
       changes: ["ZCharmAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: ZCharmAnalysis
 
 .changes_ZQG: &changes_ZQG
   rules:
     - if: *if_to_central
       changes: ["ZQGAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: ZQGAnalysis
 
 .changes_HZy: &changes_HZy
   rules:
     - if: *if_to_central
       changes: ["HZyAnalysis/**/*"]
     - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: HZyAnalysis
 
 .ntuple_validation:
   variables:
@@ -156,6 +207,25 @@ variables:
   rules:
     - if: $CI_PIPELINE_SOURCE == 'merge_request_event' && $CI_PROJECT_PATH == 'easyjet/easyjet'
   stage: validate
+  # Safety net: the changes:-based rules above can be stale after a
+  # rebase and trigger a job whose package didn't actually get
+  # compiled (see EASYJET_REQUIRED_PKG on the .changes_* anchors).
+  # Skip cleanly instead of failing on a missing binary.
+  before_script:
+    - git config --global lfs.concurrenttransfers 3 # Default is 8.
+    - git config --global lfs.transfer.maxretries 3 # Default is 8.
+    - set -e # exits the pipeline if one of the jobs don't return 0
+    - source ~/release_setup.sh
+    - if [[ -d build ]]; then source build/**/setup.sh; fi
+    - env
+    - |
+      if [[ -n "${EASYJET_REQUIRED_PKG:-}" ]]; then
+        var="EASYJET_PKG_${EASYJET_REQUIRED_PKG}"
+        if [[ -z "${!var:-}" ]]; then
+          echo "Package ${EASYJET_REQUIRED_PKG} was not compiled for this MR, skipping."
+          exit 0
+        fi
+      fi
   tags:
     - k8s-eos
   artifacts:

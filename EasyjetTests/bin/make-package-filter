@@ -14,7 +14,13 @@ Usage: $(basename "$0") [-h] [-e PKG:PKG:...] [-o PATH] [-E PATH] [PKG ...]
   -E PATH    env-var output file (default: <repo>/build/build_packages.env).
   PKG ...    package names as positional arguments.
 
-EasyjetHub and EasyjetTests are always included.
+EasyjetHub, EasyjetTests, XbbCalib, and STXSAlgorithm are always
+included: XbbCalib because some run-stage jobs depend on it
+unconditionally, and STXSAlgorithm because it's a component-only
+(MODULE_LIBRARY) package consumed via Python CompFactory calls that
+CMake can never express as a LINK_LIBRARIES dependency. Internal
+package dependencies declared via LINK_LIBRARIES are resolved
+transitively and included too.
 To apply with cmake (run from the build directory):
   cmake .. -DATLAS_PACKAGE_FILTER_FILE=\$(pwd)/package_filters.txt
 EOF
@@ -75,10 +81,11 @@ if [[ $ENV_MODE -eq 0 ]]; then
     fi
 fi
 
-ALL_PKGS=(EasyjetHub EasyjetTests)
+ALL_PKGS=(EasyjetHub EasyjetTests XbbCalib STXSAlgorithm)
 declare -A SEEN
 for pkg in "${ALL_PKGS[@]}"; do SEEN["$pkg"]=1; done
 for pkg in "${EXTRA_PKGS[@]}"; do
+    [[ -z "$pkg" ]] && continue
     [[ -v SEEN["$pkg"] ]] && continue
     ALL_PKGS+=("$pkg")
     SEEN["$pkg"]=1
@@ -89,6 +96,27 @@ for pkg in "${ALL_PKGS[@]}"; do
         echo "ERROR: package '$pkg' not found in $REPO_ROOT" >&2
         exit 1
     fi
+done
+
+# Pull in internal packages another selected package links against
+REPO_PKGS=()
+for d in "$REPO_ROOT"/*/; do
+    d="$(basename "${d%/}")"
+    [[ -f "$REPO_ROOT/$d/CMakeLists.txt" ]] && REPO_PKGS+=("$d")
+done
+
+changed=1
+while [[ $changed -eq 1 ]]; do
+    changed=0
+    for pkg in "${ALL_PKGS[@]}"; do
+        for cand in "${REPO_PKGS[@]}"; do
+            [[ -v SEEN["$cand"] ]] && continue
+            grep -qw "${cand}Lib" "$REPO_ROOT/$pkg/CMakeLists.txt" || continue
+            ALL_PKGS+=("$cand")
+            SEEN["$cand"]=1
+            changed=1
+        done
+    done
 done
 
 {

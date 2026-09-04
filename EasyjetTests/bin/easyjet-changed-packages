@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+# Used by the `cmake` CI job to restrict the `compile` job to only the
+# packages touched by an MR (plus EasyjetHub/EasyjetTests, which
+# make-package-filter always includes).
+#
+# Prints "ALL" if a core path is touched (EasyjetHub, EasyjetTests,
+# any submodule, top-level CMakeLists.txt, or .gitlab-ci.yml -- kept
+# in sync with .rule_core_pkgs in
+# .gitlab/pipelines/*.yaml, which is what decides whether every
+# per-package ntupler job runs regardless of which package it belongs
+# to). Submodules are treated as core because a bump's consumers
+# (e.g. bbyyAnalysis/multileptonAnalysis for KinematicFitTool) aren't
+# tracked anywhere else -- see .rule_core_pkgs for the full list.
+# Otherwise prints a colon-separated list (possibly empty) of
+# top-level package directories touched in <range>.
+set -euo pipefail
+
+usage() {
+  cat <<EOF
+Usage: ${0##*/} <range>
+
+<range> is a git revision range, e.g. origin/main...HEAD.
+EOF
+}
+
+if [[ $# -ne 1 ]]; then
+  usage >&2
+  exit 2
+fi
+
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  usage
+  exit 0
+fi
+
+RANGE="$1"
+
+cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+cd "$(git rev-parse --show-toplevel)"
+
+changed_files=$(git diff --name-only "$RANGE")
+
+core_regex='^(EasyjetHub|EasyjetTests|KinematicFitTool|VBFTagger|TruthWeightTools|ONNXInferenceTool)/|^\.gitlab-ci\.yml$|^CMakeLists\.txt$'
+if echo "$changed_files" | grep -qE "$core_regex"; then
+  echo "ALL"
+  exit 0
+fi
+
+pkgs=()
+for d in $(echo "$changed_files" | cut -d/ -f1 | sort -u); do
+  [[ -f "$d/CMakeLists.txt" ]] && pkgs+=("$d")
+done
+
+(IFS=:; echo "${pkgs[*]}")

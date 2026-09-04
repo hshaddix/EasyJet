@@ -27,7 +27,25 @@ cmake:
   stage: build
   script:
     - mkdir -p build
-    - EasyjetTests/bin/make-package-filter
+    - |
+      # Restrict compilation to the packages actually touched by this MR
+      # (plus EasyjetHub/EasyjetTests, always force-included by
+      # make-package-filter). If a core path is touched, or this isn't
+      # an MR pipeline (schedule/web run), fall back to building
+      # everything, since in that case every ntupler job can run anyway.
+      PKG_ARGS=()
+      if [[ "$CI_PIPELINE_SOURCE" == "merge_request_event" ]]; then
+        git fetch origin "$CI_MERGE_REQUEST_TARGET_BRANCH_NAME"
+        git fetch --unshallow
+        CHANGED_PKGS=$(EasyjetTests/bin/easyjet-changed-packages "origin/${CI_MERGE_REQUEST_TARGET_BRANCH_NAME}...${CI_COMMIT_SHA}")
+        if [[ "$CHANGED_PKGS" == "ALL" ]]; then
+          echo "Core path touched (or nothing package-specific): building everything."
+        else
+          echo "Touched packages: ${CHANGED_PKGS:-(none)}"
+          PKG_ARGS=(-e "$CHANGED_PKGS")
+        fi
+      fi
+      EasyjetTests/bin/make-package-filter "${PKG_ARGS[@]}"
     - cd build
     - cmake .. -DATLAS_PACKAGE_FILTER_FILE=$(pwd)/package_filters.txt
         | tee cmake.log
