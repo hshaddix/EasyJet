@@ -44,6 +44,17 @@ namespace XBBCALIB
       StatusCode finalize() override;
 
     private :
+      // ToolHandle<whatever> handle {this, "pythonName", "defaultValue",
+      // "someInfo"};
+      const std::vector<std::string> m_STANDARD_CUTS{
+        "PASS_EXACTLY_ONE_PHOTON",
+        "PASS_TWO_SF_LEPTONS",
+        "PASS_ZPT_CUT",
+        "PASS_ZMASS_WINDOW",
+        "PASS_PHOTON_PT",
+        "PASS_DPHI_ZGAMMA",
+      };
+      CutManager m_ZllyCalibCuts;
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run selector algorithm in pass-through mode" };
 
@@ -76,9 +87,13 @@ namespace XBBCALIB
       std::unordered_map<XBBCALIB::Booleans, bool> m_bools;
       CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<XBBCALIB::Booleans, std::string> m_boolnames{
-	// {XBBCALIB::PASS_TRIGGER, "PASS_TRIGGER"},
-	{XBBCALIB::PASS_EXACTLY_ONE_PHOTON, "PASS_EXACTLY_ONE_PHOTON"},
-	  {XBBCALIB::PASS_TWO_SF_LEPTONS, "PASS_TWO_SF_LEPTONS"},
+      // {XBBCALIB::PASS_TRIGGER, "PASS_TRIGGER"},
+      {XBBCALIB::PASS_EXACTLY_ONE_PHOTON, "PASS_EXACTLY_ONE_PHOTON"},
+      {XBBCALIB::PASS_TWO_SF_LEPTONS, "PASS_TWO_SF_LEPTONS"},
+      {XBBCALIB::PASS_ZPT_CUT, "PASS_ZPT_CUT"},
+      {XBBCALIB::PASS_ZMASS_WINDOW, "PASS_ZMASS_WINDOW"},
+      {XBBCALIB::PASS_PHOTON_PT, "PASS_PHOTON_PT"},
+      {XBBCALIB::PASS_DPHI_ZGAMMA, "PASS_DPHI_ZGAMMA"},
       };
       std::unordered_map<std::string, XBBCALIB::Booleans> m_nameToBool;
       CP::SysReadDecorHandle<float> m_generatorWeight

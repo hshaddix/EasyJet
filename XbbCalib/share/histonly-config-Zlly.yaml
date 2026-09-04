@@ -1,0 +1,18 @@
+include:
+  - XbbCalib/RunConfig_Zlly.yaml
+
+output:
+  h5:
+    hists:
+      enable: true
+      include:
+        - XbbCalib/hists-config-Zlly.yaml
+      blinding:
+        include:
+          - XbbCalib/blinding-Zll.yaml
+
+do_CP_systematics: true
+systematics_regex: [".*"]
+
+grid:
+  n_files_per_job: 2

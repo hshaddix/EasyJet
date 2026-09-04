@@ -1,0 +1,43 @@
+disable_metadata: false
+selection:
+  n_lrjets_min: 1
+variables:
+  Zcand_m:
+    lower: 70000
+    upper: 110000
+    n_bins: 100
+  Zcand_pt:
+    lower: 0
+    upper: 1500000
+    n_bins: 60
+  photon_pt:
+    lower: 150000
+    upper: 1500000
+    n_bins: 60
+  Zcand_dPhi_Ph:
+    lower: 0
+    upper: 3.2
+    n_bins: 32
+  Zcand_dR:
+    lower: 0
+    upper: 5.0
+    n_bins: 50
+  Zcand_pt_balance:
+    lower: 0
+    upper: 2.0
+    n_bins: 40
+weights:
+  all_runs:
+    - PileupWeight_NOSYS
+  run2:
+    - beamSpotWeight
+multidim:
+  zcand:
+    mass_var: Zcand_m
+    mass_lower: 70000
+    mass_upper: 110000
+    mass_n_bins: 50
+    pt_var: Zcand_pt
+    pt_lower: 200000
+    pt_upper: 500000
+    pt_n_bins: 50

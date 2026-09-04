@@ -65,8 +65,6 @@ Muon:
 Trigger:
   include: [XbbCalib/trigger_photon.yaml]
 # apply trigger lists to filter events
-# only include photon triggers, the same as in zbby
-# to use lepton triggers use: trigger_lepton.yaml
 do_trigger_filtering: true
 # write objects with overlap removal applied
 # turning this on you have to decide on one large R jet collection
@@ -102,3 +100,11 @@ ttree_output:
 CutList:
   - PASS_TWO_SF_LEPTONS
   - PASS_EXACTLY_ONE_PHOTON
+  - PASS_ZPT_CUT
+  - PASS_ZMASS_WINDOW
+  - PASS_PHOTON_PT
+  - PASS_DPHI_ZGAMMA
+
+grid:
+  n_files_per_job: 2
+

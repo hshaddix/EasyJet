@@ -6,6 +6,7 @@
 #include <SystematicsHandles/SysFilterReporter.h>
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 #include <AthenaKernel/Units.h>
+#include "TLorentzVector.h"
 
 namespace XBBCALIB
 {
@@ -59,20 +60,34 @@ namespace XBBCALIB
       // Apply Selection
       //************
 
-      // flags
       //************
       // Large-R Jet
       //************
       pass_baseline = (lrjets->size() != 0);
+      const xAOD::Jet* j0 = nullptr;
+      if (pass_baseline) {
+        j0 = lrjets->at(0);
+        pass_baseline = (j0->pt() > 200000.) && (std::abs(j0->eta()) < 2.0);
+      }
 
+      bool pass_ele = (electrons->size() == 2);
+      bool pass_mu = (muons->size() == 2);
+      pass_baseline &= (pass_ele || pass_mu);
       //************
-      // Leptons
+      // Z candidate kinematics
       //************
-      pass_baseline &= (electrons->size() >= 2 || muons->size() >= 2);
+      if (pass_baseline) {
+        TLorentzVector ll;
+        if (pass_ele) {
+          ll = electrons->at(0)->p4() + electrons->at(1)->p4();
+        } else {
+          ll = muons->at(0)->p4() + muons->at(1)->p4();
+        }
+        pass_baseline &= (ll.Pt() > 500000. && ll.Pt() < 1000000.);
+        pass_baseline &= (ll.M() > 70000. && ll.M() < 110000.);
+        pass_baseline &= (std::abs(ll.DeltaPhi(j0->p4())) > 1.5);
+      }
 
-      //****************
-      // event level info
-      //****************
 
       if (!m_bypass && !pass_baseline) continue;
 
@@ -91,3 +106,4 @@ namespace XBBCALIB
   }
 
 }
+

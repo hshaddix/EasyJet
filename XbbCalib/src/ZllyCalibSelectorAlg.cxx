@@ -6,6 +6,7 @@
 #include <SystematicsHandles/SysFilterReporter.h>
 #include <SystematicsHandles/SysFilterReporterCombiner.h>
 #include <AthenaKernel/Units.h>
+#include "TLorentzVector.h"
 
 namespace XBBCALIB
 {
@@ -86,12 +87,36 @@ namespace XBBCALIB
       //************
       // Apply Selection
       //************
-      if (electrons->size() >= 2 || muons->size() >= 2){
+      if (electrons->size() == 2 || muons->size() == 2){
         m_bools.at(XBBCALIB::PASS_TWO_SF_LEPTONS) = true;}
       if (photons->size() == 1){
         m_bools.at(XBBCALIB::PASS_EXACTLY_ONE_PHOTON) = true;}
 
       pass_baseline = m_bools.at(XBBCALIB::PASS_TWO_SF_LEPTONS) && m_bools.at(XBBCALIB::PASS_EXACTLY_ONE_PHOTON);
+      //************
+      // Z(+photon) system kinematics
+      //************
+      if (pass_baseline) {
+        // Dilepton (Z candidate) four-vector from the two leading leptons
+        TLorentzVector ll;
+
+        if (electrons->size() == 2) {
+          ll = electrons->at(0)->p4() + electrons->at(1)->p4();
+        } else if(muons->size() == 2) {
+          ll = muons->at(0)->p4() + muons->at(1)->p4();
+        }
+        const xAOD::Photon* ph = photons->at(0);
+
+        m_bools.at(XBBCALIB::PASS_ZPT_CUT)   = (ll.Pt() > 200000. && ll.Pt() < 500000.);
+        m_bools.at(XBBCALIB::PASS_ZMASS_WINDOW) = (ll.M()  > 70000.  && ll.M()  < 110000.);
+        m_bools.at(XBBCALIB::PASS_PHOTON_PT)    = (ph->pt() > 200000.);
+        m_bools.at(XBBCALIB::PASS_DPHI_ZGAMMA)  = (std::abs(ll.DeltaPhi(ph->p4())) > 1.5);
+
+        pass_baseline &= m_bools.at(XBBCALIB::PASS_ZPT_CUT);
+        pass_baseline &= m_bools.at(XBBCALIB::PASS_ZMASS_WINDOW);
+        pass_baseline &= m_bools.at(XBBCALIB::PASS_PHOTON_PT);
+        pass_baseline &= m_bools.at(XBBCALIB::PASS_DPHI_ZGAMMA);
+      }
 
       m_passallcuts.set(*event, pass_baseline, sys);
 
@@ -129,3 +154,7 @@ namespace XBBCALIB
     return StatusCode::SUCCESS;
   }
 }
+
+
+
+

@@ -44,6 +44,7 @@ namespace XBBCALIB
       Gaudi::Property<bool> m_bypass
         { this, "bypass", false, "Run selector algorithm in pass-through mode" };
 
+
       /// \brief Setup syst-aware input container handles
       CP::SysListHandle m_systematicsList {this};
 
@@ -69,3 +70,4 @@ namespace XBBCALIB
 }
 
 #endif // SELECTIONFLAGSZlljCaLIBALG_H
+

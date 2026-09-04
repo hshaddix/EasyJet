@@ -33,7 +33,8 @@ Large_R_jet:
 
 
 Electron:
-  min_pT: 7.e+3
+  min_pT: 27.e+3
+  maxEta: 2.5
   ID: "MediumLH"
   Iso: "TightTrackOnly_VarRad"
   extra_wps:
@@ -41,9 +42,9 @@ Electron:
 
 
 Muon:
-  min_pT: 7.e+3
+  min_pT: 27.e+3
   ID: "HighPt"
-  maxEta: 2.7
+  maxEta: 2.5
   Iso: "Tight_VarRad"
   extra_wps:
     - ["Loose", "PflowLoose_VarRad"]
@@ -95,3 +96,5 @@ ttree_output:
     muons:
       run_selection: true
       truth_parent_info: true
+grid:
+  n_files_per_job: 2

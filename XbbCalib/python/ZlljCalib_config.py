@@ -8,6 +8,7 @@ from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches_variables,
 )
+from XbbCalib.hists_output_config import hists_output_cfg
 
 copiedVariablePrefix = "Zcand_"
 
@@ -28,13 +29,14 @@ def ZlljCalib_cfg(flags, largejetkey, muonkey, electronkey,
     cfg.merge(MuonSelectorAlgCfg(flags,
                                  containerInKey=muonkey,
                                  containerOutKey="XbbCalibMuons_%SYS%",
-                                 minPt=7 * Units.GeV,
-                                 maxEta=2.7))
+                                 minPt=flags.Analysis.Muon.min_pT,
+                                 maxEta=flags.Analysis.Muon.maxEta))
 
     cfg.merge(ElectronSelectorAlgCfg(flags,
                                      containerInKey=electronkey,
                                      containerOutKey="XbbCalibElectrons_%SYS%",
-                                     minPt=7 * Units.GeV))
+                                     minPt=flags.Analysis.Electron.min_pT,
+                                     maxEta=flags.Analysis.Electron.maxEta))
 
     cfg.merge(LeptonOrderingAlgCfg(flags,
                                    containerInEleKey=electronkey,
@@ -73,6 +75,14 @@ def ZlljCalib_cfg(flags, largejetkey, muonkey, electronkey,
             copiedVariablePrefix=copiedVariablePrefix,
         )
     )
+
+    out_path = (
+        flags.Analysis.h5_output
+        if flags.Analysis.output.h5.hists.enable else None
+    )
+    cfg.merge(hists_output_cfg(
+        flags, flags.Analysis.output.h5.hists, out_path,
+        tag_wps=[]))
 
     return cfg
 
