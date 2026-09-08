@@ -1,4 +1,4 @@
-include: [hhmetAnalysis/RunConfig-HHMET-base.yaml]
+include: [hhmetAnalysis/RunConfig-HHMET-all.yaml]
 
 bypass: true
 do_trigger_filtering: false

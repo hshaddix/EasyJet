@@ -1,5 +1,25 @@
-hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-base.yaml -o output_PHYS_hhmet_resolved_ntuple.root ttbar_PHYS_10evt.root
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml -o output_PHYS_hhmet_resolved_ntuple.root ttbar_PHYS_10evt.root
 
 #Team local:
-#hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-base.yaml -o output_PHYS_hhmet_resolved_ntuple.root /data/atlas/users/pacey/PHYS/data24_13p6TeV.00476060.physics_Main.deriv.DAOD_PHYS.f1468_m2248_p6700/DAOD_PHYS.43637260._000293.pool.root.1
-#hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-base.yaml -o output_PHYS_hhmet_resolved_ntuple.root /data/atlas/users/pacey/PHYS/mc23_13p6TeV.601230.PhPy8EG_A14_ttbar_hdamp258p75_dil.deriv.DAOD_PHYS.e8514_s4369_r16083_p7017/DAOD_PHYS.46858811._001042.pool.root.1 
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data15_13TeV.00280464.physics_Main.deriv.DAOD_PHYS.r13604_p5087_p7266/DAOD_PHYS.49550842._000254.pool.root.1 -o output_data15.root    |& tee data15.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data16_13TeV.00304198.physics_Main.deriv.DAOD_PHYS.r13286_p4910_p7266/DAOD_PHYS.49561060._000491.pool.root.1 -o output_data16.root    |& tee data16.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data17_13TeV.00337215.physics_Main.deriv.DAOD_PHYS.r13286_p4910_p7266/DAOD_PHYS.49561833._001012.pool.root.1 -o output_data17.root    |& tee data17.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data18_13TeV.00356124.physics_Main.deriv.DAOD_PHYS.r13286_p4910_p7266/DAOD_PHYS.49562198._001195.pool.root.1 -o output_data18.root    |& tee data18.log
+
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13144_p7266/DAOD_PHYS.49680229._001420.pool.root.1 -o output_mc20a.root    |& tee mc20a.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13145_p7266/DAOD_PHYS.49680243._001038.pool.root.1 -o output_mc20d.root    |& tee mc20d.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/mc20_13TeV.410470.PhPy8EG_A14_ttbar_hdamp258p75_nonallhad.deriv.DAOD_PHYS.e6337_s3681_r13167_p7266/DAOD_PHYS.49680222._001251.pool.root.1 -o output_mc20e.root    |& tee mc20e.log
+
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/mc23_13p6TeV.601230.PhPy8EG_A14_ttbar_hdamp258p75_dil.deriv.DAOD_PHYS.e8514_s4159_r15530_p7266/DAOD_PHYS.49568784._000002.pool.root.1 -o output_mc23d.root    |& tee mc23a.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/mc23_13p6TeV.601230.PhPy8EG_A14_ttbar_hdamp258p75_dil.deriv.DAOD_PHYS.e8514_s4162_r15540_p7266/DAOD_PHYS.49568778._000007.pool.root.1 -o output_mc23a.root    |& tee mc23d.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/mc23_13p6TeV.601230.PhPy8EG_A14_ttbar_hdamp258p75_dil.deriv.DAOD_PHYS.e8514_s4369_r16083_p7266/DAOD_PHYS.49568801._000001.pool.root.1 -o output_mc23e.root    |& tee mc23e.log
+
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data22_13p6TeV.00435816.physics_Main.deriv.DAOD_PHYS.r15869_p6304_p7267/DAOD_PHYS.49562413._000490.pool.root.1 -o output_data22.root    |& tee data22.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data23_13p6TeV.00456749.physics_Main.deriv.DAOD_PHYS.r15774_p6304_p7267/DAOD_PHYS.49630893._000014.pool.root.1 -o output_data23.root    |& tee data23.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/PHYS/data24_13p6TeV.00476060.physics_Main.deriv.DAOD_PHYS.f1468_m2248_p7267/DAOD_PHYS.49551130._000515.pool.root.1 -o output_data24.root    |& tee data24.log
+
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/hhMET/signal_production/samples/2MDM_ShhMET_zp1400_dm400_s310_gq0p1.DAOD_PHYS.e8532_e8455_a907_r14860.pool.root -o output_sig_1400_310.root    |& tee sig_1400_310.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/hhMET/signal_production/samples/2MDM_ShhMET_zp1400_dm400_s735_gq0p1.DAOD_PHYS.e8532_e8455_a907_r14860.pool.root -o output_sig_1400_735.root    |& tee sig_1400_735.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/hhMET/signal_production/samples/2MDM_ShhMET_zp2300_dm400_s435_gq0p1.DAOD_PHYS.e8532_e8455_a907_r14860.pool.root -o output_sig_2300_435.root    |& tee sig_2300_435.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/hhMET/signal_production/samples/2MDM_ShhMET_zp3400_dm400_s735_gq0p1.DAOD_PHYS.e8532_e8455_a907_r14860.pool.root -o output_sig_3400_735.root    |& tee sig_3400_735.log
+hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml  /data/atlas/users/pacey/hhMET/signal_production/samples/2MDM_ShhMET_zp3500_dm400_s310_gq0p1.DAOD_PHYS.e8532_e8455_a907_r14860.pool.root -o output_sig_3500_310.root    |& tee sig_3500_310.log

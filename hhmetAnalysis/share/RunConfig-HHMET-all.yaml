@@ -1,0 +1,86 @@
+include: [hhmetAnalysis/RunConfig-HHMET-base.yaml]
+
+# with all syst on
+do_resolved_dihiggs: true
+do_boosted_dihiggs: true
+
+#==========================================
+# Object reconstruction & selection
+#==========================================
+
+# calibrate & select small-R jets
+Small_R_jet:
+  btag_extra_wps:
+    - GN2v01_FixedCutBEff_65
+    - GN2v01_FixedCutBEff_70
+    - GN2v01_FixedCutBEff_77
+    - GN2v01_FixedCutBEff_85
+    - GN2v01_Continuous2D
+
+# calibrate & select large-R jets
+Large_R_jet:
+  flat_mass_selections: 
+    GN3XPV01_hbb_bjr:
+      file: /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/xAODBTaggingEfficiency/13And13p6TeV/MC20And23_2026-08-05_GN3XPV01_HbbOnly_bJR10v01_noSFs_NominalMass_v00.json
+      wps:
+        - FlatMassQCDEff_0p08
+        - FlatMassQCDEff_0p15
+        - FlatMassQCDEff_0p25
+        - FlatMassQCDEff_0p4
+        - FlatMassQCDEff_0p6
+  do_parent_decoration: true
+
+# overlap removal
+do_overlap_removal: true
+OverlapRemoval:
+  do_small_R_jet_large_R_jet: false # remove j within dR=1 of J
+  do_large_R_jets: false
+
+#==========================================
+# Event cleaning & selections
+#==========================================
+
+# resolved di-Higgs reconstruction options
+Resolved:
+  # Supported values: mass_125, min_deltaR_max
+  pairing_algorithms:
+    - mass_125
+  # Used by mass_125. Units are MeV.
+  pairing_higgs_mass: 125.e+3
+  # Small-R jet truth-flavour label; value 5 is treated as truth-b.
+  pairing_truth_b_label: "HadronConeExclTruthLabelID"
+  # EasyJetHub truth-parent decoration. Non-zero equal masks identify b-jets from the same truth Higgs.
+  pairing_truth_higgs_parent_mask: "parentHiggsParentsMask"
+
+#==========================================
+# TTree output setup
+#==========================================
+
+
+# Include the TTree configuration and update details
+ttree_output:
+  include: EasyjetHub/AnalysisMiniTree-config.yaml
+  slim_variables_with_syst: true
+  # Our overrides. All defaults are off
+  reco_outputs:
+    small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
+    met: 'container_names.output.met'
+  collection_options:
+    small_R_jets:
+      truth_parent_info: true
+      btag_info: true
+      JVT_details: true
+      no_bjet_calib_p4: true
+      btag_details: true
+    large_R_jets:
+      truth_labels: true
+      substructure_info: true
+      no_bjet_calib_p4: true
+      run_selection: true
+      bjet_regression: true
+  truth_outputs:
+    small_R_jets: 'container_names.input.truth4Jet'
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+    higgs_particle: 'container_names.output.truthHHParticles'
+    met: 'container_names.input.truthmet'

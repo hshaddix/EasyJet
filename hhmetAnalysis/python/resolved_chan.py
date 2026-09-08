@@ -1,10 +1,10 @@
 import AthenaCommon.SystemOfUnits as Units
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
-from EasyjetHub.algs.postprocessing.SelectorAlgConfig import JetSelectorAlgCfg
 from EasyjetHub.output.ttree.selected_objects import (
     get_selected_objects_branches,
 )
+from hhmetAnalysis.helpers import get_basic_fourmom_variables, get_fixed_btag_wps
 
 
 def _get_resolved_option(flags, name, default):
@@ -79,6 +79,9 @@ def _pairing_output_variables(flags):
 
 def resolved_cfg(flags, smalljetkey, float_variables=None):
 
+    if not float_variables:
+        float_variables = []
+
     cfg = ComponentAccumulator()
 
     pairing_algorithms = _pairing_algorithms(flags)
@@ -95,36 +98,18 @@ def resolved_cfg(flags, smalljetkey, float_variables=None):
     pairing_higgs_mass = _get_resolved_option(flags,
                                               "pairing_higgs_mass", 125.0 * Units.GeV)
 
-    if not float_variables:
-        float_variables = []
+    # Make sure they are all fixed-cut
+    btag_wps_fixed = get_fixed_btag_wps(flags)
 
-    # loop over the btagging WPs
-    btag_wps = [flags.Analysis.Small_R_jet.btag_wp]
-    btag_wps += flags.Analysis.Small_R_jet.btag_extra_wps
-    for btag_wp in btag_wps:
-        btag_sys = btag_wp + "_%SYS%"
+    # Add b-tag WPs from cfg
+    for btag_wp in btag_wps_fixed:
         btag_name = f"ftag_select_{btag_wp}"
 
-        # get the 4 leading small R jets
-        cfg.merge(
-            JetSelectorAlgCfg(
-                flags, name="resolvedSmallRjetSelectorAlg_" + btag_wp,
-                containerInKey=smalljetkey,
-                containerOutKey="resolvedAnalysisSmallRjets_" + btag_sys,
-                bTagWPDecorName=btag_name,
-                selectBjet=True,
-                minPt=float(flags.Analysis.Small_R_jet.min_pT),
-                maxEta=float(flags.Analysis.Small_R_jet.max_eta),
-                truncateAtAmount=4,  # -1 means keep all
-                minimumAmount=3
-            )
-        )  # -1 means ignores this
-
-        # calculate final resolved vars
+        # Run resolved vars alg e.g. bb->h pairing.
         cfg.addEventAlgo(
             CompFactory.HHMET.BaselineVarsResolvedAlg(
                 "ResolvedAlg_" + btag_wp,
-                smallRContainerInKey="resolvedAnalysisSmallRjets_" + btag_sys,
+                smallRContainerInKey=smalljetkey,
                 recoJetContainerInKey=flags.Analysis.container_names.output.reco4PFlowJet,
                 bTagWP=btag_wp,
                 bTagSelDecor=btag_name,
@@ -138,24 +123,11 @@ def resolved_cfg(flags, smalljetkey, float_variables=None):
 
     return cfg
 
-
-def get_BaselineVarsResolvedAlg_variables(flags):
-    float_variable_names = []
-
-    objects = []
-
-    for object in objects:
-        for var in ["m", "pt", "eta", "phi"]:
-            float_variable_names.append(f"{object}_{var}")
-
-    return float_variable_names
-
-
 def resolved_branches(flags):
     branches = []
     float_variable_names = []
 
-    baseline_float_variables = get_BaselineVarsResolvedAlg_variables(flags)
+    baseline_float_variables = get_basic_fourmom_variables()
     float_variable_names += baseline_float_variables
 
     # These are the variables always saved with the objects selected by the analysis
@@ -166,10 +138,8 @@ def resolved_branches(flags):
     common_float_vars, common_int_vars, \
         alg_float_vars, alg_int_vars = _pairing_output_variables(flags)
 
-    btag_wps = [flags.Analysis.Small_R_jet.btag_wp]
-    btag_wps += flags.Analysis.Small_R_jet.btag_extra_wps
-
-    for btag_wp in btag_wps:
+    btag_wps_fixed = get_fixed_btag_wps(flags)
+    for btag_wp in btag_wps_fixed:
 
         for var in common_float_vars + common_int_vars:
             branches += [

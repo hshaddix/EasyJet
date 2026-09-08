@@ -13,18 +13,24 @@ example script to run a local test, put in your run directory:
 
 # Folder structure
 
-- `bin/`: Executables
-  - `hhmet-ntupler`: produces ntuples;
-- `python/`: Main python code to configure the components (objects, selections as well as the variables to save)
-    - `dihiggs`: main controller;
-    - `boosted`: for the boosted analysis ntuples;
-    - `resolved`: for the resolved analysis ntuples;
-    - `opt_validation.py`: set of checks to define the correct flags.
-- `share/`: yaml files containing configurations used by the components
-  - `RunConfig-hhmet-base.yaml`: basic configurations for the main resolved analysis;
-  - `RunConfig-hhmet-boosted.yaml`: configurations called by the executable for the potential boosted analysis extension.
-  - `triggers*.yaml`: list of triggers to use;
-- `src/`: C++ code
+- `bin/`: Executables:
+  - `hhmet-ntupler`: produces ntuples.
+- `python/`: Main python code to configure the components (objects, selections as well as the variables to save):
+  - `dihiggs.py`: main controller;
+  - `boosted_chan.py`: for the boosted analysis ntuples;
+  - `resolved_chan.py`: for the resolved analysis ntuples;
+  - `opt_validation.py`: set of checks to define the correct flags;
+  - `helpers.py`: some help functions common to both boosted and resolved channels.
+- `share/`: yaml files containing configurations used by the components:
+  - `RunConfig-hhmet-base.yaml`: basic configurations for both analyses;
+  - `RunConfig-hhmet-resolved.yaml`: configurations for the resolved analysis;
+  - `RunConfig-hhmet-boosted.yaml`: configurations for the potential boosted analysis extension;
+  - `RunConfig-hhmet-all.yaml`: configurations to run resolved & boosted analyses together.
+  - `triggers_MET.yaml`: list of triggers to use;
+  - `grl_*.yaml`: setup for the GRLs.
+  - `prw_files.yaml`: setup for PRW.
+  - `lumicalc_files.yaml`: setup for lumi calculation
+- `src/`: C++ code:
   - `hhmetSelectorAlg`: pre-select events to reduce the file size;
   - `BaselineVarsResolvedAlg`: compute some variables that aren't produced centrally, specific to the resolved analysis;
   - `BaselineVarsBoostedAlg`: compute some variables that aren't produced centrally, specific to the boosted analysis;
@@ -37,19 +43,21 @@ example script to run a local test, put in your run directory:
 1.  Get the files to make the test: have a look at the general [README section](https://gitlab.cern.ch/easyjet/easyjet#running-on-files) for updated informations (only <span style="color: #F2385A">PHYS</span>).
 
 2. Run the ntupler on those files:
-    ```hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-base.yaml -o output_PHYS_hhmet_resolved_ntuple.root  ttbar_PHYS_10evt.root```
+    ```hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-all.yaml -o output_PHYS_hhmet_ntuple.root  ttbar_PHYS_10evt.root```
 
 3. Input PHYS samples can be found in the "datasets" directory.
 
 4. Choose your run-config file.
 
-5. Running on the Grid (* Please test your setup before running bulk grid submission): NOT SET UP YET
+5. Running on the Grid (* Please test your setup before running bulk grid submission):
 - This is hadled by the easyjet-gridsubmit script. To run a test job on the grid please use the following command:
 "easyjet-gridsubmit --mc-list input_sample.txt --exec hhmet-ntupler --run-config hhmetAnalysis/RunConfig-HHMET-base.yaml --campaign TestXXX --nGBperJob 5 --noTag"
 
 - It is recommended to run from a central tag for large scale productions. If you have some local updates, you will be invited to commit them and a tag will be created to be pushed on your fork. If you want to avoid this, you can use the --noTag options.
 
 - Grid submission scripts are now available in the "scripts" directory.
+  - `RunOnGrid_HHMET_Run*_NoSyst.sh` to run the latest config for resolved+boosted with the newest p726* tags. 
+
 
 # Output
 

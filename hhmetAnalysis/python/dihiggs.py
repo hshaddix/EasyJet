@@ -1,4 +1,3 @@
-import AthenaCommon.SystemOfUnits as Units
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
 from EasyjetHub.algs.event_counter_config import event_counter_cfg
@@ -191,7 +190,6 @@ def pass_branches(flags):
             ]
 
     return branches
-
 
 def common_branches():
     branches = []

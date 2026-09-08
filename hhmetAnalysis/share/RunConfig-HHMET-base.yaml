@@ -1,7 +1,7 @@
 include: EasyjetHub/base-config.yaml
 
 # with all syst on
-do_resolved_dihiggs: true
+do_resolved_dihiggs: false
 do_boosted_dihiggs: false
 
 splitOutputTree: false
@@ -30,7 +30,7 @@ prw_files:
 
 # Toggles for object types
 do_small_R_jets: true
-do_large_R_UFO_jets: false
+do_large_R_UFO_jets: true
 do_muons: true
 do_electrons: true
 do_photons: true
@@ -45,11 +45,8 @@ Small_R_jet:
   btag_egReductionC: "Medium"
   btag_egReductionLight: "Medium"
   saveTriggerInfo: false
-  btag_wp: "GN2v01_FixedCutBEff_77"
-  #btag_extra_wps:
-  #  - GN2v01_FixedCutBEff_65
-  #  - GN2v01_FixedCutBEff_70
-  #  - GN2v01_FixedCutBEff_85
+  # default WP for event selection use loosest
+  btag_wp: "GN2v01_FixedCutBEff_90"
   runBJetPtCalib: true
   doL1Matching: False
   doHLTMatching: False
@@ -81,6 +78,21 @@ Small_R_jet:
   variables_int_cjets: []
   variables_int_ljets: []
   variables_int_allJets: []
+
+# calibrate & select large-R jets
+Large_R_jet:
+  min_pT: 200.e+3
+  max_pT: -1
+  max_eta: 2.0
+  runMuonJetPtCorr: true
+  do_parent_decoration: false
+  amount: 0
+  amount_leadingjet: 0
+  variables: []
+  variables_int: []
+  wtag_type: ""
+  wtag_wp: ""
+  wtag_extra_wps: []
 
 # calibrate & veto muons
 Muon:
@@ -167,8 +179,8 @@ bypass: false
 selection_name: "preselection"
 CutList:
   - PASS_TRIGGER
-  #- ZERO_LEPTONS
-  #- ExtraSUSY
+  - ZERO_LEPTONS
+  - ExtraSUSY
   - AT_LEAST_FOUR_JETS_THREE_BJETS_OR_AT_LEAST_TWO_JETS_ONE_LRJET
   - MET_50
 
@@ -192,6 +204,7 @@ ttree_output:
   # Our overrides. All defaults are off
   reco_outputs:
     small_R_jets: 'container_names.output.reco4PFlowJet'
+    large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
   collection_options:
     small_R_jets:
@@ -200,6 +213,12 @@ ttree_output:
       JVT_details: true
       no_bjet_calib_p4: true
       btag_details: true
+    large_R_jets:
+      truth_labels: true
+      substructure_info: false
+      no_bjet_calib_p4: false
+      run_selection: true
+      bjet_regression: false
   truth_outputs:
     small_R_jets: 'container_names.input.truth4Jet'
     higgs_particle: 'container_names.output.truthHHParticles'

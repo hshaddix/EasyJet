@@ -1,12 +1,12 @@
-runConfig = "hhmetAnalysis/RunConfig-HHMET-base.yaml"
-executable = "hhmet-ntupler"
-campaignName = "HHMET_v0p1_NoSyst"
+runConfig="hhmetAnalysis/RunConfig-HHMET-all.yaml"
+executable="hhmet-ntupler"
+campaignName="HHMET_v0p2_NoSyst"
 
-dir_samples = "../easyjet/hhmetAnalysis/datasets/"
-ptag_dir_data = "p7019_Run3"
-ptag_dir_mc = "p7017_mc23"
+dir_samples="../easyjet/hhmetAnalysis/datasets/"
+ptag_dir_data="p7267_Run3"
+ptag_dir_mc="p7266_mc23"
 
-mc_list = (
+mc_list=(
     "$dir_samples/$ptag_dir_mc/diboson_PHYS.txt"
     "$dir_samples/$ptag_dir_mc/singletop_PHYS.txt"
     "$dir_samples/$ptag_dir_mc/ttbar_PHYS.txt"
@@ -16,7 +16,7 @@ mc_list = (
     "$dir_samples/$ptag_dir_mc/Wjets_PHYS.txt"
     "$dir_samples/$ptag_dir_mc/Zjets_PHYS.txt"
 )
-datalist = (
+data_list=(
     "$dir_samples/$ptag_dir_data/data_PHYS.txt"
 )
 

@@ -10,25 +10,19 @@
 
 import sys
 import time
-import pathlib
 
+from EasyjetHub.algs.event_counter_config import event_counter_cfg
 from EasyjetHub.hub import (
-    AnalysisArgumentParser,     # lives in ArgumentParser
-    analysis_configuration,     # lives in flags
-    run_job,                    # lives in run
-    default_sequence_cfg,       # lives in main_sequence_config
-    output_cfg
+    analysis_configuration,  # lives in flags
+    default_sequence_cfg,  # lives in main_sequence_config
+    output_cfg,
+    run_job,  # lives in run
 )
 from EasyjetHub.output.ttree.minituple_config import check_ntuple_output_file
-from EasyjetHub.output.h5.h5_config import get_h5_cfg
-from EasyjetHub.output.xaod import get_xaod_cfg
-from EasyjetHub.algs.event_counter_config import event_counter_cfg
-
-from hhmetAnalysis.opt_validation import validate_hhmet_analysis_prerequisites
-from hhmetAnalysis.dihiggs import dihiggs_cfg, common_branches
 from hhmetAnalysis.boosted_chan import boosted_branches
+from hhmetAnalysis.dihiggs import common_branches, dihiggs_cfg, pass_branches
+from hhmetAnalysis.opt_validation import validate_hhmet_analysis_prerequisites
 from hhmetAnalysis.resolved_chan import resolved_branches
-from hhmetAnalysis.dihiggs import pass_branches
 
 
 def hhmet_job_cfg():

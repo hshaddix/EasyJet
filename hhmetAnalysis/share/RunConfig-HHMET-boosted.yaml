@@ -1,43 +1,31 @@
 include: [hhmetAnalysis/RunConfig-HHMET-base.yaml]
 
 # with all syst on
-do_resolved_dihiggs: true
+do_resolved_dihiggs: false
 do_boosted_dihiggs: true
-
-splitOutputTree: false
 
 #==========================================
 # Object reconstruction & selection
 #==========================================
 
-# Toggles for object types
-do_large_R_UFO_jets: true
-
 # calibrate & select large-R jets
 Large_R_jet:
-  min_pT: 200.e+3
-  max_pT: -1
-  max_eta: 2.0
-  runMuonJetPtCorr: true
   flat_mass_selections: 
-    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml]
-    GN2X: 
-      file: EasyjetHub/Xbb_GN2Xv01.json
-      wps: []
+    GN3XPV01_hbb_bjr:
+      file: /cvmfs/atlas.cern.ch/repo/sw/database/GroupData/dev/xAODBTaggingEfficiency/13And13p6TeV/MC20And23_2026-08-05_GN3XPV01_HbbOnly_bJR10v01_noSFs_NominalMass_v00.json
+      wps:
+        - FlatMassQCDEff_0p08
+        - FlatMassQCDEff_0p15
+        - FlatMassQCDEff_0p25
+        - FlatMassQCDEff_0p4
+        - FlatMassQCDEff_0p6
   do_parent_decoration: true
-  amount: 0
-  amount_leadingjet: 0
-  variables: []
-  variables_int: []
-  wtag_type: ""
-  wtag_wp: ""
-  wtag_extra_wps: []
 
 # overlap removal
 do_overlap_removal: true
 OverlapRemoval:
-  do_small_R_jet_large_R_jet: false
-  do_large_R_jets: false
+  do_small_R_jet_large_R_jet: true # remove j within dR=1 of J
+  do_large_R_jets: true
 
 #==========================================
 # TTree output setup
@@ -53,13 +41,6 @@ ttree_output:
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
   collection_options:
-    small_R_jets:
-      truth_parent_info: true
-      btag_info: true
-      JVT_details: true
-      no_bjet_calib_p4: true
-      btag_details: true
-#      gn3_scores: false
     large_R_jets:
       truth_labels: true
       substructure_info: true
