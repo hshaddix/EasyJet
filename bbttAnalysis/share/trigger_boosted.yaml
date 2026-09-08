@@ -46,7 +46,7 @@ chains:
   '2018':
   #LRT
   - 'HLT_j420_a10t_lcw_jes_35smcINF_L1J100'
-  - 'HLT_j420_a10r_lcw_jes_35smcINF_L1SC111'
+  - 'HLT_j420_a10t_lcw_jes_35smcINF_L1SC111'
   - 'HLT_j460_a10t_lcw_jes_L1J100'
   #DLRT
   - 'HLT_2j330_a10t_lcw_jes_35smcINF_L1J100'

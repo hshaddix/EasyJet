@@ -360,7 +360,7 @@ namespace HHBBTT
     } else if(year==2017){
       boosted_paths = {"HLT_j390_a10t_lcw_jes_30smcINF_L1J100", "HLT_j420_a10t_lcw_jes_40smcINF_L1J100", "HLT_j460_a10t_lcw_jes_L1J100"};
     } else if(year==2018){
-      boosted_paths = {"HLT_j420_a10t_lcw_jes_35smcINF_L1J100", "HLT_j420_a10r_lcw_jes_35smcINF_L1SC111", "HLT_j460_a10t_lcw_jes_L1J100"};
+      boosted_paths = {"HLT_j420_a10t_lcw_jes_35smcINF_L1J100", "HLT_j420_a10t_lcw_jes_35smcINF_L1SC111", "HLT_j460_a10t_lcw_jes_L1J100"};
     } else if(year==2022){
       boosted_paths = {"HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100"}; 
     } else if(year==2023){

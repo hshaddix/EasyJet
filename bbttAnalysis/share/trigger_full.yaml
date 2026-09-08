@@ -80,7 +80,7 @@ chains:
   - 'HLT_tau35_medium1_tracktwoEF'
   - 'HLT_tau35_mediumRNN_tracktwoMVA'
   - 'HLT_j420_a10t_lcw_jes_35smcINF_L1J100'
-  - 'HLT_j420_a10r_lcw_jes_35smcINF_L1SC111'
+  - 'HLT_j420_a10t_lcw_jes_35smcINF_L1SC111'
   - 'HLT_j460_a10t_lcw_jes_L1J100'
   - 'HLT_2j330_a10t_lcw_jes_35smcINF_L1J100'
   - 'HLT_xe110_pufit_xe70_L1XE50'
