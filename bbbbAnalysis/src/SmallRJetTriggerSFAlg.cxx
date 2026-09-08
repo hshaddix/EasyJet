@@ -31,7 +31,8 @@ namespace HH4B
     }
     m_year = m_years.size() == 1 ? m_years[0] : 2016; // in case of mc20a which corresponds to 2015+2016
     std::string path;
-    if (m_year >= 2022) path = "EasyjetHub/jet_trigger_scale_factors_2223.root"; // Run 3 calibration file
+    if (m_year >= 2024) path = "EasyjetHub/jet_trigger_scale_factors_2425.root"; // Run 3 Phase-I (2024+2025) calibration file
+    else if (m_year >= 2022) path = "EasyjetHub/jet_trigger_scale_factors_2223.root"; // Run 3 calibration file
     else path = "EasyjetHub/jet_trigger_scale_factors_run2.root"; // Run 2 calibration file
     m_resolvedPath = PathResolverFindCalibFile(path);
     if (m_resolvedPath=="") ATH_MSG_WARNING("Failed to load calibration file " << path << ". " + m_matchingLevel + " jet scale factor set to 1.");
@@ -86,7 +87,12 @@ namespace HH4B
     {
       TFile* jetSFFile = new TFile(m_resolvedPath.c_str(), "READ");
 
-      std::regex l1NameParser("(\\d*)(J)(\\d*)((p|\\.)(\\d*)ETA(\\d*))?");
+      // Parses one leg of an L1 seed item name, e.g. legacy "3J15p0ETA25"
+      // or Phase-I jFEX "3jJ40p0ETA25" / "jJ85p0ETA21" / "jJ140".
+      // Groups: [1] multiplicity, [2] "J" or "jJ", [3] threshold,
+      // [4-7] optional eta restriction. The SF maps use "L1_J<threshold>"
+      // leg names for BOTH legacy and Phase-I seeds.
+      std::regex l1NameParser("(\\d*)(jJ|J)(\\d*)((p|\\.)(\\d*)ETA(\\d*))?");
       for (auto &trig : m_triggers)
       {
         std::vector<int> thresholds;
@@ -278,21 +284,32 @@ namespace HH4B
 
               // calibration valid range
               float maxPt = 300.;
-	      float minPt = 20.;
-	      for (const auto& year : m_years) {
-	      	if (year < 2022) minPt = 40.;
-	      }
-	      float maxEta = 2.4;
-              if (m_matchingLevelEnum == TrigMatchingLevel::L1) 
+              float minPt = 20.;
+              for (const auto& year : m_years) {
+                if (year < 2022) minPt = 40.;
+              }
+              float maxEta = 2.4;
+              if (m_year >= 2024 && m_jetTriggerSFMap.find(legThreshold) != m_jetTriggerSFMap.end())
+              {
+                // For Phase-I SFs the correct eta range is embedded in the
+                // SF map, and we set maxEta here from its axis. We also set
+                // the max pT, but for now this is consistent with the 300
+                // above; minPt stays fixed at 20 GeV.
+                const TH2D *h = m_jetTriggerSFMap.at(legThreshold);
+                maxEta = h->GetYaxis()->GetXmax();
+                maxPt = h->GetXaxis()->GetXmax();
+              }
+              else if (m_matchingLevelEnum == TrigMatchingLevel::L1)
               {
                 if (legThreshold == 45) maxEta = 2.1;
-		else if (legThreshold == 15 ) maxEta = 2.5;
-		else if (legThreshold == 20 || legThreshold == 30 || legThreshold == 75 || legThreshold == 85) maxEta = 3.1;
+                else if (legThreshold == 15 ) maxEta = 2.5;
+                else if (legThreshold == 20 || legThreshold == 30 || legThreshold == 75 || legThreshold == 85) maxEta = 3.1;
               }
 
               // if SF exists and jet in the valid kinematic region, assign jet-level SF as a function of NoBJetCalibMomentum pt, eta and Threshold.
               if (jetPt>=minPt && std::abs(jetEta)<maxEta && m_jetTriggerSFMap.find(legThreshold) != m_jetTriggerSFMap.end())
               {
+                // For jetPt > maxPt, use the SF from the last pT bin.
                 int bin = m_jetTriggerSFMap.at(legThreshold)->FindBin(jetPt<maxPt ? jetPt : maxPt-0.1, jetEta);
                 jetSF = m_jetTriggerSFMap.at(legThreshold)->GetBinContent(bin);
                 if (jetSF == 0)
