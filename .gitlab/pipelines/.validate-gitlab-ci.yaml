@@ -316,6 +316,36 @@ validator_SHbbyy_data22_lite:
   script:
     - easyjet-validate SHbbyy-data22-lite
 
+validator_vbshiggs_fulllep_data18:
+  extends: .ntuple_validation
+  <<: *changes_vbshiggs
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_vbshiggs_fulllep_data18
+      artifacts: false
+  script:
+    - easyjet-validate vbshiggs-fulllep-data18
+
+validator_vbshiggs_semilep_data18:
+  extends: .ntuple_validation
+  <<: *changes_vbshiggs
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_vbshiggs_semilep_data18
+      artifacts: false
+  script:
+    - easyjet-validate vbshiggs-semilep-data18
+
+validator_vbshiggs_semilep_data22:
+  extends: .ntuple_validation
+  <<: *changes_vbshiggs
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_vbshiggs_semilep_data22
+      artifacts: false
+  script:
+    - easyjet-validate vbshiggs-semilep-data22
+
 # MC20
 
 validator_bbbb_mc20:
@@ -931,3 +961,13 @@ validator_HZy_mc23:
       artifacts: false
   script:
     - easyjet-validate HZy-mc23
+
+validator_vbshiggs_semilep_mc23:
+  extends: .ntuple_validation
+  <<: *changes_vbshiggs
+  needs:
+    - !reference [.validator_prerequisites, needs]
+    - job: ntupler_vbshiggs_semilep_mc23
+      artifacts: false
+  script:
+    - easyjet-validate vbshiggs-semilep-mc23

@@ -105,7 +105,6 @@ selection:
     - 'HLT_e17_lhloose_mu14_L1eEM18L_MU8F' # EleMu
     - 'HLT_e26_lhmedium_mu8noL1_L1eEM26M' # EleMu
     '2024':
-    - 'HLT_e20_lhtight_ivarloose_L1ZAFB-25DPHI-eEM18M' # SingleEle
     - 'HLT_e26_lhtight_ivarloose_L1eEM26M' # SingleEle
     - 'HLT_e26_lhtight_ivarloose_L1eEM26T' # SingleEle
     - 'HLT_e26_lhtight_ivarmedium_L1eEM26M' # SingleEle
@@ -121,6 +120,7 @@ selection:
     - 'HLT_mu60_L1MU14FCH' # SingleMu 
     - 'HLT_mu60_0eta105_msonly_L1MU14FCH' # SingleMu 
     - 'HLT_mu80_msonly_3layersEC_L1MU14FCH' # SingleMu 
+    - "HLT_2mu10_l2mt_L1MU10BOM" # DiMu
     - 'HLT_2mu14_L12MU8F' # DiMu
     - 'HLT_mu20_ivarmedium_mu8noL1_L1MU14FCH' # DiMu
     - 'HLT_mu22_mu8noL1_L1MU14FCH' # DiMu

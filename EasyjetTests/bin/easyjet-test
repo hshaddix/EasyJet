@@ -47,6 +47,9 @@ declare -A DATAFILES=(
     [bbyy-data22-lite]=${PHYSLITE_DATA_2022}
     [HHandHyy-data22]=${PHYS_DATA_2022}
     [SHbbyy-data22-lite]=${PHYSLITE_DATA_2022}
+    [vbshiggs-fulllep-data18]=${PHYS_DATA_2018}
+    [vbshiggs-semilep-data18]=${PHYS_DATA_2018}
+    [vbshiggs-semilep-data22]=${PHYS_DATA_2022}
     # MC20
     [bbbb-mc20]=${PHYS_TTBAR_MC20}
     [bbyy-mc20-syst]=${PHYS_BBYY_MC20}
@@ -108,6 +111,7 @@ declare -A DATAFILES=(
     [ssWW-mc23]=${PHYS_TTBAR_MC23}
     [ZQG-mc23]=${PHYS_TTBAR_MC23}
     [HZy-mc23]=${PHYS_TTBAR_MC23}
+    [vbshiggs-semilep-mc23]=${PHYS_TTBAR_MC23}
     # systematics enabled
     [syst-mc23]=${PHYS_TTBAR_MC23}
     # non-ntupler workflows
@@ -155,6 +159,9 @@ declare -A TESTS=(
     [bbyy-data22-lite]="simple bbyy-ntupler"
     [HHandHyy-data22]="simple bbyy-ntupler"
     [SHbbyy-data22-lite]="simple bbyy-ntupler"
+    [vbshiggs-fulllep-data18]="simple vbshiggs-ntupler"
+    [vbshiggs-semilep-data18]="simple vbshiggs-ntupler"
+    [vbshiggs-semilep-data22]="simple vbshiggs-ntupler"
     # MC20
     [bbbb-mc20]="simple bbbb-ntupler"
     [bbyy-mc20-syst]="simple bbyy-ntupler"
@@ -221,6 +228,7 @@ declare -A TESTS=(
     [ssWW-mc23]="simple ssWW-ntupler"
     [ZQG-mc23]="simple ZQG-ntupler"
     [HZy-mc23]="simple HZy-ntupler"
+    [vbshiggs-semilep-mc23]="simple vbshiggs-ntupler"
     # non-ntupler
     [aod-fast-bbbb-mc23]="aod-fast bbbb-ntupler bbbb-hists \
     bbbbAnalysis/RunConfig-HH4b-Resolved.yaml"
@@ -245,6 +253,9 @@ declare -A CONFIGS=(
     [bbyy-data22-lite]=bbyyAnalysis/RunConfig-bbyy-bypass.yaml
     [HHandHyy-data22]=bbyyAnalysis/RunConfig-HH_H-skimming-bypass.yaml
     [SHbbyy-data22-lite]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
+    [vbshiggs-fulllep-data18]=vbshiggsAnalysis/RunConfig-fullLep-bypass.yaml
+    [vbshiggs-semilep-data18]=vbshiggsAnalysis/RunConfig-semiLep-bypass.yaml
+    [vbshiggs-semilep-data22]=vbshiggsAnalysis/RunConfig-semiLep-bypass.yaml
     # MC20
     [bbbb-mc20]=bbbbAnalysis/RunConfig-HH4b-bypass.yaml
     [bbyy-mc20-syst]=bbyyAnalysis/RunConfig-bbyy-bypass-syst.yaml
@@ -309,6 +320,7 @@ declare -A CONFIGS=(
     [ssWW-mc23]=ssWWAnalysis/RunConfig-Signal-ssWW-bypass.yaml
     [ZQG-mc23]=ZQGAnalysis/RunConfig-ZQG-bypass.yaml
     [HZy-mc23]=HZyAnalysis/RunConfig-HZy-bypass.yaml
+    [vbshiggs-semilep-mc23]=vbshiggsAnalysis/RunConfig-semiLep-bypass.yaml
     # MC23 AF3
     [SHbbyy-mc23af3]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
     # non-ntupler

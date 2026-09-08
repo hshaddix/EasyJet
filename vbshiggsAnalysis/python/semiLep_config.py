@@ -79,9 +79,9 @@ def get_BaselineVarsSemiLepAlg_variables(flags):
         for var in ["phbb", "pqcd", "phcc", "ptop"]:
             float_variable_names.append(f"{obj}_GN2X_{var}")
 
-        float_variable_names += [obj + "_" + wtag_type + wtag_wp + "Tagger_Score"]
-        int_variable_names += [obj + "_Pass_" + wtag_type
-                                   + wtag_wp]
+        if wtag_type != "":
+            float_variable_names += [obj + "_" + wtag_type + wtag_wp + "Tagger_Score"]
+            int_variable_names += [obj + "_Pass_" + wtag_type + wtag_wp]
 
     for obj in ["Jet_Higgs_candidate1", "Jet_Higgs_candidate2"]:
         for var in ["m", "pt", "eta", "phi", "E"]:

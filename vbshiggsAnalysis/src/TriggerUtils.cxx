@@ -40,13 +40,19 @@ namespace VBSHIGGS
         "HLT_e300_etcut_L1EM22VHI"
       };
     }
-    else if(year==2023 || year==2024){
+    else if(year==2023){
+      single_ele_paths = {
+        "HLT_e26_lhtight_ivarloose_L1eEM26M", "HLT_e60_lhmedium_L1eEM26M",
+        "HLT_e140_lhloose_L1eEM26M", "HLT_e140_lhloose_noringer_L1eEM26M",
+        "HLT_e300_etcut_L1eEM26M"
+      };
+    }
+    else if(year==2024){
       single_ele_paths = {
         "HLT_e26_lhtight_ivarloose_L1eEM26M", "HLT_e26_lhtight_ivarloose_L1eEM26T", 
         "HLT_e26_lhtight_ivarmedium_L1eEM26M", "HLT_e26_lhtight_ivartight_L1eEM26M", 
-        "HLT_e20_lhtight_ivarloose_L1ZAFB-25DPHI-eEM18M", "HLT_e60_lhmedium_L1eEM26M",
-        "HLT_e140_lhloose_L1eEM26M", "HLT_e140_lhloose_noringer_L1eEM26M",
-        "HLT_e300_etcut_L1eEM26M"
+        "HLT_e60_lhmedium_L1eEM26M", "HLT_e140_lhloose_L1eEM26M", 
+        "HLT_e140_lhloose_noringer_L1eEM26M", "HLT_e300_etcut_L1eEM26M"
       };
     }
   }
@@ -128,7 +134,7 @@ namespace VBSHIGGS
 	    !runBoolDecos.at(VBSHIGGS::is24_400bunches_periodL)(*event)){
       di_mu_paths = {
         "HLT_2mu10_l2mt_L1MU10BOM", "HLT_2mu14_L12MU8F", 
-        "HLT_mu22_mu8noL1_L1MU14FCH", "HLT_mu20_ivarmedium_mu8noL1_L1MU14FCH "};
+        "HLT_mu22_mu8noL1_L1MU14FCH", "HLT_mu20_ivarmedium_mu8noL1_L1MU14FCH"};
     }
   }
 
@@ -158,7 +164,7 @@ namespace VBSHIGGS
 			  const runBoolReadDecoMap& runBoolDecos,
         std::vector<std::string>& asym_lepton_paths){
     if(year==2016){
-      asym_lepton_paths = {"HLT_e26_lhmedium_nod0_L1EM22VHI_mu8noL1"};
+      asym_lepton_paths = {"HLT_e24_lhmedium_nod0_L1EM20VHI_mu8noL1"};
     }
     else if(2017<=year && year<=2018){
       asym_lepton_paths = {"HLT_e26_lhmedium_nod0_mu8noL1"};

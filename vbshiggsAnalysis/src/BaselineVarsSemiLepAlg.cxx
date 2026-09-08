@@ -75,11 +75,12 @@ namespace VBSHIGGS{
 
       ATH_CHECK (m_eleECIDS.initialize(m_systematicsList, m_vbsElectronHandle));
       
-
-      m_WTag_score = CP::SysReadDecorHandle<float> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Score", this);
-      m_Pass_WTag = CP::SysReadDecorHandle<char> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
-      ATH_CHECK(m_WTag_score.initialize(m_systematicsList, m_vbsLRJetHandle));
-      ATH_CHECK(m_Pass_WTag.initialize(m_systematicsList, m_vbsLRJetHandle));
+      if (!m_WTag_Type.empty()) {
+        m_WTag_score = CP::SysReadDecorHandle<float> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Score", this);
+        m_Pass_WTag = CP::SysReadDecorHandle<char> (m_WTag_Type.value()+m_WTag_WP.value()+"Tagger_Tagged", this);
+        ATH_CHECK(m_WTag_score.initialize(m_systematicsList, m_vbsLRJetHandle));
+        ATH_CHECK(m_Pass_WTag.initialize(m_systematicsList, m_vbsLRJetHandle));
+      }
 
 
       // Intialise syst list (must come after all syst-aware inputs and outputs)
@@ -352,15 +353,18 @@ namespace VBSHIGGS{
         for(unsigned int i=0; i<std::min(size_t(2),largeJets->size()); i++){
           const xAOD::Jet* largeJet = largeJets->at(i);
           std::string prefix = "LargeJet"+std::to_string(i+1);
-          // Get score of W-tagger
-          float wtagger_score = m_WTag_score.get(*largeJet, sys);
           m_Fbranches.at(prefix+"_m").set(*event, largeJet->m(), sys);
           m_Fbranches.at(prefix+"_pt").set(*event, largeJet->pt(), sys);
           m_Fbranches.at(prefix+"_eta").set(*event, largeJet->eta(), sys);
           m_Fbranches.at(prefix+"_phi").set(*event, largeJet->phi(), sys);
-          m_Fbranches.at(prefix + "_" + m_WTag_Type + m_WTag_WP + "Tagger_Score").set(*event, wtagger_score, sys);
-          int pass_wtag = static_cast<int>(m_Pass_WTag.get(*largeJet, sys));
-          m_Ibranches.at(prefix+"_Pass_"+m_WTag_Type+m_WTag_WP).set(*event, pass_wtag, sys);
+
+          if (!m_WTag_Type.empty()) {
+            // Get score of W-tagger
+            float wtagger_score = m_WTag_score.get(*largeJet, sys);
+            m_Fbranches.at(prefix + "_" + m_WTag_Type + m_WTag_WP + "Tagger_Score").set(*event, wtagger_score, sys);
+            int pass_wtag = static_cast<int>(m_Pass_WTag.get(*largeJet, sys));
+            m_Ibranches.at(prefix+"_Pass_"+m_WTag_Type+m_WTag_WP).set(*event, pass_wtag, sys);
+          }
         }
 
 
