@@ -115,7 +115,7 @@ namespace XBBCALIB
       ANA_CHECK(m_XbbCalib_electronHandle.retrieve(electrons, sys, ctx));
 
       const xAOD::PhotonContainer *photons = nullptr;
-      ANA_CHECK(m_photonHandle.retrieve(photons, sys, ctx));
+      ANA_CHECK(m_XbbCalib_photonHandle.retrieve(photons, sys, ctx));
 
       for (const std::string &string_var : m_floats_to_copy)
       {
