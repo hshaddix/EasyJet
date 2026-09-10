@@ -1,0 +1,34 @@
+include: [bbttAnalysis/RunConfig-bbtt-boosted.yaml]
+channels: ["BoostedZCR"]
+
+Trigger:
+  selection:
+    include: [bbttAnalysis/trigger_leptons.yaml]
+
+ttree_output:
+  reco_outputs:
+    muons: 'container_names.output.muons'       
+    electrons: 'container_names.output.electrons' 
+  collection_options:
+    muons:
+      run_selection: true
+      truth_parent_info: true
+    electrons:
+      run_selection: true
+      truth_parent_info: true
+  truth_outputs:
+    muons: 'container_names.input.truthmuons'
+    electrons: 'container_names.input.truthelectrons'
+
+CutList:
+  - pass_trigger_SINGLE_LARGE_R_JETS
+  - pass_trigger_DI_LARGE_R_JETS
+  - pass_trigger_MET
+  - pass_trigger_SLT
+  - AT_LEAST_ONE_LRJET
+  - AT_LEAST_ONE_BTAG_LRJET
+  - pass_Boosted
+  - pass_BoostedZCR
+
+Lepton:
+  amount: 2

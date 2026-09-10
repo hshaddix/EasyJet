@@ -121,6 +121,7 @@ private:
       {HHBBTT::pass_baseline_STT, "pass_baseline_STT"},
       {HHBBTT::pass_baseline_DTT, "pass_baseline_DTT"},
       {HHBBTT::pass_ZCR, "pass_ZCR"},
+      {HHBBTT::pass_BoostedZCR, "pass_BoostedZCR"}, 
       {HHBBTT::pass_TopEMuCR, "pass_TopEMuCR"},
       {HHBBTT::pass_AntiIsoLepHad, "pass_AntiIsoLepHad"}
     };

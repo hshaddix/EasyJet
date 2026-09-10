@@ -466,7 +466,7 @@ def bbtt_branches(flags):
                                'trigger_SINGLE_LARGE_R_JETS', 'trigger_DTT',
                                'trigger_DI_LARGE_R_JETS',
                                'trigger_STT', 'trigger_DBT',
-                               'trigger_MET']:
+                               'trigger_MET', 'BoostedZCR']:
             branches += [
                 f"EventInfo.pass_{pass_selection}_%SYS% -> bbtt_pass_{pass_selection}"
                 + flags.Analysis.systematics_suffix_separator + "%SYS%"

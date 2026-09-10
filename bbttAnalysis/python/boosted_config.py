@@ -16,16 +16,19 @@ def boosted_variables():
         for hc in ["h1", "h2"]:
             variables.append(f"{hc}_{var}")
     return [f"boosted_{var}" for var in variables]
-
+    
 
 def boosted_branches_variables(flags):
     """Add here the additional branches for the boosted analysis."""
     branches = []
     float_variables = []
+    int_variables = []
     if flags.Analysis.store_high_level_variables:
-        branches, float_variables, _ = get_selected_objects_branches_variables(
-            flags, "bbtt"
-        )
+        branches, float_variables, int_variables = get_selected_objects_branches_variables(flags, "bbtt")
+        branches = [b for b in branches if "Lepton" not in b.split("->")[0]]
+        float_variables = [v for v in float_variables if not v.startswith("Lepton")]
+        int_variables = [v for v in int_variables if not v.startswith("Lepton")]
+
         for var in boosted_variables():
             branches += [
                 f"EventInfo.{var}_%SYS%"
@@ -36,7 +39,7 @@ def boosted_branches_variables(flags):
             float_variables.append(var)
 
     # Add selection decision
-    for cat in ["Boosted", "baseline_HadHad", "HadHad", "HadHad_1B", "HadHad_2B"]:
+    for cat in ["Boosted", "baseline_HadHad", "HadHad", "HadHad_1B", "HadHad_2B", "BoostedZCR"]:
         branches += [
             f"EventInfo.pass_{cat}_%SYS% -> bbtt_pass_{cat}"
             + flags.Analysis.systematics_suffix_separator
@@ -82,4 +85,4 @@ def boosted_branches_variables(flags):
             + flags.Analysis.systematics_suffix_separator + "%SYS%"
         ]
 
-    return branches, float_variables
+    return branches, float_variables, int_variables

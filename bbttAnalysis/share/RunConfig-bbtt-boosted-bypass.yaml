@@ -3,3 +3,12 @@ include: [bbttAnalysis/RunConfig-bbtt-boosted.yaml]
 bypass: true 
 do_trigger_filtering: false
 splitOutputTree: false
+
+channels: ["Boosted", "HadHad", "BoostedZCR"]
+
+Trigger:
+  selection:
+    include: [bbttAnalysis/trigger_full.yaml]
+
+Lepton:
+  amount: 2

@@ -61,9 +61,10 @@ def bbtt_job_cfg():
     # For more sophistication this could be done using
     # custom BranchManagers
     extra_bbtt_branches = []
+
     if flags.Analysis.do_boosted_dihiggs:
-        extra_bbtt_branches, float_variable_names  = boosted_branches_variables(flags)
-        int_variable_names = []
+        extra_bbtt_branches, float_variable_names, int_variable_names = boosted_branches_variables(flags)
+    
     else:
         extra_bbtt_branches,float_variable_names,int_variable_names = bbtt_branches(flags)
     

@@ -6,6 +6,7 @@
 
 #include "BaselineVarsBoostedbbttAlg.h"
 
+
 namespace HHBBTT
 {
   StatusCode BaselineVarsBoostedbbttAlg ::initialize()
@@ -16,9 +17,12 @@ namespace HHBBTT
 
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK (m_lRjetHandle.initialize(m_systematicsList));
+
+
     ATH_CHECK (m_Pass_GN3XPV01_hbb_bjr.initialize(m_systematicsList, m_lRjetHandle));
     ATH_CHECK (m_Pass_GN3XPV01_htt.initialize(m_systematicsList, m_lRjetHandle));
 
+   
     // make decorators
     for (const std::string &string_var: m_floatVariables) {
       ATH_MSG_DEBUG("initializing float variable: " << string_var);

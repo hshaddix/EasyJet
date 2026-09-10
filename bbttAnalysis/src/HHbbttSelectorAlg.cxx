@@ -187,6 +187,7 @@ namespace HHBBTT
       else if ( name == "TopEMuCR") m_channels.push_back(HHBBTT::TopEMuCR);
       else if ( name == "AntiIsoLepHad") m_channels.push_back(HHBBTT::AntiIsoLepHad);
       else if ( name == "Boosted") m_channels.push_back(HHBBTT::Boosted);
+      else if ( name == "BoostedZCR") m_channels.push_back(HHBBTT::BoostedZCR);
       else{
         ATH_MSG_ERROR("Unknown channel");
         return StatusCode::FAILURE;
@@ -841,9 +842,32 @@ namespace HHBBTT
         }
       }
 
+      // Z+HF REGION FOR BOOSTED ANALYSIS
+      if (m_bools.at(HHBBTT::pass_trigger_SLT) && m_bools.at(HHBBTT::AT_LEAST_ONE_BTAG_LRJET)){
+        if(n_leptons_tightId_iso == 2 && n_veto_leptons == 0) {
+          float mll = -999.;
+          float lep1_pt = -999.;
+          int os_lep = -999;
+          if (ele1) {
+            mll = (ele0->p4() + ele1->p4()).M();
+            os_lep  = ele0->charge() + ele1->charge();
+            lep1_pt = ele1->pt();
+          }
+          else if (mu1) {
+            mll = (mu0->p4() + mu1->p4()).M();
+            os_lep  = mu0->charge() + mu1->charge();
+            lep1_pt = mu1->pt();
+          }
+          m_bools.at(HHBBTT::pass_BoostedZCR) =
+            os_lep ==0 &&
+            lep1_pt > 40. * Athena::Units::GeV &&
+            mll > 75. * Athena::Units::GeV && mll < 110. * Athena::Units::GeV;
+        }
+      }
+
       // fake enriched antiiso-lephad region check:
       m_bools.at(HHBBTT::pass_AntiIsoLepHad) =
-	m_bools.at(HHBBTT::pass_LepHad) && m_bools.at(HHBBTT::N_LEPTONS_CUT_ANTIISOLEPHAD);
+	    m_bools.at(HHBBTT::pass_LepHad) && m_bools.at(HHBBTT::N_LEPTONS_CUT_ANTIISOLEPHAD);
 
       bool pass = false;
       for(const auto& channel : m_channels){
@@ -853,6 +877,7 @@ namespace HHBBTT
         else if(channel == HHBBTT::TopEMuCR) pass |= m_bools.at(HHBBTT::pass_TopEMuCR);
         else if(channel == HHBBTT::AntiIsoLepHad) pass |= m_bools.at(HHBBTT::pass_AntiIsoLepHad);
         else if(channel == HHBBTT::Boosted) pass |= m_bools.at(HHBBTT::pass_Boosted);
+        else if(channel == HHBBTT::BoostedZCR) pass |= m_bools.at(HHBBTT::pass_BoostedZCR);
       }
 
       // do the CUTFLOW only with sys="" -> NOSYS
@@ -925,6 +950,10 @@ namespace HHBBTT
         use_STT = true;
         use_DBT = true;
         use_MET = true;
+      }
+      else if (channel == HHBBTT::BoostedZCR){
+      use_LARGE_R_JETS = true;
+      use_SLT = true;
       }
     }
 

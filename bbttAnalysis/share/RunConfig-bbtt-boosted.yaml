@@ -39,7 +39,7 @@ ttree_output:
       bjet_regression: true
     small_R_jets:
       btag_info: true
-      ruth_parent_info: true
+      truth_parent_info: true
       no_bjet_calib_p4: true
       run_selection: true
       qg_tagger_info: true

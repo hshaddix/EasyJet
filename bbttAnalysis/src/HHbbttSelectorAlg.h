@@ -259,6 +259,7 @@ private:
     {HHBBTT::pass_TopEMuCR, "pass_TopEMuCR"},
     {HHBBTT::pass_AntiIsoLepHad, "pass_AntiIsoLepHad"},
     {HHBBTT::pass_Boosted, "pass_Boosted"},
+    {HHBBTT::pass_BoostedZCR, "pass_BoostedZCR"},
     };
     std::unordered_map<std::string, HHBBTT::Booleans> m_nameToBool;
 

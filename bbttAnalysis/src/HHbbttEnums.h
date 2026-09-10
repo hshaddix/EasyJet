@@ -11,7 +11,8 @@ namespace HHBBTT
     ZCR,
     TopEMuCR,
     AntiIsoLepHad,
-    Boosted
+    Boosted,
+    BoostedZCR
   };
 
   enum TriggerChannel
@@ -161,7 +162,8 @@ namespace HHBBTT
     pass_ZCR,
     pass_TopEMuCR,
     pass_AntiIsoLepHad,
-    pass_Boosted
+    pass_Boosted,
+    pass_BoostedZCR
   };
 
   // working points used for selecting leptons:

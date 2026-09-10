@@ -15,6 +15,8 @@
 
 #include <xAODEventInfo/EventInfo.h>
 #include <xAODJet/JetContainer.h>
+#include <xAODEgamma/ElectronContainer.h>
+#include <xAODMuon/MuonContainer.h>
 
 namespace HHBBTT
 {
@@ -34,31 +36,22 @@ public:
     /// We use default finalize() -- this is for cleanup, and we don't do any
 
 private:
-    /// ToolHandle<whatever> handle {this, "pythonName", "defaultValue", "someInfo"};
-
     CP::SysListHandle m_systematicsList {this};
-
     CP::SysReadHandle<xAOD::JetContainer>
       m_lRjetHandle{ this, "largeRjets", "bbttAnalysisLargeRJets_%SYS%", "Large-R jet container to read" };
-
     CP::SysReadHandle<xAOD::EventInfo>
       m_eventHandle{ this, "event", "EventInfo", "EventInfo container to read" };
-
     Gaudi::Property<bool> m_isMC
       { this, "isMC", false, "Is this simulation?" };
-
     Gaudi::Property<std::vector<std::string>> m_floatVariables
       {this, "floatVariableList", {}, "Name list of floating variables"};
-    
-    CP::SysReadDecorHandle<int> 
-    m_Pass_GN3XPV01_hbb_bjr{this, "GN3XPV01_hbb_bjr_WP", "", "GN3XPV01 b-tagging working point"}; 
-
-    CP::SysReadDecorHandle<int> 
-    m_Pass_GN3XPV01_htt{this, "GN3XPV01_htt_WP", "", "GN3XPV01 tau-tagging working point"}; 
-
+    CP::SysReadDecorHandle<int>
+      m_Pass_GN3XPV01_hbb_bjr{this, "GN3XPV01_hbb_bjr_WP", "", "GN3XPV01 b-tagging working point"};
+    CP::SysReadDecorHandle<int>
+      m_Pass_GN3XPV01_htt{this, "GN3XPV01_htt_WP", "", "GN3XPV01 tau-tagging working point"};
     std::unordered_map<std::string, CP::SysWriteDecorHandle<float>> m_Fbranches;
-
   };
 }
 
 #endif
+
