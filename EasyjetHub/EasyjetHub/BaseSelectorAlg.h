@@ -29,8 +29,9 @@ namespace Easyjet
     long long int m_total_events{0};
     double m_total_mcEventWeight{0.};
 
-    StatusCode initialiseCutflow(const std::vector<std::string>& boolNameList);
-    StatusCode applyCutFlow(const std::vector<bool>& cuts, double mc_weight = 0.);
+    StatusCode initialiseCutflow(const std::vector<std::string>& boolNameList,
+				 const std::string& prefix="");
+    StatusCode applyCutFlow(const std::vector<bool>& cuts, double mc_weight = 1.);
     StatusCode finaliseCutflow();
 
   };

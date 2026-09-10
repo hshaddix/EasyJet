@@ -72,8 +72,7 @@ def ZCharm_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             saveCutFlow=flags.Analysis.save_cutflow,
             triggerLists=trigger_branches,
             trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
-            bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
-                    else False),
+            bypass=flags.Analysis.bypass,
         )
     )
 
@@ -143,12 +142,11 @@ def ZCharmTruth_cfg(flags, truthsmalljetkey, truthlargejetkey, truthmuonkey,
     cfg.addEventAlgo(
         CompFactory.ZCC.ZCharmTruthSelectorAlg(
             "ZCharmTruthSelectorAlg",
-            truthcutList=flags.Analysis.TruthCutList,
+            cutList=flags.Analysis.TruthCutList,
             saveCutFlow=flags.Analysis.save_cutflow,
             truthSmallJetInContainer="ZCharmTruthJets",
             truthElectronInContainer="ZCharmTruthElectrons",
             truthMuonInContainer="ZCharmTruthMuons",
-            jetTruthFlavourDecoration="ZCharmTruthJets.HadronConeExclTruthLabelID",
             floatVariableList=float_variables
         )
     )
@@ -249,6 +247,13 @@ def ZCharm_branches(flags):
 
     branches += object_level_branches
 
+    if flags.Input.isMC:
+        truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
+        truth_branches, truth_float_variable_names = (
+            get_ZCharmTruthSelectorAlg_variables(flags)
+        )
+        branches += truth_branches
+
     branches += ["EventInfo.ZCharm_pass_sr_%SYS% -> ZCharm_pass_SR_%SYS%"]
 
     if flags.Analysis.save_cutflow:
@@ -260,12 +265,6 @@ def ZCharm_branches(flags):
             branches += [
                 "EventInfo.PassCuts_%SYS% -> ZCharm_PassRecoCuts_%SYS% type=char"
             ]
-        if flags.Input.isMC:
-            truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
-            truth_branches, truth_float_variable_names = (
-                get_ZCharmTruthSelectorAlg_variables(flags)
-            )
-            branches += truth_branches
             for cut in truthcutList:
                 branches += [f"EventInfo.{cut} -> ZCharm_{cut} type=char"]
                 branches += [

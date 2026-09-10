@@ -31,7 +31,7 @@ namespace ZCC
       std::string fullKey = m_eventInKey.key() + "." + boolName;
       SG::WriteDecorHandleKey<xAOD::EventInfo> handleKey(fullKey);
       ATH_CHECK(handleKey.initialize());
-      m_BbranchKeys.emplace(boolKey, std::move(handleKey));
+      m_BbranchKeys.emplace(boolKey, handleKey);
       ATH_CHECK(m_BbranchKeys.at(boolKey).initialize());
     }   
     
@@ -39,11 +39,18 @@ namespace ZCC
     for (const std::string &var : m_floatVariables) {
       std::string varkey = m_eventInKey.key() + "." + var;
       SG::WriteDecorHandleKey<xAOD::EventInfo> floatVarKey(varkey);
-      m_FbranchesKeys.emplace(var, std::move(floatVarKey));
+      m_FbranchesKeys.emplace(var, floatVarKey);
       ATH_CHECK (m_FbranchesKeys.at(var).initialize());
     }
     
-    if(m_saveCutFlow) ATH_CHECK (initialiseCutflow());
+    if(m_saveCutFlow){
+      std::vector<std::string> boolNameList;
+      for (const auto& [key, value]: m_boolnames){
+        boolNameList.push_back(value);
+        m_nameToBool[value] = key;
+      }
+      ATH_CHECK (initialiseCutflow(boolNameList, "Truth"));
+    }
 
     return StatusCode::SUCCESS;
 
@@ -52,7 +59,6 @@ namespace ZCC
 
   StatusCode ZCharmTruthSelectorAlg::execute()
   {
-
     m_bools.at(ZCC::IS_ee_TRUTH) = false;
     m_bools.at(ZCC::IS_mm_TRUTH) = false;
     m_bools.at(ZCC::IS_em_TRUTH) = false;
@@ -66,25 +72,33 @@ namespace ZCC
 
     // FilterReporter filter(m_filterParams, false);
 
-    SG::ReadHandle<xAOD::EventInfo> truthEvents(m_eventInKey);    SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);    SG::ReadDecorHandle<xAOD::JetContainer, int> truthFlavour(m_jetTruthFlavourKey);
+    SG::ReadHandle<xAOD::EventInfo> truthEvents(m_eventInKey);
+    SG::ReadHandle<xAOD::JetContainer> truthJets(m_truthjetsInKey);
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthElectrons(m_truthelectronInKey);
+    SG::ReadHandle<xAOD::TruthParticleContainer> truthMuons(m_truthmuonInKey);
+    SG::ReadDecorHandle<xAOD::JetContainer, int> truthFlavour(m_jetTruthFlavourKey);
     auto jets_after_overlap = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
     auto truthcjets = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
 
     for (auto [var, key] : m_FbranchesKeys){
-      SG::WriteDecorHandle<xAOD::EventInfo, float> floatDecorator(key);      m_Fbranches.insert_or_assign(var, std::move(floatDecorator));
+      SG::WriteDecorHandle<xAOD::EventInfo, float> floatDecorator(key);
+      m_Fbranches.insert_or_assign(var, std::move(floatDecorator));
     }
 
     const xAOD::EventInfo* truthevent = truthEvents.get();
 
     for (const std::string &string_var: m_floatVariables) {
-        m_Fbranches.at(string_var)(*truthevent) = -99.;
+      m_Fbranches.at(string_var)(*truthevent) = -99.;
     }
 
     auto muons_after_selection = std::make_unique<ConstDataVector<xAOD::TruthParticleContainer>>(SG::VIEW_ELEMENTS);
     auto electrons_after_selection = std::make_unique<ConstDataVector<xAOD::TruthParticleContainer>>(SG::VIEW_ELEMENTS);
 
-    evaluateTruthLeptonCuts(*truthevent, *truthElectrons, *truthMuons, m_ZCharmTruthCuts, *electrons_after_selection, *muons_after_selection);
-    truthOverlapRemoval(*truthJets, *electrons_after_selection, *muons_after_selection, *jets_after_overlap);
+    evaluateTruthLeptonCuts(*truthevent, *truthElectrons, *truthMuons,
+			    *electrons_after_selection, *muons_after_selection);
+
+    truthOverlapRemoval(*truthJets, *electrons_after_selection,
+			*muons_after_selection, *jets_after_overlap);
 
     for (const xAOD::Jet *jet : *jets_after_overlap){
       if (truthFlavour(*jet) == 4) truthcjets->push_back(jet);
@@ -159,7 +173,7 @@ namespace ZCC
       m_Fbranches.at(prefix+"_m")(*truthevent) = leptonM(*leptons.at(i));
     }
 
-    evaluateTruthCJetCuts(*truthcjets, m_ZCharmTruthCuts);
+    evaluateTruthCJetCuts(*truthcjets);
     
     char pass_truth_baseline=true;
     for (const auto& [key, value] : m_boolnames) {
@@ -169,37 +183,20 @@ namespace ZCC
         pass_truth_baseline = pass_truth_baseline && cut_passed;
       }
     }
-  
-    // Compute total_events
-    m_total_events+=1;
 
-    for (const auto &cut : m_inputCutKeys) {
-      if (m_ZCharmTruthCuts.exists(m_boolnames.at(cut))) {
-        m_ZCharmTruthCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
-        if (m_ZCharmTruthCuts(m_boolnames.at(cut)).passed) {
-          m_ZCharmTruthCuts(m_boolnames.at(cut)).counter += 1;
-        }
-      }
-    }
-    
-    unsigned int consecutive_cuts = 0;
-    for (size_t i = 0; i < m_ZCharmTruthCuts.size(); ++i) {
-      if (m_ZCharmTruthCuts[i].passed)
-        consecutive_cuts++;
-      else
-        break;
+    if (m_saveCutFlow){
+      std::vector<bool> cutBools;
+      for(const auto& cut : m_inputCutList)
+	cutBools.push_back(m_bools.at(m_nameToBool.at(cut)));
+      ATH_CHECK (applyCutFlow(cutBools));
     }
 
-    // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
-    // I think this is an elegant way to do it :) . Considering the difficulties a configurable cut list imposes.
-    for (unsigned int i=0; i<consecutive_cuts; i++) {
-      m_ZCharmTruthCuts[i].relativeCounter+=1;
-    }
-
-    SG::WriteDecorHandle<xAOD::EventInfo, char> passTruthCutsHandle(m_passTruthCutsKey);    passTruthCutsHandle(*truthevent) = pass_truth_baseline && jets_after_overlap->size()>=1;
+    SG::WriteDecorHandle<xAOD::EventInfo, char> passTruthCutsHandle(m_passTruthCutsKey);
+    passTruthCutsHandle(*truthevent) = pass_truth_baseline && jets_after_overlap->size()>=1;
 
     for (auto& [key, handleKey] : m_BbranchKeys) {
-      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(handleKey);      handle(*truthevent) = m_bools.at(key);
+      SG::WriteDecorHandle<xAOD::EventInfo, char> handle(handleKey);
+      handle(*truthevent) = m_bools.at(key);
     }
 
     return StatusCode::SUCCESS;
@@ -208,21 +205,16 @@ namespace ZCC
   StatusCode ZCharmTruthSelectorAlg::finalize()
   {
     ATH_MSG_INFO("Total events = " << m_total_events <<std::endl);
-    m_ZCharmTruthCuts.CheckCutResults(); // Print CheckCutResults
-
-    if(m_saveCutFlow) {
-      m_ZCharmTruthCuts.DoAbsoluteEfficiency(m_total_events, efficiency("AbsoluteTruthEfficiency"));
-      m_ZCharmTruthCuts.DoRelativeEfficiency(m_total_events, efficiency("RelativeTruthEfficiency"));
-      m_ZCharmTruthCuts.DoStandardCutFlow(m_total_events, efficiency("StandardTruthCutFlow"));
-      m_ZCharmTruthCuts.DoCutflowLabeling(m_total_events, hist("TruthEventsPassed_BinLabeling"));
-
-    }
-
+    ATH_CHECK (finaliseCutflow());
     return StatusCode::SUCCESS;
   }
 
 
-  void ZCharmTruthSelectorAlg::truthOverlapRemoval(const xAOD::JetContainer& truthJets, ConstDataVector<xAOD::TruthParticleContainer>& truthElectrons, ConstDataVector<xAOD::TruthParticleContainer>& truthMuons, ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap){
+  void ZCharmTruthSelectorAlg::truthOverlapRemoval
+  (const xAOD::JetContainer& truthJets,
+   ConstDataVector<xAOD::TruthParticleContainer>& truthElectrons,
+   ConstDataVector<xAOD::TruthParticleContainer>& truthMuons,
+   ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap){
 
     float dRcut = 0.4;
     SG::ConstAccessor<float> dressedLeptonPt("pt_dressed");
@@ -262,10 +254,14 @@ namespace ZCC
 
   }
 
-  void ZCharmTruthSelectorAlg::evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthelectrons, const xAOD::TruthParticleContainer& truthmuons, CutManager& ZCharmTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection)
+  void ZCharmTruthSelectorAlg::evaluateTruthLeptonCuts
+  (const xAOD::EventInfo& truthevent,
+   const xAOD::TruthParticleContainer& truthelectrons,
+   const xAOD::TruthParticleContainer& truthmuons,
+   ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection,
+   ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection)
   {
     TLorentzVector ll;
-    double mll = -99;
 
     bool OPPOSITE_CHARGE_LEPTONS_TRUTH = false;
 
@@ -348,7 +344,7 @@ namespace ZCC
       OPPOSITE_CHARGE_LEPTONS_TRUTH = electronsAfterSelection.at(0)->charge()*muonsAfterSelection.at(0)->charge() == -1;
     }
     
-    mll = ll.M();
+    double mll = ll.M();
 
     std::string prefix = "Truth_ll";
     m_Fbranches.at(prefix+"_pt")(truthevent) = ll.Pt();
@@ -357,73 +353,16 @@ namespace ZCC
     m_Fbranches.at(prefix+"_E")(truthevent) = ll.E();
     m_Fbranches.at(prefix+"_m")(truthevent) = mll;
 
-    if(ZCharmTruthCuts.exists("OPPOSITE_CHARGE_LEPTONS_TRUTH")) {
-      m_bools.at(ZCC::OPPOSITE_CHARGE_LEPTONS_TRUTH) = OPPOSITE_CHARGE_LEPTONS_TRUTH;
-    }
-    
-    if(ZCharmTruthCuts.exists("DILEPTON_MASS_WINDOW_TRUTH")) {
-      m_bools.at(ZCC::DILEPTON_MASS_WINDOW_TRUTH) = ( mll >= 76.*Athena::Units::GeV && mll <= 106.*Athena::Units::GeV );
-    }
+    m_bools.at(ZCC::OPPOSITE_CHARGE_LEPTONS_TRUTH) = OPPOSITE_CHARGE_LEPTONS_TRUTH;
+    m_bools.at(ZCC::DILEPTON_MASS_WINDOW_TRUTH) = (mll >= 76.*Athena::Units::GeV && mll <= 106.*Athena::Units::GeV );
   } 
   
   void ZCharmTruthSelectorAlg::evaluateTruthCJetCuts
-  (const ConstDataVector<xAOD::JetContainer>& truthcjets, CutManager& ZCharmTruthCuts)
+  (const ConstDataVector<xAOD::JetContainer>& truthcjets)
   { 
     ///All jets in the containers should have pT>20GeV. Check minPt of your JetSelectorAlg in the ZCharm_config file.
-    if (truthcjets.size() >= 1 && ZCharmTruthCuts.exists("ONE_C_JETS_TRUTH")){
-      m_bools.at(ZCC::ONE_C_JETS_TRUTH) = true;
-    }
-
-    if (truthcjets.size() >= 2 && ZCharmTruthCuts.exists("TWO_C_JETS_TRUTH")){
-      m_bools.at(ZCC::TWO_C_JETS_TRUTH) = true;
-    }
-  }  
-
-
-  StatusCode ZCharmTruthSelectorAlg::initialiseCutflow(){
-
-
-    std::vector<std::string> boolnameslist;
-    for (const auto& [key, value] : m_boolnames) {
-      boolnameslist.push_back(value);
-    }
-    m_ZCharmTruthCuts.CheckInputCutList(m_inputCutList, boolnameslist);
-
-    m_inputCutKeys.resize(m_inputCutList.size());
-    std::vector<bool> inputWasFound (m_inputCutList.size(), false);
-    for (const auto& [key, value]: m_boolnames) {
-      auto it = std::find(m_inputCutList.begin(), m_inputCutList.end(), value);
-      if (it != m_inputCutList.end()) {
-        auto index = it - m_inputCutList.begin();
-        m_inputCutKeys.at(index) = key;
-        inputWasFound.at(index) = true;
-      }
-    }
-
-    for (unsigned int index = 0; index < inputWasFound.size(); index++) {
-      if(inputWasFound.at(index)) continue;
-      ATH_MSG_ERROR("Doubled or falsely spelled cuts in CutList (see config file)." + m_inputCutList[index]);
-    }
-
-    for (const auto &cut : m_inputCutKeys) {
-      m_ZCharmTruthCuts.add(m_boolnames[cut]);
-    }
-
-    //After filling the CutManager, book your histograms.
-    const unsigned int nbins = m_ZCharmTruthCuts.size() + 1; //  need an extra bin for the total num of events.
-    ATH_MSG_DEBUG("Booking AbsoluteTruthEfficiency histogram...");
-    ANA_CHECK (book (TEfficiency("AbsoluteTruthEfficiency","Absolute Efficiency of ZCharm truth cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ATH_MSG_DEBUG("Booking RelativeTruthEfficiency histogram...");
-    ANA_CHECK (book (TEfficiency("RelativeTruthEfficiency","Relative Efficiency of ZCharm truth cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ATH_MSG_DEBUG("Booking StandardTruthCutFlow histogram...");
-    ANA_CHECK (book (TEfficiency("StandardTruthCutFlow","StandardCutFlow of ZCharm truth cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ATH_MSG_DEBUG("Booking TruthEventsPassed_BinLabeling histogram...");
-    ANA_CHECK (book (TH1F("TruthEventsPassed_BinLabeling", "Events passed by each truth cut / Bin labeling", nbins, 0.5, nbins + 0.5)));
-    ATH_MSG_DEBUG("Histograms booked successfully");
-    return StatusCode::SUCCESS;
+    m_bools.at(ZCC::ONE_C_JETS_TRUTH) = (truthcjets.size() >= 1);
+    m_bools.at(ZCC::TWO_C_JETS_TRUTH) = (truthcjets.size() >= 2);
   }
 
 }

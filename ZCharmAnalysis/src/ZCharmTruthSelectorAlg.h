@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -8,7 +8,7 @@
 #define ZCHARMANALYSIS_ZCHARMTRUTHSELECTORALG
 
 #include <memory>
-#include <AnaAlgorithm/AnaAlgorithm.h>
+#include "EasyjetHub/BaseSelectorAlg.h"
 #include <AsgDataHandles/ReadDecorHandleKey.h>
 #include <AsgDataHandles/WriteDecorHandle.h>
 #include <AsgDataHandles/WriteDecorHandleKey.h>
@@ -23,7 +23,6 @@
 #include <xAODTruth/TruthParticle.h>
 
 
-#include <EasyjetHub/CutManager.h>
 #include "ZCharmEnums.h"
 
 
@@ -31,10 +30,10 @@ namespace ZCC
 {
 
   /// \brief An algorithm for counting containers
-  class ZCharmTruthSelectorAlg final : public EL::AnaAlgorithm {
+  class ZCharmTruthSelectorAlg final : public Easyjet::BaseSelectorAlg {
 
     public:
-      using EL::AnaAlgorithm::AnaAlgorithm;
+    using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -68,9 +67,9 @@ namespace ZCC
       SG::ReadHandleKey<xAOD::TruthParticleContainer>
       m_truthmuonInKey{ this, "truthMuonInContainer", "", "Truth muon container to read" };
 
-      SG::ReadDecorHandleKey<xAOD::JetContainer> m_jetTruthFlavourKey{this, "jetTruthFlavourDecoration", "", "Name of jet truth flavour decoration"};
-
-      long long int m_total_events{0};
+      SG::ReadDecorHandleKey<xAOD::JetContainer> m_jetTruthFlavourKey
+	{this, "jetTruthFlavourDecoration", m_truthjetsInKey,
+	    "HadronConeExclTruthLabelID", "Name of jet truth flavour decoration"};
 
       std::unordered_map<ZCC::Booleans, SG::WriteDecorHandleKey<xAOD::EventInfo>> m_BbranchKeys;
       std::unordered_map<ZCC::Booleans, bool> m_bools;
@@ -84,15 +83,10 @@ namespace ZCC
         {ZCC::ONE_C_JETS_TRUTH, "ONE_C_JETS_TRUTH"},
         {ZCC::TWO_C_JETS_TRUTH, "TWO_C_JETS_TRUTH"},
       };
-
-      CutManager m_ZCharmTruthCuts;
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "truthcutList", {}};
-      std::vector<ZCC::Booleans> m_inputCutKeys;
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      
+      std::unordered_map<std::string, ZCC::Booleans> m_nameToBool;
       
       SG::WriteDecorHandleKey<xAOD::EventInfo> m_passTruthCutsKey{
-        this, "PassTruthCutsKey", "EventInfo.PassTruthCuts", "Decorate event with pass/fail flag"
+        this, "PassTruthCutsKey", m_eventInKey, "PassTruthCuts", "Decorate event with pass/fail flag"
       };
 
 
@@ -105,11 +99,19 @@ namespace ZCC
 
       std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::EventInfo, float>> m_Fbranches;
 
-      void truthOverlapRemoval(const xAOD::JetContainer& truthJets, ConstDataVector<xAOD::TruthParticleContainer>& truthElectrons, ConstDataVector<xAOD::TruthParticleContainer>& truthMuons, ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
-      void evaluateTruthLeptonCuts(const xAOD::EventInfo& truthevent, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, CutManager& ZCharmTruthCuts, ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection, ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection);
-      void evaluateTruthCJetCuts(const ConstDataVector<xAOD::JetContainer>& truthCjets, CutManager& ZCharmTruthCuts);
+      void truthOverlapRemoval
+	(const xAOD::JetContainer& truthJets,
+	 ConstDataVector<xAOD::TruthParticleContainer>& truthElectrons,
+	 ConstDataVector<xAOD::TruthParticleContainer>& truthMuons,
+	 ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
+      void evaluateTruthLeptonCuts
+	(const xAOD::EventInfo& truthevent,
+	 const xAOD::TruthParticleContainer& truthElectrons,
+	 const xAOD::TruthParticleContainer& truthMuons,
+	 ConstDataVector<xAOD::TruthParticleContainer>& electronsAfterSelection,
+	 ConstDataVector<xAOD::TruthParticleContainer>& muonsAfterSelection);
+      void evaluateTruthCJetCuts(const ConstDataVector<xAOD::JetContainer>& truthCjets);
       void setThresholds(const xAOD::EventInfo* event);
-      StatusCode initialiseCutflow(); 
   };
 
 }

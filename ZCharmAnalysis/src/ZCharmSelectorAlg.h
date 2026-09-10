@@ -8,7 +8,7 @@
 #define ZCHARMANALYSIS_ZCHARMSELECTORALG
 
 #include <memory>
-#include "AnaAlgorithm/AnaAlgorithm.h"
+#include "EasyjetHub/BaseSelectorAlg.h"
 #include <AsgDataHandles/ReadDecorHandleKey.h>
 
 #include <SystematicsHandles/SysReadHandle.h>
@@ -26,17 +26,16 @@
 
 
 #include "TriggerMatchingTool/IMatchingTool.h"
-#include <EasyjetHub/CutManager.h>
 #include "ZCharmEnums.h"
 
 namespace ZCC
 {
 
   /// \brief An algorithm for counting containers
-  class ZCharmSelectorAlg final : public EL::AnaAlgorithm {
+  class ZCharmSelectorAlg final : public Easyjet::BaseSelectorAlg {
 
     public:
-      using EL::AnaAlgorithm::AnaAlgorithm;
+      using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -44,7 +43,7 @@ namespace ZCC
       /// \brief Execute method, for actions to be taken in the event loop
       StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+      StatusCode finalize() override;
 
     private :
 
@@ -54,9 +53,6 @@ namespace ZCC
         "OPPOSITE_CHARGE_LEPTONS",
         "DILEPTON_MASS_WINDOW",
       };
-
-      Gaudi::Property<bool> m_isMC
-	{ this, "isMC", false, "Is this simulation?" };
 
       Gaudi::Property<bool> m_bypass
 	{ this, "bypass", false, "Run selector algorithm in pass-through mode" };
@@ -115,30 +111,25 @@ namespace ZCC
       ToolHandle<Trig::IMatchingTool> m_matchingTool
       { this, "trigMatchingTool", "", "Trigger matching tool"};
 
-      long long int m_total_events{0};
-
       std::unordered_map<ZCC::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<ZCC::Booleans, bool> m_bools;
       std::unordered_map<ZCC::Booleans, std::string> m_boolnames{
         {ZCC::IS_ee, "IS_ee"},
         {ZCC::IS_mm, "IS_mm"},
         {ZCC::IS_em, "IS_em"},
-
         {ZCC::pass_trigger_SLT, "pass_trigger_SLT"},
-
         {ZCC::PASS_TRIGGER, "PASS_TRIGGER"},
         {ZCC::EXACTLY_TWO_LEPTONS, "EXACTLY_TWO_LEPTONS"},
         {ZCC::OPPOSITE_CHARGE_LEPTONS, "OPPOSITE_CHARGE_LEPTONS"},
         {ZCC::DILEPTON_MASS_WINDOW, "DILEPTON_MASS_WINDOW"},
-
         {ZCC::ONE_C_JETS, "ONE_C_JETS"},
         {ZCC::TWO_C_JETS, "TWO_C_JETS"},
       };
+      std::unordered_map<std::string, ZCC::Booleans> m_nameToBool;
 
-      CutManager m_ZCharmCuts;
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
-      std::vector<ZCC::Booleans> m_inputCutKeys;
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
+      CP::SysReadDecorHandle<float> m_generatorWeight
+	{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
+
       CP::SysWriteDecorHandle<char> m_pass_cuts {"PassCuts_%SYS%", this};
 
       std::unordered_map<ZCC::TriggerChannel, std::unordered_map<ZCC::Var, float>> m_pt_threshold;
@@ -147,7 +138,7 @@ namespace ZCC
 	(const xAOD::EventInfo* event,
 	 const xAOD::Electron* ele0, const xAOD::Electron* ele1,
 	 const xAOD::Muon* mu0, const xAOD::Muon* mu1,
-	 CutManager& ZCharmCuts, const CP::SystematicSet& sys);
+	 const CP::SystematicSet& sys);
 
       void evaluateSingleLeptonTrigger
 	(const xAOD::EventInfo* event, 
@@ -166,10 +157,9 @@ namespace ZCC
 	 const CP::SystematicSet& sys);
 
       void evaluateLeptonCuts(const xAOD::ElectronContainer& electrons,
-                          const xAOD::MuonContainer& muons, CutManager& ZCharmCuts);
-      void evaluateCJetCuts(const ConstDataVector<xAOD::JetContainer>& cjets, CutManager& ZCharmCuts);
+			      const xAOD::MuonContainer& muons);
+      void evaluateCJetCuts(const ConstDataVector<xAOD::JetContainer>& cjets);
       void setThresholds(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
-      StatusCode initialiseCutflow();
   };
 
 }

@@ -7,28 +7,38 @@
 namespace Easyjet
 {
 
-  StatusCode BaseSelectorAlg::initialiseCutflow(const std::vector<std::string>& boolNameList) {
+  StatusCode BaseSelectorAlg::initialiseCutflow
+  (const std::vector<std::string>& boolNameList,
+   const std::string& prefix) {
     m_cuts.CheckInputCutList(m_inputCutList, boolNameList);
 
     // Initialize a vector of CutEntry structs based on the input Cut List
     for (const auto &cut : m_inputCutList) m_cuts.add(cut);
 
     const unsigned int nbins = m_cuts.size() + 1; //  need an extra bin for the total num of events.
-    ANA_CHECK (book (TEfficiency("AbsoluteEfficiency","Absolute Efficiency;Cuts;#epsilon",
+    ANA_CHECK (book (TEfficiency(("Absolute"+prefix+"Efficiency").c_str(),
+				 "Absolute Efficiency;Cuts;#epsilon",
 				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("RelativeEfficiency","Relative Efficiency;Cuts;#epsilon",
+    ANA_CHECK (book (TEfficiency(("Relative"+prefix+"Efficiency").c_str(),
+				 "Relative Efficiency;Cuts;#epsilon",
 				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("StandardCutFlow","StandardCutFlow;Cuts;#epsilon",
-                                  nbins, 0.5, nbins + 0.5)));
+    ANA_CHECK (book (TEfficiency(("Standard"+prefix+"CutFlow").c_str(),
+				 "StandardCutFlow;Cuts;#epsilon",
+				 nbins, 0.5, nbins + 0.5)));
     if(m_isMC) {
-      ANA_CHECK (book (TEfficiency("WeightedAbsoluteEfficiency","Weighted Absolute Efficiency;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-      ANA_CHECK (book (TEfficiency("WeightedRelativeEfficiency","Weighted Relative Efficiency;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-      ANA_CHECK (book (TEfficiency("WeightedStandardCutFlow","Weighted StandardCutFlow;Cuts;#epsilon",
-         nbins, 0.5, nbins + 0.5)));
+      ANA_CHECK (book (TEfficiency(("WeightedAbsolute"+prefix+"Efficiency").c_str(),
+				   "Weighted Absolute Efficiency;Cuts;#epsilon",
+				   nbins, 0.5, nbins + 0.5)));
+      ANA_CHECK (book (TEfficiency(("WeightedRelative"+prefix+"Efficiency").c_str(),
+				   "Weighted Relative Efficiency;Cuts;#epsilon",
+				   nbins, 0.5, nbins + 0.5)));
+      ANA_CHECK (book (TEfficiency(("WeightedStandard"+prefix+"CutFlow").c_str(),
+				   "Weighted StandardCutFlow;Cuts;#epsilon",
+				   nbins, 0.5, nbins + 0.5)));
     }
-    ANA_CHECK (book (TH1F("EventsPassed_BinLabeling", "Events passed by each cut / Bin labeling", nbins, 0.5, nbins + 0.5)));
+    ANA_CHECK (book (TH1F((prefix+"EventsPassed_BinLabeling").c_str(),
+			  "Events passed by each cut / Bin labeling",
+			  nbins, 0.5, nbins + 0.5)));
 
     return StatusCode::SUCCESS;
     }
