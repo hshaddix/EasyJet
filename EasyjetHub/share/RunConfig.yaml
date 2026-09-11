@@ -53,7 +53,8 @@ ttree_output:
     small_R_jets:
       truth_parent_info: true
       btag_info: true
-      JVT_details: true
+      # Disabled for PHYSLITE compatibility
+      JVT_details: false
       no_bjet_calib_p4: true
       btag_details: true
     large_R_jets:
