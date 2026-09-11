@@ -106,7 +106,6 @@ namespace XBBCALIB
         if (m_asymmetryCut > 0) {
           float ptSum = j0->pt() + ll.Pt();
           bool pass_asymmetry = (ptSum > 0) && ((ll.Pt() - j0->pt()) / ptSum < m_asymmetryCut);
-          pass_baseline &= (ll.Pt() > j0->pt());
           pass_baseline &= pass_asymmetry;
         }
         // Rapidity difference: |y0 - y1| < cut

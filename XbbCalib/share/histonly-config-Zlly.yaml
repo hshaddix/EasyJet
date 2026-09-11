@@ -8,8 +8,7 @@ output:
       include:
         - XbbCalib/hists-config-Zlly.yaml
       blinding:
-        include:
-          - XbbCalib/blinding-Zll.yaml
+        enable: false
 
 do_CP_systematics: true
 systematics_regex: [".*"]
