@@ -21,34 +21,30 @@ do_electrons: true
 # Toggles for reconstructed objects decorations
 Small_R_jet:
   btag_wp: "GN2v01_FixedCutBEff_77"
-  maxEta: 2.5
+  max_eta: 2.5
   selectBjet: false
 
 Large_R_jet:
   min_pT: 200.e+3
-  maxEta: 2.0
+  max_eta: 2.0
   runMuonJetPtCorr: false
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml, EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml]
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml]
 
 
 Electron:
   min_pT: 27.e+3
-  maxEta: 2.5
+  max_eta: 2.5
   ID: "MediumLH"
   Iso: "TightTrackOnly_VarRad"
-  extra_wps:
-    - ["LooseBLayerLH", "NonIso"]
 
 
 Muon:
-  min_pT: 27.e+3
+  min_pT: 25.e+3
   ID: "HighPt"
-  maxEta: 2.5
+  max_eta: 2.5
   Iso: "Tight_VarRad"
-  extra_wps:
-    - ["Loose", "PflowLoose_VarRad"]
-  
+  calibrationMode: "correctData_IDMS"
 
 # list of triggers per year to consider
 Trigger:
@@ -76,6 +72,7 @@ OverlapRemoval:
 # Include the TTree configuration and update details
 ttree_output:
   include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  slim_variables_with_syst: true
   # Our overrides. All defaults are off
   reco_outputs:
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'

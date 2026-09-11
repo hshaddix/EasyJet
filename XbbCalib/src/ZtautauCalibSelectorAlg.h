@@ -102,7 +102,7 @@ namespace XBBCALIB
 
       /// \brief Select the Z candidate large-R jet as the one closest in |Delta Phi|
       /// to the missing transverse momentum (mirrors python getZcandLR()).
-      /// \param jets     input large-R jet container (assumed size >= 2)
+      /// \param jets     input large-R jet container (assumed size == 2)
       /// \param met_phi  phi of the missing transverse momentum
       /// \param zcandIdx [out] index of the selected Z-candidate jet
       /// \param recoilIdx [out] index of the recoiling jet

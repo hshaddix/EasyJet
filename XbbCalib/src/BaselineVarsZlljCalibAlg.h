@@ -18,6 +18,7 @@
 #include <xAODEgamma/ElectronContainer.h>
 #include <xAODMuon/MuonContainer.h>
 #include <xAODMissingET/MissingETContainer.h>
+#include <xAODTruth/TruthParticleContainer.h>
 
 namespace XBBCALIB
 {
@@ -112,6 +113,7 @@ private:
     std::unique_ptr<FourVectorOutBlock> m_e1_candidate_4vec;
     std::unique_ptr<FourVectorOutBlock> m_mu0_candidate_4vec;
     std::unique_ptr<FourVectorOutBlock> m_mu1_candidate_4vec;
+    std::unique_ptr<FourVectorOutBlock> m_truth_z_candidate_4vec;
 
     // Setup lepton SFs
 
@@ -125,6 +127,15 @@ private:
     CP::SysWriteDecorHandle<float> m_Electron2SFHandle{"Electron2_effSF_%SYS%", this};
     CP::SysWriteDecorHandle<float> m_Muon1SFHandle{"Muon1_effSF_%SYS%", this};
     CP::SysWriteDecorHandle<float> m_Muon2SFHandle{"Muon2_effSF_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_SelectedLepton1SFHandle{"Lepton1_effSF_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_SelectedLepton2SFHandle{"Lepton2_effSF_%SYS%", this};
+
+    CP::SysReadHandle<xAOD::TruthParticleContainer> m_truthElectronHandle{
+        this, "truthelectrons", "TruthElectrons", "Truth electron container"};
+    CP::SysReadHandle<xAOD::TruthParticleContainer> m_truthMuonHandle{
+        this, "truthmuons", "TruthMuons", "Truth muon container"};
+
+    CP::SysReadDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
 
   };
 }

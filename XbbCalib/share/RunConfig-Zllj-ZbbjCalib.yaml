@@ -1,0 +1,5 @@
+include: [XbbCalib/RunConfig-Zllj.yaml]
+
+# Add selection to reproduce https://cds.cern.ch/record/2631319/files/ATL-COM-PHYS-2018-1063.pdf selection
+max_asymmetryCut: 0.15
+max_rapidityCut: 1.2

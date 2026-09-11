@@ -55,7 +55,7 @@ def ZtautauCalib_cfg(
             containerInKey=largejetkey,
             containerOutKey="XbbCalibLRJets_%SYS%",
             minPt=flags.Analysis.Large_R_jet.min_pT,
-            maxEta=flags.Analysis.Large_R_jet.maxEta,
+            maxEta=flags.Analysis.Large_R_jet.max_eta,
             minimumAmount=1,
         )
     )
@@ -76,7 +76,7 @@ def ZtautauCalib_cfg(
             containerInKey=electronkey,
             containerOutKey="XbbCalibElectrons_%SYS%",
             minPt=flags.Analysis.Electron.min_pT,
-            maxEta=flags.Analysis.Electron.maxEta,
+            maxEta=flags.Analysis.Electron.max_eta,
         )
     )
     cfg.merge(
@@ -85,7 +85,7 @@ def ZtautauCalib_cfg(
             containerInKey=muonkey,
             containerOutKey="XbbCalibMuons_%SYS%",
             minPt=flags.Analysis.Muon.min_pT,
-            maxEta=flags.Analysis.Muon.maxEta,
+            maxEta=flags.Analysis.Muon.max_eta,
         )
     )
 

@@ -44,7 +44,6 @@ Electron:
 Muon:
   min_pT: 7.e+3
   ID: "Medium"
-  maxEta: 2.7
   Iso: "Tight_VarRad"
 
 # list of triggers per year to consider

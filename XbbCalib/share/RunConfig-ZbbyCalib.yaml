@@ -49,17 +49,16 @@ Large_R_jet:
 Photon:
   ID: "Tight" # Loose, Tight
   Iso: "FixedCutTight"
-  # ntuple path applies a stricter 175 GeV cut downstream
-  min_pT: 150.e+3
+  min_pT: 175.e+3
 
 
 Electron:
-  min_pT: 28.e+3
-  ID: "TightLH"
+  min_pT: 7.e+3
+  ID: "MediumLH"
   Iso: "Tight_VarRad"
 
 Muon:
-  min_pT: 28.e+3
+  min_pT: 7.e+3
   ID: "Medium"
   Iso: "Tight_VarRad"
 # list of triggers per year to consider

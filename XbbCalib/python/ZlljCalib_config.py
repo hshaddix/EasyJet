@@ -1,6 +1,5 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
-import AthenaCommon.SystemOfUnits as Units
 
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg, JetSelectorAlgCfg,
@@ -30,13 +29,13 @@ def ZlljCalib_cfg(flags, largejetkey, muonkey, electronkey,
                                  containerInKey=muonkey,
                                  containerOutKey="XbbCalibMuons_%SYS%",
                                  minPt=flags.Analysis.Muon.min_pT,
-                                 maxEta=flags.Analysis.Muon.maxEta))
+                                 maxEta=flags.Analysis.Muon.max_eta))
 
     cfg.merge(ElectronSelectorAlgCfg(flags,
                                      containerInKey=electronkey,
                                      containerOutKey="XbbCalibElectrons_%SYS%",
                                      minPt=flags.Analysis.Electron.min_pT,
-                                     maxEta=flags.Analysis.Electron.maxEta))
+                                     maxEta=flags.Analysis.Electron.max_eta))
 
     cfg.merge(LeptonOrderingAlgCfg(flags,
                                    containerInEleKey=electronkey,
@@ -49,7 +48,7 @@ def ZlljCalib_cfg(flags, largejetkey, muonkey, electronkey,
             containerInKey=largejetkey,
             containerOutKey="XbbCalibLRJets_%SYS%",
             minPt=flags.Analysis.Large_R_jet.min_pT,
-            maxEta=flags.Analysis.Large_R_jet.maxEta,
+            maxEta=flags.Analysis.Large_R_jet.max_eta,
             minimumAmount=1,
         )
     )
@@ -59,6 +58,9 @@ def ZlljCalib_cfg(flags, largejetkey, muonkey, electronkey,
             "ZlljCalibSelectorAlg",
             eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
             bypass=flags.Analysis.bypass,
+            min_deltaPhiCut=flags.Analysis.min_deltaPhiCut if "min_deltaPhiCut" in flags.Analysis else -1,
+            max_asymmetryCut=flags.Analysis.max_asymmetryCut if "max_asymmetryCut" in flags.Analysis else -1,
+            max_rapidityCut=flags.Analysis.max_rapidityCut if "max_rapidityCut" in flags.Analysis else -1,
         )
     )
 
@@ -91,7 +93,7 @@ def get_BaselineVarsZlljCalibAlg_variables(flags):
     float_variable_names = []
     int_variable_names = ["lrjets_n", "electrons_n", "muons_n"]
 
-    for object in ["Zcand"]:
+    for object in ["Zcand", "Zcand_truth"]:
         for var in ["pt", "eta", "phi", "m"]:
             float_variable_names.append(f"{object}_{var}")
 
@@ -131,9 +133,6 @@ def ZlljCalib_branches(flags):
         = get_BaselineVarsZlljCalibAlg_variables(flags)
     float_variable_names += baseline_float_variables
     int_variable_names += baseline_int_variables
-    # for object in ["ll"]:
-    #     for var in ["pt", "eta", "phi", "m", "dR", "dPhi", "dEta"]:
-    #         float_variable_names.append(f"{object}_{var}")
 
     all_baseline_variable_names += [*float_variable_names, *int_variable_names]
 

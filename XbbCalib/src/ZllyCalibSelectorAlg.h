@@ -51,7 +51,6 @@ namespace XBBCALIB
         "PASS_TWO_SF_LEPTONS",
         "PASS_ZPT_CUT",
         "PASS_ZMASS_WINDOW",
-        "PASS_PHOTON_PT",
         "PASS_DPHI_ZGAMMA",
       };
       CutManager m_ZllyCalibCuts;
@@ -92,7 +91,6 @@ namespace XBBCALIB
       {XBBCALIB::PASS_TWO_SF_LEPTONS, "PASS_TWO_SF_LEPTONS"},
       {XBBCALIB::PASS_ZPT_CUT, "PASS_ZPT_CUT"},
       {XBBCALIB::PASS_ZMASS_WINDOW, "PASS_ZMASS_WINDOW"},
-      {XBBCALIB::PASS_PHOTON_PT, "PASS_PHOTON_PT"},
       {XBBCALIB::PASS_DPHI_ZGAMMA, "PASS_DPHI_ZGAMMA"},
       };
       std::unordered_map<std::string, XBBCALIB::Booleans> m_nameToBool;

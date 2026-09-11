@@ -1,0 +1,4 @@
+include: [XbbCalib/RunConfig-Zllj.yaml]
+
+# Add selection cut, to ensure Z and jet separation
+min_deltaPhiCut: 1.5707963

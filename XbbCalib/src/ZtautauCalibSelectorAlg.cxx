@@ -161,18 +161,18 @@ namespace XBBCALIB
       // Apply Selection
       //************
       float deltaPhi_largeR = 0;
-      if (n_boosted_jets >= 2) {
+      if (n_boosted_jets == 2) {
         const xAOD::Jet *j0 = lRjets->at(0);
         const xAOD::Jet *j1 = lRjets->at(1);
         deltaPhi_largeR = j0->p4().DeltaPhi(j1->p4());
       }
 
-      // Need to have a at least 2 large-R jets with DPhi > 1.5, no electrons
+      // Need to have a at least 2 large-R jets with DPhi > pi / 2, no electrons
       // and MET > 30 GeV.
       pass_baseline = (
         n_boosted_jets == 2 and
         n_electrons == 0 and
-        std::abs(deltaPhi_largeR) >= 1.5 and
+        std::abs(deltaPhi_largeR) > 1.5707963 and
         met->met() > 30
       );
 

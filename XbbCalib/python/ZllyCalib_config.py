@@ -1,6 +1,5 @@
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
-import AthenaCommon.SystemOfUnits as Units
 
 from EasyjetHub.algs.postprocessing.SelectorAlgConfig import (
     MuonSelectorAlgCfg, ElectronSelectorAlgCfg, LeptonOrderingAlgCfg,
@@ -30,12 +29,13 @@ def ZllyCalib_cfg(flags, largejetkey, muonkey, electronkey, photonkey,
                                  containerInKey=muonkey,
                                  containerOutKey="XbbCalibMuons_%SYS%",
                                  minPt=flags.Analysis.Muon.min_pT,
-                                 maxEta=flags.Analysis.Muon.maxEta))
+                                 maxEta=flags.Analysis.Muon.max_eta))
 
     cfg.merge(ElectronSelectorAlgCfg(flags,
                                      containerInKey=electronkey,
                                      containerOutKey="XbbCalibElectrons_%SYS%",
-                                     minPt=flags.Analysis.Electron.min_pT))
+                                     minPt=flags.Analysis.Electron.min_pT,
+                                     maxEta=flags.Analysis.Muon.max_eta))
 
     cfg.merge(LeptonOrderingAlgCfg(flags,
                                    containerInEleKey=electronkey,
@@ -44,7 +44,7 @@ def ZllyCalib_cfg(flags, largejetkey, muonkey, electronkey, photonkey,
     cfg.merge(PhotonSelectorAlgCfg(flags,
                                    containerInKey=photonkey,
                                    containerOutKey="XbbCalibPhotons_%SYS%",
-                                   minPt=150. * Units.GeV
+                                   minPt=flags.Analysis.Photon.min_pT
                                    ))
 
     cfg.merge(
@@ -54,8 +54,7 @@ def ZllyCalib_cfg(flags, largejetkey, muonkey, electronkey, photonkey,
             containerInKey=largejetkey,
             containerOutKey="XbbCalibLRJets_%SYS%",
             minPt=flags.Analysis.Large_R_jet.min_pT,
-            maxEta=flags.Analysis.Large_R_jet.maxEta,
-            minimumAmount=1,
+            maxEta=flags.Analysis.Large_R_jet.max_eta,
         )
     )
 

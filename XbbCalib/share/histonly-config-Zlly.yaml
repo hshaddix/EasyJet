@@ -1,5 +1,5 @@
 include:
-  - XbbCalib/RunConfig_Zlly.yaml
+  - XbbCalib/RunConfig-Zlly.yaml
 
 output:
   h5:

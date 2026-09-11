@@ -1,5 +1,5 @@
 
-include: [XbbCalib/RunConfig_Zllj.yaml]
+include: [XbbCalib/RunConfig-Zllj.yaml]
 
 # Run all CP syst
 do_CP_systematics: true

@@ -37,7 +37,7 @@ Large_R_jet:
   max_mass: 300.e+3
   min_pT: 200.e+3
   max_pT: 3000.e+3
-  maxEta: 2.0
+  max_eta: 2.0
   runMuonJetPtCorr: false
   amount: 2
   flat_mass_selections:
@@ -47,18 +47,19 @@ Photon:
   ID: "Loose"
   Iso: "FixedCutLoose"
 
+# here we use loose electrons and we veto on them to remove fakes.
 Electron:
   ID: "LooseBLayerLH"
   Iso: "Loose_VarRad"
   min_pT: 7.e+3
-  maxEta: 2.47
+  max_eta: 2.5
   do_parent_decoration: true
 
 Muon:
-  ID: "Loose"
-  Iso: "PflowLoose_VarRad"
   min_pT: 7.e+3
-  maxEta: 2.5
+  ID: "Medium"
+  Iso: "Tight_VarRad"
+  max_eta: 2.5
   do_parent_decoration: true
 
 Small_R_jet:

@@ -143,6 +143,8 @@ private:
                                                        this};
     CP::SysWriteDecorHandle<float> m_Muon1SFHandle{"Muon1_effSF_%SYS%", this};
     CP::SysWriteDecorHandle<float> m_Muon2SFHandle{"Muon2_effSF_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_SelectedLepton1SFHandle{"Lepton1_effSF_%SYS%", this};
+    CP::SysWriteDecorHandle<float> m_SelectedLepton2SFHandle{"Lepton2_effSF_%SYS%", this};
 
     // Setup photon SFs
     Gaudi::Property<std::string> m_photonWPName{
@@ -151,6 +153,9 @@ private:
     CP::SysReadDecorHandle<float> m_ph_SF{"", this};
     CP::SysWriteDecorHandle<float> m_PhotonSFHandle{"photon_effSF_%SYS%",
                                                     this};
+
+    CP::SysReadDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
+
   };
 } // namespace XBBCALIB
 

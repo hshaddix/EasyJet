@@ -73,7 +73,7 @@ namespace XBBCALIB
       Gaudi::Property<float> m_minJetBjrPtCut
         { this, "minJetBjrPtCut", 200e3, "Minimum BJR pT [MeV]" };
       Gaudi::Property<float> m_minPhotonPtCut
-        { this, "minPhotonPtCut", 150e3, "Minimum photon pT [MeV]" };
+        { this, "minPhotonPtCut", 175e3, "Minimum photon pT [MeV]" };
       
 
 

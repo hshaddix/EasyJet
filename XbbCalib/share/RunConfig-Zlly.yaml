@@ -31,35 +31,34 @@ do_photons: true
 # Toggles for reconstructed objects decorations
 Small_R_jet:
   btag_wp: "GN2v01_FixedCutBEff_77"
-  maxEta: 2.5
+  max_eta: 2.5
   selectBjet: false
 
 Large_R_jet:
   min_pT: 200.e+3
-  maxEta: 2.0
+  max_eta: 2.0
   runMuonJetPtCorr: false
   flat_mass_selections:
-    include: [EasyjetHub/xbb-taggers/GN2Xv01.yaml]
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml]
 
 Photon:
   ID: "Tight"
   Iso: "FixedCutTight"
-  min_pT: 150.e+3
+  min_pT: 175.e+3
 
 Electron:
-  min_pT: 7.e+3
-  ID: "LooseBLayerLH"
-  Iso: "NonIso"
-  extra_wps:
-    - ["MediumLH", "TightTrackOnly_VarRad"]
+  min_pT: 27.e+3
+  max_eta: 2.5
+  ID: "MediumLH"
+  Iso: "TightTrackOnly_VarRad"
+
 
 Muon:
-  min_pT: 7.e+3
-  ID: "Loose"
-  maxEta: 2.7
-  Iso: "PflowLoose_VarRad"
-  extra_wps:
-    - ["Medium", "Tight_VarRad","HighPt"]
+  min_pT: 25.e+3
+  ID: "HighPt"
+  max_eta: 2.5
+  Iso: "Tight_VarRad"
+  calibrationMode: "correctData_IDMS"
 
 # list of triggers per year to consider
 Trigger:
@@ -81,6 +80,7 @@ OverlapRemoval:
 # Include the TTree configuration and update details
 ttree_output:
   include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+  slim_variables_with_syst: true
   # Our overrides. All defaults are off
   reco_outputs:
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
@@ -102,7 +102,6 @@ CutList:
   - PASS_EXACTLY_ONE_PHOTON
   - PASS_ZPT_CUT
   - PASS_ZMASS_WINDOW
-  - PASS_PHOTON_PT
   - PASS_DPHI_ZGAMMA
 
 grid:

@@ -22,6 +22,9 @@ namespace XBBCALIB
     ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
     ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
 
+    // special flag for all cuts
+    ATH_CHECK (m_passallcuts.initialize(m_systematicsList, m_eventHandle));
+
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize()); 
 
@@ -63,30 +66,56 @@ namespace XBBCALIB
       //************
       // Large-R Jet
       //************
-      pass_baseline = (lrjets->size() != 0);
-      const xAOD::Jet* j0 = nullptr;
-      if (pass_baseline) {
-        j0 = lrjets->at(0);
-        pass_baseline = (j0->pt() > 200000.) && (std::abs(j0->eta()) < 2.0);
-      }
+      pass_baseline = (lrjets->size() == 1);
 
-      bool pass_ele = (electrons->size() == 2);
-      bool pass_mu = (muons->size() == 2);
-      pass_baseline &= (pass_ele || pass_mu);
+      bool pass_ele = false;
+      bool pass_mu = false;
+      int n_ele = electrons->size();
+      int n_muon = muons->size();
+      int n_lept = n_muon + n_ele;
+
       //************
       // Z candidate kinematics
       //************
-      if (pass_baseline) {
-        TLorentzVector ll;
-        if (pass_ele) {
-          ll = electrons->at(0)->p4() + electrons->at(1)->p4();
-        } else {
-          ll = muons->at(0)->p4() + muons->at(1)->p4();
-        }
-        pass_baseline &= (ll.Pt() > 500000. && ll.Pt() < 1000000.);
-        pass_baseline &= (ll.M() > 70000. && ll.M() < 110000.);
-        pass_baseline &= (std::abs(ll.DeltaPhi(j0->p4())) > 1.5);
+      TLorentzVector ll;
+      if (n_ele == 2) {
+        ll = electrons->at(0)->p4() + electrons->at(1)->p4();
+        pass_ele = true;
+      } else if (n_muon == 2) {
+        ll = muons->at(0)->p4() + muons->at(1)->p4();
+        pass_mu = true;
       }
+
+      // veto possible states with more than 2 leptons 
+      pass_baseline &= (pass_ele != pass_mu);
+      if (n_lept != 2) pass_baseline = false;
+
+      // Additonal kinematic cuts
+      if (pass_baseline) {
+        // add mass and pt requirements
+        pass_baseline &= (ll.Pt() > 200000. && ll.Pt() < 3000000.);
+        pass_baseline &= (ll.M() > 70000. && ll.M() < 110000.);
+        
+        const xAOD::Jet *j0 = lrjets->at(0);
+        // Delta Phi separation (j,Z)
+        if (m_deltaPhiCut > 0) {    
+          float deltaPhi_ll_jet = j0->p4().DeltaPhi(ll);
+          pass_baseline &= std::abs(deltaPhi_ll_jet) > m_deltaPhiCut;
+        }
+        // pT asymmetry using BJR pT: (pt_ll - pt_j0) / (pt_ll + pt_j0) < cut
+        if (m_asymmetryCut > 0) {
+          float ptSum = j0->pt() + ll.Pt();
+          bool pass_asymmetry = (ptSum > 0) && ((ll.Pt() - j0->pt()) / ptSum < m_asymmetryCut);
+          pass_baseline &= (ll.Pt() > j0->pt());
+          pass_baseline &= pass_asymmetry;
+        }
+        // Rapidity difference: |y0 - y1| < cut
+        if (m_rapidityCut > 0) {
+          bool pass_rapidity = std::abs(j0->rapidity() - ll.Rapidity()) < m_rapidityCut;
+          pass_baseline &= pass_rapidity;
+        }
+      }
+      m_passallcuts.set(*event, pass_baseline, sys);
 
 
       if (!m_bypass && !pass_baseline) continue;
