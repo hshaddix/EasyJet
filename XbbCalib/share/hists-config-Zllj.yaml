@@ -8,8 +8,12 @@ variables:
     n_bins: 40
   Zcand_pt:
     lower: 0
-    upper: 3000000.
-    n_bins: 60
+    upper: 3000000
+    n_bins: 150
+  Zcand_truth_pt:
+    lower: 0
+    upper: 3000000
+    n_bins: 150
   Zcand_dR:
     lower: 0
     upper: 5.0

@@ -2,3 +2,10 @@ include: [XbbCalib/RunConfig-Zllj.yaml]
 
 # Add selection cut, to ensure Z and jet separation
 min_deltaPhiCut: 1.5707963
+
+Large_R_jet:
+  min_pT: 200.e+3
+  max_eta: 2.0
+  runMuonJetPtCorr: false
+  flat_mass_selections:
+    include: [EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml, EasyjetHub/xbb-taggers/GN3XPV01_htt.yaml]
