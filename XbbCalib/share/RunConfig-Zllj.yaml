@@ -25,7 +25,7 @@ Small_R_jet:
   selectBjet: false
 
 Large_R_jet:
-  min_pT: 200.e+3
+  min_pT: 500.e+3
   max_eta: 2.0
   runMuonJetPtCorr: false
   flat_mass_selections:
