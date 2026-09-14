@@ -295,6 +295,7 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
         lr_jet_type == "UFO"
         and lr_output_flags.bjet_regression
         and flags.Analysis.do_CP_systematics
+        and flags.Input.isMC
         and flags.Analysis.do_bjr_syst_propagation
     ):
         configSeq.append(BJRSystPropagationConfig())
@@ -306,6 +307,7 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
         lr_jet_type == "UFO"
         and lr_output_flags.bjet_regression
         and flags.Analysis.do_CP_systematics
+        and flags.Input.isMC
         and flags.Analysis.do_bjr_kinematic_shift_syst
     ):
         configSeq.append(BJRKinematicShiftConfig())
