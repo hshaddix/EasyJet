@@ -1,6 +1,5 @@
 disable_metadata: false
-selection:
-  n_lrjets_min: 1
+selection: {}
 variables:
   Zcand_m:
     lower: 70000
@@ -41,4 +40,4 @@ multidim:
     mass_upper: 110000
     mass_n_bins: 40
     pt_var: Zcand_pt
-    pt_edges: [200000., 250000., 350000., 500000., 700000., 1000000., 1500000.]
+    pt_edges: [200000., 250000., 350000., 500000.]
