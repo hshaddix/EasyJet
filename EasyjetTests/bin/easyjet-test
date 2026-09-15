@@ -111,6 +111,7 @@ declare -A DATAFILES=(
     [ssWW-mc23]=${PHYS_TTBAR_MC23}
     [ZQG-mc23]=${PHYS_TTBAR_MC23}
     [HZy-mc23]=${PHYS_TTBAR_MC23}
+    [HZy-data22]=${PHYS_DATA_2022}
     [vbshiggs-semilep-mc23]=${PHYS_TTBAR_MC23}
     # systematics enabled
     [syst-mc23]=${PHYS_TTBAR_MC23}
@@ -228,6 +229,7 @@ declare -A TESTS=(
     [ssWW-mc23]="simple ssWW-ntupler"
     [ZQG-mc23]="simple ZQG-ntupler"
     [HZy-mc23]="simple HZy-ntupler"
+    [HZy-data22]="simple HZy-ntupler"
     [vbshiggs-semilep-mc23]="simple vbshiggs-ntupler"
     # non-ntupler
     [aod-fast-bbbb-mc23]="aod-fast bbbb-ntupler bbbb-hists \
@@ -320,6 +322,7 @@ declare -A CONFIGS=(
     [ssWW-mc23]=ssWWAnalysis/RunConfig-Signal-ssWW-bypass.yaml
     [ZQG-mc23]=ZQGAnalysis/RunConfig-ZQG-bypass.yaml
     [HZy-mc23]=HZyAnalysis/RunConfig-HZy-bypass.yaml
+    [HZy-data22]=HZyAnalysis/RunConfig-HZy-bypass.yaml
     [vbshiggs-semilep-mc23]=vbshiggsAnalysis/RunConfig-semiLep-bypass.yaml
     # MC23 AF3
     [SHbbyy-mc23af3]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml

@@ -139,6 +139,13 @@ namespace HZY
       electrons_LIdLIso->swap(*electrons_same_track_OR);
 
       // Overlap Removal Step 3: Electron/Electron Calo Direction OR
+      auto caloEta = [](const xAOD::Electron *e) {
+        return e->caloCluster() ? e->caloCluster()->eta() : e->eta();
+      };
+      auto caloPhi = [](const xAOD::Electron *e) {
+        return e->caloCluster() ? e->caloCluster()->phi() : e->phi();
+      };
+
       auto electrons_after_calo_OR = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
       std::sort(electrons_LIdLIso->begin(), electrons_LIdLIso->end(),
                 [](const auto& a, const auto& b){
@@ -153,8 +160,8 @@ namespace HZY
           for (const auto& keptProxy : *electrons_after_calo_OR) {
               const xAOD::Electron* kept = keptProxy;
 
-              if (std::fabs(el->eta() - kept->eta()) < m_dEta_ElEl.value() &&
-                  std::fabs(TVector2::Phi_mpi_pi(el->phi() - kept->phi())) < m_dPhi_ElEl.value()) {
+              if (std::fabs(caloEta(el) - caloEta(kept)) < m_dEta_ElEl.value() &&
+                  std::fabs(TVector2::Phi_mpi_pi(caloPhi(el) - caloPhi(kept))) < m_dPhi_ElEl.value()) {
                   overlap = true;
                   break;
               }

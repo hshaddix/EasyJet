@@ -44,9 +44,34 @@ def HZy_TriggerSFCfg(flags):
     return cfg
 
 
+def HZy_JvtEventSFCfg(flags):
+    """Compute event-level JVT SF on HZyJetsOR_NoJvt (after HZy OR, before JVT cut).
+
+    This container includes both JVT-passing and JVT-failing jets,
+    and excludes only jets removed by HZy custom OR. Using 'no_jvt'
+    as preselection ensures only jets within the efficiency tool's
+    validity range contribute to the product.
+    """
+    cfg = ComponentAccumulator()
+
+    if not flags.Input.isMC:
+        return cfg
+
+    cfg.addEventAlgo(
+        CompFactory.CP.AsgEventScaleFactorAlg(
+            "HZyJvtEventScaleFactorAlg",
+            particles="HZyJetsOR_NoJvt_%SYS%",
+            preselection="no_jvt",
+            scaleFactorInputDecoration="jvt_effSF_%SYS%",
+            scaleFactorOutputDecoration="hzy_jvt_effSF_%SYS%",
+        )
+    )
+    return cfg
+
+
 def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             float_variables=None, int_variables=None):
-    keys = ["baseline", "photons", "leptons", "jets", "llcand"]
+    keys = ["baseline", "photons", "leptons", "jets", "llcand", "truth"]
     if not float_variables:
         float_variables = {key: [] for key in keys}
     if not int_variables:
@@ -76,11 +101,16 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
                                    containerInEleKey=electronkey,
                                    containerInMuKey=muonkey))
 
+    doJvtSel = getattr(flags.Analysis.Small_R_jet, 'doJvtSelection', True)
     cfg.merge(JetSelectorAlgCfg(flags,
                                 containerInKey=smalljetkey,
                                 containerOutKey="HZyAnalysisJets_%SYS%",
                                 minPt=flags.Analysis.Small_R_jet.min_pT,
                                 pTsort=True,
+                                baselineSelectionName=(
+                                    "" if not doJvtSel
+                                    else "baselineSelection_outputSelect_thin_%SYS%"
+                                ),
                                 bTagWPDecorName="",
                                 selectBjet=False))
 
@@ -165,13 +195,20 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             doSystematics=flags.Analysis.do_CP_systematics,
         )
     )
-    
-    # Trigger matching / trigger SF using the selected Z-candidate leptons + possible third leptons.
+
+    # Trigger matching / trigger SF
+    # using the selected Z-candidate leptons + possible third leptons.
     # This must run after PhotonVarsHZyAlg creates:
     # HZyElOR_Photons_Extra_%SYS% and HZyMuOR_Photons_Extra_%SYS%
     # and before HZySelectorAlg reads:
     # globalTriggerMatch_%SYS%
     cfg.merge(HZy_TriggerSFCfg(flags))
+
+    # Compute event-level JVT SF on HZyJetsOR_NoJvt (after HZy OR, before JVT cut).
+    # This container includes both JVT-passing and JVT-failing jets,
+    # so the SF correctly accounts for both efficiency and inefficiency contributions.
+    # Using HZy-specific OR instead of standard CP OR ensures analysis consistency.
+    cfg.merge(HZy_JvtEventSFCfg(flags))
 
     cfg.addEventAlgo(
         CompFactory.HZY.BaselineVarsHZyAlg(
@@ -212,6 +249,7 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
     cfg.addEventAlgo(
         CompFactory.HZY.JetVarsHZyAlg(
             "JetVarsHZyAlg",
+            isMC=flags.Input.isMC,
             floatVariableList=float_variables['jets'],
             intVariableList=int_variables['jets'],
             floatVecVariableList=jet_floatvec_variables,
@@ -219,6 +257,20 @@ def HZy_cfg(flags, smalljetkey, photonkey, electronkey, muonkey,
             bTagWPDecorName="ftag_select_" + flags.Analysis.Small_R_jet.btag_wp,
         )
     )
+
+    # Truth label for the decay of the associated Z
+    if flags.Analysis.save_truth_vars:
+        cfg.addEventAlgo(
+            CompFactory.HZY.TruthVarsHZyAlg(
+                "TruthVarsHZyAlg",
+                isMC=flags.Input.isMC,
+                TruthBosonsInKey=(
+                    flags.Analysis.container_names.input.truthSMParticles
+                ),
+                intVariableList=int_variables['truth'],
+                doSystematics=flags.Analysis.do_CP_systematics,
+            )
+        )
 
     return cfg
 
@@ -248,9 +300,21 @@ def get_PhotonVarsHZyAlg_variables(flags):
 def get_LeptonVarsHZyAlg_variables(flags):
     float_variable_names = [
         "LepLead_effSF", "LepSub_effSF", "Muon_Fsr_dR", "LepLepZ_M_Fsr",
+        # Calibrated FSR photon kinematics, published so that every consumer
+        # rebuilds the same four-vector the constraint fit was given. The raw
+        # xAOD object in HZyFsrObject is NOT interchangeable with these
+        "Muon_Fsr_Pt", "Muon_Fsr_Eta", "Muon_Fsr_Phi",
     ]
-    for suffix in ["Raw", "Cstr"]:
-        for obj in ["LepLepZ", "LepLead", "LepSub"]:
+    # Z-mass constraint applied with the FSR photon left out of the fit.
+    # With LepLepZ_M_Raw (neither), LepLepZ_M_Fsr (FSR only) and
+    # LepLepZ_M_Cstr (both) these give all four FSR x constraint
+    # combinations, for isolating what each step does to m(ll)
+    for suffix in ["Raw", "Cstr", "CstrNoFsr"]:
+        if suffix == "CstrNoFsr":
+            objs = ["LepLepZ"]
+        else:
+            objs = ["LepLepZ", "LepLead", "LepSub"]
+        for obj in objs:
             for var in ["M", "Pt", "Eta", "Phi"]:
                 float_variable_names.append(f"{obj}_{var}_{suffix}")
 
@@ -274,9 +338,25 @@ def get_JetVarsHZyAlg_variables(flags):
     return float_variable_names, int_variable_names
 
 
+def get_TruthVarsHZyAlg_variables(flags):
+    """Truth label for the associated Z decay, written by TruthVarsHZyAlg.
+
+    AssocZ_DecayLabel is 0 when the event has no associated Z (ggF, VBF and
+    data), 1 for Z->ee/mumu, 2 for Z->nunu, 3 for Z->qq and 4 for Z->tautau.
+    """
+    float_variable_names = []
+    int_variable_names = (["AssocZ_DecayLabel"]
+                          if flags.Analysis.save_truth_vars else [])
+
+    return float_variable_names, int_variable_names
+
+
 def get_BaselineVarsHZyAlg_variables(flags):
     float_variable_names = [
         "BeamSpotWeight", "MC_Weight", "LLGam_M_Fsr",
+        # m(llg) built from the constrained Z of the FSR-free fit; the
+        # LLGam_M_{Raw,Fsr,CstrNoFsr,Cstr} set is the FSR x constraint 2x2
+        "LLGam_M_CstrNoFsr",
     ]
 
     for obj in ["LLGam"]:
@@ -319,7 +399,7 @@ def get_BaselineVarsHZyAlg_variables(flags):
 def get_JetVarsHZyAlg_floatvec_variables(flags):
     return [
         "jets_pt", "jets_eta", "jets_phi", "jets_mass", "jets_e",
-        "jets_PartonTruthLabelID", "jets_QGScore",
+        "jets_PartonTruthLabelID", "jets_QGScore", "jets_NNJvt", "jets_jvtEffSF",
         "jets_NumTrkPt500", "jets_NumTrkPt1000", "jets_NTracks",
     ]
 
@@ -333,7 +413,7 @@ def HZy_branches(flags):
     # this will be all the variables that are calculated by the
     # BaselineVarsAlg algorithm
     all_baseline_variable_names = []
-    keys = ["baseline", "photons", "leptons", "jets"]
+    keys = ["baseline", "photons", "leptons", "jets", "truth"]
     float_variable_names = {key: [] for key in keys}
     int_variable_names = {key: [] for key in keys}
 
@@ -349,6 +429,8 @@ def HZy_branches(flags):
         = get_LeptonVarsHZyAlg_variables(flags)
     jet_float_variables, jet_int_variables \
         = get_JetVarsHZyAlg_variables(flags)
+    truth_float_variables, truth_int_variables \
+        = get_TruthVarsHZyAlg_variables(flags)
 
     float_variable_names['baseline'] += baseline_float_variables
     int_variable_names['baseline'] += baseline_int_variables
@@ -358,6 +440,8 @@ def HZy_branches(flags):
     int_variable_names['leptons'] += lepton_int_variables
     float_variable_names['jets'] += jet_float_variables
     int_variable_names['jets'] += jet_int_variables
+    float_variable_names['truth'] += truth_float_variables
+    int_variable_names['truth'] += truth_int_variables
 
     all_baseline_variable_names += [*chain.from_iterable(float_variable_names.values()),
                                     *chain.from_iterable(int_variable_names.values())]
@@ -412,6 +496,12 @@ def HZy_branches(flags):
                      + flags.Analysis.systematics_suffix_separator + sys_suffix]
 
     s_name = flags.Analysis.selection_name
+    # MC only: HZy_JvtEventSFCfg is a no-op on data, so the decoration does
+    # not exist there and requesting it unconditionally makes the ntuple
+    # maker fail in initialize().
+    if flags.Input.isMC:
+        branches += [f"EventInfo.hzy_jvt_effSF_{sys_suffix} -> HZy_hzy_jvt_effSF"
+                     + flags.Analysis.systematics_suffix_separator + sys_suffix]
     branches += [f"EventInfo.Pass_{s_name}_{sys_suffix} -> HZy_pass_{s_name}"
                  + flags.Analysis.systematics_suffix_separator + sys_suffix]
 

@@ -35,6 +35,7 @@ namespace HZY
 
     ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyJetORHandle.initialize(m_systematicsList));
+    ATH_CHECK(m_HZyJetORNoJvtHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyElORPhotonsExtraHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyMuORPhotonsExtraHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyJetORExtraHandle.initialize(m_systematicsList));
@@ -319,7 +320,7 @@ namespace HZY
           elExtraView->push_back(el);
       }
       if (extraLabel == 1 && bestExtra)
-        elExtraView->push_back(static_cast<const xAOD::Electron *>(bestExtra));
+        elExtraView->push_back(dynamic_cast<const xAOD::Electron *>(bestExtra));
 
       auto muExtraView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
       if (HZyMuonsOR_ZCand) {
@@ -327,7 +328,7 @@ namespace HZY
           muExtraView->push_back(mu);
       }
       if (extraLabel == 2 && bestExtra)
-        muExtraView->push_back(static_cast<const xAOD::Muon *>(bestExtra));
+        muExtraView->push_back(dynamic_cast<const xAOD::Muon *>(bestExtra));
       
       //save ExtraLep p4
       if (bestExtra) {
@@ -352,25 +353,56 @@ namespace HZY
       for (const xAOD::Jet *jet : *jetsView)
         jetsORExtraView->push_back(jet);
 
-      if (bestExtra){
+      if (bestExtra) {
         if (extraLabel == 1) {
-          auto singleElView = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
-          singleElView->push_back(static_cast<const xAOD::Electron *>(bestExtra));
-          safeRemoveOverlap(*jetsORExtraView, *singleElView, m_dR_Jet_El);
+          auto el = dynamic_cast<const xAOD::Electron*>(bestExtra);
+          if (el) {
+            auto v = std::make_unique<ConstDataVector<xAOD::ElectronContainer>>(SG::VIEW_ELEMENTS);
+            v->push_back(el);
+            safeRemoveOverlap(*jetsORExtraView, *v, m_dR_Jet_El);
+          }
         } else if (extraLabel == 2) {
-          auto singleMuView = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
-          singleMuView->push_back(static_cast<const xAOD::Muon *>(bestExtra));
-          const auto *muPtr = static_cast<const xAOD::Muon *>(bestExtra);
-          if (muPtr->muonType() == xAOD::Muon::MuonType::CaloTagged)
-            safeRemoveOverlap(*jetsORExtraView, *singleMuView, m_dR_Jet_CaloMu);
-          else
-            safeRemoveOverlap(*jetsORExtraView, *singleMuView, m_dR_Jet_StacoMu);
+          auto mu = dynamic_cast<const xAOD::Muon*>(bestExtra);
+          if (mu) {
+            auto v = std::make_unique<ConstDataVector<xAOD::MuonContainer>>(SG::VIEW_ELEMENTS);
+            v->push_back(mu);
+            safeRemoveOverlap(*jetsORExtraView, *v,
+              mu->muonType() == xAOD::Muon::CaloTagged ? m_dR_Jet_CaloMu : m_dR_Jet_StacoMu);
+          }
         }
+      }
+
+      // Save jetsORExtraView before JVT cut as HZyJetsOR_NoJvt
+      // (used for HZy-specific JVT event SF computation, no LooseBad filter)
+      auto jetsORNoJvtView = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
+      for (const xAOD::Jet *jet : *jetsORExtraView)
+        jetsORNoJvtView->push_back(jet);
+
+      // Apply LooseBad jet cleaning (only for HZyJetsOR_Extra downstream)
+      {
+        static const SG::ConstAccessor<char> acc_JetCleanLooseBad("DFCommonJets_jetClean_LooseBad");
+        auto jetsCleaned = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
+        for (const xAOD::Jet *jet : *jetsORExtraView) {
+          if (acc_JetCleanLooseBad.isAvailable(*jet) && acc_JetCleanLooseBad(*jet))
+            jetsCleaned->push_back(jet);
+        }
+        jetsORExtraView = std::move(jetsCleaned);
+      }
+
+      // Apply JVT cut to jetsORExtraView for downstream use
+      {
+        auto jetsWithJvt = std::make_unique<ConstDataVector<xAOD::JetContainer>>(SG::VIEW_ELEMENTS);
+        for (const xAOD::Jet *jet : *jetsORExtraView) {
+          if (m_jvtSelection.isAvailable(*jet) && m_jvtSelection(*jet))
+            jetsWithJvt->push_back(jet);
+        }
+        jetsORExtraView = std::move(jetsWithJvt);
       }
 
       ATH_CHECK(m_HZyElORPhotonsExtraHandle.record(std::move(elExtraView), sys, ctx));
       ATH_CHECK(m_HZyMuORPhotonsExtraHandle.record(std::move(muExtraView), sys, ctx));
-      ATH_CHECK(m_HZyJetORExtraHandle.record(std::move(jetsORExtraView), sys, ctx));//jets overlaped with Z candidates, extra lepton and photon
+      ATH_CHECK(m_HZyJetORExtraHandle.record(std::move(jetsORExtraView), sys, ctx));//jets overlaped with Z candidates, extra lepton and photon, with JVT
+      ATH_CHECK(m_HZyJetORNoJvtHandle.record(std::move(jetsORNoJvtView), sys, ctx));//jets overlaped with Z candidates, extra lepton and photon, no JVT
       ATH_CHECK(m_HZyPhotonORHandle.record(std::move(photonsView), sys, ctx));
       ATH_CHECK(m_HZyJetORHandle.record(std::move(jetsView), sys, ctx));//jets overlaped with Z candidates and photon 
       ATH_CHECK(m_HZyElORPhotonsHandle.record(std::move(electronsORPhotonsView), sys, ctx));

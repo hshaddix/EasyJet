@@ -9,8 +9,11 @@ Analysis Package for Full Run3 $H\rightarrow Z \gamma$ analyis
   - `HZy_config`
 - `share/`: yaml files containing configurations used by the components
   - `RunConfig-HZy-base`: base configuration file, where all the common flags are set, configurations called by the executables, no `CutList` defined here, all configs that define a `CutList` should include this (see below);
-  - `RunConfig-HZy`: analysis configuration file for selected events, defining a `CutList` and including `RunConfig-HZy-base`, where all the common flags are set;
-  - `RunConfig-HZy-bypass`: bypass configuration file for the run-through/debug mode, including `RunConfig-HZy`, but with the `bypass` flag set to true, flags for the cuts are saved, which allows to run the ntupler without applying any cuts;
+  - `RunConfig-HZ-nominal`: analysis configuration file for selected events, defining a `CutList` and including `RunConfig-HZy-base`, where all the common flags are set;
+  - `RunConfig-HZy-bypass`: bypass configuration file for the run-through/debug mode, including `RunConfig-HZy-nominal`, but with the `bypass` flag set to true, flags for the cuts are saved, which allows to run the ntupler 
+  without applying any cuts;
+  - `RunConfig-HZy-purity`: production configuration setup for dedicated purity study samples, including `RunConfig-HZy-base`;
+  - `RunConfig-HZy-truth`: analysis configuration file for truth-level studies, including `RunConfig-HZy-base`, where all the common flags are set, but with the `save_truth_vars` flag set to `true`;
   - `trigger`: list of the triggers to use per year.
   - `lumicalc`: list of the luminosity to use per year.
   - `prw_lepton`: list of the pileup reweighting files to use per year.
@@ -20,7 +23,7 @@ Analysis Package for Full Run3 $H\rightarrow Z \gamma$ analyis
   - `HZyLeptonORAlg`: Perform the lepton overlap removal before Z selection;
   - `LeptonVarsHZyAlg`: Compute the lepton-related variables; Find the Z(ll)y candidate ([FSRCorrectionTool](https://gitlab.cern.ch/atlas/athena/-/tree/main/PhysicsAnalysis/AnalysisCommon/FsrUtils) and [ZMassConstrainTool](https://gitlab.cern.ch/atlas/athena/-/tree/main/PhysicsAnalysis/HiggsPhys/Run2/HZZ/Tools/ZMassConstraint)) in the event, and compute the associated variables (masses, pT, etc...); 
   - `PhotonVarsHZyAlg`: Compute the photon-related variables; Perform the photon-jet overlap removal after the Z(ll)y selection;
-  - `HZySelectorAlg`: Apply the event selections following the configuration in the `RunConfig-HZy.yaml` file, and save the cutflow;
+  - `HZySelectorAlg`: Apply the event selections following the configuration in the `RunConfig-HZy-nominal.yaml` file, and save the cutflow;
   - `JetVarsHZyAlg`: Compute the small-R jet variables.
   - `BaselineVarsHZyAlg`: Compute the baseline variables.
 
@@ -32,8 +35,22 @@ For DAOD_PHYSLITE inputs, the `Analysis*` containers are already available and c
 1. Get the files to make the test: have a look at the general [README section](https://gitlab.cern.ch/easyjet/easyjet#running-on-files) for updated informations.
 
 2. Run the ntupler on those files:
-- run the analysis on <span style="color: #F2385A">PHYS</span>: ```HZy-ntupler ttbar_PHYS_10evt.root --run-config HZyAnalysis/RunConfig-HZy.yaml --out-file output_PHYS_ttbar.root```
-- run the analysis on <span style="color: #4BD9D9;">PHYSLITE</span>: ```HZy-ntupler ttbar_PHYSLITE_10evt.root --run-config HZyAnalysis/RunConfig-HZy.yaml --out-file output_PHYSLITE_ttbar.root```
+- run the analysis on <span style="color: #F2385A">PHYS</span>: ```HZy-ntupler ttbar_PHYS_10evt.root --run-config HZyAnalysis/RunConfig-HZy-nominal.yaml --out-file output_PHYS_ttbar.root```
+- run the analysis on <span style="color: #4BD9D9;">PHYSLITE</span>: ```HZy-ntupler ttbar_PHYSLITE_10evt.root --run-config HZyAnalysis/RunConfig-HZy-nominal.yaml --out-file output_PHYSLITE_ttbar.root```
+
+## Run on the Grid
+
+All Run-2 and Run-3 MC/data samples listed in [`datasets`](/easyjet/HZyAnalysis/datasets/) can be submitted to the grid using [`SubmitToGrid`](/easyjet/HZyAnalysis/scripts/SubmitToGrid).
+
+Usage:
+
+```bash
+SubmitToGrid -h
+SubmitToGrid SAMPLE [submit|dry|nosubmit]
+```
+
+where there are a few options for SAMPLE: `Run2_signal`, `Run2_bkg`, `Run2_data`, `Run3_signal`, `Run3_bkg`, `Run3_data`, `Run3_purity`, `ECMS_Zjets` and 
+only the configuration file `RunConfig-HZy-purity` is used for the `Run3_purity` production while others use the `RunConfig-HZy-nominal`
 
 # Output
 
@@ -57,7 +74,7 @@ If these run properly, your outputs files should contain a TTree `AnalysisMiniTr
 
 * Weight variables on trigger SF, lepton and photon efficiency SF, pileup weights, MC weight, beam spot weight, and jet vertex tagger weight: 
     * `globalTriggerEffSF_NOSYS`, `HZy_LepLead_effSF_NOSYS`, `HZy_LepSub_effSF_NOSYS`, `HZy_Ph_effSF_NOSYS`
-    * `PileupWeight_NOSYS`, `HZy_MC_Weight_NOSYS`, `HZy_BeamSpotWeight_NOSYS`, `jvt_effSF_NOSYS`
+    * `PileupWeight_NOSYS`, `HZy_MC_Weight_NOSYS`, `HZy_BeamSpotWeight_NOSYS`, `HZy_hzy_jvt_effSF_NOSYS`
 
 # Post processing
 

@@ -22,7 +22,6 @@ namespace HZY
     ATH_CHECK(m_HZyMuonHandle.initialize(m_systematicsList));
 
     ATH_CHECK(m_HZyPhotonORHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_FsrObjectHandle.initialize(m_systematicsList));
 
     // Setup read decorations for Z candidate dilepton variables (float)
     for (const std::string &string_var : m_floatVariables_leptons)
@@ -71,36 +70,41 @@ namespace HZY
     const std::vector<std::string> vbfFiles = {
         "VBF_model_0.onnx", "VBF_model_1.onnx",
         "VBF_model_2.onnx", "VBF_model_3.onnx"};
-    for (size_t i = 0; i < vbfFiles.size(); ++i)
-      loadModel(ModelFamily::VBF, m_modelFolder + "/" + vbfFiles[i], 25);
+    for (size_t i = 0; i < vbfFiles.size(); ++i) {
+      ATH_CHECK(loadModel(ModelFamily::VBF, m_modelFolder + "/" + vbfFiles[i], 25));
+    }
 
     // ggF_ee: 17 features, 4 folds
     const std::vector<std::string> ggFeeFiles = {
         "ggF_BDT_ee_0.onnx", "ggF_BDT_ee_1.onnx",
         "ggF_BDT_ee_2.onnx", "ggF_BDT_ee_3.onnx"};
-    for (size_t i = 0; i < ggFeeFiles.size(); ++i)
-      loadModel(ModelFamily::ggF_ee, m_modelFolder + "/" + ggFeeFiles[i], 17);
+    for (size_t i = 0; i < ggFeeFiles.size(); ++i) {
+      ATH_CHECK(loadModel(ModelFamily::ggF_ee, m_modelFolder + "/" + ggFeeFiles[i], 17));
+    }
 
     // ggF_mm: 17 features, 4 folds
     const std::vector<std::string> ggFmmFiles = {
         "ggF_BDT_mumu_0.onnx", "ggF_BDT_mumu_1.onnx",
         "ggF_BDT_mumu_2.onnx", "ggF_BDT_mumu_3.onnx"};
-    for (size_t i = 0; i < ggFmmFiles.size(); ++i)
-      loadModel(ModelFamily::ggF_mm, m_modelFolder + "/" + ggFmmFiles[i], 17);
+    for (size_t i = 0; i < ggFmmFiles.size(); ++i) {
+      ATH_CHECK(loadModel(ModelFamily::ggF_mm, m_modelFolder + "/" + ggFmmFiles[i], 17));
+    }
 
     // RelpT_ee: 17 features, 4 folds
     const std::vector<std::string> relpTeeFiles = {
         "ggF_BDT_ee_relpT40_0.onnx", "ggF_BDT_ee_relpT40_1.onnx",
         "ggF_BDT_ee_relpT40_2.onnx", "ggF_BDT_ee_relpT40_3.onnx"};
-    for (size_t i = 0; i < relpTeeFiles.size(); ++i)
-      loadModel(ModelFamily::RelpT_ee, m_modelFolder + "/" + relpTeeFiles[i], 17);
+    for (size_t i = 0; i < relpTeeFiles.size(); ++i) {
+      ATH_CHECK(loadModel(ModelFamily::RelpT_ee, m_modelFolder + "/" + relpTeeFiles[i], 17));
+    }
 
     // RelpT_mm: 17 features, 4 folds
     const std::vector<std::string> relpTmmFiles = {
         "ggF_BDT_mumu_relpT40_0.onnx", "ggF_BDT_mumu_relpT40_1.onnx",
         "ggF_BDT_mumu_relpT40_2.onnx", "ggF_BDT_mumu_relpT40_3.onnx"};
-    for (size_t i = 0; i < relpTmmFiles.size(); ++i)
-      loadModel(ModelFamily::RelpT_mm, m_modelFolder + "/" + relpTmmFiles[i], 17);
+    for (size_t i = 0; i < relpTmmFiles.size(); ++i) {
+      ATH_CHECK(loadModel(ModelFamily::RelpT_mm, m_modelFolder + "/" + relpTmmFiles[i], 17));
+    }
 
     // Initialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK(m_systematicsList.initialize());
@@ -133,9 +137,6 @@ namespace HZY
 
       const xAOD::PhotonContainer *HZyPhotonOR = nullptr;
       ANA_CHECK(m_HZyPhotonORHandle.retrieve(HZyPhotonOR, sys, ctx));
-
-      const xAOD::IParticleContainer* fsrObject = nullptr;
-      ANA_CHECK(m_FsrObjectHandle.retrieve(fsrObject, sys, ctx));
 
       // Reset all decorations to default values at the start of each systematics loop
       for (const std::string &string_var : m_floatVariables)
@@ -178,6 +179,13 @@ namespace HZY
           m_Fbranches_leptons.at("LepLepZ_Phi_Cstr").get(*event, sys),
           m_Fbranches_leptons.at("LepLepZ_M_Cstr").get(*event, sys));
 
+      TLorentzVector llCstrNoFsrP4;
+      llCstrNoFsrP4.SetPtEtaPhiM(
+          m_Fbranches_leptons.at("LepLepZ_Pt_CstrNoFsr").get(*event, sys),
+          m_Fbranches_leptons.at("LepLepZ_Eta_CstrNoFsr").get(*event, sys),
+          m_Fbranches_leptons.at("LepLepZ_Phi_CstrNoFsr").get(*event, sys),
+          m_Fbranches_leptons.at("LepLepZ_M_CstrNoFsr").get(*event, sys));
+
       // signal photon with tightID and looseISO
       TLorentzVector TIdLIsoPhotonP4;
       const float sigPhotonPt = m_Fbranches_photons.at("Ph_Pt_Raw").get(*event, sys);
@@ -199,15 +207,23 @@ namespace HZY
         m_Fbranches.at("LLGam_Pt_Raw").set(*event, llgRawP4.Pt(), sys);
         m_Fbranches.at("LLGam_Eta_Raw").set(*event, llgRawP4.Eta(), sys);
         m_Fbranches.at("LLGam_Phi_Raw").set(*event, llgRawP4.Phi(), sys);
-
-        const xAOD::IParticle *fsr =
-            (fsrObject && !fsrObject->empty()) ? fsrObject->at(0) : nullptr;
         TLorentzVector fsrP4;
-        if (fsr){
-          fsrP4 = fsr->p4();
+        if (m_Ibranches_leptons.at("Muon_hasFsr").get(*event, sys) == 1){
+          fsrP4.SetPtEtaPhiM(m_Fbranches_leptons.at("Muon_Fsr_Pt").get(*event, sys),
+                             m_Fbranches_leptons.at("Muon_Fsr_Eta").get(*event, sys),
+                             m_Fbranches_leptons.at("Muon_Fsr_Phi").get(*event, sys),
+                             0.);
         }
         const TLorentzVector llgFsrP4 = llRawP4 + fsrP4 + selHZyLoosePhoton->p4();
         m_Fbranches.at("LLGam_M_Fsr").set(*event, llgFsrP4.M(), sys);
+
+        // The four m(llg) variables span FSR x constraint:
+        //   _Raw       neither
+        //   _Fsr       FSR recovery only
+        //   _CstrNoFsr Z-mass constraint only
+        //   _Cstr      both (the constrained Z already contains the FSR photon)
+        const TLorentzVector llgCstrNoFsrP4 = llCstrNoFsrP4 + selHZyLoosePhoton->p4();
+        m_Fbranches.at("LLGam_M_CstrNoFsr").set(*event, llgCstrNoFsrP4.M(), sys);
 
         llgCstrP4 = llCstrP4 + selHZyLoosePhoton->p4();
         m_Fbranches.at("LLGam_M_Cstr").set(*event, llgCstrP4.M(), sys);
@@ -278,7 +294,7 @@ namespace HZY
       for (const auto& name : ggFRelpTFeatures)
         ggFRelpTInputs.push_back(features.at(name));
 
-      const int evtNum = event->eventNumber();
+      const uint64_t evtNum = event->eventNumber();
       const float vbfScore = getScore(ModelFamily::VBF, vbfInputs, evtNum);
 
       float ggFScore = -1.f;
@@ -517,14 +533,14 @@ namespace HZY
     
   }
 
-  void BaselineVarsHZyAlg::loadModel(ModelFamily family,
-                                     const std::string &fileName,
-                                     int nFeatures)
+  StatusCode BaselineVarsHZyAlg::loadModel(ModelFamily family,
+                                           const std::string &fileName,
+                                           int nFeatures)
   {
-    std::string resolvedPath = PathResolverFindCalibFile(fileName);
+    const std::string resolvedPath = PathResolverFindCalibFile(fileName);
     if (resolvedPath.empty()) {
       ATH_MSG_FATAL("Could not resolve ONNX model: " << fileName);
-      return;
+      return StatusCode::FAILURE;
     }
     ATH_MSG_INFO("Loading ONNX model for family=" << static_cast<int>(family) << ": " << resolvedPath);
 
@@ -536,35 +552,48 @@ namespace HZY
     opts.SetLogSeverityLevel(4);
     opts.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_BASIC);
 
-    fold.session = std::make_unique<Ort::Session>(*fold.env, resolvedPath.c_str(), opts);
+    try {
+      fold.session = std::make_unique<Ort::Session>(*fold.env, resolvedPath.c_str(), opts);
 
-    Ort::AllocatorWithDefaultOptions alloc;
-    size_t nIn = fold.session->GetInputCount();
-    fold.inputNames.resize(nIn);
-    for (size_t i = 0; i < nIn; ++i)
-    {
-      char *nm = fold.session->GetInputNameAllocated(i, alloc).release();
-      fold.inputNames[i] = nm;
+      Ort::AllocatorWithDefaultOptions alloc;
+      size_t nIn = fold.session->GetInputCount();
+      fold.inputNames.resize(nIn);
+      for (size_t i = 0; i < nIn; ++i)
+      {
+        char *nm = fold.session->GetInputNameAllocated(i, alloc).release();
+        fold.inputNames[i] = nm;
+      }
+      fold.inputDims = {1, nFeatures};
+
+      size_t nOut = fold.session->GetOutputCount();
+      fold.outputNames.resize(nOut);
+      for (size_t i = 0; i < nOut; ++i)
+      {
+        char *nm = fold.session->GetOutputNameAllocated(i, alloc).release();
+        fold.outputNames[i] = nm;
+      }
     }
-    fold.inputDims = {1, nFeatures};
-
-    size_t nOut = fold.session->GetOutputCount();
-    fold.outputNames.resize(nOut);
-    for (size_t i = 0; i < nOut; ++i)
-    {
-      char *nm = fold.session->GetOutputNameAllocated(i, alloc).release();
-      fold.outputNames[i] = nm;
+    catch (const Ort::Exception &e) {
+      ATH_MSG_FATAL("ONNX runtime rejected " << resolvedPath << ": " << e.what());
+      return StatusCode::FAILURE;
     }
 
     m_folds[family].push_back(std::move(fold));
+    return StatusCode::SUCCESS;
   }
 
   float BaselineVarsHZyAlg::getScore(ModelFamily family,
                                      const std::vector<float>& inputs,
-                                     const int eventNumber) const
+                                     const uint64_t eventNumber) const
   {
-    ATH_MSG_INFO("getScore: family=" << static_cast<int>(family));
-    const auto& folds = m_folds.at(family);
+    ATH_MSG_DEBUG("getScore: family=" << static_cast<int>(family));
+    // initialize() now fails if any fold is missing
+    const auto it = m_folds.find(family);
+    if (it == m_folds.end()) {
+      ATH_MSG_WARNING("No ONNX folds loaded for family=" << static_cast<int>(family));
+      return -1.f;
+    }
+    const auto& folds = it->second;
     const size_t nfold = folds.size();
     if (nfold == 0) return -1.f;
 
@@ -602,8 +631,8 @@ namespace HZY
     };
 
     if (m_isMC) {
-      const size_t ifold = static_cast<size_t>(eventNumber >= 0 ? eventNumber : -eventNumber) % nfold;
-      
+      const size_t ifold = static_cast<size_t>(eventNumber % nfold);
+
       return evalFold(folds[ifold], ifold);
     }
     else {
@@ -626,7 +655,7 @@ namespace HZY
                                           float vbf_nj,
                                           float ph_pt_rel) const
   {
-    ATH_MSG_INFO( "computeCategory: evet categorization for" << " channel=" << channel);
+    ATH_MSG_DEBUG("computeCategory: event categorization for channel=" << channel);
     const float VBF_cut_H = 0.99f;
     const float VBF_cut_M = 0.95f;
     const float ggF_ee_cut_H = 0.85f;

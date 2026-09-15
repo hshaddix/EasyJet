@@ -676,6 +676,11 @@ ntupler_HZy_mc23:
   script:
     - easyjet-test HZy-mc23
 
+ntupler_HZy_data22:
+  extends: .ntupler
+  <<: *changes_HZy
+  script:
+    - easyjet-test HZy-data22
 ntupler_vbshiggs_semilep_mc23:
   extends: .ntupler
   <<: *changes_vbshiggs

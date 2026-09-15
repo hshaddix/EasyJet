@@ -45,6 +45,11 @@ public:
     CP::SysReadDecorHandle<char> m_isBtag{this, "bTagWPDecorName",
         "", "Name of input dectorator for b-tagging"};
 
+    CP::SysReadDecorHandle<float> m_jvtEffSF{
+        this, "jvtEffSF", "jvt_effSF_%SYS%", "JVT efficiency scale factor per-jet"};
+
+    Gaudi::Property<bool> m_isMC{this, "isMC", false, "Is this simulation?"};
+
     Gaudi::Property<std::vector<std::string>> m_floatVariables
     {this, "floatVariableList", {}, "Name list of floating variables"};
 

@@ -1,0 +1,24 @@
+# The config is dedicated to produce those ntuples for 
+# the H->Zy background decomposition study.
+# Samples included are: Z+jets, Z+gamma, Data, but not H->Zy signal.
+# All these ntuples are produced until the "DILEPTON_MASS_CLOSEZ" cut, 
+# to allow for a study of the background composition in the signal region.
+
+# Requiring Loose photon ID for background decomposition.
+
+include: HZyAnalysis/RunConfig-HZy-base.yaml
+
+CutList:
+      - "PASS_TRIGGER"
+      - "PASS_LEPTON_ID"
+      - "PASS_LEPTON_ISO"
+      - "SIZE_ZCANDIDATE"
+      - "SIZE_Z_LOOSEPHOTON"
+      - "PASS_TRIGGER_MATCHING"
+      - "PHOTONS_JETS_OR_LEPTONS"
+      - "DILEPTON_MASS_VETO_HMM"  
+      - "DILEPTON_MASS_CLOSEZ"
+      # - "PASS_RELPT_LOW"
+      # - "PHOTON_TIGHT_ID"
+      # - "PHOTON_ISOLATION"
+      # - "MASS_DILEPTON_PHOTON"

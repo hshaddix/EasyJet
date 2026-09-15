@@ -76,6 +76,11 @@ private:
     CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_HZyJetORHandle{
         this, "HZyJetsOR", "HZyJetsOR_%SYS%", "HZy Jets passing OR with leptons and photons"};
 
+    /// Jets after full OR (Z cand leptons, photons, extra lepton) — no JVT cut.
+    /// Used for HZy-specific JVT event SF computation.
+    CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>> m_HZyJetORNoJvtHandle{
+        this, "HZyJetsOR_NoJvt", "HZyJetsOR_NoJvt_%SYS%", "HZy Jets after full OR (no JVT cut)"};
+
     /// Extra-lepton containers: Z cand leptons + highest-pT extra lepton
     CP::SysWriteHandle<ConstDataVector<xAOD::ElectronContainer>> m_HZyElORPhotonsExtraHandle{
         this, "HZyElOR_Photons_Extra", "HZyElOR_Photons_Extra_%SYS%", "Z cand electrons + extra electron (if any)"};
@@ -93,6 +98,9 @@ private:
     Gaudi::Property<double> m_dR_Jet_El{this, "dR_Jet_El", 0.2, "deltaR cut for Jet/Electron OR"};
     Gaudi::Property<double> m_dR_Jet_CaloMu{this, "dR_Jet_CaloMu", 0.2, "deltaR cut for Jet/CaloMuon OR"};
     Gaudi::Property<double> m_dR_Jet_StacoMu{this, "dR_Jet_StacoMu", 0.2, "deltaR cut for Jet/StacoMuon OR"};
+
+    /// JVT selection decoration (char, computed by CP JVT selection on raw jets)
+    SG::AuxElement::ConstAccessor<char> m_jvtSelection{"jvt_selection"};
 
     CP::SysReadDecorHandle<char> m_photonTIdNonIsoDecorHandle{
         this, "PhotonTIdNonIsoPDecor", "baselineSelection_Tight_NonIso_%SYS%", "Photon tight ID + non Iso selection"};

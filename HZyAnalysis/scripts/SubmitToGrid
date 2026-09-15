@@ -1,0 +1,56 @@
+#!/bin/bash
+# Created by Qiuping
+set -e
+
+usage() {
+    echo "Usage: SubmitToGrid SAMPLE [submit|dry|nosubmit]"
+    echo "SAMPLE: Run2_signal Run2_bkg Run2_data Run3_signal Run3_bkg Run3_data Run3_purity_bkgMC Run3_purity_data ECMS_Zjets"
+    exit ${1:-0}
+}
+
+[[ $# -lt 1 || "$1" == "-h" || "$1" == "--help" ]] && usage
+
+SAMPLE=$1
+MODE=${2:-submit}
+
+# Find files installed by atlas_install_data()
+finddata() {
+    python -c "import ROOT; print(ROOT.PathResolver.find_file('HZyAnalysis/$1','DATAPATH'))"
+}
+
+DATASET=$(finddata "${SAMPLE}.txt")
+CONFIG=$(finddata "$([[ "$SAMPLE" == "Run3_purity" ]] && echo RunConfig-HZy-purity.yaml || echo RunConfig-HZy-nominal.yaml)")
+
+[[ -f "$DATASET" && -f "$CONFIG" ]] || { echo "ERROR: input/config not found"; exit 1; }
+
+case "$SAMPLE" in
+    Run2_signal)       TYPE=mc;   TAG="HZy_SIG_mc20" ; NFILE=5;;
+    Run3_signal)       TYPE=mc;   TAG="HZy_SIG_mc23" ; NFILE=5;;
+    Run2_bkg)          TYPE=mc;   TAG="HZy_BKG_mc20" ; NFILE=10;;
+    Run3_bkg)          TYPE=mc;   TAG="HZy_BKG_mc23" ; NFILE=10;;
+    Run2_data)         TYPE=data; TAG="HZy_data_Run2" ; NFILE=20;;
+    Run3_data)         TYPE=data; TAG="HZy_data_Run3" ; NFILE=20;;
+    ECMS_Zjets)        TYPE=data; TAG="HZy_ECMS_Zjets" ; NFILE=20;;
+    Run3_purity_bkgMC) TYPE=mc;   TAG="HZy_purity_bkgMC_Run3" ; NFILE=10;;
+    Run3_purity_data)  TYPE=data; TAG="HZy_purity_data_Run3" ; NFILE=20;;
+    *) echo "Unknown sample: $SAMPLE"; usage 1 ;;
+esac
+
+case "$MODE" in
+    submit)   EXTRA="" ;;
+    dry)      EXTRA="--dry-run" ;;
+    nosubmit) EXTRA="--noSubmit" ;;
+    *) echo "Unknown mode: $MODE"; usage 1 ;;
+esac
+
+echo "Sample : $DATASET"
+echo "Config : $CONFIG"
+
+easyjet-gridsubmit \
+    --${TYPE}-list "$DATASET" \
+    --run-config "$CONFIG" \
+    --exec HZy-ntupler \
+    --campaign "${TAG}_%Y%m%d_%H%M" \
+    --nFilesPerJob $NFILE \
+    --memory 4000 \
+    --mergeOutput --noTag $EXTRA

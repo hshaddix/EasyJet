@@ -46,7 +46,7 @@ namespace HZY
   };
 
   // Read MVA input features. Order matters — must match training order.
-  // getVBFScore feature list (26 features):
+  // getVBFScore feature list (25 features):
   const std::vector<std::string> vbfFeatures = {
       "VBF_DRmin_y_j",    "VBF_Dphi_Zy_jj_Fullrange",
       "VBF_Dy_j_j",       "VBF_N_j",
@@ -116,8 +116,11 @@ public:
                                     const TLorentzVector &photon);
 
     /// \brief Event categorization
-    void loadModel(ModelFamily family, const std::string &fileName, int nFeatures);
-    float getScore(ModelFamily family, const std::vector<float> &inputs, int eventNumber) const;
+    /// Load one ONNX fold. Returns FAILURE if the file cannot be resolved or
+    /// the ONNX runtime rejects it
+    StatusCode loadModel(ModelFamily family, const std::string &fileName, int nFeatures);
+    float getScore(ModelFamily family, const std::vector<float> &inputs,
+                   uint64_t eventNumber) const;
     int computeCategory(int channel, int nLepIdIso_ORPh, 
         float vbfScore, float ggFScore, float relpTScore, float vbf_nj, float ph_pt_rel) const;
 
@@ -143,8 +146,6 @@ private:
     CP::SysReadHandle<xAOD::PhotonContainer> m_HZyPhotonORHandle{
         this, "HZyPhotonsOR", "HZyPhotonsOR_%SYS%", "HZy Photon container with LooseIDnonISO after photons and jets OR"};
 
-    CP::SysReadHandle<xAOD::IParticleContainer> m_FsrObjectHandle{
-        this, "HZyFsrObject", "HZyFsrObject_%SYS%", "Selected FSR object view container"};
     
     /// \brief Setup sys-aware output decorations
     Gaudi::Property<std::vector<std::string>> m_floatVariables_leptons{this, "floatVariableList_leptons", {}, "Name list of float variables for Z candidate"};

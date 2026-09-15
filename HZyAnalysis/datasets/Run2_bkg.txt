@@ -1,0 +1,13 @@
+# only incldue partial Run2 bkg now
+mc20_13TeV.700946.Sh_mumugamma_pty7_mZy_90_175.deriv.DAOD_PHYS.e8577_a907_r14859_p7018 
+mc20_13TeV.700946.Sh_mumugamma_pty7_mZy_90_175.deriv.DAOD_PHYS.e8577_a907_r14860_p7018 
+mc20_13TeV.700946.Sh_mumugamma_pty7_mZy_90_175.deriv.DAOD_PHYS.e8577_a907_r14861_p7018 
+mc20_13TeV.700945.Sh_eegamma_pty7_mZy_95_175.deriv.DAOD_PHYS.e8577_a907_r14859_p7018   
+mc20_13TeV.700945.Sh_eegamma_pty7_mZy_95_175.deriv.DAOD_PHYS.e8577_a907_r14860_p7018   
+mc20_13TeV.700945.Sh_eegamma_pty7_mZy_95_175.deriv.DAOD_PHYS.e8577_a907_r14861_p7018   
+mc20_13TeV.521382.MGPy8EG_EW_eegammajj.deriv.DAOD_PHYS.e8589_s3797_r13144_p7018        
+mc20_13TeV.521382.MGPy8EG_EW_eegammajj.deriv.DAOD_PHYS.e8589_s3797_r13145_p7018        
+mc20_13TeV.521382.MGPy8EG_EW_eegammajj.deriv.DAOD_PHYS.e8589_s3797_r13167_p7018        
+mc20_13TeV.521383.MGPy8EG_EW_mumugammajj.deriv.DAOD_PHYS.e8589_s3797_r13144_p7018      
+mc20_13TeV.521383.MGPy8EG_EW_mumugammajj.deriv.DAOD_PHYS.e8589_s3797_r13145_p7018      
+mc20_13TeV.521383.MGPy8EG_EW_mumugammajj.deriv.DAOD_PHYS.e8589_s3797_r13167_p7018      

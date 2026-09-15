@@ -40,7 +40,8 @@ def thinning_sequence(flags):
         jet_type = flags.Analysis.Small_R_jet.jet_type
         selection_string = 'selectPtEta'
         if jet_type != 'reco4EMTopoJet':
-            selection_string += '&&baselineJvt'
+            if getattr(flags.Analysis.Small_R_jet, 'doJvtSelection', True):
+                selection_string += '&&baselineJvt'
             if flags.Analysis.Small_R_jet.useFJvt:
                 selection_string += '&&baselineFJvt'
         configSeq += makeConfig('Thinning')

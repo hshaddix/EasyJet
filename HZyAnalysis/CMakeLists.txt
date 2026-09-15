@@ -18,6 +18,8 @@ atlas_add_component(HZyAnalysis
   xAODMuon
   xAODEgamma
   xAODEventInfo
+  xAODTruth
+  TruthUtils
   TriggerMatchingToolLib
   EventBookkeeperToolsLib
   EasyjetHubLib
@@ -29,6 +31,7 @@ atlas_add_component(HZyAnalysis
 # Install python modules, joboptions, and share content
 atlas_install_scripts(
   bin/HZy-ntupler
+  scripts/*
   )
 #atlas_install_runtime( scripts/*.py POST_BUILD_CMD ${ATLAS_FLAKE8} )
 
@@ -38,8 +41,8 @@ atlas_install_python_modules(
 atlas_install_data(
   data/*
   share/*
+  datasets/*
 )
 
-# atlas_install_data( data/* )
 # You can access your data from code using path resolver, e.g.
 # PathResolverFindCalibFile("JetMETCommon/file.txt")

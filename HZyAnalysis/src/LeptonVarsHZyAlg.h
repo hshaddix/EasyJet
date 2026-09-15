@@ -41,12 +41,19 @@ namespace HZY
     const xAOD::IParticle *l2 = nullptr;
     TLorentzVector c1_fit;
     TLorentzVector c2_fit;
+    TLorentzVector z_fit;
 
     bool hasFSR = false;
     int fsrIdx = -1;
     float fsrDR = -99.f;
     FSR::FsrCandidate fsrCand;
     TLorentzVector fsrP4;
+
+    // Same constraint fit re-run with the FSR photon left out of the fit
+    // constituents: the "constraint, no FSR" counterfactual. Equal to
+    // mll_constrained / z_fit whenever hasFSR is false.
+    float mll_constrained_noFsr = -99.0f;
+    TLorentzVector z_fit_noFsr;
   };
 
   /// \brief An algorithm for counting containers
@@ -132,7 +139,7 @@ private:
                           const LLCandidate &cand,
                           const FSR::FsrCandidate *fsrCand,
                           const TLorentzVector *fsrP4, TLorentzVector &c1_out,
-                          TLorentzVector &c2_out);
+                          TLorentzVector &c2_out, TLorentzVector &z_out);
 
     bool applyFSRCorrection(const xAOD::Muon *mu1, const xAOD::Muon *mu2,
                             const xAOD::PhotonContainer *allPhotons,

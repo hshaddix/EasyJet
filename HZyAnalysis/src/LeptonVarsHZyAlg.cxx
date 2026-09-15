@@ -129,6 +129,7 @@ namespace HZY
       {
         TLorentzVector c1_fit;
         TLorentzVector c2_fit;
+        TLorentzVector z_fit;
 
         const float mll_constrained = ZMassConstraint(*m_ZMassConstraint,
                             event,
@@ -136,17 +137,52 @@ namespace HZY
                             fsrCand,
                             fsrP4,
                             c1_fit,
-                            c2_fit);
+                            c2_fit,
+                            z_fit);
         if (mll_constrained > 0.f){
           cand.mll_constrained = mll_constrained;
           cand.c1_fit = c1_fit;
           cand.c2_fit = c2_fit;
+          cand.z_fit = z_fit;
         }
         else{
           cand.mll_constrained = cand.mll_raw;
           // fallback = original leptons
           cand.c1_fit = cand.l1->p4();
           cand.c2_fit = cand.l2->p4();
+          cand.z_fit = cand.l1->p4() + cand.l2->p4();
+        }
+
+        // "Constraint, no FSR": the same fit with the photon left out of the
+        // constituents. This is NOT (c1_fit + c2_fit) -- with the photon in the
+        // fit the leptons are pulled down to absorb it, so dropping it
+        // afterwards gives the low-biased mass that used to be stored as
+        // LepLepZ_M_Cstr.
+        if (fsrCand || fsrP4){
+          TLorentzVector c1_noFsr;
+          TLorentzVector c2_noFsr;
+          TLorentzVector z_noFsr;
+          const float mll_noFsr = ZMassConstraint(*m_ZMassConstraint,
+                              event,
+                              cand,
+                              nullptr,
+                              nullptr,
+                              c1_noFsr,
+                              c2_noFsr,
+                              z_noFsr);
+          if (mll_noFsr > 0.f){
+            cand.mll_constrained_noFsr = mll_noFsr;
+            cand.z_fit_noFsr = z_noFsr;
+          }
+          else{
+            cand.mll_constrained_noFsr = cand.mll_raw;
+            cand.z_fit_noFsr = cand.l1->p4() + cand.l2->p4();
+          }
+        }
+        else{
+          // Nothing to leave out: the nominal fit had no photon in it either.
+          cand.mll_constrained_noFsr = cand.mll_constrained;
+          cand.z_fit_noFsr = cand.z_fit;
         }
         ll_candidates.push_back(cand);
       };
@@ -165,8 +201,9 @@ namespace HZY
 
           const float mll_raw = (e1->p4() + e2->p4()).M();
           LLCandidate cand{mll_raw, -99.f, 
-            1, e1, e2, {}, {}, 
-            false, -1, -99.f, {}, {}};
+            1, e1, e2, {}, {}, {}, // c1_fit, c2_fit, z_fit 
+            false, -1, -99.f, {}, {},
+            -99.f, {}}; // mll_constrained_noFsr, z_fit_noFsr
           
           // No FSR for electron channel
           finalizeCandidate(cand, nullptr, nullptr);
@@ -187,8 +224,9 @@ namespace HZY
 
           const float mll_raw = (m1->p4() + m2->p4()).M();
           LLCandidate cand{mll_raw, -99.f, 
-            2, m1, m2, {}, {}, 
-            false, -1, -99.f, {}, {}};
+            2, m1, m2, {}, {}, {}, // c1_fit, c2_fit, z_fit 
+            false, -1, -99.f, {}, {},
+            -99.f, {}}; // mll_constrained_noFsr, z_fit_noFsr
 
           // FSR correction for muon channel
           const bool hasFSR = applyFSRCorrection(
@@ -299,8 +337,9 @@ namespace HZY
       if (has4Lep && leadPhoton) {
         // 4-lepton swap mode: pick candidate whose m(llγ) is closer to 125.09 GeV
         const TLorentzVector phP4 = leadPhoton->p4();
-        double mllgA = (candA->c1_fit + candA->c2_fit + phP4).M();
-        double mllgB = (candB->c1_fit + candB->c2_fit + phP4).M();
+        // z_fit, not c1_fit + c2_fit: the FSR photon belongs to the Z here too
+        double mllgA = (candA->z_fit + phP4).M();
+        double mllgB = (candB->z_fit + phP4).M();
         double diffA = std::abs(mllgA - H_MASS);
         double diffB = std::abs(mllgB - H_MASS);
 
@@ -338,7 +377,9 @@ namespace HZY
           std::swap(c1, c2);
         }
         TLorentzVector ll_raw = l1->p4() + l2->p4();
-        TLorentzVector ll_constrained = c1 + c2;
+        // z_fit, not c1 + c2: the constrained Z includes the recovered FSR
+        // photon. Identical to c1 + c2 whenever there was no FSR candidate.
+        const TLorentzVector &ll_constrained = bestCand->z_fit;
 
         // Decorate event with best candidate info
         m_Fbranches.at("LepLepZ_M_Raw").set(*event, bestCand->mll_raw, sys);
@@ -393,8 +434,17 @@ namespace HZY
           m_Fbranches.at("Muon_Fsr_dR").set(*event, bestCand->hasFSR ? bestCand->fsrDR : -99.0, sys);
 
           if (bestCand->hasFSR){
-            m_Fbranches.at("LepLepZ_M_Fsr").set(*event, 
+            m_Fbranches.at("LepLepZ_M_Fsr").set(*event,
               (bestCand->l1->p4() + bestCand->l2->p4() + bestCand->fsrP4).M(), sys);
+            // Pblish the FSR photon exactly as the constraint fit received it:
+            // the FSR tool's calibrated Et/eta/phi, taken massless. Downstream
+            // algorithms must build their FSR four-vector from these and not
+            // from the object in HZyFsrObject, whose p4() still carries the
+            // electron calibration and mass when the candidate was an electron
+            // recalibrated as a photon.
+            m_Fbranches.at("Muon_Fsr_Pt").set(*event, bestCand->fsrP4.Pt(), sys);
+            m_Fbranches.at("Muon_Fsr_Eta").set(*event, bestCand->fsrP4.Eta(), sys);
+            m_Fbranches.at("Muon_Fsr_Phi").set(*event, bestCand->fsrP4.Phi(), sys);
             if (bestCand->fsrCand.particle) fsrView->push_back(bestCand->fsrCand.particle);
           }
           else{
@@ -414,6 +464,16 @@ namespace HZY
         m_Fbranches.at("LepSub_Eta_Cstr").set(*event, c2.Eta(), sys);
         m_Fbranches.at("LepSub_Phi_Cstr").set(*event, c2.Phi(), sys);
         m_Fbranches.at("LepSub_M_Cstr").set(*event, c2.M(), sys);
+
+        // Constrained Z from the FSR-free fit. Together with _Raw (neither),
+        // _Fsr (FSR only) and _Cstr (both) this completes the FSR x constraint
+        // 2x2 for the Z candidate. Identical to _Cstr for the ee channel and
+        // for muon pairs with no accepted FSR photon.
+        const TLorentzVector &ll_constrained_noFsr = bestCand->z_fit_noFsr;
+        m_Fbranches.at("LepLepZ_M_CstrNoFsr").set(*event, bestCand->mll_constrained_noFsr, sys);
+        m_Fbranches.at("LepLepZ_Pt_CstrNoFsr").set(*event, ll_constrained_noFsr.Pt(), sys);
+        m_Fbranches.at("LepLepZ_Eta_CstrNoFsr").set(*event, ll_constrained_noFsr.Eta(), sys);
+        m_Fbranches.at("LepLepZ_Phi_CstrNoFsr").set(*event, ll_constrained_noFsr.Phi(), sys);
       }
       else{
         ATH_MSG_DEBUG("No valid Z candidate found. Setting defaults.");
@@ -515,11 +575,13 @@ namespace HZY
       const LLCandidate &cand, const FSR::FsrCandidate *fsrCand,
       const TLorentzVector *fsrP4,
       TLorentzVector &c1_out,
-      TLorentzVector &c2_out)
+      TLorentzVector &c2_out,
+      TLorentzVector &z_out)
   {
     constexpr float BAD = -99.0f;
     c1_out.SetPtEtaPhiM(0, 0, 0, 0);
     c2_out.SetPtEtaPhiM(0, 0, 0, 0);
+    z_out.SetPtEtaPhiM(0, 0, 0, 0);
     if (!event){
       ATH_MSG_ERROR("ZMassConstraint: EventInfo pointer is null");
       return BAD;
@@ -612,8 +674,23 @@ namespace HZY
       return BAD;
     }
     
-    TLorentzVector Z_constr;
-    result.getCompositeFourVector(Z_constr);
+    // The FSR photon is added to the fit as a constituent alongside the two
+    // leptons (ConstraintFit::addFSRParticle -> addConstituent_...), so the
+    // composite four-vector is the FSR-inclusive constrained Z. Using
+    // c1_out + c2_out instead *drops* the recovered photon and biases the
+    // constrained mass low!
+    result.getCompositeFourVector(z_out);
+    if (!sane(z_out))
+    {
+      ATH_MSG_WARNING("ZMassConstraint: non-sane fitted Z four-vector");
+      return BAD;
+    }
+
+    const unsigned int nExpected =
+        (fsrCand && fsrP4 && fsrCand->particle) ? 3u : 2u;
+    if (result.getNConstituents() != nExpected)
+      ATH_MSG_WARNING("ZMassConstraint: expected " << nExpected
+                      << " fit constituents, got " << result.getNConstituents());
 
     ATH_MSG_DEBUG("ZMassConstraint: fitted lepton masses = " << c1_out.M() << " , " << c2_out.M());
 
@@ -621,8 +698,9 @@ namespace HZY
     float mErrCon = fitter.getMassError(result);
     ATH_MSG_DEBUG("ZMassConstraint: mass error (before/after) = "
                   << mErrUnc << " / " << mErrCon);
-    double mll_constrained = (c1_out+c2_out).M();
-    ATH_MSG_DEBUG("ZMassConstraint: constrained mass = " << mll_constrained); 
+    double mll_constrained = z_out.M();
+    ATH_MSG_DEBUG("ZMassConstraint: constrained mass = " << mll_constrained
+                  << " (leptons only = " << (c1_out + c2_out).M() << ")");
     return mll_constrained;
   }
 

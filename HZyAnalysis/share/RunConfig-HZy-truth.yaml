@@ -1,0 +1,22 @@
+# Dedicated to configure the HZy analysis for truth-level studies, e.g. for the associated-Z production mode
+# Only for signal MC (ZH), no background samples and data are included in this config.
+include: HZyAnalysis/RunConfig-HZy-base.yaml
+
+CutList:
+      - "PASS_TRIGGER"
+      # - "TWO_LEPTONS" # HZyCore uses noIDnoISO, but EJ only ID_noISO
+      # - "PASS_LEPTON_ID"
+      # - "PASS_LEPTON_ISO"
+      # - "SIZE_ZCANDIDATE"
+      # - "SIZE_Z_LOOSEPHOTON"
+      # - "PASS_TRIGGER_MATCHING"
+      # - "PHOTONS_JETS_OR_LEPTONS"
+      # - "DILEPTON_MASS_VETO_HMM"  
+      # - "DILEPTON_MASS_CLOSEZ"
+      # - "PASS_RELPT_LOW"
+      # - "PHOTON_TIGHT_ID"
+      # - "PHOTON_ISOLATION"
+      # - "MASS_DILEPTON_PHOTON"
+
+# associated-Z truth label (TruthVarsHZyAlg): R&D only, off for production
+save_truth_vars: true

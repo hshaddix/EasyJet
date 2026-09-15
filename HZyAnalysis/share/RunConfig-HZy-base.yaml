@@ -3,6 +3,9 @@ include: EasyjetHub/base-config.yaml
 # which analysis to consider
 do_HZy_analysis: true
 
+# associated-Z truth label (TruthVarsHZyAlg): R&D only, off for production
+save_truth_vars: false
+
 # Whether to activate CP alg systematic variations
 do_CP_systematics: false
 systematics_regex: []
@@ -17,12 +20,21 @@ do_met: true
 Small_R_jet:
   min_pT: 25.e+3
   max_eta: 4.4
+  JVT_details: true
+  runJvtEfficiency: true
   useFJvt: true
+  # Disable JVT selection in HZyAnalysisJets so that JVT-failing jets
+  # remain in the container. JVT cut is applied later in PhotonVarsHZyAlg
+  # after HZy custom OR, producing HZyJetsOR_Extra (with JVT) and
+  # HZyJetsOR_NoJvt (without JVT, for event-level SF computation).
+  doJvtSelection: false
   # btagging nominal working point
   btag_wp: "GN2v01_FixedCutBEff_85"
   # to use multiple btagging WPs
+  do_parent_decoration: true
   btag_extra_wps:
     - GN2v01_Continuous
+# do_overlap_removal: true
 
 Photon:
   min_pT: 10.e+3
@@ -30,6 +42,7 @@ Photon:
   Iso: "NonIso"
   variables_int: ["isEMTight"]
   extra_wps:
+    - ["Medium", "NonIso"] 
     - ["Tight", "NonIso"] 
     - ["Tight", "FixedCutLoose"]
   do_truth_matching: true
@@ -63,6 +76,7 @@ do_trigger_filtering: false
 
 # flag for event cleaning
 do_event_cleaning: false
+dump_event_cleaning_info: true
 
 # Require the events pass the global multi-leg trigger matching, using the
 # TrigGlobalEfficiencyCorrection tool/alg. Only for electron/muon/photon triggers
@@ -148,5 +162,5 @@ PileupReweighting:
 ttree_output:
   include: HZyAnalysis/HZy-base-output.yaml
 
-#for 603798 to used weight index 88 
+# for 603798 to used weight index 88 
 always_do_CBK_systematics: true

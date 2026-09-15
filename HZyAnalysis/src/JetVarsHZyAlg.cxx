@@ -19,6 +19,7 @@ namespace HZY
     ATH_CHECK(m_HZyJetORHandle.initialize(m_systematicsList));
     ATH_CHECK(m_HZyJetORExtraHandle.initialize(m_systematicsList));
     ATH_CHECK(m_isBtag.initialize(m_systematicsList, m_HZyJetORExtraHandle));
+    ATH_CHECK(m_jvtEffSF.initialize(m_systematicsList, m_HZyJetORExtraHandle));
 
     for (const std::string &string_var : m_floatVariables)
     {
@@ -54,6 +55,9 @@ namespace HZY
 
       const xAOD::EventInfo *event = nullptr;
       ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
+
+      const xAOD::JetContainer *HZyJets = nullptr;
+      ANA_CHECK(m_HZyJetHandle.retrieve(HZyJets, sys, ctx));
 
       const xAOD::JetContainer *HZyJetsOR = nullptr;
       ANA_CHECK(m_HZyJetORHandle.retrieve(HZyJetsOR, sys, ctx));
@@ -109,13 +113,14 @@ namespace HZY
       // Per-jet attribute accessors (avoid deprecated isAvailable/getAttribute)
       static const SG::ConstAccessor<int> acc_PartonTruthLabelID("PartonTruthLabelID");
       static const SG::ConstAccessor<float> acc_QGScore("QGTransformer_ConstScore");
+      static const SG::ConstAccessor<float> acc_NNJvt("NNJvt");
       static const SG::ConstAccessor<std::vector<int>> acc_NumTrkPt500("NumTrkPt500");
       static const SG::ConstAccessor<std::vector<int>> acc_NumTrkPt1000("NumTrkPt1000");
       static const SG::ConstAccessor<int> acc_NTracks("DFCommonJets_QGTagger_NTracks");
 
       // Local vectors to accumulate per-jet values
       std::vector<float> j_pt, j_eta, j_phi, j_mass, j_e;
-      std::vector<float> j_PartonTruthLabelID, j_QGScore;
+      std::vector<float> j_PartonTruthLabelID, j_QGScore, j_NNJvt, j_jvtEffSF;
       std::vector<float> j_NumTrkPt500, j_NumTrkPt1000, j_NTracks;
 
       for (const auto *jet : *HZyJetsORExtra) {
@@ -132,6 +137,13 @@ namespace HZY
 
         j_QGScore.push_back(
             acc_QGScore.isAvailable(*jet) ? acc_QGScore(*jet) : -1.f);
+
+        j_NNJvt.push_back(
+            acc_NNJvt.isAvailable(*jet) ? acc_NNJvt(*jet) : -1.f);
+
+        // jvt_effSF is written by CP::JvtEfficiencyAlg, which is scheduled
+        // for MC onl--> reading it on data throws SG::ExcBadAuxVar
+        j_jvtEffSF.push_back(m_isMC ? m_jvtEffSF.get(*jet, sys) : -1.f);
 
         {
           if (acc_NumTrkPt500.isAvailable(*jet)) {
@@ -160,6 +172,8 @@ namespace HZY
       m_FvecBranches.at("jets_e").set(*event, j_e, sys);
       m_FvecBranches.at("jets_PartonTruthLabelID").set(*event, j_PartonTruthLabelID, sys);
       m_FvecBranches.at("jets_QGScore").set(*event, j_QGScore, sys);
+      m_FvecBranches.at("jets_NNJvt").set(*event, j_NNJvt, sys);
+      m_FvecBranches.at("jets_jvtEffSF").set(*event, j_jvtEffSF, sys);
       m_FvecBranches.at("jets_NumTrkPt500").set(*event, j_NumTrkPt500, sys);
       m_FvecBranches.at("jets_NumTrkPt1000").set(*event, j_NumTrkPt1000, sys);
       m_FvecBranches.at("jets_NTracks").set(*event, j_NTracks, sys);

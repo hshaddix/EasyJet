@@ -91,9 +91,21 @@ private:
         this, "HZyMuons", "HZyAnalysisMuons_%SYS%", "HZy Muon container to read"};
 
     CP::SysReadDecorHandle<float> m_generatorWeight{
-        this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights"};
+        this, "generatorWeight", "MC_Weight_%SYS%", "MC event weights"};
     CP::SysReadDecorHandle<char> m_globalTriggerMatch{
         this, "globalTriggerMatch", "globalTriggerMatch_%SYS%", "Global trigger matching"};
+
+    // Extra SF handles for weighted cutflow (stage-dependent)
+    CP::SysReadDecorHandle<float> m_pileupWeight{
+        this, "pileupWeight", "PileupWeight_%SYS%", "Pileup reweighting"};
+    CP::SysReadDecorHandle<float> m_lepLeadSF{
+        this, "lepLeadSF", "LepLead_effSF_%SYS%", "Leading lepton effSF"};
+    CP::SysReadDecorHandle<float> m_lepSubSF{
+        this, "lepSubSF", "LepSub_effSF_%SYS%", "Sub-leading lepton effSF"};
+    CP::SysReadDecorHandle<float> m_photonSF{
+        this, "photonSF", "Photon_effSF_%SYS%", "Photon effSF"};
+    CP::SysReadDecorHandle<float> m_triggerSF{
+        this, "triggerSF", "globalTriggerEffSF_%SYS%", "Global trigger effSF"};
 
     CP::SysFilterReporterParams m_filterParams{this, "HZy selection"};
     CP::SysWriteDecorHandle<char> m_passallcuts{"Pass_allcuts_%SYS%", this};

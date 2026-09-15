@@ -27,6 +27,14 @@ namespace HZY
     ATH_CHECK(m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_globalTriggerMatch.initialize(m_systematicsList, m_eventHandle));
 
+    if (m_isMC) {
+      ATH_CHECK(m_pileupWeight.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_lepLeadSF.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_lepSubSF.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_photonSF.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK(m_triggerSF.initialize(m_systematicsList, m_eventHandle));
+    }
+
     for (auto &[key, value] : m_boolnames)
     {
       m_bools.emplace(key, false);
@@ -76,12 +84,23 @@ namespace HZY
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK(m_systematicsList.initialize());
 
-    if(m_saveCutFlow){
-      std::vector<std::string> boolNameList;
-      for (const auto& [key, value]: m_boolnames){
-        boolNameList.push_back(value);
-        m_nameToBool[value] = key;
+    // m_nameToBool maps a CutList entry onto its boolean, and is needed by
+    // execute() whether or not the cutflow histograms are booked.
+    std::vector<std::string> boolNameList;
+    for (const auto& [key, value]: m_boolnames){
+      boolNameList.push_back(value);
+      m_nameToBool[value] = key;
+    }
+
+    // Every configured cut must name a boolean we actually evaluate.
+    for (const auto& cut : m_inputCutList){
+      if (!m_nameToBool.count(cut)){
+        ATH_MSG_ERROR("CutList entry '" << cut << "' is not a known HZy cut");
+        return StatusCode::FAILURE;
       }
+    }
+
+    if(m_saveCutFlow){
       ATH_CHECK (initialiseCutflow(boolNameList));
     }
 
@@ -126,19 +145,73 @@ namespace HZY
       // Photon ID and Isolation selections
       evaluateEventSelections(event, sys);
 
-      bool passedall = !m_bools.empty();
-      for (const auto& [key, value]: m_boolnames){
-        passedall = passedall && m_bools.at(key);
+      // AND over the CONFIGURED cuts only. m_boolnames also holds
+      // pass_trigger_SLT / pass_trigger_DLT, which record *which* trigger class
+      // fired and are deliberately absent from CutList; ANDing them turns the
+      // trigger requirement from "SLT or DLT" into "SLT and DLT".
+      bool passedall = !m_inputCutList.empty();
+      for (const auto& cutName : m_inputCutList){
+        passedall = passedall && m_bools.at(m_nameToBool.at(cutName));
       }
       m_passallcuts.set(*event, passedall, sys);
 
       // do the CUTFLOW only with sys="" -> NOSYS
       if (sys.name()=="" && m_saveCutFlow){
-        std::vector<bool> cutBools;
-        for(const auto& cut : m_inputCutList)
-          cutBools.push_back(m_bools.at(m_nameToBool.at(cut)));
-        double mc_weight = m_isMC ? m_generatorWeight.get(*event, sys) : 0.;
-        ATH_CHECK (applyCutFlow(cutBools, mc_weight));
+        // Base weight: genWeight * PileupWeight (applied always)
+        const double genW = m_isMC ? m_generatorWeight.get(*event, sys) : 1.0;
+        const double puW  = m_isMC ? m_pileupWeight.get(*event, sys)   : 1.0;
+        const double baseW = genW * puW;
+
+        // Stage-dependent SFs, applied after the corresponding object is selected.
+        // - lepton SFs and trigger SFs available after SIZE_ZCANDIDATE (Z candidate leptons selected)
+        // - photon SF available after Trigger match (signal photon selected)
+        const double lepLead = m_isMC ? std::max(0.0f, m_lepLeadSF.get(*event, sys)) : 1.0;
+        const double lepSub  = m_isMC ? std::max(0.0f, m_lepSubSF.get(*event, sys))  : 1.0;
+        const double phSF    = m_isMC ? std::max(0.0f, m_photonSF.get(*event, sys))  : 1.0;
+        const double trigSF  = m_isMC ? std::max(0.0f, m_triggerSF.get(*event, sys)) : 1.0;
+
+        // Accumulate absolute per-cut counters
+        m_total_events += 1;
+        m_total_mcEventWeight += baseW;
+
+        bool SIZE_Z_Stage = false;
+        bool phStage = false;
+        double relW = baseW;
+        bool prevPassed = true;
+
+        for (unsigned int i = 0; i < m_inputCutList.size(); ++i)
+        {
+          const std::string &cutName = m_inputCutList[i];
+          const bool passed = m_bools.at(m_nameToBool.at(cutName));
+
+          // At the boundary of each stage, multiply in the new SF component.
+          // Absolute weight for this cut = base * (SFs from stages already reached).
+          double absW = baseW;
+          if (SIZE_Z_Stage)  absW *= lepLead * lepSub * trigSF;
+          if (phStage)   absW *= phSF;
+
+          m_cuts(cutName).passed = passed;
+          if (passed) {
+            m_cuts(cutName).counter    += 1;
+            m_cuts(cutName).w_counter  += absW;
+          }
+
+          // Relative (consecutive) counting: only if all previous cuts passed
+          if (prevPassed && passed) {
+            m_cuts(cutName).relativeCounter   += 1;
+            m_cuts(cutName).w_relativeCounter += relW;
+          }
+          prevPassed = prevPassed && passed;
+          // Update relW for the *next* cut based on which stage boundary the
+          // current cut opens up (SF becomes available AFTER this cut is passed).
+          if (cutName == "SIZE_ZCANDIDATE")       { SIZE_Z_Stage = true;}
+          if (cutName == "PASS_TRIGGER_MATCHING") { phStage = true; }
+          if (prevPassed) {
+            relW = baseW;
+            if (SIZE_Z_Stage)  relW *= lepLead * lepSub *trigSF;
+            if (phStage)   relW *= phSF;
+          }
+        }
       }
 
       for (auto &[key, var] : m_bools)
@@ -185,7 +258,7 @@ namespace HZY
       }
 
       if (muons) {
-        if (trig.starts_with("HLT_2mu") || trig == "HLT_mu22_mu8noL1_L1MU14FCH")
+        if (trig.starts_with("HLT_2mu") || trig == "HLT_mu22_mu8noL1" || trig == "HLT_mu22_mu8noL1_L1MU14FCH")
           passDLT = true;
         else if (trig.starts_with("HLT_mu"))
           passSLT = true;
