@@ -3,7 +3,7 @@ include: [ssWWAnalysis/RunConfig-Baseline-ssWW.yaml]
 channels: 
   - "SR"
   - "WZCR"
-  - "misIDCR"
+  #- "misIDCR"  #For Zee sample and charge-misidentification background estimation only
   - "incVR"
   - "LowDyVR"
   - "LowMjjVR"
@@ -12,7 +12,10 @@ channels:
   - "tEWKVR"
   - "lllVR"
   - "ZeeVR"
+  - "ttbarFakeCR"
+  #- "prescale_DijetsCR"  #For non-prompt background estimation only
+  #- "unprescale_DijetsCR"
 
 #If set to True, the output ntuple will only has the events in the channels
 #If set to False, a loose selection "pass_baseline" will be used to filter events into the output ntuple
-collect_channels_only: False
+collect_channels_only: True

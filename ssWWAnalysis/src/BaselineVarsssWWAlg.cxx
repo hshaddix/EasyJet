@@ -30,14 +30,16 @@ namespace ssWWVBS
     ATH_CHECK(m_eleWPDecorHandle.initialize(m_systematicsList, m_electronHandle));
     ATH_CHECK(m_muonWPDecorHandle.initialize(m_systematicsList, m_muonHandle));
     
-    ATH_CHECK (m_ele_selected.initialize(m_systematicsList, m_ssWWElectronHandle));
-    ATH_CHECK (m_mu_selected.initialize(m_systematicsList, m_ssWWMuonHandle));
     ATH_CHECK (m_ele_TrigMatching.initialize(m_systematicsList, m_ssWWElectronHandle));
     ATH_CHECK (m_mu_TrigMatching.initialize(m_systematicsList, m_ssWWMuonHandle));
 
+
+    //Original leptons (to match the output object vector)
+    ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
+    ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
     // Charge Flip only supported for Run 2
     if (!m_isRun3){
-        ATH_CHECK (m_eleECIDS.initialize(m_systematicsList, m_ssWWElectronHandle));
+        ATH_CHECK (m_eleECIDS.initialize(m_systematicsList, m_electronHandle));
     }
 
     if(m_isMC){
@@ -53,12 +55,10 @@ namespace ssWWVBS
 
       if((m_eleWPName != "TightDNN_Tight_VarRad") && (m_eleWPName != "LooseDNN_Loose_VarRad"))
       {  
-        ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
         m_ele_SF = CP::SysReadDecorHandle<float>("effSF_"+m_eleWPName+"_%SYS%", this);
         ATH_CHECK (m_ele_SF.initialize(m_systematicsList, m_electronHandle));
       }
 
-      ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
       m_mu_SF = CP::SysReadDecorHandle<float>("effSF_"+m_muWPName+"_%SYS%", this);
       ATH_CHECK (m_mu_SF.initialize(m_systematicsList, m_muonHandle, SG::AllowEmpty));
     }
@@ -136,6 +136,13 @@ namespace ssWWVBS
       for (const std::string &string_var: m_floatVariables) {
         m_Fbranches.at(string_var).set(*event, -99., sys);
       }
+
+      //Original input
+      const xAOD::MuonContainer *muons_original = nullptr;
+      ANA_CHECK (m_muonHandle.retrieve (muons_original, sys, ctx));
+
+      const xAOD::ElectronContainer *electrons_original = nullptr;
+      ANA_CHECK (m_electronHandle.retrieve (electrons_original, sys, ctx));
 
       if (m_isMC) {
         const bool useSpecialWeights = event->mcChannelNumber() == m_specialWeightsDsid;
@@ -218,17 +225,11 @@ namespace ssWWVBS
       std::vector<std::pair<const xAOD::IParticle*, int>> leptons;
       
       for(const xAOD::Electron* electron : *electrons) {
-        if(m_ele_selected.get(*electron, sys))
-        {
-          leptons.emplace_back(electron, -11*electron->charge());
-        }
+        leptons.emplace_back(electron, -11*electron->charge());
       }
 
       for(const xAOD::Muon* muon : *muons) {
-        if(m_mu_selected.get(*muon, sys))
-        {
-          leptons.emplace_back(muon, -13*muon->charge());
-        }
+        leptons.emplace_back(muon, -13*muon->charge());
       }
       
       int nLeptons = leptons.size();
@@ -292,7 +293,7 @@ namespace ssWWVBS
       }
 
 
-      for (const xAOD::Electron* ele : *electrons) {
+      for (const xAOD::Electron* ele : *electrons_original) {
 	// electron author vector
 	m_vectorBool.at("el_author").push_back(ele->author()==1);
 	// electron ECIDS vector
@@ -303,12 +304,24 @@ namespace ssWWVBS
           m_vectorBool.at("el_ECIDS").push_back(false);
 	}
 	// electron match to single-ele trigger chain vector
-	m_vectorBool.at("el_TrigMatching").push_back(m_ele_TrigMatching.get(*ele, sys));
+	bool is_ssWW_ele = std::find(electrons->begin(), electrons->end(), ele) != electrons->end();
+	if (is_ssWW_ele){
+	  m_vectorBool.at("el_TrigMatching").push_back(m_ele_TrigMatching.get(*ele, sys));
+	}
+	else{
+	  m_vectorBool.at("el_TrigMatching").push_back(false);
+	}
       }
 
-      for (const xAOD::Muon* mu : *muons) {
+      for (const xAOD::Muon* mu : *muons_original) {
 	// muon match to single-mu trigger chain vector
-	m_vectorBool.at("mu_TrigMatching").push_back(m_mu_TrigMatching.get(*mu, sys));
+	bool is_ssWW_mu = std::find(muons->begin(), muons->end(), mu) != muons->end();
+	if (is_ssWW_mu){
+	  m_vectorBool.at("mu_TrigMatching").push_back(m_mu_TrigMatching.get(*mu, sys));
+	}
+	else{
+	  m_vectorBool.at("mu_TrigMatching").push_back(false);
+	}
       }
 
       //vector decor set

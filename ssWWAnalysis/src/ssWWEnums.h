@@ -17,6 +17,7 @@ namespace ssWWVBS
     tEWKVR,
     lllVR,
     ZeeVR,
+    ttbarFakeCR,
     prescale_DijetsCR,
     unprescale_DijetsCR,
   };
@@ -73,6 +74,7 @@ namespace ssWWVBS
     pass_tEWKVR,
     pass_lllVR,
     pass_ZeeVR,
+    pass_ttbarFakeCR,
     pass_prescale_DijetsCR,
     pass_unprescale_DijetsCR,
 

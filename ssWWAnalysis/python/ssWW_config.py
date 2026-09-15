@@ -424,7 +424,7 @@ def ssWW_branches(flags):
         "SR", "WZCR", "misIDCR", "incVR",
         "LowDyVR", "LowMjjVR", "LowNjVR",
         "tFakeVR", "tEWKVR", "lllVR",
-        "ZeeVR",
+        "ZeeVR", "ttbarFakeCR",
         "prescale_DijetsCR", "unprescale_DijetsCR",
     ]:
         branches += [f"EventInfo.pass_{region}_%SYS% -> ssWW_pass_{region}_%SYS%"]

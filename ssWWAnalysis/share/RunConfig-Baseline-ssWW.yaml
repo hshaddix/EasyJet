@@ -42,7 +42,7 @@ Electron:
   maxD0Significance: 5 
   maxDeltaZ0SinTheta: 0.5
   ID: "LooseDNN"
-  Iso: "Loose_VarRad"
+  Iso: "NonIso"
   min_pT: 4.5e+3
   min_pT_ssWW: 4.5e+3
   do_IFF_decoration: true
@@ -52,20 +52,25 @@ Electron:
 
   extra_wps:
   - ["TightDNN", "Tight_VarRad"]
+  - ["TightDNN", "Loose_VarRad"]
+  - ["TightDNN", "NonIso"]
+  - ["MediumDNN", "Tight_VarRad"]
+  - ["MediumDNN", "Loose_VarRad"]
+  - ["MediumDNN", "NonIso"]
+  - ["LooseDNN", "Tight_VarRad"]
+  - ["LooseDNN", "Loose_VarRad"]
   - ["TightLH", "Tight_VarRad"]  # previously Gradient. The fisrt one is used to define the pass-ID region
   - ["TightLH", "Loose_VarRad"]  
   - ["MediumLH", "Tight_VarRad"]  
   - ["MediumLH", "Loose_VarRad"]  
   - ["MediumLH", "NonIso"] 
-  - ["LooseBLayerLH", "Tight_VarRad"]  
-  - ["LooseBLayerLH", "Loose_VarRad"]  
-  - ["LooseBLayerLH", "NonIso"] #allows previous wp to be used if needed
+  - ["LooseBLayerLH", "NonIso"] 
 
 Muon:
   maxD0Significance: 15
   maxDeltaZ0SinTheta: 1.5
   ID: "Loose"
-  Iso: "PflowLoose_VarRad"
+  Iso: "NonIso"
   min_pT: 3.e+3
   max_eta: 2.5 # no recommendation yet for forward muons with eta between 2.5 and 2.7.
   min_pT_ssWW: 5.e+3
@@ -74,12 +79,9 @@ Muon:
 
   extra_wps:
   - ["Medium", "PflowTight_VarRad", 3, 0.5] # previously FixedCutPflowTight. The fisrt one is used to define the pass-ID region
-  - ["Medium", "PflowLoose_VarRad", 3, 0.5]
-  - ["Medium", "PflowLoose_VarRad", 10, 0.5] 
-  - ["Loose", "PflowTight_VarRad", 3, 0.5] 
-  - ["Loose", "PflowLoose_VarRad", 3, 0.5]
-  - ["Loose", "PflowLoose_VarRad", 10, 0.5]
-  - ["Loose", "NonIso", 15, 1.5] #allows previous wp to be used if needed
+  - ["Medium", "PflowLoose_VarRad"]
+  - ["Loose", "PflowTight_VarRad"] 
+  - ["Loose", "PflowLoose_VarRad",]
 
 Lepton:
   amount: 3

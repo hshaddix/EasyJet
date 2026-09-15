@@ -107,6 +107,8 @@ namespace ssWWVBS
       Gaudi::Property<std::string> m_muonWPName
   {this, "muonWP", "","Muon ID + Iso cuts" };
       CP::SysReadDecorHandle<char> m_muonWPDecorHandle{"", this};
+      CP::SysReadDecorHandle<float> m_mu_d0sig{"", this};
+      CP::SysReadDecorHandle<float> m_mu_z0sintheta{"", this};
 
       CP::SysReadDecorHandle<unsigned int> m_year
 	{this, "year", "dataTakingYear", ""};
@@ -174,6 +176,7 @@ namespace ssWWVBS
         {ssWWVBS::pass_tFakeVR, "pass_tFakeVR"},
         {ssWWVBS::pass_tEWKVR, "pass_tEWKVR"},
         {ssWWVBS::pass_lllVR, "pass_lllVR"},
+        {ssWWVBS::pass_ttbarFakeCR, "pass_ttbarFakeCR"},
         {ssWWVBS::pass_ZeeVR, "pass_ZeeVR"},
         {ssWWVBS::pass_prescale_DijetsCR, "pass_prescale_DijetsCR"},
         {ssWWVBS::pass_unprescale_DijetsCR, "pass_unprescale_DijetsCR"},
@@ -186,8 +189,6 @@ namespace ssWWVBS
       Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
       CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
 
-      CP::SysWriteDecorHandle<char> m_ele_selected {"ele_is_selected_%SYS%", this};
-      CP::SysWriteDecorHandle<char> m_mu_selected {"mu_is_selected_%SYS%", this};
       CP::SysWriteDecorHandle<char> m_ele_TrigMatching {"ele_TrigMatchingDecor_%SYS%", this};
       CP::SysWriteDecorHandle<char> m_mu_TrigMatching {"mu_TrigMatchingDecor_%SYS%", this};
       
@@ -210,17 +211,10 @@ namespace ssWWVBS
       void evaluateSingleMuonTrigger
 	(const xAOD::EventInfo* event, 
 	 const xAOD::Muon *mu, const CP::SystematicSet& sys);
-      void evaulateLeptonKinematicCuts
-  (const xAOD::Electron*& ele0, const xAOD::Electron*& ele1,
-   const xAOD::Muon*& mu0, const xAOD::Muon*& mu1,
-   const CP::SystematicSet& sys);
       void evaulateLeptonIDLabels
-  (const xAOD::Electron*& ele0, const xAOD::Electron*& ele1,
-   const xAOD::Muon*& mu0, const xAOD::Muon*& mu1,
+  (const xAOD::ElectronContainer& electrons, const xAOD::MuonContainer& muons,
    CutManager& ssWWCuts, const CP::SystematicSet& sys);
-      void evaluateLeptonCuts(const xAOD::ElectronContainer& electrons,const xAOD::MuonContainer& muons,
-                          const xAOD::Electron* ele0, const xAOD::Electron* ele1,
-                          const xAOD::Muon* mu0, const xAOD::Muon* mu1,
+      void evaluateLeptonCuts(std::vector<std::pair<const xAOD::IParticle*, int>> leptons,
                           CutManager& ssWWCuts);
       void evaluateMetCuts(const xAOD::MissingET* met, CutManager& ssWWCuts);
       void evaluateJetCuts(const xAOD::JetContainer& jets, CutManager& ssWWCuts);
