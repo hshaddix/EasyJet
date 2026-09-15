@@ -1,6 +1,7 @@
 include: [XbbCalib/syst-Zbbj-full.yaml]
 
 Large_R_jet:
-  systModelJER: "Simple"
-  systModelJMS: "Simple"
-  systModelJMR: "Simple"
+  tool_options:
+    systematicsModelJER: "Simple"
+    systematicsModelJMS: "Simple"
+    systematicsModelJMR: "Simple"

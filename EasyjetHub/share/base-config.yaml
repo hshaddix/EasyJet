@@ -138,13 +138,11 @@ Large_R_jet:
     GN2X:
       file: EasyjetHub/Xbb_GN2Xv01.json
       wps: []
-  systModelJER: "Full"
-  systModelJMS: "Full"
-  systModelJMR: "Full"
-  uncertToolCalibArea: ""
-  uncertToolConfigPath: ""
-  uncertToolConfigPathJMR: ""
-  uncertToolMCType: ""
+  # Passed verbatim to LargeRJetAnalysisConfig; empty uncertTool* keys omitted.
+  tool_options:
+    systematicsModelJER: "Full"
+    systematicsModelJMS: "Full"
+    systematicsModelJMR: "Full"
 
 Photon:
   min_pT: 10.e+3

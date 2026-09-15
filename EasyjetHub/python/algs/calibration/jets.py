@@ -269,24 +269,9 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     configSeq.setOptionValue('.minMass', jet_flags.min_mass)
     configSeq.setOptionValue('.maxMass', jet_flags.max_mass)
 
-    configSeq.setOptionValue('.systematicsModelJER', jet_flags.systModelJER)
-    configSeq.setOptionValue('.systematicsModelJMS', jet_flags.systModelJMS)
-    configSeq.setOptionValue('.systematicsModelJMR', jet_flags.systModelJMR)
-    if jet_flags.uncertToolConfigPath and jet_flags.uncertToolCalibArea:
-        configSeq.setOptionValue(
-            '.uncertToolConfigPath', jet_flags.uncertToolConfigPath
-        )
-        configSeq.setOptionValue(
-            '.uncertToolCalibArea', jet_flags.uncertToolCalibArea
-        )
-    if jet_flags.uncertToolConfigPathJMR:
-        configSeq.setOptionValue(
-            '.uncertToolConfigPathJMR', jet_flags.uncertToolConfigPathJMR
-        )
-    if jet_flags.uncertToolMCType:
-        configSeq.setOptionValue(
-            '.uncertToolMCType', jet_flags.uncertToolMCType
-        )
+    # Keys are LargeRJetAnalysisConfig's own option names (MR !2164 thread 9).
+    for opt, val in jet_flags.tool_options.items():
+        configSeq.setOptionValue(f'.{opt}', val)
 
     lr_output_flags = (
         flags.Analysis.ttree_output.collection_options.large_R_jets
