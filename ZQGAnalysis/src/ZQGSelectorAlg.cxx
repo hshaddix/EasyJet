@@ -37,7 +37,8 @@ namespace ZQG
 
     ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
     ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_eventHandle.initialize(m_systematicsList));    
+    ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
+    if (m_saveCutFlow) ATH_CHECK (m_generatorWeight.initialize(m_systematicsList, m_eventHandle));
 
     ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
 
@@ -71,8 +72,15 @@ namespace ZQG
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize());
 
+    if(m_saveCutFlow){
+      std::vector<std::string> boolNameList;
+      for (const auto& [key, value]: m_boolnames){
+        boolNameList.push_back(value);
+        m_nameToBool[value] = key;
+      }
+      ATH_CHECK (initialiseCutflow(boolNameList));
+    }
 
-    if(m_saveCutFlow) ATH_CHECK (initialiseCutflow());
     return StatusCode::SUCCESS;
   }
 
@@ -89,7 +97,7 @@ namespace ZQG
 
       // Retrive inputs
       const xAOD::EventInfo *event = nullptr;
-      ANA_CHECK (m_eventHandle.retrieve (event, sys, ctx));
+      ATH_CHECK (m_eventHandle.retrieve (event, sys, ctx));
       bool pass_truth_baseline = false;
       if (m_isMC){
         // Find truth decision
@@ -102,7 +110,7 @@ namespace ZQG
       }
       
       const xAOD::JetContainer *jets = nullptr;
-      ANA_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
+      ATH_CHECK (m_jetHandle.retrieve (jets, sys, ctx));
 
       std::string ftag2D_WP = "ftag_quantile_GN2v01_Continuous2D";
       std::vector<int> ctag_values = {1,2,3};
@@ -121,14 +129,14 @@ namespace ZQG
       const xAOD::JetContainer *largeJets = nullptr;
       // STDM13 COMPATIBILITY: Only retrieve large-R jets if handle is initialized
       if (!m_largejetHandle.empty()) {
-        ANA_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
+        ATH_CHECK (m_largejetHandle.retrieve (largeJets, sys, ctx));
       }
 
       const xAOD::MuonContainer *muons = nullptr;
-      ANA_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
+      ATH_CHECK (m_muonHandle.retrieve (muons, sys, ctx));
       
       const xAOD::ElectronContainer *electrons = nullptr;
-      ANA_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
+      ATH_CHECK (m_electronHandle.retrieve (electrons, sys, ctx));
 
 
       m_bools.at(ZQG::IS_ee) = false;
@@ -172,10 +180,10 @@ namespace ZQG
         mu0 = muons->at(0);
       }
 
-      evaluateTriggerCuts(event, ele0, ele1, mu0, mu1, m_ZQGCuts, sys);
-      evaluateLeptonCuts(*electrons, *muons, m_ZQGCuts);
-      evaluateBJetCuts(*bjets, m_ZQGCuts);
-      evaluateCJetCuts(*cjets, m_ZQGCuts);
+      evaluateTriggerCuts(event, ele0, ele1, mu0, mu1, sys);
+      evaluateLeptonCuts(*electrons, *muons);
+      evaluateBJetCuts(*bjets);
+      evaluateCJetCuts(*cjets);
       // STDM13 COMPATIBILITY: Only evaluate large jet cuts if large-R jets are available
       if (largeJets != nullptr) {
         evaluateLargeJetCuts(largeJets);
@@ -190,36 +198,13 @@ namespace ZQG
       }
       m_pass_cuts.set(*event, pass_baseline, sys);
 
-      // do the CUTFLOW only with sys="" -> NOSYS
-      if (sys.name()=="" && m_saveCutFlow) {
-
-        // Compute total_events
-        m_total_events+=1;
-
-        for (const auto &cut : m_inputCutKeys) {
-          if (m_ZQGCuts.exists(m_boolnames.at(cut))) {
-            m_ZQGCuts(m_boolnames.at(cut)).passed = m_bools.at(cut);
-            if (m_ZQGCuts(m_boolnames.at(cut)).passed) {
-              m_ZQGCuts(m_boolnames.at(cut)).counter += 1;
-            }
-          }
-        }
-
-        // Check how many consecutive cuts are passed by the event.
-        unsigned int consecutive_cuts = 0;
-        for (size_t i = 0; i < m_ZQGCuts.size(); ++i) {
-          if (m_ZQGCuts[i].passed)
-            consecutive_cuts++;
-          else
-            break;
-        }
-
-        // Here we basically increment the  N_events(pass_i  AND pass_i-1  AND ... AND pass_0) for the i-cut.
-        // I think this is an elegant way to do it :) . Considering the difficulties a configurable cut list imposes.
-        for (unsigned int i=0; i<consecutive_cuts; i++) {
-          m_ZQGCuts[i].relativeCounter+=1;
-        }
-    }
+      if (sys.name()=="" && m_saveCutFlow){
+        std::vector<bool> cutBools;
+        for(const auto& cut : m_inputCutList)
+          cutBools.push_back(m_bools.at(m_nameToBool.at(cut)));
+        double mc_weight = m_isMC ? m_generatorWeight.get(*event, sys) : 0.;
+        ATH_CHECK (applyCutFlow(cutBools, mc_weight));
+      }
 
       for (auto& [key, var] : m_bools) {
         m_Bbranches.at(key).set(*event, var, sys);
@@ -239,24 +224,15 @@ namespace ZQG
       filter.setPassed(true);
     }
 
-    return StatusCode::SUCCESS;
-  }
+  return StatusCode::SUCCESS;
+}
 
   StatusCode ZQGSelectorAlg::finalize()
   {
     //adapt the following for each syst TODO
     ATH_MSG_INFO("Total events = " << m_total_events <<std::endl);
-    ANA_CHECK (m_filterParams.finalize ());
-    m_ZQGCuts.CheckCutResults(); // Print CheckCutResults
-
-    if(m_saveCutFlow) {
-      m_ZQGCuts.DoAbsoluteEfficiency(m_total_events, efficiency("AbsoluteEfficiency"));
-      m_ZQGCuts.DoRelativeEfficiency(m_total_events, efficiency("RelativeEfficiency"));
-      m_ZQGCuts.DoStandardCutFlow(m_total_events, efficiency("StandardCutFlow"));
-      m_ZQGCuts.DoCutflowLabeling(m_total_events, hist("EventsPassed_BinLabeling"));
-
-    }
-
+    ATH_CHECK (m_filterParams.finalize ());
+    ATH_CHECK (finaliseCutflow());
     return StatusCode::SUCCESS;
   }
 
@@ -264,13 +240,9 @@ namespace ZQG
   (const xAOD::EventInfo *event,
    const xAOD::Electron* ele0, const xAOD::Electron* ele1,
    const xAOD::Muon* mu0, const xAOD::Muon* mu1,
-   CutManager& ZQGCuts, const CP::SystematicSet& sys) {
-
-    if (!ZQGCuts.exists("PASS_TRIGGER"))
-        return;
+   const CP::SystematicSet& sys) {
     if (ele0 || mu0) evaluateSingleLeptonTrigger(event, ele0, mu0, sys);
     if (ele1 || mu1) evaluateSingleLeptonTrigger(event, ele1, mu1, sys);
-
     if (m_bools.at(ZQG::pass_trigger_SLT)) m_bools.at(ZQG::PASS_TRIGGER) = true;
   }
 
@@ -384,11 +356,9 @@ namespace ZQG
   }
 
   void ZQGSelectorAlg::evaluateLeptonCuts
-  (const xAOD::ElectronContainer& electrons, const xAOD::MuonContainer& muons,
-   CutManager& ZQGCuts)
+  (const xAOD::ElectronContainer& electrons, const xAOD::MuonContainer& muons)
   {
     TLorentzVector ll;
-    double mll = -99;
 
     bool OPPOSITE_CHARGE_LEPTONS = false;
 
@@ -416,42 +386,27 @@ namespace ZQG
       OPPOSITE_CHARGE_LEPTONS = electrons.at(0)->charge()*muons.at(0)->charge() == -1;
     }
 
-    mll = ll.M();
+    double mll = ll.M();
     
-    if(ZQGCuts.exists("OPPOSITE_CHARGE_LEPTONS")) m_bools.at(ZQG::OPPOSITE_CHARGE_LEPTONS) = OPPOSITE_CHARGE_LEPTONS;
-    if(ZQGCuts.exists("DILEPTON_MASS_WINDOW")) m_bools.at(ZQG::DILEPTON_MASS_WINDOW) = ( mll >= 76.*Athena::Units::GeV && mll <= 106.*Athena::Units::GeV );
-
+    m_bools.at(ZQG::OPPOSITE_CHARGE_LEPTONS) = OPPOSITE_CHARGE_LEPTONS;
+    m_bools.at(ZQG::DILEPTON_MASS_WINDOW) = ( mll >= 76.*Athena::Units::GeV && mll <= 106.*Athena::Units::GeV );
 
   }
 
   void ZQGSelectorAlg::evaluateBJetCuts
-  (const ConstDataVector<xAOD::JetContainer>& bjets, CutManager& ZQGCuts)
+  (const ConstDataVector<xAOD::JetContainer>& bjets)
   { 
-
     ///All jets in the containers should have pT>20GeV. Check minPt of your JetSelectorAlg in the ZQG_config file.
-    if (bjets.size() >= 1 && ZQGCuts.exists("ONE_B_JETS")){
-      m_bools.at(ZQG::ONE_B_JETS) = true;
-    }
-
-    if (bjets.size() >= 2 && ZQGCuts.exists("TWO_B_JETS")){
-      m_bools.at(ZQG::TWO_B_JETS) = true;
-    }
-
+    m_bools.at(ZQG::ONE_B_JETS) = bjets.size() >= 1;
+    m_bools.at(ZQG::TWO_B_JETS) = bjets.size() >= 2;
   }  
   
   void ZQGSelectorAlg::evaluateCJetCuts
-  (const ConstDataVector<xAOD::JetContainer>& cjets, CutManager& ZQGCuts)
+  (const ConstDataVector<xAOD::JetContainer>& cjets)
   { 
-
     ///All jets in the containers should have pT>20GeV. Check minPt of your JetSelectorAlg in the ZQG_config file.
-    if (cjets.size() >= 1 && ZQGCuts.exists("ONE_C_JETS")){
-      m_bools.at(ZQG::ONE_C_JETS) = true;
-    }
-
-    if (cjets.size() >= 2 && ZQGCuts.exists("TWO_C_JETS")){
-      m_bools.at(ZQG::TWO_C_JETS) = true;
-    }
-
+    m_bools.at(ZQG::ONE_C_JETS) = cjets.size() >= 1;
+    m_bools.at(ZQG::TWO_C_JETS) = cjets.size() >= 2;
   }  
 
   void ZQGSelectorAlg::evaluateLargeJetCuts
@@ -480,47 +435,6 @@ namespace ZQG
       m_pt_threshold[ZQG::SLT][ZQG::mu] = 27. * Athena::Units::GeV;
     else
       m_pt_threshold[ZQG::SLT][ZQG::mu] = 25. * Athena::Units::GeV;
-  }
-
-  StatusCode ZQGSelectorAlg::initialiseCutflow(){
-
-    std::vector<std::string> boolnameslist;
-    for (const auto& [key, value] : m_boolnames) {
-      boolnameslist.push_back(value);
-    }
-    m_ZQGCuts.CheckInputCutList(m_inputCutList, boolnameslist);
-
-    m_inputCutKeys.resize(m_inputCutList.size());
-    std::vector<bool> inputWasFound (m_inputCutList.size(), false);
-    for (const auto& [key, value]: m_boolnames) {
-      auto it = std::find(m_inputCutList.begin(), m_inputCutList.end(), value);
-      if (it != m_inputCutList.end()) {
-        auto index = it - m_inputCutList.begin();
-        m_inputCutKeys.at(index) = key;
-        inputWasFound.at(index) = true;
-      }
-    }
-
-    for (unsigned int index = 0; index < inputWasFound.size(); index++) {
-      if(inputWasFound.at(index)) continue;
-      ATH_MSG_ERROR("Doubled or falsely spelled cuts in CutList (see config file)." + m_inputCutList[index]);
-    }
-
-    for (const auto &cut : m_inputCutKeys) {
-      m_ZQGCuts.add(m_boolnames[cut]);
-    }
-
-    //After filling the CutManager, book your histograms.
-    const unsigned int nbins = m_ZQGCuts.size() + 1; //  need an extra bin for the total num of events.
-    ANA_CHECK (book (TEfficiency("AbsoluteEfficiency","Absolute Efficiency of ZQG cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("RelativeEfficiency","Relative Efficiency of ZQG cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TEfficiency("StandardCutFlow","StandardCutFlow of ZQG cuts;Cuts;#epsilon",
-				 nbins, 0.5, nbins + 0.5)));
-    ANA_CHECK (book (TH1F("EventsPassed_BinLabeling", "Events passed by each cut / Bin labeling", nbins, 0.5, nbins + 0.5)));
-
-    return StatusCode::SUCCESS;
   }
 
 }

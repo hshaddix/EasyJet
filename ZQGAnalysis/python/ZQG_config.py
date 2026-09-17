@@ -83,8 +83,7 @@ def ZQG_cfg(flags, smalljetkey, largejetkey, muonkey, electronkey,
             saveCutFlow=flags.Analysis.save_cutflow,
             triggerLists=trigger_branches,
             trigMatchingTool=cfg.popToolsAndMerge(TriggerMatchingToolCfg(flags)),
-            bypass=(flags.Analysis.bypass if hasattr(flags.Analysis, 'bypass')
-                    else False),
+            bypass=flags.Analysis.bypass,
         )
     )
 
@@ -173,13 +172,12 @@ def ZQGTruth_cfg(flags, truthsmalljetkey, truthlargejetkey, truthmuonkey,
     cfg.addEventAlgo(
         CompFactory.ZQG.ZQGTruthSelectorAlg(
             "ZQGTruthSelectorAlg",
-            truthcutList=flags.Analysis.TruthCutList,
+            cutList=flags.Analysis.TruthCutList,
             saveCutFlow=flags.Analysis.save_cutflow,
             truthSmallJetInContainer="ZQGTruthJets",
             truthLargeJetInContainer="ZQGTruthLargeJets",
             truthElectronInContainer="ZQGTruthElectrons",
             truthMuonInContainer="ZQGTruthMuons",
-            jetTruthFlavourDecoration="ZQGTruthJets.HadronConeExclTruthLabelID",
             floatVariableList=float_variables
         )
     )
@@ -279,6 +277,13 @@ def ZQG_branches(flags):
 
     branches += object_level_branches
 
+    if flags.Input.isMC:
+        truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
+        truth_branches, truth_float_variable_names = (
+            get_ZQGTruthSelectorAlg_variables(flags)
+        )
+        branches += truth_branches
+
     branches += ["EventInfo.ZQG_pass_sr_%SYS% -> ZQG_pass_SR_%SYS%"]
 
     if flags.Analysis.save_cutflow:
@@ -288,12 +293,6 @@ def ZQG_branches(flags):
             branches += [
                 "EventInfo.PassCuts_%SYS% -> ZQG_PassRecoCuts_%SYS% type=char"
             ]
-        if flags.Input.isMC:
-            truthcutList = flags.Analysis.TruthCutList + flags.Analysis.TruthCategories
-            truth_branches, truth_float_variable_names = (
-                get_ZQGTruthSelectorAlg_variables(flags)
-            )
-            branches += truth_branches
             for cut in truthcutList:
                 branches += [f"TruthEvents.{cut} -> ZQG_{cut} type=char"]
                 branches += [

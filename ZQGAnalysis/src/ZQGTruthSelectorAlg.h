@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2002-2025 CERN for the benefit of the ATLAS collaboration
+  Copyright (C) 2002-2026 CERN for the benefit of the ATLAS collaboration
 */
 
 // Always protect against multiple includes!
@@ -8,7 +8,7 @@
 #define ZQGANALYSIS_ZQGTRUTHSELECTORALG
 
 #include <memory>
-#include <AnaAlgorithm/AnaAlgorithm.h>
+#include "EasyjetHub/BaseSelectorAlg.h"
 #include <AsgDataHandles/ReadDecorHandleKey.h>
 #include <AsgDataHandles/WriteDecorHandle.h>
 #include <AsgDataHandles/WriteDecorHandleKey.h>
@@ -25,7 +25,6 @@
 #include <xAODTruth/TruthParticle.h>
 
 
-#include <EasyjetHub/CutManager.h>
 #include "ZQGEnums.h"
 
 
@@ -33,10 +32,10 @@ namespace ZQG
 {
 
   /// \brief An algorithm for counting containers
-  class ZQGTruthSelectorAlg final : public EL::AnaAlgorithm {
+  class ZQGTruthSelectorAlg final : public Easyjet::BaseSelectorAlg {
 
     public:
-      using EL::AnaAlgorithm::AnaAlgorithm;
+      using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -77,7 +76,9 @@ namespace ZQG
 
       std::unordered_map<std::string, SG::ReadDecorHandleKey<xAOD::JetContainer>> m_cjetDecorHandleKeys;
 
-      SG::ReadDecorHandleKey<xAOD::JetContainer> m_jetTruthFlavourKey{this, "jetTruthFlavourDecoration", "", "Name of jet truth flavour decoration"};
+      SG::ReadDecorHandleKey<xAOD::JetContainer> m_jetTruthFlavourKey
+	{this, "jetTruthFlavourDecoration", m_truthjetsInKey,
+	    "HadronConeExclTruthLabelID", "Name of jet truth flavour decoration"};
 
       long long int m_total_events{0};
 
@@ -97,14 +98,10 @@ namespace ZQG
         {ZQG::ONE_LARGE_JET_TRUTH, "ONE_LARGE_JET_TRUTH"},
       };
 
-      CutManager m_ZQGTruthCuts;
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "truthcutList", {}};
-      std::vector<ZQG::Booleans> m_inputCutKeys;
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
-      
+      std::unordered_map<std::string, ZQG::Booleans> m_nameToBool;
       
       SG::WriteDecorHandleKey<xAOD::TruthEventContainer> m_passTruthCutsKey{
-        this, "PassTruthCutsKey", "TruthEvents.PassTruthCuts", "Decorate event with pass/fail flag"
+	this, "PassTruthCutsKey", m_eventInKey, "PassTruthCuts", "Decorate event with pass/fail flag"
       };
 
 
@@ -117,13 +114,19 @@ namespace ZQG
 
       std::unordered_map<std::string, SG::WriteDecorHandle<xAOD::TruthEventContainer, float>> m_Fbranches;
 
-      void truthOverlapRemoval(const xAOD::JetContainer& truthJets, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
-      void evaluateTruthLeptonCuts(const xAOD::TruthEvent& truthevent, const xAOD::TruthParticleContainer& truthElectrons, const xAOD::TruthParticleContainer& truthMuons, CutManager& ZQGTruthCuts);
-      void evaluateTruthBJetCuts(const ConstDataVector<xAOD::JetContainer>& truthBjets, CutManager& ZQGTruthCuts);
-      void evaluateTruthCJetCuts(const ConstDataVector<xAOD::JetContainer>& truthCjets, CutManager& ZQGTruthCuts);
+      void truthOverlapRemoval
+	(const xAOD::JetContainer& truthJets,
+	 const xAOD::TruthParticleContainer& truthElectrons,
+	 const xAOD::TruthParticleContainer& truthMuons,
+	 ConstDataVector<xAOD::JetContainer>& jetsAfterOverlap);
+      void evaluateTruthLeptonCuts
+	(const xAOD::TruthEvent& truthevent,
+	 const xAOD::TruthParticleContainer& truthElectrons,
+	 const xAOD::TruthParticleContainer& truthMuons);
+      void evaluateTruthBJetCuts(const ConstDataVector<xAOD::JetContainer>& truthBjets);
+      void evaluateTruthCJetCuts(const ConstDataVector<xAOD::JetContainer>& truthCjets);
       void evaluateTruthLargeJetCuts(const xAOD::JetContainer& truthLargeJets);
       void setThresholds(const xAOD::TruthEvent* event);
-      StatusCode initialiseCutflow(); 
   };
 
 }

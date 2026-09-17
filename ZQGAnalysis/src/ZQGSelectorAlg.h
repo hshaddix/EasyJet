@@ -8,7 +8,7 @@
 #define ZQGANALYSIS_ZQGSELECTORALG
 
 #include <memory>
-#include "AnaAlgorithm/AnaAlgorithm.h"
+#include "EasyjetHub/BaseSelectorAlg.h"
 #include <AsgDataHandles/ReadDecorHandleKey.h>
 
 #include <SystematicsHandles/SysReadHandle.h>
@@ -26,17 +26,16 @@
 
 
 #include "TriggerMatchingTool/IMatchingTool.h"
-#include <EasyjetHub/CutManager.h>
 #include "ZQGEnums.h"
 
 namespace ZQG
 {
 
   /// \brief An algorithm for counting containers
-  class ZQGSelectorAlg final : public EL::AnaAlgorithm {
+  class ZQGSelectorAlg final : public Easyjet::BaseSelectorAlg {
 
     public:
-      using EL::AnaAlgorithm::AnaAlgorithm;
+      using Easyjet::BaseSelectorAlg::BaseSelectorAlg;
 
       /// \brief Initialisation method, for setting up tools and other persistent
       /// configs
@@ -44,7 +43,7 @@ namespace ZQG
       /// \brief Execute method, for actions to be taken in the event loop
       StatusCode execute(const EventContext& ctx) override;
       /// \brief This is the mirror of initialize() and is called after all events are processed.
-      StatusCode finalize() override; ///I added this to write the cutflow histogram.
+      StatusCode finalize() override;
 
     private :
 
@@ -54,9 +53,6 @@ namespace ZQG
         "OPPOSITE_CHARGE_LEPTONS",
         "DILEPTON_MASS_WINDOW",
       };
-
-      Gaudi::Property<bool> m_isMC
-	{ this, "isMC", false, "Is this simulation?" };
 
       Gaudi::Property<bool> m_bypass
 	{ this, "bypass", false, "Run selector algorithm in pass-through mode" };
@@ -113,33 +109,28 @@ namespace ZQG
       ToolHandle<Trig::IMatchingTool> m_matchingTool
       { this, "trigMatchingTool", "", "Trigger matching tool"};
 
-      long long int m_total_events{0};
-
       std::unordered_map<ZQG::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<ZQG::Booleans, bool> m_bools;
       std::unordered_map<ZQG::Booleans, std::string> m_boolnames{
         {ZQG::IS_ee, "IS_ee"},
         {ZQG::IS_mm, "IS_mm"},
         {ZQG::IS_em, "IS_em"},
-
         {ZQG::pass_trigger_SLT, "pass_trigger_SLT"},
-
         {ZQG::PASS_TRIGGER, "PASS_TRIGGER"},
         {ZQG::EXACTLY_TWO_LEPTONS, "EXACTLY_TWO_LEPTONS"},
         {ZQG::OPPOSITE_CHARGE_LEPTONS, "OPPOSITE_CHARGE_LEPTONS"},
         {ZQG::DILEPTON_MASS_WINDOW, "DILEPTON_MASS_WINDOW"},
-
         {ZQG::ONE_B_JETS, "ONE_B_JETS"},
         {ZQG::TWO_B_JETS, "TWO_B_JETS"},
         {ZQG::ONE_C_JETS, "ONE_C_JETS"},
         {ZQG::TWO_C_JETS, "TWO_C_JETS"},
         {ZQG::ONE_LARGE_JET, "ONE_LARGE_JET"},
       };
+      std::unordered_map<std::string, ZQG::Booleans> m_nameToBool;
 
-      CutManager m_ZQGCuts;
-      Gaudi::Property<std::vector<std::string>> m_inputCutList{this, "cutList", {}};
-      std::vector<ZQG::Booleans> m_inputCutKeys;
-      Gaudi::Property<bool> m_saveCutFlow{this, "saveCutFlow", false};
+      CP::SysReadDecorHandle<float> m_generatorWeight
+	{ this, "generatorWeight", "generatorWeight_%SYS%", "MC event weights" };
+
       CP::SysWriteDecorHandle<char> m_pass_cuts {"PassCuts_%SYS%", this};
 
       std::unordered_map<ZQG::TriggerChannel, std::unordered_map<ZQG::Var, float>> m_pt_threshold;
@@ -148,7 +139,7 @@ namespace ZQG
 	(const xAOD::EventInfo* event,
 	 const xAOD::Electron* ele0, const xAOD::Electron* ele1,
 	 const xAOD::Muon* mu0, const xAOD::Muon* mu1,
-	 CutManager& ZQGCuts, const CP::SystematicSet& sys);
+	 const CP::SystematicSet& sys);
 
       void evaluateSingleLeptonTrigger
 	(const xAOD::EventInfo* event, 
@@ -156,12 +147,11 @@ namespace ZQG
 	 const CP::SystematicSet& sys);
 
       void evaluateLeptonCuts(const xAOD::ElectronContainer& electrons,
-                          const xAOD::MuonContainer& muons, CutManager& ZQGCuts);
-      void evaluateBJetCuts(const ConstDataVector<xAOD::JetContainer>& bjets, CutManager& ZQGCuts);
-      void evaluateCJetCuts(const ConstDataVector<xAOD::JetContainer>& cjets, CutManager& ZQGCuts);
+			      const xAOD::MuonContainer& muons);
+      void evaluateBJetCuts(const ConstDataVector<xAOD::JetContainer>& bjets);
+      void evaluateCJetCuts(const ConstDataVector<xAOD::JetContainer>& cjets);
       void evaluateLargeJetCuts(const xAOD::JetContainer *largeJets);
       void setThresholds(const xAOD::EventInfo* event, const CP::SystematicSet& sys);
-      StatusCode initialiseCutflow();
   };
 
 }
