@@ -35,7 +35,8 @@ DEFAULT_PTAG_BY_ANALYSIS = {
     "Zbby":       "p701X",
     "Zbby-aod":   "p701X",
     "Zbby-hists": "p701X",
-    "Zll":        "p701X",
+    "Zllj":        "p701X",
+    "Zlly":        "p701X",
     "tt":         "p701X",
 }
 
@@ -81,13 +82,15 @@ MC_PROCESSES_BY_ANALYSIS = {
     "Zbby":       _ZBBY_PROCESSES,
     "Zbby-aod":   _ZBBY_PROCESSES,
     "Zbby-hists": _ZBBY_PROCESSES,
-    "Zll": [
+    "Zllj": [
         "Diboson",
-        "Zll"
+        "Zllj"
+    ],
+    "Zlly": [
+        "Zlly"
     ],
     "tt": [
         "Diboson",
-        "Zll",
         "Wjet",
         "singletop",
         "ttbar_nonallhad",
@@ -122,7 +125,8 @@ CONFIG_BY_ANALYSIS = {
     "Zbby":       "XbbCalib/RunConfig-ZbbyCalib.yaml",
     "Zbby-aod":   "XbbCalib/RunConfig-ZbbyCalib.yaml",
     "Zbby-hists": "XbbCalib/histonly-config-Zbby.yaml",
-    "Zll":        "XbbCalib/RunConfig-Zll.yaml",
+    "Zllj":        "XbbCalib/RunConfig-Zllj.yaml",
+    "Zlly":        "XbbCalib/RunConfig-Zlly.yaml",
     "tt":         "XbbCalib/RunConfig-ttCalib.yaml",
 }
 
