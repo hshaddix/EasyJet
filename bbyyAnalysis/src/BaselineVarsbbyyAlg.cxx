@@ -287,8 +287,12 @@ namespace HHBBYY
       std::vector<TLorentzVector> Hyy_photons = {ph1, ph2};
 
       // Fill the bb and bbyy branches
-      if (jets->size() >= 2) {
+      if (jets->size() >= 1) {
+        fill_bbyy_branches(Hbb_jets, Hyy_photons, "", event, sys);
         fill_bb_branches(Hbb_jets, "", event, sys);
+      }
+      
+      if (jets->size() >= 2) {
         if (m_doKF) {eventFloats.at(HHBBYY::Var::bb_m_KF_unconstrained) = m_KF_MBB.get(*event, sys);}
 
         if(n_photons >= 2){
@@ -297,7 +301,6 @@ namespace HHBBYY
           double Higgs_mass = 125. * Athena::Units::GeV;
           float bbyy_mStar = HH.M() - (H_bb.M() - Higgs_mass)-(H_yy.M() - Higgs_mass);
           eventFloats.at(HHBBYY::Var::bbyy_mStar) = bbyy_mStar;
-          fill_bbyy_branches(Hbb_jets, Hyy_photons, "", event, sys);
         }
       }
 
@@ -662,6 +665,9 @@ namespace HHBBYY
       for(unsigned int i =0; i<2; i++){
         const xAOD::Jet* jet = Hbb_jets[i];
 
+        // Special case for SH analysis, for only one b(-jet) exists
+        if(jet == nullptr) continue;
+
         bool PCBTgiven = !m_PCBT.empty();
 
         std::string prefix_bjet = prefix + "HbbCandidate_Jet"+std::to_string(i+1);
@@ -694,17 +700,20 @@ namespace HHBBYY
       }
     }
 
-    TLorentzVector H_bb = Hbb_jets[0]->p4() + Hbb_jets[1]->p4();
+    // Special case for SH analysis, for only one b(-jet) exists
+    TLorentzVector H_bb = Hbb_jets[1] != nullptr ? Hbb_jets[0]->p4() + Hbb_jets[1]->p4() : Hbb_jets[0]->p4();
 
     m_Fbranches.at(prefix+"mbb").set(*event, H_bb.M(), sys);
     m_Fbranches.at(prefix+"pTbb").set(*event, H_bb.Pt(), sys);
     m_Fbranches.at(prefix+"Etabb").set(*event, H_bb.Eta(), sys);
     m_Fbranches.at(prefix+"Phibb").set(*event, H_bb.Phi(), sys);
-    m_Fbranches.at(prefix+"dRbb").set(*event, Hbb_jets[0]->p4().DeltaR(Hbb_jets[1]->p4()), sys);
+    
+    if(Hbb_jets[1] != nullptr) m_Fbranches.at(prefix+"dRbb").set(*event, Hbb_jets[0]->p4().DeltaR(Hbb_jets[1]->p4()), sys);
   }
 
   void BaselineVarsbbyyAlg::fill_bbyy_branches(const std::vector<const xAOD::Jet*> &Hbb_jets, const std::vector<TLorentzVector> &Hyy_photons, const std::string &prefix, const xAOD::EventInfo *event, const auto& sys) {
-    TLorentzVector H_bb = Hbb_jets[0]->p4() + Hbb_jets[1]->p4();
+    // Special case for SH analysis, for only one b(-jet) exists
+    TLorentzVector H_bb = Hbb_jets[1] != nullptr ? Hbb_jets[0]->p4() + Hbb_jets[1]->p4() : Hbb_jets[0]->p4();
     TLorentzVector H_yy = Hyy_photons[0] + Hyy_photons[1];
 
     TLorentzVector HH = H_yy + H_bb;
@@ -726,7 +735,7 @@ namespace HHBBYY
       m_Fbranches.at(prefix+"mbyy").set(*event, H_byy.M(), sys);
     }
 
-    if (m_save_extra_vars){
+    if (m_save_extra_vars and Hbb_jets[1] != nullptr){
       std::vector<double> vec_angular_variables_CM=compute_angular_variables_CM(Hyy_photons[0], Hyy_photons[1], Hbb_jets[0]->p4(), Hbb_jets[1]->p4());
 
       m_Fbranches.at(prefix+"cos_theta_yy_cm_bbyy").set(*event,vec_angular_variables_CM[0],sys);
