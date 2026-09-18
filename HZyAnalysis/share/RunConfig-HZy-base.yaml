@@ -158,6 +158,8 @@ PileupReweighting:
     include: HZyAnalysis/prw_lepton.yaml
   extra_prw:
     - postfix: "lepton"
+      prw_files: {}
+      lumicalc_files: {}
 
 ttree_output:
   include: HZyAnalysis/HZy-base-output.yaml

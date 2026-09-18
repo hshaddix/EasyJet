@@ -70,6 +70,7 @@ GRL:
 PileupReweighting:
   extra_prw:
     - postfix: "semiresolved"
+      prw_files: {}
       lumicalc_files:
         include: [EasyjetHub/lumicalc_no2015.yaml]
 

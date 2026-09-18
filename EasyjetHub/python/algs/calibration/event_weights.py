@@ -22,12 +22,12 @@ def pileup_sequence(flags):
         configSeq.setOptionValue('.postfix', postfix)
         configSeq.setOptionValue('.campaign', flags.Input.MCCampaign)
         configSeq.setOptionValue('.alternativeConfig', altConfig)
-        if 'prw_files' in prw:
+        if prw.prw_files:
             configSeq.setOptionValue('.userPileupConfigs', get_prw_files(flags, prw))
         else:
             # only use default config if we're not using custom PRW
             configSeq.setOptionValue('.useDefaultConfig', True)
-        if 'lumicalc_files' in prw:
+        if prw.lumicalc_files:
             configSeq.setOptionValue('.userLumicalcFiles',
                                      get_lumicalc_files(flags, prw))
         altConfig = True

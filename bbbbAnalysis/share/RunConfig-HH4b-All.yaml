@@ -93,6 +93,7 @@ PileupReweighting:
       prw_files:
         include: [EasyjetHub/prw_bjet.yaml]
     - postfix: "boosted"
+      prw_files: {}
       lumicalc_files:
         include: [EasyjetHub/lumicalc_no2015.yaml]
 

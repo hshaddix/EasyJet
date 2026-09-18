@@ -49,6 +49,12 @@ class ConfigItem:
     def __contains__(self, key):
         return key in self._fields
 
+    def __bool__(self):
+        return bool(self._fields)
+
+    def __len__(self):
+        return len(self._fields)
+
     # and why not <3 hashing too?
     def __hash__(self):
         return self._hash
@@ -146,7 +152,10 @@ def to_immutable(keydict):
 def dict_to_flags(d: dict) -> AthConfigFlags:
     _flags = AthConfigFlags()
     for k, v in d.items():
-        if isinstance(v, dict):
+        # an empty dict has no sub-keys to register as a category, so
+        # asdict() would reconstruct nothing for it: treat it as a leaf
+        # flag instead, to keep the key present.
+        if isinstance(v, dict) and v:
             _flags.addFlagsCategory(
                 k,
                 lambda v=v: dict_to_flags(v),
@@ -179,8 +188,10 @@ def fill_flags_from_runconfig(
     # add them to athena's ConfigFlags
     for key, value in run_config_all.items():
         log.info("User configured: " + str(key) + ": " + str(value))
-        # if we find a dict, make a flag category
-        if isinstance(value, dict):
+        # if we find a non-empty dict, make a flag category. An empty
+        # dict has no sub-keys to register, so it falls through to the
+        # leaf branch below to keep the key present.
+        if isinstance(value, dict) and value:
             flags.addFlagsCategory(
                 f"Analysis.{key}",
                 lambda value=value: dict_to_flags(value),

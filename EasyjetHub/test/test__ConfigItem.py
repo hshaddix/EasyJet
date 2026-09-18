@@ -72,6 +72,17 @@ class TestConfigItem(TestCase):
     def test_retrieve(self):
         self.assertEqual(self.ref_citem.a_float, self.ref_dict['a_float'])
 
+    def test_bool_empty(self):
+        self.assertFalse(ConfigItem())
+
+    def test_bool_nonempty(self):
+        self.assertTrue(self.ref_citem)
+        self.assertTrue(self.nested_citem)
+
+    def test_len(self):
+        self.assertEqual(len(ConfigItem()), 0)
+        self.assertEqual(len(self.ref_citem), len(self.ref_dict))
+
     def test_interface(self):
         self.assertEqual(set(self.ref_citem.keys()), set(self.ref_dict.keys()))
         self.assertEqual(set(self.ref_citem.values()), set(self.ref_dict.values()))

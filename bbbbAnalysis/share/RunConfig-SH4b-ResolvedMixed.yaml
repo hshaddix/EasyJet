@@ -74,6 +74,7 @@ PileupReweighting:
         include: [EasyjetHub/prw_bjet.yaml]
     # these pileup weights do not include 2015 in mc20a
     - postfix: "boosted"
+      prw_files: {}
       lumicalc_files:
         include: [EasyjetHub/lumicalc_no2015.yaml]
 
