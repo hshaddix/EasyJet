@@ -170,8 +170,42 @@ The selection decision is stored as a decoration who's name is configured by the
 
 When running with systematics, an event that passes the selection for at least one of the requested systematic variations is stored. The decoration will be stored for all systematics ("\_%SYS%" included in the name) which allows to identify events that passed the selection for a given systematics (or the nominal).
 
+
+## Configuration Files
+
+Easyjet uses yaml as a top level configuration language.  The
+structure of these files is mirrored in the python configuration code,
+i.e. the `entry1` string below
+```yaml
+top:
+  level1:
+    level2: [entry0, entry1, entry2]
+```
+will be accessed as
+```python
+flags.Analysis.top.level1.level2[1]
+```
+
+More technical documentation on configuration can be found in the
+[`steering` README][steering] file.
+
+### Rules when adding configuration
+
+1. Reuse base configuration files with `include:
+   [file_name.yaml]`. The file will be expanded into the scope where
+   `include` appears.
+
+2. There should be no "default" behaviour when a key is unspecified: the code should crash. The role of defaults is subsumed by
+   base configuration files, e.g.
+   ```yaml
+   some_structure:
+     include: [defaults_for_some_structure.yaml]
+     some_option: override_value
+   ```
+
 [sh]: https://atlassoftwaredocs.web.cern.ch/AnalysisTools/ana_alg_sys_handle/
 [rh]: https://gitlab.cern.ch/atlas/athena/-/blob/main/Control/StoreGate/StoreGate/ReadDecorHandle.h
 [wh]: https://gitlab.cern.ch/atlas/athena/-/blob/main/Control/StoreGate/StoreGate/WriteDecorHandle.h
+[steering]: EasyjetHub/python/steering/README.md
 
 [^1]: At the time of writing we can't think of a good reason to use the `object->auxdata<T>` syntax anywhere.
