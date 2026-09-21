@@ -8,6 +8,7 @@ do_GNN2bjetSelection: true
 
 do_KinematicFit: true
 extra_KinematicFit_variables: true
+do_TransformerTagger: true
 
 TopReconstruction:
   BDT_path: "bbyyAnalysis/model_topRecoBDT.root"

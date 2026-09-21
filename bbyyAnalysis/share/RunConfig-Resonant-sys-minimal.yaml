@@ -1,0 +1,37 @@
+include: [bbyyAnalysis/RunConfig-Resonant.yaml]
+
+## Exclude branchees
+exclude_branches: 
+- .*defaultOrderJets.*
+- bbyy_m_.*
+- bbyy_pT.*
+- bbyy_Eta.*
+- bbyy_Phi.*
+- bbyy_D.*
+- .*[Tt]ruth.*
+- bbyy_dR.*
+- pass.*
+- bbyy_PASS.*
+- recojet_antikt4PFlow_GN2v01_p.*
+- bbyy_.*JET.*
+- bbyy_.*PHOTON.*
+- bbyy_cosTS_yyjj
+- bbyy_Zepp
+- bbyy_EXACTLY_ZERO_LEPTONS
+- bbyy_n(?!Photons).*
+- bbyy_fwd.*
+
+do_met: false
+
+ttree_output:
+  include: [EasyjetHub/AnalysisMiniTree-config.yaml]
+
+  reco_outputs:
+    small_R_jets: 'bbyyAnalysisJets_%SYS%'
+    
+  collection_options:
+    small_R_jets:
+      btag_info: true
+
+do_CP_systematics: true
+systematics_regex: [".*"]

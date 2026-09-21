@@ -571,8 +571,10 @@ def bbyy_branches(flags):
     int_variable_names['jets'] += jet_int_variables
     float_variable_names['photonjets'] += photonjet_float_variables
     int_variable_names['photonjets'] += photonjet_int_variables
-    float_variable_names['transformer_tagger'] += transformer_float_variables
-    int_variable_names['transformer_tagger'] += transformer_int_variables
+    
+    if flags.Analysis.do_TransformerTagger:
+        float_variable_names['transformer_tagger'] += transformer_float_variables
+        int_variable_names['transformer_tagger'] += transformer_int_variables
 
     if flags.Analysis.do_KinematicFit:
         # do not append KF_mbb variables to float_variable_names['baseline']
