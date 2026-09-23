@@ -8,9 +8,13 @@ variables:
     n_bins: 260
 weights:
   all_runs:
-    - PileupWeight_NOSYS
+    sys: []
+    nosys:
+      - PileupWeight_NOSYS
   run2:
-    - beamSpotWeight
+    sys: []
+    nosys:
+      - beamSpotWeight
 multidim:
   # BJR-pT-binned views (mass binned at 1 GeV: 260 bins over 40-300 GeV).
   leading:

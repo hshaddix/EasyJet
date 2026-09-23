@@ -65,8 +65,6 @@ namespace XBBCALIB
 
       CP::SysFilterReporterParams m_filterParams {this, "XbbCalib selection"};
 
-      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
-
       Gaudi::Property<float> m_deltaPhiCut
         { this, "min_deltaPhiCut", -1.0, "Minimum delta Phi |deltaPhi(ll - j0)|" };
       Gaudi::Property<float> m_asymmetryCut

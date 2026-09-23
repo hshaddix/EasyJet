@@ -32,15 +32,15 @@ private:
   CP::SysWriteDecorHandle<float>
     m_weightHandle{this, "weightDecoration", "",
                    "per-systematic combined weight written to EventInfo"};
-  Gaudi::Property<std::string> m_sysWeightName
-    {this, "sysWeight", "",
-     "Systematic-aware weight deco name (e.g. generatorWeight_%SYS%)"};
+  Gaudi::Property<std::vector<std::string>> m_sysWeightNames
+    { this,"sysWeights",  {},
+     "Systematic-aware weight deco name patterns (must contain %SYS%)"};
   Gaudi::Property<std::vector<std::string>> m_extraWeightNames
     {this, "extraWeights", {},
      "Non-systematic weight decoration names (ConstAccessor<float>)"};
 
   // created in initialize()
-  std::unique_ptr<CP::SysReadDecorHandle<float>> m_sysWeightHandle;
+  std::vector<std::unique_ptr<CP::SysReadDecorHandle<float>>> m_sysWeightsHandle;
   std::vector<SG::AuxElement::ConstAccessor<float>> m_extraWeightAccs;
 };
 

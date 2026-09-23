@@ -22,9 +22,6 @@ namespace XBBCALIB
     ATH_CHECK (m_electronHandle.initialize(m_systematicsList));
     ATH_CHECK (m_muonHandle.initialize(m_systematicsList));
 
-    // special flag for all cuts
-    ATH_CHECK (m_passallcuts.initialize(m_systematicsList, m_eventHandle));
-
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize()); 
 
@@ -114,8 +111,6 @@ namespace XBBCALIB
           pass_baseline &= pass_rapidity;
         }
       }
-      m_passallcuts.set(*event, pass_baseline, sys);
-
 
       if (!m_bypass && !pass_baseline) continue;
 

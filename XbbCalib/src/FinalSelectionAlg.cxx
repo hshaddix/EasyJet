@@ -59,6 +59,7 @@ StatusCode FinalSelectionAlg::initialize() {
   // event handle must be initialised before decoration handles that reference it
   ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
   ATH_CHECK(m_passHandle.initialize(m_systematicsList, m_eventHandle));
+  ATH_CHECK(m_passBaselineVarsHandle.initialize(m_systematicsList, m_eventHandle));
 
   if (c.n_lrjets_min) {
     m_lrjetsNHandle = std::make_shared<CP::SysReadDecorHandle<int>>(
@@ -81,7 +82,8 @@ StatusCode FinalSelectionAlg::execute(const EventContext& ctx) {
     const xAOD::EventInfo* event = nullptr;
     ANA_CHECK(m_eventHandle.retrieve(event, sys, ctx));
 
-    bool pass = true;
+    // Always start the selection from the BaselineVars decoration
+    bool pass = m_passBaselineVarsHandle.get(*event, sys);
 
     // cuts are applied here
     const auto& c = *m_cuts;

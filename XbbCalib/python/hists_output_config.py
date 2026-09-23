@@ -30,9 +30,10 @@ def _validate_variables2d(variables2d):
                         f"missing key '{key}'")
 
 
-def _final_selection_cfg(flags, hists_cfg, deco_name):
+def _final_selection_cfg(flags, hists_cfg, deco_name_in, deco_name_out):
+    """Apply blinding and other selections coming from selectionConfig."""
     selection_config = hists_cfg.selection.as_mutable()
-    algo_name = f"FinalSelectionAlg_{deco_name}"
+    algo_name = f"FinalSelectionAlg_{deco_name_out}"
     sel_kwargs = {}
     if not flags.Input.isMC and hists_cfg.blinding.enable:
         sel_kwargs['blindingVariable'] = str(hists_cfg.blinding.variable)
@@ -42,9 +43,11 @@ def _final_selection_cfg(flags, hists_cfg, deco_name):
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.FinalSelectionAlg(
             algo_name,
+            # TODO: can we remove such option for sake of simplicity?
             selectionConfig=json.dumps(
                 {k: v for k, v in selection_config.items()}),
-            selectionDecoration=deco_name,
+            selectionDecorationIn=deco_name_in,
+            selectionDecorationOut=deco_name_out,
             **sel_kwargs,
         )
     )
@@ -90,11 +93,14 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
     weight_deco = "XbbCalib_event_weight_%SYS%"
     weight_kwargs = {}
     if flags.Input.isMC:
-        weight_kwargs['sysWeight'] = "generatorWeight_%SYS%"
-        extra = list(hists_cfg.weights.all_runs)
+        sys_weights = ["generatorWeight_%SYS%"]
+        sys_weights += list(hists_cfg.weights.all_runs.sys)
+        extra = list(hists_cfg.weights.all_runs.nosys)
         if flags.GeoModel.Run is LHCPeriod.Run2:
-            extra += list(hists_cfg.weights.run2)
+            sys_weights += list(hists_cfg.weights.run2.sys)
+            extra += list(hists_cfg.weights.run2.nosys)
         weight_kwargs['extraWeights'] = extra
+        weight_kwargs['sysWeights'] = sys_weights
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.FinalWeightAlg(
             "FinalWeightAlg",
@@ -104,10 +110,12 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
     )
 
     # Single notag selection (also needed by ZbbHistogramAlg).
-    selection_flag = "XbbCalib_pass_%SYS%"
+    selection_flag_selectoralg = "XbbCalib_pass_sr_%SYS%"
+    selection_flag_finalalg = "XbbCalib_pass_final_selection_%SYS%"
     cfg.merge(_final_selection_cfg(
         flags, hists_cfg,
-        deco_name=selection_flag
+        deco_name_in=selection_flag_selectoralg,
+        deco_name_out=selection_flag_finalalg
     ))
 
     cfg.addEventAlgo(
@@ -119,7 +127,7 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
             variables2dYvar=variables2dYvar,
             weightDecoration=weight_deco,
             output=h5_svc,
-            selectionDecoration=selection_flag,
+            selectionDecoration=selection_flag_finalalg,
             nominalOnly=True,
             groupName="notag",
         )
@@ -143,7 +151,7 @@ def hists_output_cfg(flags, hists_cfg, out_path, tag_wps):
                 f"ZbbHistogramAlg_{name}",
                 event="EventInfo",
                 weightDecoration=weight_deco,
-                selectionDecoration=selection_flag,
+                selectionDecoration=selection_flag_finalalg,
                 massVar=mass_var,
                 ptVar=str(md.pt_var),
                 truthPtVar=str(truthPtVar),

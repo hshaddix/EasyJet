@@ -34,9 +34,6 @@ namespace XBBCALIB
       ATH_CHECK(m_Bbranches.at(key).initialize(m_systematicsList, m_eventHandle));
     }
 
-    // special flag for all cuts
-    ATH_CHECK (m_passallcuts.initialize(m_systematicsList, m_eventHandle));
-
     // Intialise syst list (must come after all syst-aware inputs and outputs)
     ATH_CHECK (m_systematicsList.initialize());
 
@@ -132,7 +129,6 @@ namespace XBBCALIB
         pass_baseline &= m_bools.at(XBBCALIB::PASS_ZMASS_WINDOW);
         pass_baseline &= m_bools.at(XBBCALIB::PASS_DPHI_ZGAMMA);
       }
-      m_passallcuts.set(*event, pass_baseline, sys);
 
       if (sys.name()=="" && m_saveCutFlow){
 	std::vector<bool> cutBools;

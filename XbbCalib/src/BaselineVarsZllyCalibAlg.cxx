@@ -15,7 +15,6 @@ namespace XBBCALIB
   StatusCode BaselineVarsZllyCalibAlg::initialize()
   {
     ATH_CHECK(m_lrjetHandle.initialize(m_systematicsList));
-    ATH_CHECK(m_metHandle.initialize(m_systematicsList));
     ATH_CHECK(m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK(m_XbbCalib_photonHandle.initialize(m_systematicsList));
     ATH_CHECK(m_XbbCalib_electronHandle.initialize(m_systematicsList));

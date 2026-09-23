@@ -60,8 +60,6 @@ private:
 
     CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{this, "muons", "AnalysisMuons_%SYS%", "Original muon container to read"};
 
-    CP::SysReadHandle<xAOD::MissingETContainer>
-    m_metHandle{ this, "met", "AnalysisMET_%SYS%",   "MET container to read" };
 
     CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{ this, "event", "EventInfo",   "EventInfo container to read" };
@@ -100,12 +98,10 @@ private:
     // floats
     Gaudi::Property<std::vector<std::string>> m_floats_to_copy{
         this, "floatsToCopy", {}, "floats to copy to eventinfo"};
-    std::vector<std::unique_ptr<rw_pair_t<float>>> m_float_copy_pairs;
 
     // ints
     Gaudi::Property<std::vector<std::string>> m_ints_to_copy{
         this, "intsToCopy", {}, "ints to copy to eventinfo"};
-    std::vector<std::unique_ptr<rw_pair_t<int>>> m_int_copy_pairs;
 
     /// \brief Setup sys-aware output decorations
     std::unique_ptr<FourVectorOutBlock> m_z_candidate_4vec;
@@ -135,7 +131,7 @@ private:
     CP::SysReadHandle<xAOD::TruthParticleContainer> m_truthMuonHandle{
         this, "truthmuons", "TruthMuons", "Truth muon container"};
 
-    CP::SysReadDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_passallcuts {"XbbCalib_pass_sr_%SYS%", this};
 
   };
 }

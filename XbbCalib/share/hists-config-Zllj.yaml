@@ -28,11 +28,15 @@ variables:
     n_bins: 50
 weights:
   all_runs:
-    - PileupWeight_NOSYS
-    - Lepton1_effSF_NOSYS
-    - Lepton2_effSF_NOSYS
+    sys: 
+      - Lepton1_effSF_%SYS%
+      - Lepton2_effSF_%SYS%
+    nosys:
+      - PileupWeight_NOSYS
   run2:
-    - beamSpotWeight
+    sys: []
+    nosys:
+      - beamSpotWeight
 multidim:
   zcand:
     mass_var: Zcand_m

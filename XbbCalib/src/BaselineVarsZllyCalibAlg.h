@@ -66,9 +66,6 @@ private:
         this, "muons", "AnalysisMuons_%SYS%",
         "Original muon container to read"};
 
-    CP::SysReadHandle<xAOD::MissingETContainer> m_metHandle{
-        this, "met", "AnalysisMET_%SYS%", "MET container to read"};
-
     CP::SysReadHandle<xAOD::PhotonContainer> m_XbbCalib_photonHandle{
         this, "XbbCalib_photons", "XbbCalibPhotons_%SYS%",
         "Photon container to read"};
@@ -114,12 +111,10 @@ private:
     // floats
     Gaudi::Property<std::vector<std::string>> m_floats_to_copy{
         this, "floatsToCopy", {}, "floats to copy to eventinfo"};
-    std::vector<std::unique_ptr<rw_pair_t<float>>> m_float_copy_pairs;
 
     // ints
     Gaudi::Property<std::vector<std::string>> m_ints_to_copy{
         this, "intsToCopy", {}, "ints to copy to eventinfo"};
-    std::vector<std::unique_ptr<rw_pair_t<int>>> m_int_copy_pairs;
 
     /// \brief Setup sys-aware output decorations
     std::unique_ptr<FourVectorOutBlock> m_photon_4vec;
@@ -154,7 +149,7 @@ private:
     CP::SysWriteDecorHandle<float> m_PhotonSFHandle{"photon_effSF_%SYS%",
                                                     this};
 
-    CP::SysReadDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
+    CP::SysReadDecorHandle<char> m_passallcuts {"XbbCalib_pass_sr_%SYS%", this};
 
   };
 } // namespace XBBCALIB

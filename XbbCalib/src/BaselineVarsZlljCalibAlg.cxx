@@ -39,7 +39,6 @@ namespace XBBCALIB
   StatusCode BaselineVarsZlljCalibAlg::initialize()
   {
     ATH_CHECK (m_lrjetHandle.initialize(m_systematicsList));
-    ATH_CHECK (m_metHandle.initialize(m_systematicsList));
     ATH_CHECK(m_XbbCalib_electronHandle.initialize(m_systematicsList));
     ATH_CHECK(m_XbbCalib_muonHandle.initialize(m_systematicsList));
 

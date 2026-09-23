@@ -8,9 +8,13 @@ variables:
     n_bins: 52
 weights:
   all_runs:
-    - PileupWeight_NOSYS
+    sys: []
+    nosys:
+      - PileupWeight_NOSYS
   run2:
-    - beamSpotWeight
+    sys: []
+    nosys:
+      - beamSpotWeight
 multidim:
   leading:
     mass_var: Zcand0_met_mass

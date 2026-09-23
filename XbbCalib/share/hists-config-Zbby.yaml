@@ -20,9 +20,13 @@ hists2d:
       n_bins: 50
 weights:
   all_runs:
-    - PileupWeight_NOSYS
+    sys: []
+    nosys:
+      - PileupWeight_NOSYS
   run2:
-    - beamSpotWeight
+    sys: []
+    nosys:
+      - beamSpotWeight
 multidim:
   jet0:
     mass_var: Zcand_0_m

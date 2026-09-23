@@ -32,9 +32,15 @@ private:
   CP::SysReadHandle<xAOD::EventInfo>
     m_eventHandle{this, "event", "EventInfo", "EventInfo container"};
 
+    // Containe for decoration coming from BaselineVars
+    CP::SysReadDecorHandle<char>
+    m_passBaselineVarsHandle{this, "selectionDecorationIn",
+                 "",
+                 "per-systematic pass/fail char on EventInfo"};
+
   // Written decoration — name must contain %SYS%
   CP::SysWriteDecorHandle<char>
-    m_passHandle{this, "selectionDecoration",
+    m_passHandle{this, "selectionDecorationOut",
                  "",
                  "per-systematic pass/fail char on EventInfo"};
 

@@ -84,7 +84,6 @@ namespace XBBCALIB
 
       std::unordered_map<XBBCALIB::Booleans, CP::SysWriteDecorHandle<char> > m_Bbranches;
       std::unordered_map<XBBCALIB::Booleans, bool> m_bools;
-      CP::SysWriteDecorHandle<char> m_passallcuts {"PassAllCuts_%SYS%", this};
       std::unordered_map<XBBCALIB::Booleans, std::string> m_boolnames{
       // {XBBCALIB::PASS_TRIGGER, "PASS_TRIGGER"},
       {XBBCALIB::PASS_EXACTLY_ONE_PHOTON, "PASS_EXACTLY_ONE_PHOTON"},
