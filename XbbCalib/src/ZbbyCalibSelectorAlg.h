@@ -68,8 +68,6 @@ namespace XBBCALIB
         { this, "bjrMassCut", 40e3, "Minimum BJR mass [MeV]" };
       Gaudi::Property<float> m_bjrMassUpperCut
         { this, "bjrMassUpperCut", 160e3, "Maximum BJR mass [MeV]" };
-      Gaudi::Property<float> m_leadJetUfoPtCut
-        { this, "leadJetUfoPtCut", 500e3, "Minimum leading jet UFO/calo pT [MeV] (trigger plateau)" };
       Gaudi::Property<float> m_minJetBjrPtCut
         { this, "minJetBjrPtCut", 200e3, "Minimum BJR pT [MeV]" };
       Gaudi::Property<float> m_minPhotonPtCut

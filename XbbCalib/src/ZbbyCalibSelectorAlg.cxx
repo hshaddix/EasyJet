@@ -79,14 +79,6 @@ namespace XBBCALIB
         if (m_bypass) filter.setPassed(true);
         continue;
       }
-
-      // 2. Leading jet UFO/calo pT cut (trigger plateau, before BJR reordering)
-      //    lrjets->at(0) is the leading calo-pT jet at this point
-      if (lrjets->at(0)->pt() < m_leadJetUfoPtCut) {
-        ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
-        if (m_bypass) filter.setPassed(true);
-        continue;
-      }
         
       // Copy jet pointers and sort by BJR pT (descending)
       std::vector<const xAOD::Jet*> jets(lrjets->begin(), lrjets->end());
