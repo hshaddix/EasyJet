@@ -4,7 +4,8 @@ from EasyjetHub.steering.sample_metadata import is_at_least
 
 def lrj_gn3x_working_points(flags):
     wps = []
-    for tagger, tagger_spec in flags.Analysis.Large_R_jet.flat_mass_selections.items():
+    selections = flags.Analysis.Large_R_jet.flat_mass_selections
+    for tagger, tagger_spec in sorted(selections.items()):
         wps += [
             f"xbb_select_{tagger}_{x}" for x in tagger_spec["wps"]
         ]
