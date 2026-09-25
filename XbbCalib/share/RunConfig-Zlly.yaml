@@ -33,6 +33,10 @@ Small_R_jet:
   btag_wp: "GN2v01_FixedCutBEff_77"
   max_eta: 2.5
   selectBjet: false
+  do_MCMC_dsid_fix: true
+  MCMC_dsid_map: 
+    Sherpa2211: [700320]
+
 
 Large_R_jet:
   min_pT: 200.e+3
