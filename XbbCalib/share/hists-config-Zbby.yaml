@@ -1,4 +1,4 @@
-disable_metadata: true
+disable_metadata: false
 selection:
   n_lrjets_min: 1
 variables:
@@ -27,12 +27,21 @@ weights:
     sys: []
     nosys:
       - beamSpotWeight
+
 multidim:
-  jet0:
-    mass_var: Zcand_0_m
+
+  # BJR-pT-binned view
+  leading: &leading
+    mass_var: Zcand_0_bJR10v01_mass
     mass_lower: 50000
     mass_upper: 150000
     mass_n_bins: 50
-    pt_var: Zcand_0_pt
-    pt_edges: [200000., 250000., 350000., 500000., 700000., 1000000., 1500000.]
+    pt_var: Zcand_0_bJR10v01_pt
+    pt_edges: [200000., 250000., 350000., 500000., 1500000.]
     wp_prefix: Zcand_0
+
+  # UFO-pT-binned view
+  # Same BJR mass observable, but sliced by the UFO large-R jet pT
+  leading_ufopt:
+    <<: *leading
+    pt_var: Zcand_0_pt
