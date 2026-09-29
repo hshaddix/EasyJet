@@ -429,10 +429,18 @@ namespace HHBBTT
 	  if(channel==HHBBTT::DTT_4J12)
 	    trig2 = std::regex_replace(trig, std::regex("4J12p0ETA23"),
 				      "4J12_0ETA23");
-	  else if(channel==HHBBTT::DTT_L1Topo || channel==HHBBTT::DTT_L1Topo_delayed)
-	    trig2 = std::regex_replace(trig,
-				       std::regex("L1DR_TAU20ITAU12I_J25"),
-				       "L1DR-TAU20ITAU12I-J25");
+	  else if(channel==HHBBTT::DTT_L1Topo || channel==HHBBTT::DTT_L1Topo_delayed) {
+	    if (year >= 2024) {
+	      trig2 = std::regex_replace(trig,
+				         std::regex("DR_eTAU30eTAU20_jJ55"),
+				         "DR-eTAU30eTAU20-jJ55");
+	    }
+	    else {
+	      trig2 = std::regex_replace(trig,
+				         std::regex("L1DR_TAU20ITAU12I_J25"),
+				         "L1DR-TAU20ITAU12I-J25");
+	    }
+	  }
 	  for(const xAOD::TauJet* tau : *taus){
 	    bool match = m_matchingTool->match(*tau, trig2, 0.2);
 	    char& deco_channel = tau_trigMatchDecos.at(channel)(*tau);

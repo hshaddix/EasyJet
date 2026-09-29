@@ -1287,7 +1287,7 @@ namespace HHBBTT
     m_trigger_pt_threshold[HHBBTT::DTT_L1Topo][HHBBTT::leadingjet_matchL1] = 25;
     m_trigger_pt_threshold[HHBBTT::DTT_4J12][HHBBTT::leadingjet_matchL1] = 12;
     m_trigger_pt_threshold[HHBBTT::DTT_4J12][HHBBTT::subleadingjet_matchL1] = 12;
-    if(m_is2023_first_2400bunches.get(*event, sys)){
+    if(m_is2023_first_2400bunches.get(*event, sys) || year==2024){
       m_pt_threshold[HHBBTT::DTT][HHBBTT::leadingtau] = 35. * Athena::Units::GeV;
       m_pt_threshold[HHBBTT::DTT][HHBBTT::subleadingtau] = 25. * Athena::Units::GeV;
     }

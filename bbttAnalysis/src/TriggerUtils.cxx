@@ -220,6 +220,11 @@ namespace HHBBTT
         single_tau_paths = {"HLT_tau160_mediumRNN_tracktwoMVA_L1eTAU140"};
       }
     }
+    else if(year==2024){
+      single_tau_paths = {"HLT_tau160_mediumRNN_tracktwoMVA_L1eTAU140"};
+      // Tau trigger scale factors are not available yet for MC23e
+      // single_tau_SF_path = "tau160_mediumRNN_tracktwoMVA";
+    }
   }
 
   void getDiTauTriggers(int year, const xAOD::EventInfo* eventInfo,
@@ -331,6 +336,23 @@ namespace HHBBTT
       }
        di_tau_SF_path = std::make_pair("tau35_mediumRNN_tracktwoMVA",
              "tau25_mediumRNN_tracktwoMVA");
+    }
+    else if(year==2024){
+      ditau_paths_L1Topo = {"HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB30_L1cTAU30M_2cTAU20M_DR_eTAU30eTAU20_jJ55"};
+      ditau_paths_4J12 = {"HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB_L1cTAU30M_2cTAU20M_4jJ30p0ETA25"};
+      ditau_paths_L1Topo_delayed = {"HLT_tau30_mediumRNN_tracktwoMVA_tau20_mediumRNN_tracktwoMVA_03dRAB30_L1cTAU30M_2cTAU20M_DR_eTAU30eTAU20_jJ55"};
+      ditau_paths_4J12_delayed = {"HLT_tau30_mediumRNN_tracktwoMVA_tau20_mediumRNN_tracktwoMVA_03dRAB_L1cTAU30M_2cTAU20M_4jJ30p0ETA25"};
+      tau35_match_paths = {
+	"HLT_mu24_ivarmedium_tau35_mediumRNN_tracktwoMVA_probe_03dRAB_L1MU14FCH",
+	"HLT_e26_lhtight_ivarloose_tau35_mediumRNN_tracktwoMVA_probe_03dRAB_L1EM22VHI"
+      };
+      tau25_match_paths = {
+	"HLT_mu24_ivarmedium_tau25_mediumRNN_tracktwoMVA_probe_03dRAB_L1MU14FCH",
+	"HLT_e26_lhtight_ivarloose_tau25_mediumRNN_tracktwoMVA_probe_L1TAU12IM_03dRAB_L1eEM26M"
+      };
+      // Tau trigger scale factors are not available yet for MC23e
+      //  di_tau_SF_path = std::make_pair("tau35_mediumRNN_tracktwoMVA",
+      //        "tau25_mediumRNN_tracktwoMVA");
     }
   }
 
