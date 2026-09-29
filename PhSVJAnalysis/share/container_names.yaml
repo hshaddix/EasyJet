@@ -1,0 +1,29 @@
+################################################################################
+#                                                                              #
+# These are the default container names used by our framework. Syntax is       #
+# "alias: container_name". A full list of container names can be found under   #
+# EasyJetHub.                                                                  #
+#                                                                              #
+################################################################################
+
+  input:
+      reco4PFlowJet:       AntiKt4EMPFlowJets #AntiKt4EMPFlow_jetInclMuElRMJets
+      reco10UFOJet:        AntiKt10UFOCSSKSoftDropBeta100Zcut10Jets #AntiKt10UFOCSSK_jetInclMuElRMSoftDropBeta100Zcut10Jets
+      muons:               Muons
+      electrons:           Electrons
+      photons:             Photons
+      met:                 AntiKt4EMPFlow
+      tracks:              InDetTrackParticles 
+      truth4Jet:           AntiKt4TruthDressedWZJets
+      truth10SoftDropJet:  AntiKt10TruthSoftDropBeta100Zcut10Jets
+      truthmet:            MET_Truth
+      truthphotons:        TruthPhotons
+
+  output:
+      reco4PFlowJet:       AnalysisAntiKt4EMPFlowJets_%SYS%
+      reco10UFOJet:        AnalysisAntiKt10UFOCSSKSoftDropBeta100Zcut10Jets_%SYS%
+      met:                 AnalysisMET_%SYS%
+      muons:               AnalysisMuons_%SYS%
+      electrons:           AnalysisElectrons_%SYS%
+      photons:             AnalysisPhotons_%SYS%
+      tracks:              AnalysisTracks_%SYS%

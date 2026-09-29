@@ -1,0 +1,319 @@
+################################################################################
+#                                                                              #
+# The "base-config" yaml settings are applied. Our changes are overlain here.  #
+# If a cut, calibration or other setting is not applied by you but seems to be #
+# activated, first reference the base-config under the "EasyjetHub/share/"     #
+# directory.                                                                   #
+#                                                                              #
+################################################################################
+
+include: EasyjetHub/base-config.yaml
+
+################################################################################
+
+#This is the setup block. Declare container names and triggers.
+
+#Overwrite the container names for our purposes. File in same directory.
+full_container_names:
+  phys:
+    include: "container_names.yaml"
+
+#Trigger file in same directory. Parsed in EasyjetHub/python/algs/preselection.
+Trigger:
+  include: PhSVJAnalysis/trigger_PhSVJ.yaml
+ #Enable writing trigger flag to AnalysisMiniTree
+ #toggle false to remove
+  writeOutput: true
+ #Scale factor
+  scale_factor:
+    doSF: false
+
+################################################################################
+
+#Toggle run configurations. Example, isMC, trigger filtering, etc. 
+#Should be largely object INDEPENDENT toggles.
+
+#If MC toggle true
+Input:
+  isMC: true
+
+#Trigger toggles: year, and whether to filter events with trigger or no.
+trigger_year: Auto
+#Toggle true to remove events by applying trigger list
+do_trigger_filtering: true
+
+#Exclude 2015 (not sure what about it) but default to true since we are Run 3
+#Exclude2015: true
+
+#Toggle to bypass event selection. If toggled to true, this means no selection.
+bypass: false
+
+#Disable GRL filtering (no GRL files configured; filter would reject all data events)
+GRL:
+  runGRL: false
+
+################################################################################
+
+#Toggle event algorithms like event cleaning, thinning, etc.
+#These are parsed by default in EasyJetHub
+
+#Parsed in preselection
+do_event_cleaning: false
+
+#Parsed in preselection
+#Some slides: {https://indico.cern.ch/event/506093/contributions/2284077/
+#attachments/1326586/1991653/Presentation.pdf}
+add_BadBatman_jet_cleaning: true
+#Parsed in preselection
+do_tight_jet_cleaning: true
+
+
+#Parsed in post-processing
+#KEEP THIS TRUE!! Safest way to overwrite is in the jet config blocks.
+do_thinning: true
+
+#Parsed in post-processing
+#Off for PhSVJ purposes 
+do_overlap_removal: false
+
+#Parsed in EasyJetHub/python/output/ttree/selected_objects.py
+#Toggle false for NOSYS and true for %SYS%
+#do_CP_systematics: false
+
+#Disable generator weight systematic variations in CutBookkeeper histograms
+#do_cbk_systematics: false
+
+################################################################################
+
+#Which analysis to consider
+#This is parsed in the PhSVJ-ntupler and PhSVJ python config
+do_PhSVJ: true
+
+################################################################################
+
+################################################################################
+#                                                                              #
+# Toggles for objects. Parsed in PhSVJ specific code and default EasyJetHub.    #
+# For more information look under the python/output/ttree section. To better   #
+# understand the outputs available by default please read the source code of   #
+# each obect in the python directory.                                          #
+#                                                                              #
+################################################################################
+
+#For our analysis we will use Unified Flow Objects (UFO)
+do_large_R_UFO_jets: true
+
+#Toggle small R jets. Default is PFlow.
+do_small_R_jets: true
+
+#Muons are listed under the muon.py script and their energy is a default
+#decorator listed as e_%SYS%
+do_muons: false
+do_electrons: false
+#Add photons
+do_photons: true
+
+#MET calculation is steered by the choice of small R jet type
+#View this in the calibration section of EasyjetHub
+do_met: true
+
+do_tracks: false #crashes is true
+
+OverlapRemoval:
+  # Enable overlap removal between large-R jets and objects for which
+  # large-R jet OR removal is implemented in Athena
+  do_large_R_jets: false
+  # Enable overlap removal between small-R jets and large-R jets
+  # Athena default is true
+  do_small_R_jet_large_R_jet: false
+
+################################################################################
+
+#PhSVJ specific object configurations. These are parsed in the PhSVJ config, 
+#hence they are needed anytime do_PhSVJ: true.
+do_bsm: false
+do_truthmuon: false
+do_truthelectron: false
+#Toggle to save jet constituent (PFlow) kinematics per jet
+do_jet_constituents: false
+
+#Toggles for our PhSVJ algo outputs. Parsed in the PhSVJ python config.
+
+bsm:
+  #These variables will be added to the readout
+  variables: ["pt", "eta", "phi", "e", "pdgId", "barcode", "child_pdgId", "child_barcode", "status"]
+
+
+#Note: Truth electron/muon is available by default but the outputs are
+#of the form (px, py, pz) which is not desireable. When this change can be 
+#implemented the below truth algos will no longer be necessary
+
+truthmuon:
+  #These variables will be added to the readout
+  variables: ["pt", "eta", "phi", "e", "pdgId", "barcode", "parent_pdgId", "parent_barcode"]
+
+# truthelectron: 
+#   #These variables will be added to the readout
+#   variables: ["pt", "eta", "phi", "e"]
+
+
+#Jet constituent (PFlow) kinematics stored as vector<vector<float>>
+#indexed by jet. Specify which jet collection to read constituents from.
+jet_constit:
+  #Name of the jet container to read constituents from
+  jet_collection: "AntiKt10UFOCSSKSoftDropBeta100Zcut10Jets"
+  output_prefix: "recojet_antikt10UFO"
+  #These variables will be added to the readout
+  #pt/eta/phi/e/charge are flat vectors with all constituents concatenated.
+  #count gives the number of constituents per jet, so to recover per-jet
+  #grouping: offset = sum(count[0:i]), read count[i] elements starting there.
+  variables: ["pt", "eta", "phi", "e", "charge", "d0", "d0sig", "z0", "z0sig", "phi0", "phi0sig", "theta", "thetasig", "qOverP", "qOverPsig", "type", "eem", "ehad"]
+
+################################################################################
+
+################################################################################
+#                                                                              #
+# Toggles for reconstructed objects. There are quite a few toggles so read     #
+# carefully!! These are parsed both in the EasyJetHub python scripts and by    #
+# our analysis specific pipeline.                                              #
+#                                                                              #
+################################################################################
+
+Small_R_jet:
+  #Anti-kt R = 0.4 PFlow 
+  jet_type: 'reco4PFlowJet'
+  #Kinematic cuts
+  min_pT: 20.e+3
+  maxEta: 2.5
+  #Multiplicity cut
+  minAmount: -1
+  #B-tagging
+  btag_wp: "GN2v01_FixedCutBEff_77" #CAMBIATO
+  selectBjet: false
+  runBJetPtCalib: false
+  do_parent_decoration: false
+  #Trigger
+  #L1 Matching gives Et, eta, phi, dr, thresholds
+  doL1Matching: false
+  #HLT Matching gives pt, eta, phi, df, thresholds, btag
+  #Jet matching not available for Run 2
+  doHLTMatching: false
+  saveTriggerInfo: false
+  #Jet Thinning. Parsed in python/algs/postprocessing/thinning.py
+  #If jet is NOT EMTopo then it applies kinematic and Jvt cuts
+  #Crashes if not true
+  do_thinning: true
+  #Toggle for saving all jets rather than the thinned collection
+  #effectively circumvents thinning
+  save_all_jets: true
+  output_prefix: "recojet_antikt4PFlow"
+    #additional_variables: ["constit_scale_pt", "constit_scale_eta", "constit_scale_phi", 
+    #                    "constit_scale_e", "charged_pt_frac", "neutral_e_frac", "width", 
+    #                    "charge", "jvt", "em_frac"]
+
+
+#Type is toggled by our "do" choice
+Large_R_jet:
+  #Kinematic cuts
+  min_pT: 100.e+3
+  maxEta: 2.5
+  #Multiplicity cut
+  minAmount: 1
+  #Muon Jet pt Correlation
+  runMuonJetPtCorr: false
+  do_parent_decoration: false
+  #Here thinning can be turned off. Toggle on sets pT > 200 GeV
+  do_thinning: false
+  # Extra per-jet aux variables to write for reco10UFOJet
+  get_additional_vars: true
+  output_prefix: "recojet_antikt10UFO"
+    #additional_variables: ["constit_scale_pt", "constit_scale_eta", "constit_scale_phi", 
+    #                     "constit_scale_e", "charged_pt_frac", "neutral_e_frac", "width", 
+    #                      "charge", "jvt", "em_frac"]
+
+Electron:
+  #Kinematic Cuts
+  min_pT: 2.e+3
+  maxEta: 2.7
+  #maxD0Significance: 5. #MODIFICATO
+  #maxDeltaZ0SinTheta: 0.5 #MODIFICATO
+  ID: "LooseBLayerLH"
+  Iso: "NonIso"
+  amount: -1
+  #Multiplicity cut. Set to -1 for no cut
+  minAmount: -1
+ 
+
+Muon:
+  min_pT: 5.e+3
+  maxEta: 2.7
+  ID: "Loose"
+  Iso: "NonIso"
+  #This will create a pt, eta, phi, E, effSF
+  #For N muons (separate branches!!)
+  amount: -1
+  #Multiplicity cut. Set to -1 for no cut
+  minAmount: -1 #MODIFICATO
+
+
+Photon:
+  min_pT: 20.e+3 
+  maxEta: 2.7
+  ID: "Loose" 
+  Iso: "FixedCutLoose" #"FixedCutTightCaloOnly" #NonIso #MODIFICATO
+  amount: -1
+  #Multiplicity cut
+  miniAmount: -1 #fixme: not recognized and use -1 explicitely in the selector
+
+Track:
+  min_pT: 5.e+2
+  maxEta: 2.7
+  working_points: "Medium"
+  extra_variables: []
+  mc_extra_variables: []
+  outputTrackSummaryInfo: True
+
+################################################################################
+
+# Include the TTree configuration and update details
+ttree_output:
+  tree_name: "AnalysisMiniTree"
+  include: EasyjetHub/AnalysisMiniTree-config.yaml
+  # Our overrides. All defaults are off
+  reco_outputs:
+    large_R_UFO_jets: 'PhSVJ_LRJets_%SYS%'
+    muons: 'PhSVJ_Muons_%SYS%'
+    electrons: 'container_names.output.electrons'  
+    photons:  'container_names.output.photons'
+    small_R_jets: 'PhSVJ_Jets_%SYS%'
+    met: 'container_names.output.met'
+    tracks: ''
+    
+  truth_outputs:
+    large_R_jets: 'container_names.input.truth10SoftDropJet'
+    small_R_jets: 'container_names.input.truth4Jet'
+    met: 'container_names.input.truthmet'
+    # photons: 'container_names.input.truthphotons'
+
+  collection_options:
+    large_R_jets:
+      run_selection: false
+      substructure_info: true
+      truth_labels: false
+      btag_details: false
+    small_R_jets:
+      btag_info: false
+      JVT_details: true
+      run_selection: false
+    electrons:
+      run_selection: false
+    muons:
+      run_selection: false
+    photons:
+      run_selection: false
+      truth_labels: true
+      shower_shapes: false
+      iso_variables: true
+    tracks: 
+      run_selection: false
+
