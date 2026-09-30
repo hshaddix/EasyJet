@@ -27,10 +27,11 @@ do_photons: true
 
 # Toggles for reconstructed objects decorations
 Tau:
-  ID: "Baseline"
-  extra_wps: ["RNNLoose"]
+  ID: "RNNLoose"
   do_parent_decoration: true
   min_pT: 20.e+3
+  # offline pT requirement on the STT-matched leading tau (STT analysis path)
+  min_stt_pT: 170.e+3
 
 Large_R_jet:
   min_mass: 40.e+3
@@ -66,11 +67,13 @@ Small_R_jet:
   runBJetPtCalib: false
 
 MET:
+  # event-level requirement (ZtautauCalibSelectorAlg), common to all paths
   min_met: 30.e+3
 
 # list of triggers per year to consider
+# (per-year chain lists of the included files are concatenated)
 Trigger:
-  include: [XbbCalib/trigger_ljr.yaml]
+  include: [XbbCalib/trigger_ljr.yaml, XbbCalib/trigger_tau.yaml]
 # apply trigger lists to filter events
 do_trigger_filtering: true
 
@@ -91,6 +94,7 @@ ttree_output:
     large_R_UFO_jets: 'container_names.output.reco10UFOJet'
     met: 'container_names.output.met'
     electrons: 'container_names.output.electrons'
+    taus: 'container_names.output.taus'
   collection_options:
     large_R_jets:
       run_selection: true
@@ -100,6 +104,9 @@ ttree_output:
       tautag_details: true
     electrons:
       run_selection: true
+    taus:
+      run_selection: true
+      score_branches: true
   truth_outputs:
     large_R_jets: 'container_names.input.truth10SoftDropJet'
     met: 'container_names.input.truthmet'

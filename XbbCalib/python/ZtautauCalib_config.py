@@ -95,8 +95,22 @@ def ZtautauCalib_cfg(
             eventDecisionOutputDecoration="XbbCalib_pass_sr_%SYS%",
             bypass=flags.Analysis.bypass,
             isMC=flags.Input.isMC,
+            minMet=flags.Analysis.MET.min_met,
         )
     )
+
+    # Trigger chains per year: the STT group is listed explicitly in
+    # trigger_tau.yaml, the large-R jet (LJT) chains are the remaining
+    # chains of the (concatenated) selection list
+    selection_chains = flags.Analysis.Trigger.selection.chains
+    stt_chains = flags.Analysis.Trigger.STT.chains
+    ljt_chains = {
+        year: [
+            c for c in chains
+            if year not in stt_chains or c not in stt_chains[year]
+        ]
+        for year, chains in selection_chains.items()
+    }
 
     cfg.addEventAlgo(
         CompFactory.XBBCALIB.BaselineVarsZtautauCalibAlg(
@@ -105,7 +119,12 @@ def ZtautauCalib_cfg(
             floatVariableList=float_variables,
             intVariableList=int_variables,
             trigMatchingTool=matchingtool,
-            triggerlist=flags.Analysis.Trigger["selection"]["chains"].as_mutable(),
+            triggerlist=selection_chains,
+            singleTauTriggerList=stt_chains,
+            largeRJetTriggerList=ljt_chains,
+            allTaus=taukey,
+            minSTTTauPt=flags.Analysis.Tau.min_stt_pT,
+            tau0IDSelectionDecor=f"baselineSelection_{flags.Analysis.Tau.ID}_%SYS%",
             copiedVariablePrefix0="Zcand0_",
             intsToCopy=lrj_ints_to_copy(flags),
             floatsToCopy=lrj_floats_to_copy(flags)
@@ -129,8 +148,38 @@ def ZtautauCalib_cfg(
 def ZtautauCalib_branches(flags):
     """Variables to compute."""
     branches = []
-    float_variable_names = ["Zcand0_met_mass", "Zcand0_truth_m", "Zcand0_truth_pt", "Zcand0_truth_eta", "Zcand0_truth_phi"]
-    int_variable_names = ["nJets", "nTaus"]
+    float_variable_names = [
+        "Zcand0_met_mass",
+        "Zcand0_truth_m",
+        "Zcand0_truth_pt",
+        "Zcand0_truth_eta",
+        "Zcand0_truth_phi",
+        # highest-pT STT-matched tau (tau0)
+        "tau0_pt",
+        "tau0_eta",
+        "tau0_phi",
+        "tau0_dR_Zcand",
+    ]
+    # per-trigger-path copies of the Z-candidate variables (filled only when
+    # the LJT / STT analysis selection passes, the STT path requiring tau0 to
+    # pass the RNNLoose ID; stt1p / stt3p additionally require a 1-prong /
+    # 3-prong tau0), used by the h5 histograms
+    for path in ("ljt", "stt", "stt1p", "stt3p"):
+        float_variable_names += [
+            f"Zcand0_{path}_met_mass",
+            f"Zcand0_{path}_pt",
+            f"Zcand0_{path}_truth_pt",
+        ]
+    int_variable_names = [
+        "nJets",
+        "nTaus",
+        "nTaus_STT_matched",
+        "pass_LJT",
+        "pass_STT",
+        "tau0_nProng",
+        "tau0_charge",
+        "tau0_index",
+    ]
 
     object_level_branches, object_level_float_variables, object_level_int_variables = (
         get_selected_objects_branches_variables(flags, "XbbCalib")
@@ -158,6 +207,14 @@ def ZtautauCalib_branches(flags):
             + "%SYS%"
         ]
 
+    # Z-candidate four-momentum (decorated by the FourVectorOutBlock of the alg)
+    for var in ("pt", "eta", "phi", "m"):
+        branches += [
+            f"EventInfo.Zcand0_{var}_%SYS% -> XbbCalib_Zcand0_{var}"
+            + flags.Analysis.systematics_suffix_separator
+            + "%SYS%"
+        ]
+
     # Trigger match
     branches += [
         "XbbCalibLRJets_%SYS%.largeR_trigMatch_%SYS% -> recojet_antikt10UFO_trigMatch"
@@ -173,5 +230,33 @@ def ZtautauCalib_branches(flags):
             "photon_trigMatch",
         ]
     )
+
+    # Per-chain tau trigger match flags, decorated on the full calibrated
+    # tau container so they align with the standard tau_* output branches
+    tau_chains = sorted(
+        c for c in flags.Analysis.TriggerChains if c.startswith("HLT_tau")
+    )
+    tau_container = flags.Analysis.container_names.output.taus
+    for chain in tau_chains:
+        # same chain-name sanitisation as the trigPassed_* decorations
+        var = "tau_trigMatch_" + chain.replace("-", "_").replace(".", "p")
+        branches += [
+            f"{tau_container}.{var}_%SYS% -> {var}"
+            + flags.Analysis.systematics_suffix_separator
+            + "%SYS%"
+        ]
+        int_variable_names.append(var)
+
+    # Grouped (OR over the STT chain list) decision and match flags
+    branches += [
+        "EventInfo.trigPassed_STT_%SYS% -> trigPassed_STT"
+        + flags.Analysis.systematics_suffix_separator
+        + "%SYS%",
+        f"{tau_container}.tau_trigMatch_STT_%SYS% -> tau_trigMatch_STT"
+        + flags.Analysis.systematics_suffix_separator
+        + "%SYS%",
+    ]
+    int_variable_names.append("trigPassed_STT")
+    int_variable_names.append("tau_trigMatch_STT")
 
     return branches, float_variable_names, int_variable_names

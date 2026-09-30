@@ -56,6 +56,9 @@ private:
     CP::SysReadHandle<xAOD::TauJetContainer>
     m_tauHandle{ this, "taus", "XbbCalibTaus_%SYS%",   "Tau container to read" };
 
+    CP::SysReadHandle<xAOD::TauJetContainer>
+    m_allTauHandle{ this, "allTaus", "AnalysisTauJets_%SYS%", "Full calibrated tau container to decorate with trigger matching" };
+
     /// \brief Ordered container produced by ZtautauCalibSelectorAlg:
     /// index 0 = Z candidate (smallest |Delta Phi| w.r.t. MET), index 1 = recoiling jet
     CP::SysReadHandle<xAOD::JetContainer>
@@ -78,6 +81,20 @@ private:
     Gaudi::Property<bool> m_isMC
       { this, "isMC", false, "Is this simulation?" };
 
+    /// \brief Analysis-level selections of the two trigger paths (LJT = large-R
+    /// jet trigger, STT = single-tau trigger), on top of the baseline selection
+    /// of ZtautauCalibSelectorAlg. They define the pass_LJT / pass_STT flags and
+    /// the Zcand0_ljt_* / Zcand0_stt_* histogram variables.
+    Gaudi::Property<float> m_minSTTTauPt
+      {this, "minSTTTauPt", 170.e3, "Minimum pT of the STT-matched leading tau [MeV]"};
+    Gaudi::Property<float> m_maxSTTTauZcandDeltaR
+      {this, "maxSTTTauZcandDeltaR", 1.0, "Maximum DeltaR between the STT-matched tau and the Z-candidate jet"};
+
+    /// \brief Tau-ID selection decoration (e.g. RNNLoose) required on tau0 for
+    /// the STT path, read from the full calibrated tau container
+    CP::SysReadDecorHandle<char> m_tau0IDDecor
+      { this, "tau0IDSelectionDecor", "baselineSelection_RNNLoose_%SYS%", "Tau ID selection decoration checked on tau0" };
+
     Gaudi::Property<std::vector<std::string>> m_floatVariables
           {this, "floatVariableList", {}, "Name list of floating variables"};
   
@@ -87,6 +104,12 @@ private:
     // matching tool
     Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_triggerlist
           {this, "triggerlist", {}, "Trigger list for each year"};
+
+    Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_singleTauTriggers
+          {this, "singleTauTriggerList", {}, "Single-tau (STT) trigger chains for each year"};
+
+    Gaudi::Property<std::map<std::string, std::vector<std::string>>> m_largeRJetTriggers
+          {this, "largeRJetTriggerList", {}, "Large-R jet (LJT) trigger chains for each year"};
 
     ToolHandle<Trig::IMatchingTool> m_matchingTool { this, "trigMatchingTool", "", "Trigger matching tool"};
     CP::SysReadDecorHandle<unsigned int> m_year{this, "year", "dataTakingYear", ""};
@@ -110,7 +133,23 @@ private:
     std::unordered_map<std::string, CP::SysWriteDecorHandle<int>> m_Ibranches;
     std::unique_ptr<FourVectorOutBlock> m0_z_candidate_4vec;
 
+    /// \brief Per-tau trigger-match variables ("tau_trigMatch_<sanitized chain>")
+    std::vector<std::string> m_tauTrigMatchVars;
+
     void getTriggers(int year, const std::basic_string<char>& key_word, std::vector<std::string>& triggers) const;
+
+    /// \brief Chain name -> decoration name token ('-' -> '_', '.' -> 'p'),
+    /// same convention as the trigPassed_* decorations
+    static std::string sanitizeChainName(std::string chain);
+
+    /// \brief Look up the chains of the given year in a year->chains map
+    static std::vector<std::string> triggersForYear(
+      const std::map<std::string, std::vector<std::string>>& trigMap, int year);
+
+    /// \brief Whether the trigPassed_<chain> decoration of the given chain is
+    /// available on the event and set (chains not requested from the TDT, e.g.
+    /// of another year, count as not fired)
+    static bool chainFired(const xAOD::EventInfo& event, const std::string& chain);
 
   };
 }

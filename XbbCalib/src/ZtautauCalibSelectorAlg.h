@@ -58,6 +58,14 @@ namespace XBBCALIB
       Gaudi::Property<bool> m_isMC
         { this, "isMC", false, "Is this simulation?" };
 
+      /// \brief Baseline missing transverse momentum requirement [MeV]
+      Gaudi::Property<float> m_minMet
+        { this, "minMet", 30.e3, "Minimum MET of the baseline selection [MeV]" };
+
+      /// \brief Upper cut on tau21 = Tau2_wta/Tau1_wta of the Z-candidate jet
+      Gaudi::Property<float> m_maxZcandT21
+        { this, "maxZcandT21", 0.2, "Maximum tau21 of the Z-candidate jet" };
+
       /// \brief Setup syst-aware input container handles
       CP::SysListHandle m_systematicsList {this};
 

@@ -5,7 +5,39 @@ variables:
   Zcand0_met_mass:
     lower: 40000
     upper: 300000
+    n_bins: 50
+  Zcand0_m:
+    lower: 40000
+    upper: 300000
     n_bins: 52
+  Zcand0_ljt_pt:
+    lower: 0
+    upper: 3000000
+    n_bins: 150
+  Zcand0_ljt_truth_pt:
+    lower: 0
+    upper: 3000000
+    n_bins: 150
+  Zcand0_ljt_met_mass:
+    lower: 50000
+    upper: 300000
+    n_bins: 50
+  Zcand0_stt_met_mass:
+    lower: 50000
+    upper: 300000
+    n_bins: 50
+  Zcand0_stt1p_met_mass:
+    lower: 50000
+    upper: 300000
+    n_bins: 50
+  Zcand0_stt3p_met_mass:
+    lower: 50000
+    upper: 300000
+    n_bins: 50
+  tau0_pt:
+    lower: 0
+    upper: 1000000
+    n_bins: 50
 weights:
   all_runs:
     sys: []
@@ -16,13 +48,43 @@ weights:
     nosys:
       - beamSpotWeight
 multidim:
-  leading:
-    mass_var: Zcand0_met_mass
-    mass_lower: 40000
+  leading_ljt:
+    mass_var: Zcand0_ljt_met_mass
+    mass_lower: 50000
     mass_upper: 300000
-    mass_n_bins: 52
-    pt_var: Zcand0_pt
+    mass_n_bins: 50
+    pt_var: Zcand0_ljt_pt
     pt_edges: [200000., 400000., 3000000.]
     wp_prefix: Zcand0
-    truth_pt_var: Zcand0_truth_pt
+    truth_pt_var: Zcand0_ljt_truth_pt
+    truth_pt_edges: [200000., 320000., 400000., 500000., 3000000.]
+  leading_stt:
+    mass_var: Zcand0_stt_met_mass
+    mass_lower: 50000
+    mass_upper: 300000
+    mass_n_bins: 50
+    pt_var: Zcand0_stt_pt
+    pt_edges: [200000., 400000., 3000000.]
+    wp_prefix: Zcand0
+    truth_pt_var: Zcand0_stt_truth_pt
+    truth_pt_edges: [200000., 320000., 400000., 500000., 3000000.]
+  leading_stt_1p:
+    mass_var: Zcand0_stt1p_met_mass
+    mass_lower: 50000
+    mass_upper: 300000
+    mass_n_bins: 50
+    pt_var: Zcand0_stt1p_pt
+    pt_edges: [200000., 400000., 3000000.]
+    wp_prefix: Zcand0
+    truth_pt_var: Zcand0_stt1p_truth_pt
+    truth_pt_edges: [200000., 320000., 400000., 500000., 3000000.]
+  leading_stt_3p:
+    mass_var: Zcand0_stt3p_met_mass
+    mass_lower: 50000
+    mass_upper: 300000
+    mass_n_bins: 50
+    pt_var: Zcand0_stt3p_pt
+    pt_edges: [200000., 400000., 3000000.]
+    wp_prefix: Zcand0
+    truth_pt_var: Zcand0_stt3p_truth_pt
     truth_pt_edges: [200000., 320000., 400000., 500000., 3000000.]

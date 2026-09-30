@@ -1,0 +1,24 @@
+STT:
+  chains: &stt_chains
+    '2015':
+    - 'HLT_tau80_medium1_tracktwo_L1TAU60'
+    '2016':
+    - 'HLT_tau80_medium1_tracktwo_L1TAU60'
+    - 'HLT_tau125_medium1_tracktwo'
+    - 'HLT_tau160_medium1_tracktwo'
+    '2017':
+    - 'HLT_tau160_medium1_tracktwo'
+    - 'HLT_tau160_medium1_tracktwo_L1TAU100'
+    '2018':
+    - 'HLT_tau160_medium1_tracktwoEF_L1TAU100'
+    - 'HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100'
+    '2022':
+    - 'HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100'
+    '2023':
+    - 'HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100'
+    - 'HLT_tau160_mediumRNN_tracktwoMVA_L1eTAU140'
+    '2024':
+    - 'HLT_tau160_mediumRNN_tracktwoMVA_L1eTAU140'
+
+selection:
+  chains: *stt_chains

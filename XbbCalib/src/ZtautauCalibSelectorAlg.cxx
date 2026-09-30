@@ -167,17 +167,25 @@ namespace XBBCALIB
         deltaPhi_largeR = j0->p4().DeltaPhi(j1->p4());
       }
 
-      // Need to have a at least 2 large-R jets with DPhi > pi / 2, no electrons
-      // and MET > 30 GeV.
+      // Need to have exactly 2 large-R jets with |DPhi| >= pi/2, no electrons
+      // and MET above the baseline threshold (minMet, MeV).
       pass_baseline = (
         n_boosted_jets == 2 and
         n_electrons == 0 and
-        std::abs(deltaPhi_largeR) > 1.5707963 and
-        met->met() > 30
+        std::abs(deltaPhi_largeR) >= 0.5 * M_PI and
+        met->met() > m_minMet
       );
 
       if (!m_bypass && !pass_baseline){
         ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
+        continue;
+      }
+
+      // The Z-candidate / recoil logic below needs two jets; in bypass mode
+      // events with fewer jets are kept but get no ordered jets.
+      if (n_boosted_jets < 2){
+        ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
+        if (m_bypass) filter.setPassed(true);
         continue;
       }
 
@@ -188,9 +196,9 @@ namespace XBBCALIB
       findZcandIndex(*lRjets, met_phi, zcandIdx, recoilIdx);
 
       // The Z-candidate jet must be sufficiently 2-pronged
-      // (t21 = Tau2_wta/Tau1_wta <= 0.2).
+      // (t21 = Tau2_wta/Tau1_wta <= maxZcandT21).
       float zcand_t21 = computeT21(*lRjets->at(zcandIdx));
-      if (zcand_t21 > 0.2){
+      if (zcand_t21 > m_maxZcandT21){
         ANA_CHECK (m_outHandle.record (std::move(ordered), sys, ctx));
         continue;
       }
