@@ -1,6 +1,6 @@
 runConfig="bbbbAnalysis/RunConfig-HH4b-All.yaml"
 executable="bbbb-ntupler"
-campaignName="EJ_v0_50_HH4b_Syst"
+campaignName="EJ_v0_59_HH4b_Syst"
 
 dir_samples="../easyjet/bbbbAnalysis/datasets/HH4b/"
 mc_list=(
