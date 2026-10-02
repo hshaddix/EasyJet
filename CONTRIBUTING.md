@@ -203,6 +203,17 @@ More technical documentation on configuration can be found in the
      some_option: override_value
    ```
 
+## Use of coding agents
+
+Agents should be directed to read and follow the guidelines in this file.
+
+In line with [Athena guidelines on agent usage][ai], you are free to use LLM-based agents to edit code, with a few caveats:
+
+1. You are responsible for every line of code committed.
+2. Agents must not write documentation. Asking an agent to clean up what you've written, or check for and fix inconsistencies, is fine.
+3. Overall, respect your colleagues. Every line you commit will be reviewed by a human, and will serve as a reference for a larger team. If your contribution takes more effort to review than it took to produce, something is wrong.
+
+[ai]: https://atlas-software.docs.cern.ch/athena/guidelines/#use-of-ai-coding-assistants-in-athena-development
 [sh]: https://atlassoftwaredocs.web.cern.ch/AnalysisTools/ana_alg_sys_handle/
 [rh]: https://gitlab.cern.ch/atlas/athena/-/blob/main/Control/StoreGate/StoreGate/ReadDecorHandle.h
 [wh]: https://gitlab.cern.ch/atlas/athena/-/blob/main/Control/StoreGate/StoreGate/WriteDecorHandle.h
