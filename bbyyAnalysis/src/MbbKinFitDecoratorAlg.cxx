@@ -128,7 +128,6 @@ namespace HHBBYY{
       xAOD::Jet* bjet2 = nullptr;
 
       for(xAOD::Jet* jet : *workJetCont_Iter1){
-        if(jet->pt() < m_Jet_Min_Pt) continue;
         if(m_isBtag.get(*jet, sys) && std::abs(jet->eta())<2.5){
           if(!bjet1) bjet1 = jet;
           else if(!bjet2) bjet2 = jet;
