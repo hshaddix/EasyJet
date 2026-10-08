@@ -1,6 +1,11 @@
 include: [bbttAnalysis/RunConfig-bbtt-boosted.yaml]
 channels: ["BoostedZCR"]
 
+Muon:
+  extra_wps:
+    - ["HighPt", "PflowLoose_VarRad"]
+  calibrationMode: "correctData_IDMS"
+  
 Trigger:
   selection:
     include: [bbttAnalysis/trigger_leptons.yaml]
