@@ -18,6 +18,10 @@ namespace VBSHIGGS
     ASLT1_me,
     ASLT2,
     JET,
+    RST,
+    SingleLargeR,
+    SingleMassiveLargeR,
+    DoubleMassiveLargeR,
   };
 
   enum Var_Trigger 
@@ -43,6 +47,9 @@ namespace VBSHIGGS
 
   enum Booleans{
     PASS_TRIGGER,
+    PASS_TRIGGER_SINGLE_LARGE_R,
+    PASS_TRIGGER_SINGLE_MASSIVE_LARGE_R,
+    PASS_TRIGGER_DOUBLE_MASSIVE_LARGE_R,
     PASS_EXACTLY_ONE_LEPTON,
     PASS_EXACTLY_TWO_LEPTONS,
     PASS_TWO_SS_CHARGE_LEPTONS,

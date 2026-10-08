@@ -67,6 +67,17 @@ ttree_output:
       run_selection: true
       truth_parent_info: true
       btag_info: true
+      JVT_details: true
+      extra_variables:
+        # - [DFCommonJets_QGTagger_NTracks, null]
+        # - [DFCommonJets_QGTagger_TracksWidth, null]
+        - [NumTrkPt1000, null]
+        - [NumTrkPt500, null]
+        - [EMFrac, null]
+        - [Width, null] # Jet Width
+        - [TrackWidthPt1000, null] # Track Width
+        - [Timing, null] # calorimeter timing
+        # - [N90Constituents, null] # this is probably not sufficient. Need total number of jet constituents     
     large_R_jets:
       run_selection: true
       btag_details: true
@@ -79,8 +90,14 @@ ttree_output:
 CutList : 
   - PASS_TRIGGER
   - PASS_LEPTON_VETO
-  - PASS_EXACTLY_TWO_SMALL_JETS
+  - PASS_TRIGGER_SINGLE_LARGE_R
+  - PASS_TRIGGER_SINGLE_MASSIVE_LARGE_R
+  - PASS_TRIGGER_DOUBLE_MASSIVE_LARGE_R
+  - PASS_EXACTLY_ONE_LARGE_JET
   - PASS_EXACTLY_TWO_LARGE_JETS
   - PASS_MORE_THAN_TWO_LARGE_JETS
+  # - PASS_EXACTLY_TWO_SMALL_JETS
+  # - PASS_EXACTLY_TWO_LARGE_JETS
+  # - PASS_MORE_THAN_TWO_LARGE_JETS
   # - PASS_THREE_LARGE_JETS
 

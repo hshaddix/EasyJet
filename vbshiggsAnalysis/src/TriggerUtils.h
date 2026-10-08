@@ -45,6 +45,14 @@ namespace VBSHIGGS
          const runBoolReadDecoMap& runBoolDecos,
          std::vector<std::string>& single_large_jet_paths);
 
+    void getSingleMassiveLargeJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& single_massive_large_jet_paths);
+
+    void getDoubleMassiveLargeJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& double_massive_large_jet_paths);
+
     void getSingleSmallJetTriggers(int year, const xAOD::EventInfo* event,
          const runBoolReadDecoMap& runBoolDecos,
          std::vector<std::string>& single_small_jet_paths);

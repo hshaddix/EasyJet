@@ -1,48 +1,72 @@
 selection:
   chains:
 
+    '2015':
+      # Single large-R baseline
+      - 'HLT_j360_a10_lcw_sub_L1J100'
+
     '2016':
-      # resolved (bb + jets)
-      - 'HLT_j100_2j55_bmv2c2060_split'
-      - 'HLT_2j55_bmv2c2060_split_ht300_L14J15'
-
-      # boosted (fat jets)
+      # Single large-R baseline
       - 'HLT_j420_a10_lcw_L1J100'
-
+      # Alternative large-R reconstruction
+      - 'HLT_j420_a10r_L1J100'
 
     '2017':
-      # resolved
-      - 'HLT_j225_gsc300_bmv2c1070_split'
-      - 'HLT_j150_gsc175_bmv2c1060_split_j45_gsc60_bmv2c1060_split'
-
-      # boosted
-      - 'HLT_j420_a10t_lcw_jes_L1J100'
+      # Single large-R strategy
       - 'HLT_j460_a10t_lcw_jes_L1J100'
+      
+      # Single massive large-R, lower pT threshold + large-R jet mass requirement
+      - 'HLT_j390_a10t_lcw_jes_30smcINF_L1J100'
+      - 'HLT_j420_a10t_lcw_jes_40smcINF_L1J100'
 
+      # Double massive large-R
+      - 'HLT_2j330_a10t_lcw_jes_30smcINF_L1J100'
+      - 'HLT_2j330_a10t_lcw_jes_40smcINF_L1J100'
 
     '2018':
-      # resolved
-      - 'HLT_j225_gsc300_bmv2c1070_split'
-      - 'HLT_j175_gsc225_bmv2c1040_split'
-
-      # boosted
+      # Single large-R 
       - 'HLT_j460_a10t_lcw_jes_L1J100'
+
+      # Single massive large-R
+      - 'HLT_j420_a10t_lcw_jes_35smcINF_L1J100'
+      - 'HLT_j420_a10t_lcw_jes_35smcINF_L1SC111'
+          
+      # Double massive large-R
+      - 'HLT_2j330_a10t_lcw_jes_35smcINF_L1J100'
+      - 'HLT_2j330_a10t_lcw_jes_35smcINF_L1SC111'
+      - 'HLT_j360_a10t_lcw_jes_60smcINF_j360_a10t_lcw_jes_L1SC111'
+      - 'HLT_j370_a10t_lcw_jes_35smcINF_j370_a10t_lcw_jes_L1SC111'
 
 
     '2022':
-      # resolved 
-      - 'HLT_j80c_020jvt_j55c_020jvt_j28c_020jvt_j20c_020jvt_SHARED_2j20c_020jvt_bdl1d77_pf_ftf_presel2c20XX2c20b85_L1J45p0ETA21_3J15p0ETA25'
-      - 'HLT_j150_2j55_0eta290_020jvt_bdl1d70_pf_ftf_preselj80XX2j45b90_L1J85_3J30'
-
-      # boosted
+      # Current single large-R strategy
       - 'HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
+      
+      # Single massive large-R
+      - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
+
+
+      # Double massive large-R
+      - 'HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1J100'
 
 
     '2023':
-      # resolved
-      - 'HLT_j75c_020jvt_j50c_020jvt_j25c_020jvt_j20c_020jvt_SHARED_2j20c_020jvt_bgn177_pf_ftf_presel2c20XX2c20b85_L1J45p0ETA21_3J15p0ETA25'
-      - 'HLT_j150_2j55_0eta290_020jvt_bgn170_pf_ftf_preselj80XX2j45b90_L1J85_3J30'
-
-      # boosted
+      # Single large-R strategy
       - 'HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
-    
+
+      # Single massive large-R
+      - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
+  
+      # Double massive large-R
+      - 'HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1J100'
+
+
+    '2024':
+      # Single high-pT large-R 
+      - 'HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
+     
+      # Single massive large-R
+      - 'HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100'
+
+      # Double massive large-R
+      - 'HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1J100'

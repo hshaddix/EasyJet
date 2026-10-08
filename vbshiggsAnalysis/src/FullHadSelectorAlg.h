@@ -41,14 +41,18 @@ private:
     CP::SysReadHandle<xAOD::JetContainer> m_signaljetHandle{ this, "signaljets", "vbshiggsAnalysisSignalJets_%SYS%", "Signal Jet container to read" };
     CP::SysReadHandle<xAOD::JetContainer> m_HCandHandle{ this, "higgsCandidates", "vbshiggsAnalysisHJets_%SYS%", "Higgs Candidates container to read"};
     CP::SysReadDecorHandle<char>  m_isBtag {this, "bTagWPDecorName", "", "Name of input dectorator for b-tagging"};
-    CP::SysReadHandle<xAOD::JetContainer> m_vbsjetHandle{ this, "vbsjets", "vbshiggsAnalysisVBSJets_%SYS%", "VBS Jet container to read" };
+    //CP::SysReadHandle<xAOD::JetContainer> m_vbsjetHandle{ this, "vbsjets", "vbshiggsAnalysisVBSJets_%SYS%", "VBS Jet container to read" };
 
     CP::SysReadHandle<xAOD::JetContainer> m_largeJetHandle{this, "largeJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large boosted jets"}; 
     // CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "AnalysisElectrons_%SYS%", "Original electron container to read" };
     CP::SysReadHandle<xAOD::ElectronContainer> m_electronHandle{ this, "electrons", "vbshiggsAnalysisElectrons_%SYS%", "Original electron container to read" };
      CP::SysReadHandle<xAOD::MuonContainer> m_muonHandle{ this, "muons", "vbshiggsAnalysisMuons_%SYS%", "Original muon container to read" };
     CP::SysReadDecorHandle<char> m_passTriggerJET {this, "passTriggerJET", "pass_trigger_JET_%SYS%", "events pass any jet triggers"};
-
+    CP::SysReadDecorHandle<char> m_passTriggerRST {this, "passTriggerRST", "pass_trigger_RST_%SYS%", "events pass resolved small-R jet triggers"};
+    // Split triggers for single, single massive, and double massive large-R jets
+    CP::SysReadDecorHandle<char> m_passTriggerSingleLargeR {this, "passTriggerSingleLargeR", "pass_trigger_single_large_R_%SYS%", "events pass single large-R jet triggers"};
+    CP::SysReadDecorHandle<char> m_passTriggerSingleMassiveLargeR {this, "passTriggerSingleMassiveLargeR", "pass_trigger_single_massive_large_R_%SYS%", "events pass single massive large-R jet triggers"};
+    CP::SysReadDecorHandle<char> m_passTriggerDoubleMassiveLargeR {this, "passTriggerDoubleMassiveLargeR", "pass_trigger_double_massive_large_R_%SYS%", "events pass double massive large-R jet triggers"};
     
     CP::SysFilterReporterParams m_filterParams {this, "vbshiggs selection"};
 
@@ -69,6 +73,9 @@ private:
 	    {PASS_LEPTON_VETO, "PASS_LEPTON_VETO"},
         {PASS_EXACTLY_ONE_LARGE_JET, "PASS_EXACTLY_ONE_LARGE_JET"},
         {PASS_TRIGGER, "PASS_TRIGGER"},
+        {PASS_TRIGGER_SINGLE_LARGE_R, "PASS_TRIGGER_SINGLE_LARGE_R"},
+        {PASS_TRIGGER_SINGLE_MASSIVE_LARGE_R, "PASS_TRIGGER_SINGLE_MASSIVE_LARGE_R"},
+        {PASS_TRIGGER_DOUBLE_MASSIVE_LARGE_R, "PASS_TRIGGER_DOUBLE_MASSIVE_LARGE_R"},
         {PASS_ALL_CUTS, "PASS_ALL_CUTS"}
     };
 

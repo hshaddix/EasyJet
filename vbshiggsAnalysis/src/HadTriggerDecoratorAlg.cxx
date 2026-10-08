@@ -75,17 +75,29 @@ namespace VBSHIGGS
 
     std::vector<std::string> single_small_jet_paths;
     std::vector<std::string> single_large_jet_paths;
+    std::vector<std::string> single_massive_large_jet_paths;
+    std::vector<std::string> double_massive_large_jet_paths;
 
     const int year = m_year.get(*event, sys);
     getSingleSmallJetTriggers(year, event, runBoolDecos, single_small_jet_paths);
     getSingleLargeJetTriggers(year, event, runBoolDecos, single_large_jet_paths);
+    getSingleMassiveLargeJetTriggers(year, event, runBoolDecos, single_massive_large_jet_paths);
+    getDoubleMassiveLargeJetTriggers(year, event, runBoolDecos, double_massive_large_jet_paths);
 
     bool trigPassed_smallJet = false;
     bool trigPassed_largeJet = false;
+    bool trigPassed_singleMassiveLargeJet = false;
+    bool trigPassed_doubleMassiveLargeJet = false;
     evaluateSingleJetTrigger(event, single_small_jet_paths, trigPassed_smallJet, sys);
     evaluateSingleJetTrigger(event, single_large_jet_paths, trigPassed_largeJet, sys);
+    evaluateSingleJetTrigger(event, single_massive_large_jet_paths, trigPassed_singleMassiveLargeJet, sys);
+    evaluateSingleJetTrigger(event, double_massive_large_jet_paths, trigPassed_doubleMassiveLargeJet, sys);
 
     m_trig_bools.at(VBSHIGGS::JET) = trigPassed_smallJet || trigPassed_largeJet;
+    m_trig_bools.at(VBSHIGGS::RST) = trigPassed_smallJet;
+    m_trig_bools.at(VBSHIGGS::SingleLargeR) = trigPassed_largeJet;
+    m_trig_bools.at(VBSHIGGS::SingleMassiveLargeR) = trigPassed_singleMassiveLargeJet;
+    m_trig_bools.at(VBSHIGGS::DoubleMassiveLargeR) = trigPassed_doubleMassiveLargeJet;
 
   }
 
@@ -96,7 +108,11 @@ namespace VBSHIGGS
     for (const auto& trig : jet_paths) {
       std::string trig_key = "trigPassed_" + trig;
 
-      bool pass = m_triggerdecos.at(trig_key).get(*event, sys);
+      // Skip chains not configured in triggerLists
+      auto it = m_triggerdecos.find(trig_key);
+      if (it == m_triggerdecos.end()) continue;
+
+      bool pass = it->second.get(*event, sys);
       if (pass) {
         jet_pass = true;
       }

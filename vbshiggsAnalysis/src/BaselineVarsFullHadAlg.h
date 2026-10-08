@@ -38,10 +38,9 @@ private:
 
   CP::SysReadDecorHandle<int> m_truthFlav { this, "truthFlav", "HadronConeExclTruthLabelID", "Jet truth flavor" };
 
- 
-  CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{ this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", ""};
+  CP::SysReadHandle<xAOD::JetContainer> m_smallJetHandle{ this, "smallJets", "vbshiggsAnalysisJets_%SYS%", "All small-R jets for counting" };
 
-  CP::SysReadHandle<xAOD::JetContainer> m_vbsJetHandle{ this, "vbsJets", "",   "VBS Jet container to read" };
+  CP::SysReadHandle<xAOD::JetContainer> m_vbsLRJetHandle{ this, "vbsLRJets", "vbshiggsAnalysisLargeJets_%SYS%", "Large R Jet container to read" };
 
 
 

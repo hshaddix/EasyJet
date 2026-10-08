@@ -217,7 +217,7 @@ namespace VBSHIGGS
       single_large_jet_paths={"HLT_j460_a10t_lcw_jes_L1J100"};
     }
 
-    else if (2022 <= year && year <= 2023 &&
+    else if (2022 <= year && year <= 2024 &&
              !runBoolDecos.at(VBSHIGGS::is22_75bunches)(*event) &&
              !runBoolDecos.at(VBSHIGGS::is23_75bunches)(*event) &&
              !runBoolDecos.at(VBSHIGGS::is23_400bunches)(*event)&&
@@ -227,6 +227,34 @@ namespace VBSHIGGS
       single_large_jet_paths={"HLT_j460_a10sd_cssk_pf_jes_ftf_preselj225_L1J100"};
     }
 
+}
+
+void getSingleMassiveLargeJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& single_massive_large_jet_paths){
+    (void)event;
+    (void)runBoolDecos;
+    if (year == 2017) {
+      single_massive_large_jet_paths = {"HLT_j390_a10t_lcw_jes_30smcINF_L1J100", "HLT_j420_a10t_lcw_jes_40smcINF_L1J100"};
+    } else if (year == 2018) {
+      single_massive_large_jet_paths = {"HLT_j420_a10t_lcw_jes_35smcINF_L1SC111", "HLT_j420_a10t_lcw_jes_35smcINF_L1J100"};
+    } else if (year == 2022 || year == 2023 || year == 2024) {
+      single_massive_large_jet_paths = {"HLT_j420_35smcINF_a10sd_cssk_pf_jes_ftf_preselj225_L1J100"};
+    } 
+}
+
+void getDoubleMassiveLargeJetTriggers(int year, const xAOD::EventInfo* event,
+         const runBoolReadDecoMap& runBoolDecos,
+         std::vector<std::string>& double_massive_large_jet_paths){
+    (void)event;
+    (void)runBoolDecos;
+    if (year == 2017) {
+      double_massive_large_jet_paths = {"HLT_2j330_a10t_lcw_jes_30smcINF_L1J100", "HLT_2j330_a10t_lcw_jes_40smcINF_L1J100"};
+    } else if (year == 2018) {
+      double_massive_large_jet_paths = {"HLT_2j330_a10t_lcw_jes_35smcINF_L1J100", "HLT_2j330_a10t_lcw_jes_35smcINF_L1SC111", "HLT_j360_a10t_lcw_jes_60smcINF_j360_a10t_lcw_jes_L1SC111", "HLT_j370_a10t_lcw_jes_35smcINF_j370_a10t_lcw_jes_L1SC111"};
+    } else if (year == 2022 || year == 2023 || year == 2024) {
+      double_massive_large_jet_paths = {"HLT_2j330_35smcINF_a10sd_cssk_pf_jes_ftf_presel2j225_L1J100"};
+    } 
 }
 
 void getSingleSmallJetTriggers(int year, const xAOD::EventInfo* event,

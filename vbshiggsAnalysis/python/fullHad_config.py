@@ -15,16 +15,10 @@ def fullHad_cfg(flags, float_variables=None, int_variables=None):
     cfg = ComponentAccumulator()
 
     # set jets container labels
-    if flags.Analysis.UseVBFRNN:
-        # vbs tagging jets no more
-        VBSJetsLabel = ""
-        # use full small-R jets pool to select signal jets
-        SignalJetsLabel = "vbshiggsAnalysisJets_%SYS%"
-    else:
-        # use vbs tagging jets
-        VBSJetsLabel = "vbshiggsAnalysisVBSJets_%SYS%"
-        # use the small-R jets after selecting tagging jets
-        SignalJetsLabel = "vbshiggsAnalysisSignalJets_%SYS%"
+    # Full-hadronic analyses no longer create a dedicated VBS-jet split container.
+    # The resolved Higgs selection therefore runs on the already-selected small-R
+    # jet pool, which is the same container used for the VBF-RNN path.
+    SignalJetsLabel = "vbshiggsAnalysisJets_%SYS%"
         
     # Selection
     cfg.addEventAlgo(CompFactory.VBSHIGGS.FullHadSelectorAlg(
@@ -46,7 +40,6 @@ def fullHad_cfg(flags, float_variables=None, int_variables=None):
             "FinalVarsFullHadAlg",
             signaljets=SignalJetsLabel,
             UseVBFRNN=flags.Analysis.UseVBFRNN,
-            vbsJets=VBSJetsLabel,
             isMC=flags.Input.isMC,
             do_resolved=flags.Analysis.do_resolved,
             bTagWPDecorName="ftag_select_"
@@ -64,47 +57,35 @@ def get_BaselineVarsFullHadAlg_variables(flags):
     float_variable_names = []
     int_variable_names = []
 
-    int_variable_names += ["nJets", "nBJets", "nCentralJets", "nForwardJets", "nLargeJets"]
+    int_variable_names += ["nJets", "nBJets", "nLargeJets"]
     
     # obj = "LargeJet1"
     wtag_type = flags.Analysis.Large_R_jet.wtag_type
     wtag_wp = flags.Analysis.Large_R_jet.wtag_wp
-    for obj in ["LargeJet1", "LargeJet2", "LargeJet3"]:
-        for var in ["m", "pt", "eta", "phi", "GN2X"]:
-            float_variable_names.append(f"{obj}_{var}")
-        for var in ["phbb", "pqcd", "phcc", "ptop"]:
-            float_variable_names.append(f"{obj}_GN2X_{var}")
-
-        float_variable_names += [obj + "_" + wtag_type + wtag_wp + "Tagger_Score"]
-        int_variable_names += [obj + "_Pass_" + wtag_type
-                                   + wtag_wp]
 
     if flags.Analysis.do_resolved:
         for i in [1, 2]:
             for var in ["m", "pt", "eta", "phi", "E"]:
                 float_variable_names.append(f"Jet_Higgs_candidate{i}_{var}")
-                float_variable_names.append(f"resolvedWCandidate{i}_{var}")
-                float_variable_names.append(f"resolvedZCandidate{i}_{var}")
-                float_variable_names.append(f"fullyresolved_WCandidate{i}_{var}")
-                float_variable_names.append(f"fullyresolved_ZCandidate{i}_{var}")
+    
         float_variable_names += [
             "Hdijet_m", "Hdijet_pt", "Hdijet_eta", "Hdijet_phi",
             "dRHjj", "dPhiHjj", "dEtaHjj"
         ]
 
-    if not flags.Analysis.UseVBFRNN:
-        for jet in ["VBSJ1", "VBSJ2", "VBSdijet"]:
-            for var in ["m", "pt", "eta", "phi"]:
-                float_variable_names.append(f"{jet}_{var}")
-        float_variable_names += ["dRVBSjj", "dEtaVBSjj", "dPhiVBSjj"]
-    else:
-        regions = ["boostedCategory"]
-        if flags.Analysis.do_resolved:
-            regions.append("resolvedCategory")
-        for reg in regions:
-            for jet in ["Jet1", "Jet2"]:
-                for var in ["m", "pt", "eta", "phi"]:
-                    float_variable_names.append(f"RNNJets_{reg}_{jet}_{var}")
+  #  if not flags.Analysis.UseVBFRNN:
+  #      for jet in ["VBSJ1", "VBSJ2", "VBSdijet"]:
+  #          for var in ["m", "pt", "eta", "phi"]:
+  #              float_variable_names.append(f"{jet}_{var}")
+  #      float_variable_names += ["dRVBSjj", "dEtaVBSjj", "dPhiVBSjj"]
+  #  else:
+  #      regions = ["boostedCategory"]
+  #      if flags.Analysis.do_resolved:
+  #          regions.append("resolvedCategory")
+  #      for reg in regions:
+  #          for jet in ["Jet1", "Jet2"]:
+  #              for var in ["m", "pt", "eta", "phi"]:
+  #                  float_variable_names.append(f"RNNJets_{reg}_{jet}_{var}")
 
     return float_variable_names, int_variable_names
 
@@ -135,8 +116,8 @@ def fullHad_branches(flags):
     all_baseline_variable_names += [*float_variable_names, *int_variable_names]
 
     for var in all_baseline_variable_names:
-        branches += [f"EventInfo.{var}_%SYS% -> FullHad_{var}_%SYS%"]
-
+        branches += [f"EventInfo.{var}_%SYS% -> {var}_%SYS%"]
+        
     # Variables always saved with the objects selected by the analysis
     # This is tunable with the flags amount and variables
     # in the object configs.

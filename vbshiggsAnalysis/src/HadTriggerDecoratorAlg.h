@@ -58,6 +58,10 @@ namespace VBSHIGGS
       std::unordered_map<VBSHIGGS::TriggerChannel, std::string> m_triggerChannels = 
       {
         {VBSHIGGS::JET, "JET"},
+        {VBSHIGGS::RST, "RST"},
+        {VBSHIGGS::SingleLargeR, "single_large_R"},
+        {VBSHIGGS::SingleMassiveLargeR, "single_massive_large_R"},
+        {VBSHIGGS::DoubleMassiveLargeR, "double_massive_large_R"},
       };
 
       std::unordered_map<VBSHIGGS::RunBooleans, std::string> m_runBooleans =

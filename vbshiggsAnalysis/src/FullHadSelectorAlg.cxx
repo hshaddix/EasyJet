@@ -21,6 +21,18 @@ namespace VBSHIGGS {
       //  ATH_CHECK(m_systematicsList.initialize());
       ATH_CHECK (m_filterParams.initialize(m_systematicsList));
       ATH_CHECK (m_passTriggerJET.initialize(m_systematicsList, m_eventHandle));
+      ATH_CHECK (m_passTriggerRST.initialize(m_systematicsList, m_eventHandle));
+
+      // Trigger families for FH_BH_2BV
+      ATH_CHECK(m_passTriggerSingleLargeR.initialize(
+        m_systematicsList, m_eventHandle));
+    
+    ATH_CHECK(m_passTriggerSingleMassiveLargeR.initialize(
+        m_systematicsList, m_eventHandle));
+    
+    ATH_CHECK(m_passTriggerDoubleMassiveLargeR.initialize(
+        m_systematicsList, m_eventHandle));
+
 
       if (m_doResolved){
         ATH_CHECK (m_signaljetHandle.initialize(m_systematicsList));
@@ -48,10 +60,7 @@ namespace VBSHIGGS {
         ATH_CHECK (m_isBtag.initialize(m_systematicsList, m_signaljetHandle));
       }
 
-      if (!m_UseVBFRNN) {
-        ATH_CHECK(m_vbsjetHandle.initialize(m_systematicsList));
-    }
-
+  
       ATH_CHECK (m_systematicsList.initialize());
       if (m_saveCutFlow) ATH_CHECK(initialiseCutflow());
 
@@ -76,9 +85,7 @@ namespace VBSHIGGS {
 	ANA_CHECK (m_signaljetHandle.retrieve (signalJets, sys, ctx));
 	ANA_CHECK (m_HCandHandle.retrieve (HJets, sys, ctx));
       }
-      const xAOD::JetContainer *vbsjets = nullptr;
-      if( !m_UseVBFRNN )
-	ANA_CHECK (m_vbsjetHandle.retrieve (vbsjets, sys, ctx));
+ 
 
 
       ANA_CHECK(m_smallJetHandle.retrieve(smallJets, sys, ctx));
@@ -105,6 +112,19 @@ namespace VBSHIGGS {
       if (largeJets->size() > 2) m_bools[PASS_MORE_THAN_TWO_LARGE_JETS] = true;
       if (!m_passTriggerJET.empty() and m_passTriggerJET.get(*event, sys)) {
 	m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      }
+      if (!m_passTriggerRST.empty() and m_passTriggerRST.get(*event, sys)) {
+    	m_bools.at(VBSHIGGS::PASS_TRIGGER) = true;
+      }
+      //Split triggers for single, single massive, and double massive large-R jets
+      if (m_passTriggerSingleLargeR.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER_SINGLE_LARGE_R) = true;
+      }
+      if (m_passTriggerSingleMassiveLargeR.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER_SINGLE_MASSIVE_LARGE_R) = true;
+      }
+      if (m_passTriggerDoubleMassiveLargeR.get(*event, sys)) {
+        m_bools.at(VBSHIGGS::PASS_TRIGGER_DOUBLE_MASSIVE_LARGE_R) = true;
       }
       bool passAll = true;
       for (auto& [key, val] : m_bools) {
