@@ -33,10 +33,29 @@ namespace MULTILEPTON
         SLT,
         DLT,
         ASLT,
+        LTT,
+        MTT,
+        ETT,
+        ETT_4J12,
+        MTT_2016,
+        MTT_high,
+        MTT_low,
         STT,
         DTT,
-        ETT,
-        MTT,
+        DBT,
+        DTT_2016,
+        DTT_4J12,
+        DTT_L1Topo,
+        DTT_4J12_delayed,
+        DTT_L1Topo_delayed,
+        trigMatch_Tau35,
+        trigMatch_Tau25,
+        L1,
+        HLT,
+        SINGLE_LARGE_R_JETS,
+        DI_LARGE_R_JETS,
+        MET,
+        RNNTauTrig18
     };
 
     enum Var
@@ -50,6 +69,28 @@ namespace MULTILEPTON
         tau = 6,
         leadingtau = 7,
         subleadingtau = 8,
+    };
+
+    enum RunBooleans
+    {
+        is16PeriodA,
+        is16PeriodB_D3,
+        is16PeriodD4_end,
+        is17PeriodB1_B4,
+        is17PeriodB5_B7,
+        is17PeriodB8_end,
+        is18PeriodB_end,
+        is18_tau35_medium1,
+        is18PeriodK_end,
+        is22_75bunches,
+        is23_75bunches,
+        is23_400bunches,
+        is23_from1200bunches,
+        is23_first_2400bunches,
+        is24_timeframeA_C,
+        is24_timeframeD,
+        is24_timeframeE_F,
+        l1topo_disabled
     };
 
     enum Booleans
@@ -125,9 +166,17 @@ private:
         this, "year", "dataTakingYear",""};
 
     CP::SysReadDecorHandle<char> m_is16_periodA{"is2016_periodA", this};
+    CP::SysReadDecorHandle<char> m_is16_periodB_D3{"is2016_periodB_D3", this};
+    CP::SysReadDecorHandle<char> m_is16_periodD4_end{"is2016_periodD4_end", this};
+    CP::SysReadDecorHandle<char> m_is17_periodB1_B4{"is2017_periodB1_B4", this};
+    CP::SysReadDecorHandle<char> m_is17_periodB5_B7{"is2017_periodB5_B7", this};
+    CP::SysReadDecorHandle<char> m_is17_periodB8_end{"is2017_periodB8_end", this};
+    CP::SysReadDecorHandle<char> m_is18_periodB_K{"is2018_periodB_K", this};
+    CP::SysReadDecorHandle<char> m_is18_periodK_end{"is2018_periodK_end", this};
     CP::SysReadDecorHandle<char> m_is22_75bunches{"is2022_75bunches", this};
     CP::SysReadDecorHandle<char> m_is23_75bunches{"is2023_75bunches", this};
     CP::SysReadDecorHandle<char> m_is23_400bunches{"is2023_400bunches", this};
+    CP::SysReadDecorHandle<char> m_is23_first_2400bunches{"is2023_first_2400bunches", this};
     CP::SysReadDecorHandle<char> m_is24_timeframeA_C{"is2024_timeframeA_C", this};
     CP::SysReadDecorHandle<char> m_is24_timeframeD{"is2024_timeframeD", this};
     CP::SysReadDecorHandle<char> m_is24_timeframeE_F{"is2024_timeframeE_F", this};

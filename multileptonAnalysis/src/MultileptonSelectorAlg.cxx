@@ -34,9 +34,17 @@ namespace MULTILEPTON
     ATH_CHECK(m_year.initialize(m_systematicsList, m_eventHandle));
 
     ATH_CHECK(m_is16_periodA.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is16_periodB_D3.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is16_periodD4_end.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is17_periodB1_B4.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is17_periodB5_B7.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is17_periodB8_end.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is18_periodB_K.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is18_periodK_end.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is22_75bunches.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is23_75bunches.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is23_400bunches.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is23_first_2400bunches.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is24_timeframeA_C.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is24_timeframeD.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is24_timeframeE_F.initialize(m_systematicsList, m_eventHandle));
@@ -530,7 +538,16 @@ namespace MULTILEPTON
     if(year==2015){
       emu_paths = {"HLT_e17_lhloose_mu14"};
     }
-    else if(2016<=year && year<=2018){
+    if(year==2016){
+      if (m_is16_periodA.get(*event, sys) || m_is16_periodB_D3.get(*event, sys) || m_is16_periodD4_end.get(*event, sys)){
+        emu_paths = {
+          "HLT_e17_lhloose_nod0_mu14",
+          "HLT_e24_lhmedium_nod0_L1EM20VHI_mu8noL1",
+          "HLT_e7_lhmedium_nod0_mu24"
+        };
+      }
+    }
+    else if(2017<=year && year<=2018){
       emu_paths = {"HLT_e17_lhloose_nod0_mu14"};
     }
     else if(2022==year){
@@ -588,23 +605,45 @@ namespace MULTILEPTON
       };
     }
     else if(year==2016){
-      single_tau_paths = {
-        "HLT_tau80_medium1_tracktwo_L1TAU60",
-        "HLT_tau125_medium1_tracktwo",
-        "HLT_tau160_medium1_tracktwo",
-      };
+      if (m_is16_periodA.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau80_medium1_tracktwo_L1TAU60",
+        };
+      }
+      else if (m_is16_periodB_D3.get(*event, sys)){
+        single_tau_paths = {
+           "HLT_tau125_medium1_tracktwo",
+        };
+      }
+      else if (m_is16_periodD4_end.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau160_medium1_tracktwo",
+        };
+      }
     }
     else if(year==2017){
-      single_tau_paths = {
-        "HLT_tau160_medium1_tracktwo",
-        "HLT_tau160_medium1_tracktwo_L1TAU100",
-      };
+      if (m_is17_periodB1_B4.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau160_medium1_tracktwo",
+        };
+      }
+      else if (m_is17_periodB5_B7.get(*event, sys) || m_is17_periodB8_end.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau160_medium1_tracktwo_L1TAU100",
+        };
+      }
     }
     else if(year==2018){
-      single_tau_paths = {
-        "HLT_tau160_medium1_tracktwoEF_L1TAU100",
-        "HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100",
-      };
+      if (m_is18_periodB_K.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau160_medium1_tracktwoEF_L1TAU100",
+        };
+      }
+      else if (m_is18_periodK_end.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100",
+        };
+      }
     }
     else if(m_is23_400bunches.get(*event, sys) || year==2024){
       single_tau_paths = {
@@ -650,37 +689,77 @@ namespace MULTILEPTON
       };
     }
     else if(year==2016){
-      di_tau_paths = {
-        "HLT_tau35_loose1_tracktwo_tau25_loose1_tracktwo",
-        "HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo",
-        "HLT_tau80_medium1_TAU60_tau50_medium1_L1TAU12",
-      };
+      if (m_is16_periodA.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau35_loose1_tracktwo_tau25_loose1_tracktwo",
+        };
+      }
+      else if (m_is16_periodB_D3.get(*event, sys)){
+        di_tau_paths = {
+           "HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo",
+        };
+      }
+      else if (m_is16_periodD4_end.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo",
+          "HLT_tau80_medium1_TAU60_tau50_medium1_L1TAU12",
+        };
+      }
     }
     else if(year==2017){
-      di_tau_paths = {
-        // can we use "HLT_tau35_medium1_tracktwo_tau25_medium1_tracktwo"? 
-        // Cause it is described as "di-tau+L1 jets" in https://twiki.cern.ch/twiki/bin/viewauth/Atlas/LowestUnprescaled?sortcol=2;table=77;up=0#sorted_table
-        "HLT_tau80_medium1_tracktwo_L1TAU60_tau50_medium1_tracktwo_L1TAU12",
-        "HLT_tau80_medium1_tracktwo_L1TAU60_tau60_medium1_tracktwo_L1TAU40",
-      };
+      if (m_is17_periodB1_B4.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau80_medium1_tracktwo_L1TAU60_tau50_medium1_tracktwo_L1TAU12",
+        };
+      }
+      else if (m_is17_periodB5_B7.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau80_medium1_tracktwo_L1TAU60_tau35_medium1_tracktwo_L1TAU12IM_L1TAU60_DR-TAU20ITAU12I",
+          "HLT_tau80_medium1_tracktwo_L1TAU60_tau50_medium1_tracktwo_L1TAU12",
+        };
+      }
+      else if (m_is17_periodB8_end.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau80_medium1_tracktwo_L1TAU60_tau35_medium1_tracktwo_L1TAU12IM_L1TAU60_DR-TAU20ITAU12I",
+          "HLT_tau80_medium1_tracktwo_L1TAU60_tau60_medium1_tracktwo_L1TAU40",
+        };
+      }
     }
     else if(year==2018){
-      di_tau_paths = {
-        "HLT_tau80_medium1_tracktwoEF_L1TAU60_tau60_medium1_tracktwoEF_L1TAU40",
-        "HLT_tau80_mediumRNN_tracktwoMVA_L1TAU60_tau60_mediumRNN_tracktwoMVA_L1TAU40",
-      };
+      if (m_is18_periodB_K.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau80_medium1_tracktwoEF_L1TAU60_tau60_medium1_tracktwoEF_L1TAU40",
+          "HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1DR_TAU20ITAU12I_J25",
+          "HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1TAU20IM_2TAU12IM_4J12p0ETA23",
+        };
+      }
+      else if (m_is18_periodK_end.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau80_mediumRNN_tracktwoMVA_L1TAU60_tau60_mediumRNN_tracktwoMVA_L1TAU40",
+          "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_L1DR_TAU20ITAU12I_J25",
+          "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_L1TAU20IM_2TAU12IM_4J12p0ETA23",
+        };
+      }
     }
     else if(2022<=year && year<=2023){
-      di_tau_paths = {
-        // All from 75 bunches
-        "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB_L1TAU20IM_2TAU12IM_4J12p0ETA25",
-        "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB30_L1DR_TAU20ITAU12I_J25",
-        "HLT_tau40_mediumRNN_tracktwoMVA_tau35_mediumRNN_tracktwoMVA_03dRAB_L1TAU25IM_2TAU20IM_2J25_3J20",
-        "HLT_tau80_mediumRNN_tracktwoMVA_tau60_mediumRNN_tracktwoMVA_03dRAB_L1TAU60_2TAU40",
-        "HLT_tau80_mediumRNN_tracktwoMVA_tau35_mediumRNN_tracktwoMVA_03dRAB30_L1TAU60_DR_TAU20ITAU12I",
-        //************* In Questions: Whether should it be included?     *************//
-        // "HLT_tau80_mediumRNN_tracktwoMVA_tau60_mediumRNN_tracktwoMVA_03dRAB_L1eTAU80_2eTAU60"  // Only 2023 From 1200 bunches has it, others are from 75 bunches, should it be in m_is23_1200bunches?
-      };
+      if (m_is23_first_2400bunches.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau30_mediumRNN_tracktwoMVA_tau20_mediumRNN_tracktwoMVA_03dRAB30_L1DR-TAU20ITAU12I-J25",
+          "HLT_tau30_mediumRNN_tracktwoMVA_tau20_mediumRNN_tracktwoMVA_03dRAB_L1TAU20IM_2TAU12IM_4J12p0ETA25",
+        };
+      }
+      else {
+        di_tau_paths = {
+          // All from 75 bunches
+          "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB_L1TAU20IM_2TAU12IM_4J12p0ETA25",
+          "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB30_L1DR_TAU20ITAU12I_J25",
+          "HLT_tau40_mediumRNN_tracktwoMVA_tau35_mediumRNN_tracktwoMVA_03dRAB_L1TAU25IM_2TAU20IM_2J25_3J20",
+          "HLT_tau80_mediumRNN_tracktwoMVA_tau60_mediumRNN_tracktwoMVA_03dRAB_L1TAU60_2TAU40",
+          "HLT_tau80_mediumRNN_tracktwoMVA_tau35_mediumRNN_tracktwoMVA_03dRAB30_L1TAU60_DR_TAU20ITAU12I",
+          //************* In Questions: Whether should it be included?     *************//
+          // "HLT_tau80_mediumRNN_tracktwoMVA_tau60_mediumRNN_tracktwoMVA_03dRAB_L1eTAU80_2eTAU60"  // Only 2023 From 1200 bunches has it, others are from 75 bunches, should it be in m_is23_1200bunches?
+        };
+      }
     }
     // timeframe A-D is the early 2024 for di-tau triggers
     else if(m_is24_timeframeA_C.get(*event, sys) || m_is24_timeframeD.get(*event, sys)){
@@ -755,22 +834,39 @@ namespace MULTILEPTON
       };
     }
     else if(year==2016){
-      ele_tau_paths = {
-        "HLT_e17_lhmedium_nod0_tau25_medium1_tracktwo",
-        "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwo",
-      };
+      if (m_is16_periodA.get(*event, sys)){
+        ele_tau_paths = {
+          "HLT_e17_lhmedium_nod0_tau25_medium1_tracktwo",
+        };
+      }
+      else if (m_is16_periodB_D3.get(*event, sys) || m_is16_periodD4_end.get(*event, sys)){
+        ele_tau_paths = {
+           "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwo",
+        };
+      }
     }
     else if(year==2017){
       ele_tau_paths = {
         "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwo",
+        "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwo_L1EM15VHI_2TAU12IM_4J12",
         "HLT_e24_lhmedium_nod0_ivarloose_tau35_medium1_tracktwo",
       };
     }
     else if(year==2018){
-      ele_tau_paths = {
-        "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF",
-        "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA",
-      };
+      if (m_is18_periodB_K.get(*event, sys)){
+        ele_tau_paths = {
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF",
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF_L1DR-EM15TAU12I-J25",
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF_L1EM15VHI_2TAU12IM_4J12",
+        };
+      }
+      else if (m_is18_periodK_end.get(*event, sys)){
+        ele_tau_paths = {
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA",
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA_L1DR-EM15TAU12I-J25",
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA_L1EM15VHI_2TAU12IM_4J12",
+        };
+      }
     }
     else if(year==2022){
       ele_tau_paths = {
@@ -785,11 +881,17 @@ namespace MULTILEPTON
       };
     }
     else if(year==2023){
-      ele_tau_paths = {
-        "HLT_e24_lhmedium_ivarloose_tau20_mediumRNN_tracktwoMVA_03dRAB_L1eEM26M", // From 400 bunches
-        "HLT_e17_lhmedium_ivarloose_tau25_mediumRNN_tracktwoMVA_03dRAB_L1EM15VHI_2TAU12IM_4J12" // From 75 bunches
-        // Questions: what's the difference between From 75 bunches and 75 only?
-      };
+      if (m_is22_75bunches.get(*event, sys)){
+        ele_tau_paths = {
+          "HLT_e17_lhmedium_ivarloose_tau25_mediumRNN_tracktwoMVA_03dRAB_L1EM15VHI_2TAU12IM_4J12"
+        };
+      }
+      else if (m_is23_400bunches.get(*event, sys)){
+        ele_tau_paths = {
+          "HLT_e24_lhmedium_ivarloose_tau20_mediumRNN_tracktwoMVA_03dRAB_L1eEM26M", // From 400 bunches
+          // Questions: what's the difference between From 75 bunches and 75 only?
+        };
+      }
     }
     // timeframe A-C is early 2024 for ele-tau triggers
     else if(m_is24_timeframeA_C.get(*event, sys)){
@@ -838,6 +940,16 @@ namespace MULTILEPTON
       };
     }
     else if(year==2016){
+      if (m_is16_periodA.get(*event, sys)){
+        mu_tau_paths = {
+          "HLT_mu14_tau25_medium1_tracktwo",
+        };
+      }
+      else if (m_is16_periodB_D3.get(*event, sys) || m_is16_periodD4_end.get(*event, sys)){
+        mu_tau_paths = {
+           "HLT_mu14_ivarloose_tau25_medium1_tracktwo",
+        };
+      }
       mu_tau_paths = {
         "HLT_mu14_tau25_medium1_tracktwo",
         "HLT_mu14_ivarloose_tau25_medium1_tracktwo",
@@ -846,14 +958,27 @@ namespace MULTILEPTON
     else if(year==2017){
       mu_tau_paths = {
         "HLT_mu14_ivarloose_tau25_medium1_tracktwo",
+        "HLT_mu14_ivarloose_tau25_medium1_tracktwo_L1MU10_TAU12IM_3J12",
         "HLT_mu14_ivarloose_tau35_medium1_tracktwo",
       };
     }
     else if(year==2018){
-      mu_tau_paths = {
-        "HLT_mu14_ivarloose_tau35_medium1_tracktwoEF",
-        "HLT_mu14_ivarloose_tau35_mediumRNN_tracktwoMVA",
-      };
+      if (m_is18_periodB_K.get(*event, sys)){
+        mu_tau_paths = {
+          "HLT_mu14_ivarloose_tau35_medium1_tracktwoEF",
+          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF",
+          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF_L1DR-MU10TAU12I_TAU12I-J25",
+          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF_L1MU10_TAU12IM_3J12",
+        };
+      }
+      else if (m_is18_periodK_end.get(*event, sys)){
+        mu_tau_paths = {
+          "HLT_mu14_ivarloose_tau35_mediumRNN_tracktwoMVA",
+          "HLT_mu14_ivarloose_tau25_mediumRNN_tracktwoMVA",
+          "HLT_mu14_ivarloose_tau25_mediumRNN_tracktwoMVA_L1DR-MU10TAU12I_TAU12I-J25",
+          "HLT_mu14_ivarloose_tau25_mediumRNN_tracktwoMVA_L1MU10_TAU12IM_3J12",
+        };
+      }
     }
     else if(2022<=year && year<=2023){
       mu_tau_paths = {
