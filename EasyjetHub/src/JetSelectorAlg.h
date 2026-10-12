@@ -72,6 +72,10 @@ private:
     CP::SysWriteHandle<ConstDataVector<xAOD::JetContainer>>
       m_outHandle{ this, "containerOutKey", "",   "Jet container to write" };
 
+    Gaudi::Property<std::vector<std::string>> 
+      m_propagateDecorSys{this, "propagateDecorSys", {},
+        "Input decorations whose systematics are propagated to the output"};
+
     /// \brief Setup sys-aware output decorations
     CP::SysWriteDecorHandle<int> m_nSelPart {this, "decorOutName", "nJets_%SYS%", 
         "Name of output decorator for number of selected jets"};

@@ -14,6 +14,14 @@ namespace Easyjet
     ATH_CHECK (m_eventHandle.initialize(m_systematicsList));
     ATH_CHECK (m_outHandle.initialize(m_systematicsList));
 
+    for (const std::string &decor : m_propagateDecorSys)
+    {
+      ATH_CHECK(m_systematicsList.service().setDecorSystematics(
+          m_outHandle.getNamePattern(), decor,
+          m_systematicsList.service().getDecorSystematics(
+              m_inHandle.getNamePattern(), decor)));
+    }
+
     if(m_keepAntiTaus){
       m_antiTau = CP::SysReadDecorHandle<char>("baselineSelection_isAntiTau_%SYS%", this);
       m_IDTau = CP::SysReadDecorHandle<char>("baselineSelection_isIDTau_%SYS%", this);

@@ -1,7 +1,50 @@
+from AthenaCommon.Logging import logging
 from AthenaConfiguration.ComponentAccumulator import ComponentAccumulator
 from AthenaConfiguration.ComponentFactory import CompFactory
 from AthenaConfiguration.Enums import LHCPeriod
 from EasyjetHub.steering.analysis_configuration import get_trigger_chains_scale_factor
+from EasyjetHub.output.ttree.electrons import get_electron_branches
+from EasyjetHub.output.ttree.muons import get_muon_branches
+from EasyjetHub.output.ttree.photons import get_photon_branches
+from EasyjetHub.output.ttree.taus import get_tau_branches
+from EasyjetHub.output.ttree.small_R_jets import get_small_R_jet_branches
+from EasyjetHub.output.ttree.large_R_jets import get_large_R_jet_branches
+
+
+log = logging.getLogger(__name__)
+
+
+def get_sys_decorations(flags, branch_getter, **kwargs):
+    """%SYS% decorations the ntuple writes for this object type.
+
+    Selector outputs are views of the input objects, but the systematics
+    service only knows which variations affect a decoration on the container
+    it was registered for. The selectors re-register these on their output
+    (propagateDecorSys), so they also resolve correctly when read through it.
+    """
+    if not hasattr(flags.Analysis, "ttree_output"):
+        return []
+    try:
+        branches = branch_getter(
+            flags,
+            flags.Analysis.ttree_output,
+            input_container="Selected_%SYS%",
+            output_prefix="selected",
+            **kwargs,
+        )
+    except (AttributeError, KeyError, RuntimeError) as err:
+        log.warning(
+            "Not propagating decoration systematics for %s: %s",
+            branch_getter.__name__,
+            err,
+        )
+        return []
+    decorations = []
+    for branch in branches:
+        decoration = branch.split(" -> ")[0].split(".", 1)[1]
+        if "%SYS%" in decoration and decoration not in decorations:
+            decorations.append(decoration)
+    return decorations
 
 
 def MuonSelectorAlgCfg(flags, name="MuonSelectorAlg", **kwargs):
@@ -33,6 +76,10 @@ def MuonSelectorAlgCfg(flags, name="MuonSelectorAlg", **kwargs):
     if not flags.Analysis.Muon.do_thinning:
         kwargs.setdefault("baselineSelectionName", "")
 
+    kwargs.setdefault(
+        "propagateDecorSys", get_sys_decorations(flags, get_muon_branches)
+    )
+
     cfg.addEventAlgo(CompFactory.Easyjet.MuonSelectorAlg(name, **kwargs))
     return cfg
 
@@ -47,6 +94,10 @@ def ElectronSelectorAlgCfg(flags, name="ElectronSelectorAlg", **kwargs):
 
     if not flags.Analysis.Electron.do_thinning:
         kwargs.setdefault("baselineSelectionName", "")
+
+    kwargs.setdefault(
+        "propagateDecorSys", get_sys_decorations(flags, get_electron_branches)
+    )
 
     cfg.addEventAlgo(CompFactory.Easyjet.ElectronSelectorAlg(name, **kwargs))
     return cfg
@@ -67,7 +118,7 @@ def TruthElectronSelectorAlgCfg(flags, name="TruthElectronSelectorAlg", **kwargs
 def TruthMuonSelectorAlgCfg(flags, name="TruthMuonSelectorAlg", **kwargs):
     cfg = ComponentAccumulator()
 
-    kwargs.setdefault("decoration",
+    kwargs.setdefault("decoration", 
                       flags.Analysis.container_names.input.truthmuons
                       + ".isTruthMuon")
     kwargs.setdefault("decorOutName", "TruthEvents.nMuons")
@@ -106,12 +157,14 @@ def TauSelectorAlgCfg(flags, name="TauSelectorAlg", **kwargs):
     tau_WPs = [flags.Analysis.Tau.ID]
     tau_WPs += flags.Analysis.Tau.extra_wps
     kwargs.setdefault("tauWPs", tau_WPs)
-    kwargs.setdefault("keepAntiTaus",
+    kwargs.setdefault("keepAntiTaus", 
                       flags.Analysis.OverlapRemoval.doTauAntiTauJet)
     kwargs.setdefault("tauAmount", flags.Analysis.Tau.amount)
 
     if not flags.Analysis.Tau.do_thinning:
         kwargs.setdefault("baselineSelectionName", "")
+
+    kwargs.setdefault("propagateDecorSys", get_sys_decorations(flags, get_tau_branches))
 
     cfg.addEventAlgo(CompFactory.Easyjet.TauSelectorAlg(name, **kwargs))
     return cfg
@@ -128,6 +181,10 @@ def PhotonSelectorAlgCfg(flags, name="PhotonSelectorAlg", **kwargs):
     if not flags.Analysis.Photon.do_thinning:
         kwargs.setdefault("baselineSelectionName", "")
 
+    kwargs.setdefault(
+        "propagateDecorSys", get_sys_decorations(flags, get_photon_branches)
+    )
+
     cfg.addEventAlgo(CompFactory.Easyjet.PhotonSelectorAlg(name, **kwargs))
     return cfg
 
@@ -143,7 +200,7 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
     if kwargs.get("bTagWPDecorName", ""):
         kwargs.setdefault("bJetAmount", smallR_flags.amount_bjet)
     if (isSmallRJet and smallR_flags.runBJetPtCalib) or \
-       (isLargeRJet and largeR_flags.runMuonJetPtCorr):
+        (isLargeRJet and largeR_flags.runMuonJetPtCorr):
         kwargs.setdefault("nmuons", "n_muons_%SYS%")
 
     # b-jet matching decoration
@@ -171,6 +228,10 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
         kwargs.setdefault("doHLTMatching", smallR_flags.doHLTMatching and (
             flags.GeoModel.Run >= LHCPeriod.Run3 or smallR_flags.doRun2HLTEmulation))
 
+        kwargs.setdefault(
+            "propagateDecorSys", get_sys_decorations(flags, get_small_R_jet_branches)
+        )
+
     if isLargeRJet:
         if not largeR_flags.do_thinning:
             kwargs.setdefault("baselineSelectionName", "")
@@ -178,6 +239,14 @@ def JetSelectorAlgCfg(flags, name="JetSelectorAlg", **kwargs):
         kwargs.setdefault("httWPDecorName", largeR_flags.htt_tag_wp)
         kwargs.setdefault("hbbJetAmount", largeR_flags.amount_hbb_leadingjet)
         kwargs.setdefault("httJetAmount", largeR_flags.amount_htt_leadingjet)
+
+        lr_jet_type = "UFO" if flags.Analysis.do_large_R_UFO_jets else "Topo"
+        kwargs.setdefault(
+            "propagateDecorSys",
+            get_sys_decorations(
+                flags, get_large_R_jet_branches, lr_jet_type=lr_jet_type
+            ),
+        )
 
     cfg.addEventAlgo(CompFactory.Easyjet.JetSelectorAlg(name, **kwargs))
     return cfg

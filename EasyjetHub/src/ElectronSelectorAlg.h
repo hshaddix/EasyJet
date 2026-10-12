@@ -60,6 +60,10 @@ private:
     CP::SysWriteHandle<ConstDataVector<xAOD::ElectronContainer>>
       m_outHandle{ this, "containerOutKey", "",   "Electron container to write" };
 
+    Gaudi::Property<std::vector<std::string>> 
+      m_propagateDecorSys{this, "propagateDecorSys", {},
+        "Input decorations whose systematics are propagated to the output"};
+
     /// \brief Setup sys-aware output decorations
     CP::SysWriteDecorHandle<int> m_nSelPart {this, "decorOutName", "nElectrons_%SYS%", 
         "Name out output decorator for number of selected electrons"};

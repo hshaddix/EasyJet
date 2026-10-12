@@ -64,6 +64,10 @@ private:
     /// \brief Setup syst-aware output container handles
     CP::SysWriteHandle<ConstDataVector<xAOD::TauJetContainer>>
       m_outHandle{ this, "containerOutKey", "",   "Tau container to write" };
+ 
+    Gaudi::Property<std::vector<std::string>> 
+      m_propagateDecorSys{this, "propagateDecorSys", {},
+        "Input decorations whose systematics are propagated to the output"};
 
     /// \brief Setup sys-aware output decorations
     CP::SysWriteDecorHandle<int>
