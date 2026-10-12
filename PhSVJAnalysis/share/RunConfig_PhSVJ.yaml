@@ -108,8 +108,8 @@ do_small_R_jets: true
 
 #Muons are listed under the muon.py script and their energy is a default
 #decorator listed as e_%SYS%
-do_muons: false
-do_electrons: false
+do_muons: true
+do_electrons: true
 #Add photons
 do_photons: true
 
@@ -207,6 +207,7 @@ Small_R_jet:
   #effectively circumvents thinning
   save_all_jets: true
   output_prefix: "recojet_antikt4PFlow"
+  additional_variables: []
     #additional_variables: ["constit_scale_pt", "constit_scale_eta", "constit_scale_phi", 
     #                    "constit_scale_e", "charged_pt_frac", "neutral_e_frac", "width", 
     #                    "charge", "jvt", "em_frac"]
@@ -227,6 +228,7 @@ Large_R_jet:
   # Extra per-jet aux variables to write for reco10UFOJet
   get_additional_vars: true
   output_prefix: "recojet_antikt10UFO"
+  additional_variables: []
     #additional_variables: ["constit_scale_pt", "constit_scale_eta", "constit_scale_phi", 
     #                     "constit_scale_e", "charged_pt_frac", "neutral_e_frac", "width", 
     #                      "charge", "jvt", "em_frac"]
@@ -263,7 +265,7 @@ Photon:
   Iso: "FixedCutLoose" #"FixedCutTightCaloOnly" #NonIso #MODIFICATO
   amount: -1
   #Multiplicity cut
-  miniAmount: -1 #fixme: not recognized and use -1 explicitely in the selector
+  minAmount: -1 #fixme: not recognized and use -1 explicitely in the selector
 
 Track:
   min_pT: 5.e+2

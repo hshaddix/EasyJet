@@ -113,6 +113,7 @@ declare -A DATAFILES=(
     [HZy-mc23]=${PHYS_TTBAR_MC23}
     [HZy-data22]=${PHYS_DATA_2022}
     [vbshiggs-semilep-mc23]=${PHYS_TTBAR_MC23}
+    [PhSVJ-mc23af3]=${PHYS_JETS_MC23_AF3}
     # systematics enabled
     [syst-mc23]=${PHYS_TTBAR_MC23}
     # non-ntupler workflows
@@ -231,6 +232,7 @@ declare -A TESTS=(
     [HZy-mc23]="simple HZy-ntupler"
     [HZy-data22]="simple HZy-ntupler"
     [vbshiggs-semilep-mc23]="simple vbshiggs-ntupler"
+    [PhSVJ-mc23af3]="simple phsvj-ntupler"
     # non-ntupler
     [aod-fast-bbbb-mc23]="aod-fast bbbb-ntupler bbbb-hists \
     bbbbAnalysis/RunConfig-HH4b-Resolved.yaml"
@@ -326,6 +328,7 @@ declare -A CONFIGS=(
     [vbshiggs-semilep-mc23]=vbshiggsAnalysis/RunConfig-semiLep-bypass.yaml
     # MC23 AF3
     [SHbbyy-mc23af3]=bbyyAnalysis/RunConfig-Resonant-bypass.yaml
+    [PhSVJ-mc23af3]=PhSVJAnalysis/RunConfig_PhSVJ.yaml
     # non-ntupler
     [aod-fast-bbbb-mc23]=bbbbAnalysis/RunConfig-HH4b-Resolved.yaml
     [hist-syst-bbbb-mc23]=bbbbAnalysis/histonly-config.yaml

@@ -238,6 +238,14 @@ variables:
   variables:
     EASYJET_REQUIRED_PKG: HZyAnalysis
 
+.changes_phsvj: &changes_phsvj
+  rules:
+    - if: *if_to_central
+      changes: ["PhSVJAnalysis/**/*"]
+    - <<: *rule_core_pkgs
+  variables:
+    EASYJET_REQUIRED_PKG: PhSVJAnalysis
+
 # Data
 
 ntupler_fast_data18:
@@ -686,6 +694,12 @@ ntupler_vbshiggs_semilep_mc23:
   <<: *changes_vbshiggs
   script:
     - easyjet-test vbshiggs-semilep-mc23
+
+ntupler_PhSVJ_mc23af3:
+  extends: .ntupler
+  <<: *changes_phsvj
+  script:
+    - easyjet-test PhSVJ-mc23af3
 
 # systematics enabled
 

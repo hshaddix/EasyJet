@@ -128,13 +128,13 @@ def PhSVJ_branches(flags):
         prefix = flags.Analysis.Large_R_jet.output_prefix
         for var in flags.Analysis.Large_R_jet.additional_variables:
             continue #fixme: decoration is not ready.
-        all_baseline_variable_names.append(f"{prefix}_{var}")
+            all_baseline_variable_names.append(f"{prefix}_{var}")
 
     if flags.Analysis.do_small_R_jets:
         prefix = flags.Analysis.Small_R_jet.output_prefix
         for var in flags.Analysis.Small_R_jet.additional_variables:
             continue #fixme: decoration is not ready.
-        all_baseline_variable_names.append(f"{prefix}_{var}")
+            all_baseline_variable_names.append(f"{prefix}_{var}")
     #End of custom add
     all_baseline_variable_names += [*float_variable_names, *int_variable_names]
 
