@@ -32,6 +32,10 @@ def get_muon_branches(flags, tree_flags, input_container, output_prefix):
             "topoetcone20",
             "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt500",
             "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt1000",
+            "neflowisol20_CloseByCorr",
+            "topoetcone20_CloseByCorr",
+            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt500_CloseByCorr",
+            "ptvarcone30_Nonprompt_All_MaxWeightTTVA_pt1000_CloseByCorr",
         ]
         muon_branches.variables += [(name, None) for name in isolation_variables]
 

@@ -18,3 +18,10 @@ Muon:
 
 Lepton:
   amount: 3
+
+ttree_output:
+  collection_options:
+    electrons:
+      iso_variables: true
+    muons:
+      iso_variables: true

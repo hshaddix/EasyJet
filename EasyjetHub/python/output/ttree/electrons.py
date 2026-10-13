@@ -28,7 +28,8 @@ def get_electron_branches(flags, tree_flags, input_container, output_prefix):
         electron_branches.variables += [
             ("topoetcone20", None),
             ("topoetcone20_CloseByCorr", None),
-            ("ptvarcone30_Nonprompt_All_MaxWeightTTVALooseCone_pt1000", None)
+            ("ptvarcone30_Nonprompt_All_MaxWeightTTVALooseCone_pt1000", None),
+            ("ptvarcone30_Nonprompt_All_MaxWeightTTVALooseCone_pt1000_CloseByCorr", None)
         ]
 
     if el_output_flags.id_variables:
