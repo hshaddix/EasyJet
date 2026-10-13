@@ -1,0 +1,22 @@
+include: [HZallyyAnalysis/RunConfig-llyy_LLP1.yaml]
+
+# Systematics run on top of the nominal LLP1 configuration.
+
+do_CP_systematics: true
+
+systematics_regex:
+  - "EG_"      # photon/electron energy scale and resolution
+  - "EL_"      # electron reco/ID/iso/trigger SF
+  - "MUON_"    # muon momentum calibration, reco/iso/TTVA/trigger SF
+  - "PH_"      # photon ID/iso SF
+  - "PRW_"     # pile-up reweighting
+  - "GEN_"     # generator weights (scale, PDF, alphaS)
+  # Jets are used only in overlap removal: JET_ and FT_ are not included.
+  # To be confirmed before the full production.
+
+# CutBookkeeper per systematic, needed to normalise the GEN_ variations
+always_do_CBK_systematics: true
+
+# EGamma/muon correlation models are the base-config defaults
+# (Photon/Electron correlationModelScale: 1NP_v1, Electron Id/Iso/Reco: SIMPLIFIED).
+# Change them here only after the decision in WP-A.
