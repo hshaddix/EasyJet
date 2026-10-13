@@ -1,0 +1,47 @@
+disable_metadata: false
+selection:
+  n_lrjets_min: 1
+variables:
+  Zcand_m:
+    lower: 70000
+    upper: 110000
+    n_bins: 40
+  Zcand_pt:
+    lower: 0
+    upper: 3000000
+    n_bins: 150
+  Zcand_truth_pt:
+    lower: 0
+    upper: 3000000
+    n_bins: 150
+  Zcand_dR:
+    lower: 0
+    upper: 5.0
+    n_bins: 50
+  Zcand_pt_balance:
+    lower: 0
+    upper: 2.0
+    n_bins: 40
+  Zcand_leplep_LR_ptsymmetry:
+    lower: 0
+    upper: 1.0
+    n_bins: 50
+weights:
+  all_runs:
+    - PileupWeight_NOSYS
+    - Lepton1_effSF_NOSYS
+    - Lepton2_effSF_NOSYS
+    - globalTriggerEffSF_NOSYS
+  run2:
+    - beamSpotWeight
+multidim:
+  zcand:
+    mass_var: Zcand_m
+    mass_lower: 70000
+    mass_upper: 110000
+    mass_n_bins: 40
+    pt_var: Zcand_pt
+    pt_edges: [200000., 260000., 320000., 400000., 500000., 600000., 1000000., 3000000.]
+    wp_prefix: Zcand
+    truth_pt_var: Zcand_truth_pt
+    truth_pt_edges: [200000., 260000., 320000., 400000., 500000., 600000., 1000000., 3000000.]

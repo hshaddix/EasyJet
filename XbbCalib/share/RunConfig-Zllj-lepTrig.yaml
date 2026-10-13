@@ -1,0 +1,22 @@
+include: [XbbCalib/Zll-objects.yaml]
+
+Trigger:
+  include: [XbbCalib/trigger_lepton.yaml]
+  scale_factor:
+    doSF: true
+    # needed by do_trigger_match_filtering
+    do_trigger_match: true
+
+do_trigger_filtering: true
+do_trigger_match_filtering: true
+
+# trigger SFs exist only for Tight / Tight_VarRad
+Electron:
+  ID: "TightLH"
+  Iso: "Tight_VarRad"
+
+# Add selection cut, to ensure Z and jet separation
+min_deltaPhiCut: 1.5707963
+
+Large_R_jet:
+  min_pT: 200.e+3

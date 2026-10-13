@@ -5,6 +5,7 @@ selection:
     - 'HLT_e60_lhmedium'
     - 'HLT_e120_lhloose'
     - 'HLT_mu20_iloose_L1MU15'
+    - 'HLT_mu40'
     - 'HLT_mu50'
     '2016':
     - 'HLT_e26_lhtight_nod0_ivarloose'
@@ -45,6 +46,7 @@ selection:
 
 scale_factor:
   doSF: false
+  do_trigger_match: false
 
   chains:
     '2015':
@@ -60,9 +62,21 @@ scale_factor:
     - 'HLT_e26_lhtight_nod0_ivarloose || HLT_e60_lhmedium_nod0 || HLT_e140_lhloose_nod0'
     - 'HLT_mu26_ivarmedium || HLT_mu50'
     '2022':
-    #- 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI'
+    - 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI'
     - 'HLT_mu24_ivarmedium_L1MU14FCH || HLT_mu50_L1MU14FCH'
     '2023':
-    #- 'HLT_e26_lhtight_ivarloose_L1EM22VHI || HLT_e60_lhmedium_L1EM22VHI || HLT_e140_lhloose_L1EM22VHI'
+    - 'HLT_e26_lhtight_ivarloose_L1eEM26M || HLT_e60_lhmedium_L1eEM26M || HLT_e140_lhloose_L1eEM26M'
     - 'HLT_mu24_ivarmedium_L1MU14FCH || HLT_mu50_L1MU14FCH'
-# TO DO: Add 2024 trigger chains, and check if run 3 electron SFs are ready
+    '2024':
+    - 'HLT_e26_lhtight_ivarloose_L1eEM26M || HLT_e60_lhmedium_L1eEM26M || HLT_e140_lhloose_L1eEM26M'
+    - 'HLT_mu24_ivarmedium_L1MU14FCH || HLT_mu50_L1MU14FCH'
+
+  # must match the RunConfig lepton WPs
+  Electron:
+    ID_Run2: "TightLH"
+    Iso_Run2: "Tight_VarRad"
+    ID_Run3: "TightLH"
+    Iso_Run3: "Tight_VarRad"
+
+  Muon:
+    ID: "HighPt"

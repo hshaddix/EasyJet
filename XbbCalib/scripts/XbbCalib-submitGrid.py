@@ -37,7 +37,11 @@ DEFAULT_PTAG_BY_ANALYSIS = {
     "Zbby-hists": "p701X",
     "Zllj":        "p701X",
     "Zlly":        "p701X",
+    "Zllj-lepTrig":       "p701X",
+    "Zllj-lepTrig-hists": "p701X",
     "tt":         "p701X",
+    "Ztautau":       "p701X",
+    "Ztautau-hists": "p701X",
 }
 
 OUTPUT_FLAGS_BY_ANALYSIS = {
@@ -45,6 +49,8 @@ OUTPUT_FLAGS_BY_ANALYSIS = {
     "Zbbj-hists": ["--h5-output"],
     "Zbby-aod":   ["--output-xaod"],
     "Zbby-hists": ["--h5-output"],
+    "Zllj-lepTrig-hists": ["--h5-output"],
+    "Ztautau-hists": ["--h5-output"],
 }
 
 _ZBBY_PROCESSES = [
@@ -75,6 +81,21 @@ _ZBBJ_PROCESSES = [
     "Higgs",
 ]
 
+# Z(tautau)+jet signal is in Zll; multijet is not taken from MC.
+_ZTAUTAU_PROCESSES = [
+    "Zll",
+    "Wjet",
+    "Diboson",
+    "ttbar_nonallhad",
+    "singletop",
+]
+
+_ZLL_PROCESSES = [
+    "Diboson",
+    "Zll",
+    "ttbar_nonallhad",
+]
+
 MC_PROCESSES_BY_ANALYSIS = {
     "Zbbj":       _ZBBJ_PROCESSES,
     "Zbbj-aod":   _ZBBJ_PROCESSES,
@@ -89,12 +110,16 @@ MC_PROCESSES_BY_ANALYSIS = {
     "Zlly": [
         "Zlly"
     ],
+    "Zllj-lepTrig":       _ZLL_PROCESSES,
+    "Zllj-lepTrig-hists": _ZLL_PROCESSES,
     "tt": [
         "Diboson",
         "Wjet",
         "singletop",
         "ttbar_nonallhad",
     ],
+    "Ztautau":       _ZTAUTAU_PROCESSES,
+    "Ztautau-hists": _ZTAUTAU_PROCESSES,
 }
 
 GRID_PARAM_FLAGS = {
@@ -127,7 +152,11 @@ CONFIG_BY_ANALYSIS = {
     "Zbby-hists": "XbbCalib/histonly-config-Zbby.yaml",
     "Zllj":        "XbbCalib/RunConfig-Zllj.yaml",
     "Zlly":        "XbbCalib/RunConfig-Zlly.yaml",
+    "Zllj-lepTrig":       "XbbCalib/RunConfig-Zllj-lepTrig.yaml",
+    "Zllj-lepTrig-hists": "XbbCalib/histonly-config-Zllj-lepTrig.yaml",
     "tt":         "XbbCalib/RunConfig-ttCalib.yaml",
+    "Ztautau":       "XbbCalib/RunConfig-ZtautauCalib.yaml",
+    "Ztautau-hists": "XbbCalib/histonly-config-Ztautau.yaml",
 }
 
 
