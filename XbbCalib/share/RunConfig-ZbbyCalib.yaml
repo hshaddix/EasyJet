@@ -45,6 +45,7 @@ Large_R_jet:
     include: 
       - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
       - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hcc_bjr.yaml
 
 Photon:
   ID: "Tight" # Loose, Tight

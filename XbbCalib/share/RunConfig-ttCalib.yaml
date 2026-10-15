@@ -24,9 +24,9 @@ Large_R_jet:
   max_eta: 2.0
   flat_mass_selections:
     include: 
-      - EasyjetHub/xbb-taggers/GN2Xv01.yaml
       - EasyjetHub/xbb-taggers/GN3XPV01_hbb.yaml
       - EasyjetHub/xbb-taggers/GN3XPV01_hbb_bjr.yaml
+      - EasyjetHub/xbb-taggers/GN3XPV01_hcc_bjr.yaml
 
 # # Toggles for reconstructed objects decorations
 Small_R_jet:

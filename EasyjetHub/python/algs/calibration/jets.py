@@ -251,6 +251,7 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
     config = ConfigFactory()
     makeConfig = config.makeConfig
     jet_flags = flags.Analysis.Large_R_jet
+    isRun3 = True if flags.GeoModel.Run is LHCPeriod.Run3 else False
 
     # Temporary hack, we should do this in a more systematic way
     # The config sequence will deal with the systematics suffix
@@ -299,8 +300,9 @@ def lr_jet_sequence(flags, lr_jet_type, configAcc):
         configSeq.setOptionValue('.containerName', output_name)
 
     for tagger, tagger_cfg in flags.Analysis.Large_R_jet.flat_mass_selections.items():
-        jsonCalibFile = find_datafile(tagger_cfg['file'])
-
+        run_key = 'run3' if isRun3 else 'run2'
+        cfg = tagger_cfg if 'file' in tagger_cfg else tagger_cfg[run_key]
+        jsonCalibFile = find_datafile(cfg['file'])
         for wp in tagger_cfg['wps']:
             configSeq += config.makeConfig('Jets.XbbTagging')
             configSeq.setOptionValue('.containerName', output_name)

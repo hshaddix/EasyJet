@@ -1,0 +1,10 @@
+GN3XPV01_hcc_bjr:
+  run2:
+    file: EasyjetHub/MC20_2026-08-13_GN3XPV01_HccWithHbbVeto_bJR10v01_noSFs_v00.json
+  run3:
+    file: EasyjetHub/MC23_2026-08-13_GN3XPV01_HccWithHbbVeto_bJR10v01_noSFs_v00.json
+  wps:
+    - "FlatMassQCDEff_0p11"
+    - "FlatMassQCDEff_0p17"
+    - "FlatMassQCDEff_0p25"
+    - "FlatMassQCDEff_0p35"
