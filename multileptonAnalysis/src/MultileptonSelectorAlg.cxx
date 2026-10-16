@@ -39,7 +39,7 @@ namespace MULTILEPTON
     ATH_CHECK(m_is17_periodB1_B4.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is17_periodB5_B7.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is17_periodB8_end.initialize(m_systematicsList, m_eventHandle));
-    ATH_CHECK(m_is18_periodB_K.initialize(m_systematicsList, m_eventHandle));
+    ATH_CHECK(m_is18_periodB_end.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is18_periodK_end.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is22_75bunches.initialize(m_systematicsList, m_eventHandle));
     ATH_CHECK(m_is23_75bunches.initialize(m_systematicsList, m_eventHandle));
@@ -364,7 +364,12 @@ namespace MULTILEPTON
     if (electrons){
       for (const auto& trig : single_ele_paths){
         if (trigPassed_SET) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        bool pass = false;
+        if (m_triggerdecos.contains("trigPassed_"+trig)){
+          pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        } else {
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+        }
         if (pass){
           for (const auto& ele : *electrons){
             bool match = m_matchingTool->match(*ele, trig);
@@ -401,7 +406,12 @@ namespace MULTILEPTON
     if (muons){
       for(const auto& trig : single_mu_paths){
         if (trigPassed_SMT) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        bool pass = false;
+        if (m_triggerdecos.contains("trigPassed_"+trig)){
+          pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        } else {
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+        }
         if (pass){
           for (const auto& mu : *muons){
             bool match = m_matchingTool->match(*mu, trig);
@@ -465,7 +475,12 @@ namespace MULTILEPTON
     if (electrons && electrons->size() >= 2){
       for (const auto &trig : di_ele_paths){
         if (trigPassed_DET) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        bool pass = false;
+        if (m_triggerdecos.contains("trigPassed_"+trig)){
+          pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        } else {
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+        }
         if (pass){
           for (const auto &ele0: *electrons){
             if (trigPassed_DET) break;
@@ -512,7 +527,12 @@ namespace MULTILEPTON
     if (muons && muons->size() >= 2){
       for (const auto &trig : di_mu_paths){
         if (trigPassed_DMT) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        bool pass = false;
+        if (m_triggerdecos.contains("trigPassed_"+trig)){
+          pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        } else {
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+        }
         if (pass){
           for (const auto &mu0: *muons){
             if (trigPassed_DMT) break;
@@ -568,8 +588,13 @@ namespace MULTILEPTON
     if (electrons && muons){
       for(const auto& trig : emu_paths){
         if (trigPassed_EMT) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
-        if (pass){
+      bool pass = false;
+      if (m_triggerdecos.contains("trigPassed_"+trig)){
+        pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+      } else {
+        throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+      }
+      if (pass){
           for(const auto& ele : *electrons){
             if (trigPassed_EMT) break;
             for(const auto& mu : *muons){
@@ -634,14 +659,14 @@ namespace MULTILEPTON
       }
     }
     else if(year==2018){
-      if (m_is18_periodB_K.get(*event, sys)){
-        single_tau_paths = {
-          "HLT_tau160_medium1_tracktwoEF_L1TAU100",
-        };
-      }
-      else if (m_is18_periodK_end.get(*event, sys)){
+      if (m_is18_periodK_end.get(*event, sys)){
         single_tau_paths = {
           "HLT_tau160_mediumRNN_tracktwoMVA_L1TAU100",
+        };
+      }
+      else if (m_is18_periodB_end.get(*event, sys)){
+        single_tau_paths = {
+          "HLT_tau160_medium1_tracktwoEF_L1TAU100",
         };
       }
     }
@@ -660,7 +685,12 @@ namespace MULTILEPTON
     bool trigPassed_STT = false;
     for(const auto& trig : single_tau_paths){
       if (trigPassed_STT) break;
-      bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+      bool pass = false;
+      if (m_triggerdecos.contains("trigPassed_"+trig)){
+        pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+      } else {
+        throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+      }
       if (pass){
         for(const auto& tau : *taus){
           bool match = m_matchingTool->match(*tau, trig, 0.2);
@@ -726,25 +756,22 @@ namespace MULTILEPTON
       }
     }
     else if(year==2018){
-      if (m_is18_periodB_K.get(*event, sys)){
-        di_tau_paths = {
-          "HLT_tau80_medium1_tracktwoEF_L1TAU60_tau60_medium1_tracktwoEF_L1TAU40",
-          "HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1DR_TAU20ITAU12I_J25",
-          "HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1TAU20IM_2TAU12IM_4J12p0ETA23",
-        };
-      }
-      else if (m_is18_periodK_end.get(*event, sys)){
+      if (m_is18_periodK_end.get(*event, sys)){
         di_tau_paths = {
           "HLT_tau80_mediumRNN_tracktwoMVA_L1TAU60_tau60_mediumRNN_tracktwoMVA_L1TAU40",
-          "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_L1DR_TAU20ITAU12I_J25",
           "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_L1TAU20IM_2TAU12IM_4J12p0ETA23",
+        };
+      }
+      else if (m_is18_periodB_end.get(*event, sys)){
+        di_tau_paths = {
+          "HLT_tau80_medium1_tracktwoEF_L1TAU60_tau60_medium1_tracktwoEF_L1TAU40",
+          "HLT_tau35_medium1_tracktwoEF_tau25_medium1_tracktwoEF_L1TAU20IM_2TAU12IM_4J12p0ETA23",
         };
       }
     }
     else if(2022<=year && year<=2023){
       if (m_is23_first_2400bunches.get(*event, sys)){
         di_tau_paths = {
-          "HLT_tau30_mediumRNN_tracktwoMVA_tau20_mediumRNN_tracktwoMVA_03dRAB30_L1DR-TAU20ITAU12I-J25",
           "HLT_tau30_mediumRNN_tracktwoMVA_tau20_mediumRNN_tracktwoMVA_03dRAB_L1TAU20IM_2TAU12IM_4J12p0ETA25",
         };
       }
@@ -752,7 +779,6 @@ namespace MULTILEPTON
         di_tau_paths = {
           // All from 75 bunches
           "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB_L1TAU20IM_2TAU12IM_4J12p0ETA25",
-          "HLT_tau35_mediumRNN_tracktwoMVA_tau25_mediumRNN_tracktwoMVA_03dRAB30_L1DR_TAU20ITAU12I_J25",
           "HLT_tau40_mediumRNN_tracktwoMVA_tau35_mediumRNN_tracktwoMVA_03dRAB_L1TAU25IM_2TAU20IM_2J25_3J20",
           "HLT_tau80_mediumRNN_tracktwoMVA_tau60_mediumRNN_tracktwoMVA_03dRAB_L1TAU60_2TAU40",
           "HLT_tau80_mediumRNN_tracktwoMVA_tau35_mediumRNN_tracktwoMVA_03dRAB30_L1TAU60_DR_TAU20ITAU12I",
@@ -791,7 +817,7 @@ namespace MULTILEPTON
         if (m_triggerdecos.contains("trigPassed_"+trig)){
           pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
         } else {
-          ATH_MSG_WARNING("Trigger " << trig << " not found. Skipping.");
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
         }
 
         if (pass){
@@ -853,18 +879,16 @@ namespace MULTILEPTON
       };
     }
     else if(year==2018){
-      if (m_is18_periodB_K.get(*event, sys)){
-        ele_tau_paths = {
-          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF",
-          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF_L1DR-EM15TAU12I-J25",
-          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF_L1EM15VHI_2TAU12IM_4J12",
-        };
-      }
-      else if (m_is18_periodK_end.get(*event, sys)){
+      if (m_is18_periodK_end.get(*event, sys)){
         ele_tau_paths = {
           "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA",
-          "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA_L1DR-EM15TAU12I-J25",
           "HLT_e17_lhmedium_nod0_ivarloose_tau25_mediumRNN_tracktwoMVA_L1EM15VHI_2TAU12IM_4J12",
+        };
+      }
+      else if (m_is18_periodB_end.get(*event, sys)){
+        ele_tau_paths = {
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF",
+          "HLT_e17_lhmedium_nod0_ivarloose_tau25_medium1_tracktwoEF_L1EM15VHI_2TAU12IM_4J12",
         };
       }
     }
@@ -881,7 +905,7 @@ namespace MULTILEPTON
       };
     }
     else if(year==2023){
-      if (m_is22_75bunches.get(*event, sys)){
+      if (m_is23_75bunches.get(*event, sys)){
         ele_tau_paths = {
           "HLT_e17_lhmedium_ivarloose_tau25_mediumRNN_tracktwoMVA_03dRAB_L1EM15VHI_2TAU12IM_4J12"
         };
@@ -915,7 +939,12 @@ namespace MULTILEPTON
     if (electrons){
       for(const auto& trig : ele_tau_paths){
         if (trigPassed_ETT) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        bool pass = false;
+        if (m_triggerdecos.contains("trigPassed_"+trig)){
+          pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        } else {
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+        }
         if (pass){
           for (const auto& ele : *electrons){
             if (trigPassed_ETT) break;
@@ -950,10 +979,6 @@ namespace MULTILEPTON
            "HLT_mu14_ivarloose_tau25_medium1_tracktwo",
         };
       }
-      mu_tau_paths = {
-        "HLT_mu14_tau25_medium1_tracktwo",
-        "HLT_mu14_ivarloose_tau25_medium1_tracktwo",
-      };
     }
     else if(year==2017){
       mu_tau_paths = {
@@ -963,20 +988,16 @@ namespace MULTILEPTON
       };
     }
     else if(year==2018){
-      if (m_is18_periodB_K.get(*event, sys)){
-        mu_tau_paths = {
-          "HLT_mu14_ivarloose_tau35_medium1_tracktwoEF",
-          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF",
-          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF_L1DR-MU10TAU12I_TAU12I-J25",
-          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF_L1MU10_TAU12IM_3J12",
-        };
-      }
-      else if (m_is18_periodK_end.get(*event, sys)){
+      if (m_is18_periodK_end.get(*event, sys)){
         mu_tau_paths = {
           "HLT_mu14_ivarloose_tau35_mediumRNN_tracktwoMVA",
-          "HLT_mu14_ivarloose_tau25_mediumRNN_tracktwoMVA",
-          "HLT_mu14_ivarloose_tau25_mediumRNN_tracktwoMVA_L1DR-MU10TAU12I_TAU12I-J25",
           "HLT_mu14_ivarloose_tau25_mediumRNN_tracktwoMVA_L1MU10_TAU12IM_3J12",
+        };
+      }
+      else if (m_is18_periodB_end.get(*event, sys)){
+        mu_tau_paths = {
+          "HLT_mu14_ivarloose_tau35_medium1_tracktwoEF",
+          "HLT_mu14_ivarloose_tau25_medium1_tracktwoEF_L1MU10_TAU12IM_3J12",
         };
       }
     }
@@ -998,7 +1019,12 @@ namespace MULTILEPTON
     if (muons){
       for(const auto& trig : mu_tau_paths){
         if (trigPassed_MTT) break;
-        bool pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        bool pass = false;
+        if (m_triggerdecos.contains("trigPassed_"+trig)){
+          pass = m_triggerdecos.at("trigPassed_"+trig).get(*event, sys);
+        } else {
+          throw std::runtime_error("Trigger " + trig + " not found. Exiting.");
+        }
         if (pass){
           for (const auto& mu : *muons){
             if (trigPassed_MTT) break;

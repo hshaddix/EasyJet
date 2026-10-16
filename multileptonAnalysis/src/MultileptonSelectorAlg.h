@@ -171,7 +171,7 @@ private:
     CP::SysReadDecorHandle<char> m_is17_periodB1_B4{"is2017_periodB1_B4", this};
     CP::SysReadDecorHandle<char> m_is17_periodB5_B7{"is2017_periodB5_B7", this};
     CP::SysReadDecorHandle<char> m_is17_periodB8_end{"is2017_periodB8_end", this};
-    CP::SysReadDecorHandle<char> m_is18_periodB_K{"is2018_periodB_K", this};
+    CP::SysReadDecorHandle<char> m_is18_periodB_end{"is2018_periodB_end", this};
     CP::SysReadDecorHandle<char> m_is18_periodK_end{"is2018_periodK_end", this};
     CP::SysReadDecorHandle<char> m_is22_75bunches{"is2022_75bunches", this};
     CP::SysReadDecorHandle<char> m_is23_75bunches{"is2023_75bunches", this};
