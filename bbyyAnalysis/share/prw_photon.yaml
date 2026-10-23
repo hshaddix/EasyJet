@@ -7,6 +7,7 @@
 'mc23c': 'PileupReweighting/mc23_common/mc23c.450000.physlite.prw.v1.root'
 'mc23d': 'PileupReweighting/mc23_common/mc23d.450000.physlite.prw.v1.root'
 'mc23e': 'PileupReweighting/mc23_common/mc23e.470000.physlite.prw.v1.root'
+'mc23g': 'PileupReweighting/mc23_common/mc23g.495000.physlite.prw.v1.root'
 '2017': 'physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root'
 '2018': 'physics_25ns_Triggerno17e33prim.actualMu.OflLumi-13TeV-010.root'
 '2022' : 'purw.actualMu.ignore_TRIGLAR.root'
