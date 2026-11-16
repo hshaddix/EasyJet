@@ -152,7 +152,7 @@ checking whether that is the right SF to use here.
 ## Isolation efficiency
 
 Efficiency = (Tight + FixedCutLoose photons) / (Tight photons), unweighted, for the leading
-and subleading photon, with Clopper–Pearson 68% CL errors. Events need the g35_g25 trigger
+and subleading photon. Events need the g35_g25 trigger
 (fired and matched) and two loose photons. Bins with fewer than 20 photons in a sample are
 not shown.
 
