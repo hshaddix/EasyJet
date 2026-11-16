@@ -1,29 +1,5 @@
-# Compare kinematic distributions between mc23 campaigns.
-# Top panel: all campaigns overlaid, bottom panel: ratio to the reference campaign.
-#
-# usage:
-#   python plot_kinematics.py --samples mc23a=a.root mc23d=d.root mc23e=e.root mc23g=g.root --ref mc23g
-#
-# modes (default: shape and yield):
-#   raw    - plain number of MC events per bin, no weights and no scaling at all
-#   shape  - weighted, each histogram scaled to unit area
-#   yield  - weighted, divided by the initial sum of weights (fraction of generated events)
-#
-# By default every mode except raw uses generator weight x pile-up weight x photon SFs.
-#
-# --compare-prw <name> makes only that one variable, with and without the pile-up weight
-# side by side (e.g. --compare-prw photon1_pt).
-# --compare-sf <name> does the same with and without the photon SFs
-# (bbyy_PhotonN_effSF = ID SF x isolation SF, and the isolation SF is 1 here).
-# --compare-gen <name> does the same with and without the generator weight.
-#
-# --compare-kf makes mbb and pTbb without and with the kinematic fit, side by side.
-#
-# --cut-scan [name] plots one variable (default photon1_phi) after the full pre-selection,
-# then again each time the last cut is dropped, down to no cuts at all.
-#
-# --no-prw leaves the pile-up weight out (generator weight x photon SFs only).
-# The pile-up weight distribution of each campaign is always saved as <tag>_prw_weights.png.
+# Kinematic comparison of mc23 campaigns for the HH->bbyy signal, ratio to a reference campaign.
+# shape: unit area. yield: divided by the generated sum of weights. See README.md.
 
 import argparse
 import re
@@ -33,16 +9,13 @@ import ROOT
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 
-# full bbyy pre-selection (the ntuples are made in bypass mode, so we apply it here)
+# bbyy pre-selection (ntuples are made in bypass mode)
 cuts = ['PASS_TRIGGERSINGLE_OR_DIPHOTON', 'TWO_LOOSE_PHOTONS', 'PASS_TRIGGER_MATCHINGSINGLE_OR_DIPHOTON',
         'TWO_TIGHTID_ISO_PHOTONS', 'PASS_RELPT', 'DIPHOTON_MASS', 'EXACTLY_ZERO_LEPTONS',
         'AT_LEAST_TWO_JETS', 'LESS_THAN_SIX_CENTRAL_JETS', 'EXACTLY_TWO_B_JETS']
-# (cut name, selection expression), in the order the cuts are applied
 presel_cuts = [(c, 'bbyy_' + c + '_NOSYS') for c in cuts]
 
-# same pre-selection, but only through the g35_g25 diphoton trigger route, which every
-# mc23 campaign has. The trigger and relpT cuts are replaced by:
-#   g35_g25 fired and matched to the two photons, leading pT/myy > 0.35, subleading > 0.25
+# --g35-g25-only: g35_g25 trigger + matching, relpT 0.35/0.25
 g35_g25_replace = {
     'PASS_TRIGGERSINGLE_OR_DIPHOTON': ('G35_G25_TRIGGER', 'pass_trigger_diphoton_g35_g25_NOSYS'),
     'PASS_TRIGGER_MATCHINGSINGLE_OR_DIPHOTON': ('G35_G25_MATCHING', 'pass_matching_trigger_diphoton_g35_g25_NOSYS'),
@@ -53,10 +26,10 @@ g35_g25_cuts = [g35_g25_replace.get(c, (c, e)) for c, e in presel_cuts]
 presel = ' && '.join(e for c, e in presel_cuts)
 presel_text = 'All bbyy pre-selections'
 
-# variables where the campaigns are meant to differ, so a ratio panel means nothing
+# plots drawn without a ratio panel
 no_ratio = set()
 
-# extra room above the tallest bin, for plots whose peak would otherwise sit under the legend
+# y-axis headroom (default 1.45)
 headroom = {'mu': 1.8}
 
 colors = [ROOT.kRed, ROOT.kBlue, ROOT.kGreen + 2, ROOT.kMagenta + 1]
@@ -109,7 +82,7 @@ plots = [
 
 
 def get_prw_branch(branches):
-    # prefer the photon pile-up weight if it is there
+    # use the photon PRW if available
     prw = sorted(b for b in branches if b.startswith('PileupWeight') and b.endswith('NOSYS'))
     photon_prw = [b for b in prw if 'photon' in b]
     if photon_prw:
@@ -119,19 +92,14 @@ def get_prw_branch(branches):
     return None
 
 
-# event-level jet scale factors written by EasyJet:
-#   jvt_effSF   - jet vertex tagger (pile-up jet removal) efficiency SF
-#   fjvt_effSF  - forward jet vertex tagger SF
-#   ftag_effSF_GN2v01_Continuous - GN2 b-tagging SF (pseudo-continuous calibration),
-#                                  product over all jets in the event
+# event-level jet SFs: JVT, fJVT, GN2 b-tagging
 jet_sf_branches = ['jvt_effSF_NOSYS', 'fjvt_effSF_NOSYS', 'ftag_effSF_GN2v01_Continuous_NOSYS']
 
-# cuts that involve jets: the jet SFs are only applied once one of these is in the selection
+# jet SFs are only applied once one of these cuts is in the selection
 jet_cuts = ['AT_LEAST_TWO_JETS', 'LESS_THAN_SIX_CENTRAL_JETS', 'EXACTLY_TWO_B_JETS', 'AT_LEAST_TWO_B_JETS']
 
 
 def get_weight(branches, use_sf, use_prw, use_gen=True, use_jet=False):
-    # MC weight x pile-up weight x photon SFs (x jet SFs), using whatever is in the file
     w = []
     text = []
     if use_gen and 'generatorWeight_NOSYS' in branches:
@@ -163,7 +131,6 @@ def get_weight(branches, use_sf, use_prw, use_gen=True, use_jet=False):
 
 
 def get_cutbookkeeper(f):
-    # number of generated events and sum of generator weights before any selection
     n_events = 0
     total = 0
     for key in f.GetListOfKeys():
@@ -178,7 +145,7 @@ def get_cutbookkeeper(f):
 
 
 def auto_range(tree, expr, nbins=30):
-    # take the 1% - 99% range of the reference sample
+    # 1-99% range of the reference sample
     tree.SetEstimate(tree.GetEntries() + 1)
     n = tree.Draw(expr, presel, 'goff')
     if n <= 0:
@@ -192,7 +159,7 @@ def auto_range(tree, expr, nbins=30):
 
 
 def fold_overflow(h, name, label):
-    # put underflow/overflow into the first/last bin, and warn if a lot ends up there
+    # move under/overflow into the edge bins
     n = h.GetNbinsX()
     total = h.Integral(0, n + 1)
     outside = h.GetBinContent(0) + h.GetBinContent(n + 1)
@@ -208,7 +175,6 @@ def fold_overflow(h, name, label):
 
 
 def per_bin_text(binning, xtitle):
-    # "/ 10 GeV" etc. for the y axis; nothing for jet counts
     if xtitle.startswith('number of'):
         return ''
     width = (binning[2] - binning[1]) / binning[0]
@@ -218,8 +184,7 @@ def per_bin_text(binning, xtitle):
 
 
 def make_prw_plot(c, trees, branches, labels, color, tag):
-    # distribution of the pile-up weight in each campaign, all events (no pre-selection),
-    # weighted by the generator weight and scaled to unit area. The mean should be ~1.
+    # PRW weight distribution per campaign, all events
     c.Clear()
     c.SetLeftMargin(0.15)
     c.SetRightMargin(0.05)
@@ -237,7 +202,7 @@ def make_prw_plot(c, trees, branches, labels, color, tag):
 
         h = ROOT.TH1D(f'h_prw_{label}', '', 60, 0, 3)
         h.Sumw2()
-        # count weights above 3 in the mean as well
+        # include overflow in the mean
         ROOT.TH1.StatOverflows(True)
         trees[label].Draw(f'{prw} >> h_prw_{label}', 'generatorWeight_NOSYS', 'goff')
         ROOT.TH1.StatOverflows(False)
@@ -277,7 +242,6 @@ def make_prw_plot(c, trees, branches, labels, color, tag):
 
 
 def ratio_range(ratios):
-    # 0.8 - 1.2 if everything fits, otherwise open it up (raw counts can be far from 1)
     values = []
     for r in ratios:
         for i in range(1, r.GetNbinsX() + 1):
@@ -328,8 +292,7 @@ def make_plot(c, hists, ref, others, binning, xtitle, ytitle, weight_text, show_
         hists[label].Draw('hist same')
     hists[ref].Draw('hist same')  # reference on top
 
-    # Without a ratio panel the top pad is the whole canvas, so text and legend sizes (which are
-    # fractions of the pad) would come out ~1.5x bigger. Scale them so they look the same.
+    # keep text size the same when there is no ratio pad
     scale = 1.0 if show_ratio else 0.65
     leg = ROOT.TLegend(0.68, 0.88 - 0.26 * scale, 0.92, 0.88)
     leg.SetBorderSize(0)
@@ -346,7 +309,6 @@ def make_plot(c, hists, ref, others, binning, xtitle, ytitle, weight_text, show_
     if show_selection:
         tex.DrawLatex(0.19, y, presel_text)
         y -= 0.05 * scale
-    # the weights line is long, so it gets a smaller font to stay clear of the legend
     tex.SetTextSize(0.024 * scale)
     tex.DrawLatex(0.19, y + 0.005 * scale, 'Weights: ' + weight_text)
 
@@ -380,25 +342,17 @@ def make_plot(c, hists, ref, others, binning, xtitle, ytitle, weight_text, show_
     line.SetLineStyle(2)
     line.Draw()
 
-    # ROOT needs these to stay alive until the canvas is saved
+    # keep references until the canvas is saved
     return [top, bottom, leg, tex, line, frame] + ratios
 
 
 def fill_hists(name, expr, binning, xtitle, mode, labels, trees, weights, total, color, suffix='',
                selection=None):
-    # total: what the yield mode divides by. The sum of generator weights normally, or the
-    # number of generated events when the generator weight is left out.
-    # one histogram per campaign after the pre-selection (or the selection given), scaled
-    # according to the mode
     if selection is None:
         selection = presel
     hists = {}
     for label in labels:
-        # raw: count MC events, nothing else. shape/yield: apply the event weights
-        if mode == 'raw':
-            weight = '1'
-        else:
-            weight = weights[label]
+        weight = weights[label]
 
         hname = f'h_{name}_{label}_{mode}{suffix}'
         h = ROOT.TH1D(hname, '', *binning)
@@ -418,7 +372,6 @@ def fill_hists(name, expr, binning, xtitle, mode, labels, trees, weights, total,
 
 
 def scale_hists(hists, mode, binning, xtitle, total, suffix=''):
-    # copies of the filled histograms scaled for the mode, so one fill serves shape and yield
     scaled = {}
     for label, h0 in hists.items():
         h = h0.Clone(h0.GetName() + suffix) if suffix else h0
@@ -430,9 +383,7 @@ def scale_hists(hists, mode, binning, xtitle, total, suffix=''):
             h.Scale(1 / total[label])
         scaled[label] = h
 
-    if mode == 'raw':
-        ytitle = 'Events' + per_bin_text(binning, xtitle)
-    elif mode == 'shape':
+    if mode == 'shape':
         ytitle = 'Normalised events' + per_bin_text(binning, xtitle)
     else:
         ytitle = 'Fraction of generated events' + per_bin_text(binning, xtitle)
@@ -440,9 +391,7 @@ def scale_hists(hists, mode, binning, xtitle, total, suffix=''):
 
 
 def skim_trees(trees, branches, labels):
-    # Read each file once: keep only the events passing the pre-selection and only the branches
-    # the plots and weights use, in memory. Every plot after this is quick, instead of
-    # re-reading the files from EOS for each variable.
+    # copy the selected events and needed branches into memory once
     exprs = [presel] + [p[1] for p in plots]
     for label in labels:
         exprs.append(get_weight(branches[label], True, True, True, True)[0])
@@ -465,71 +414,8 @@ def skim_trees(trees, branches, labels):
     return skims
 
 
-def compare_weight(plot, which, args, labels, others, trees, branches, sumw, n_gen, color):
-    # one variable, left: with the chosen weight, right: without it.
-    # which = 'prw' (pile-up weight), 'sf' (photon SFs) or 'gen' (generator weight);
-    # everything else follows the usual options, so by default the other weights stay in.
-    name, expr, binning, xtitle = plot
-    if binning == 'auto':
-        binning = auto_range(trees[args.ref], expr)
-
-    mode = 'shape' if args.mode == 'shape' else 'yield'
-    what = {'prw': 'pile-up weight', 'sf': 'photon SFs', 'gen': 'generator weight'}[which]
-
-    c = ROOT.TCanvas(f'c_{which}', '', 1600, 800)
-    c.Divide(2, 1)
-
-    keep = []
-    totals = {}
-    for i, use_it in enumerate([True, False]):
-        use_prw = not args.no_prw
-        use_sf = not args.no_sf
-        use_gen = not args.no_gen
-        if which == 'prw':
-            use_prw = use_it
-        elif which == 'sf':
-            use_sf = use_it
-        else:
-            use_gen = use_it
-
-        weights = {}
-        weight_text = ''
-        for label in labels:
-            weights[label], weight_text = get_weight(branches[label], use_sf, use_prw, use_gen,
-                                                     not args.no_jet_sf)
-
-        # without the generator weight, divide by the number of generated events instead
-        total = sumw if use_gen else n_gen
-
-        suffix = f'_{which}' if use_it else f'_no{which}'
-        hists, ytitle = fill_hists(name, expr, binning, xtitle, mode, labels, trees, weights, total, color, suffix)
-        totals[use_it] = {label: hists[label].Integral() for label in labels}
-
-        pad = c.cd(i + 1)
-        keep += make_plot(pad, hists, args.ref, others, binning, xtitle, ytitle, weight_text,
-                          show_ratio=name not in no_ratio)
-        keep += list(hists.values())
-
-    c.SaveAs(f'{args.tag}_{which}compare_{name}.png')
-    c.SaveAs(f'{args.tag}_{which}compare_{name}.pdf')
-
-    # the numbers behind the plot
-    print(f'\n{name}: total {mode} with / without {what}')
-    for label in labels:
-        with_it = totals[True][label]
-        without = totals[False][label]
-        change = with_it / without if without else 0
-        print(f'  {label}: with = {with_it:.5f}, without = {without:.5f}, with/without = {change:.4f}')
-    for use_it in [True, False]:
-        text = f'with {which.upper():3s}   ' if use_it else f'without {which.upper():3s}'
-        ratios = ', '.join(f'{l}/{args.ref} = {totals[use_it][l] / totals[use_it][args.ref]:.4f}' for l in others)
-        print(f'  {text}: {ratios}')
-
-
 def cut_scan(plot, args, labels, others, trees, branches, total, color):
-    # the same variable after the full pre-selection, then dropping the last cut one at a
-    # time until no cut is left. If the campaign ratio jumps when a cut is dropped, that
-    # cut is where the difference comes from.
+    # plot one variable with 0..N cuts applied
     global presel_text
     name, expr, binning, xtitle = plot
     if binning == 'auto':
@@ -537,19 +423,16 @@ def cut_scan(plot, args, labels, others, trees, branches, total, color):
 
     mode = 'shape' if args.mode == 'shape' else 'yield'
 
-    # before the photon / jet cuts the object may not exist and the branch holds a default
-    # value (e.g. -99), so only events where the variable is filled are plotted
+    # skip default values (-99) before the object cuts
     filled = f'({expr}) > -90'
 
-    # two sets of weights: without the jet SFs for the steps before any jet cut, with them after.
-    # Before the tight photon cut the photon SFs can be 0 or a default value, which would throw
-    # the event away, so use SF = 1 when it is not a positive number.
+    # weights with and without jet SFs; photon SFs set to 1 where not defined
     scan_weights = {}
     scan_text = {}
     for use_jet in [False, True]:
         scan_weights[use_jet] = {}
         for label in labels:
-            w, scan_text[use_jet] = get_weight(branches[label], not args.no_sf, not args.no_prw, not args.no_gen,
+            w, scan_text[use_jet] = get_weight(branches[label], not args.no_sf, not args.no_prw, True,
                                                use_jet and not args.no_jet_sf)
             for sf in ['bbyy_Photon1_effSF_NOSYS', 'bbyy_Photon2_effSF_NOSYS']:
                 w = w.replace(sf, f'(({sf} > 0) * {sf} + ({sf} <= 0))')
@@ -577,10 +460,8 @@ def cut_scan(plot, args, labels, others, trees, branches, total, color):
 
         unscaled, _ = fill_hists(name, expr, binning, xtitle, 'unscaled', labels, trees, weights, total, color,
                                  f'_scan{n}', selection)
-        # under/overflow are folded into the edge bins, so the integral is the full selected yield
         sums = {label: unscaled[label].Integral() / total[label] for label in labels}
         hists, ytitle = scale_hists(unscaled, mode, binning, xtitle, total)
-        # the cuts applied at each step go in a note under the plot on the slide
         keep += make_plot(c, hists, args.ref, others, binning, xtitle, ytitle, weight_text,
                           show_ratio=name not in no_ratio, show_selection=False)
         keep += list(hists.values())
@@ -602,13 +483,11 @@ def cut_scan(plot, args, labels, others, trees, branches, total, color):
         print(line)
 
 
-# pairs for --compare-kf: (without KF, with KF)
+# (without KF, with KF)
 kf_pairs = [('mbb', 'KF_mbb'), ('pTbb', 'KF_pTbb')]
 
 
 def compare_kf(args, labels, others, trees, branches, weights, weight_text, total, color):
-    # for each pair: left the variable without the kinematic fit, right with it,
-    # same binning so the two panels can be compared directly
     mode = 'shape' if args.mode == 'shape' else 'yield'
     by_name = {p[0]: p for p in plots}
 
@@ -632,7 +511,6 @@ def compare_kf(args, labels, others, trees, branches, weights, weight_text, tota
             keep += make_plot(pad, hists, args.ref, others, binning, xtitle, ytitle, weight_text)
             keep += list(hists.values())
 
-            # mean and RMS help to see how much the fit sharpens the peak
             for label in labels:
                 h = hists[label]
                 print(f'  {name:8s} {label}: mean = {h.GetMean():7.2f}, RMS = {h.GetRMS():6.2f}')
@@ -645,31 +523,21 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--samples', nargs='+', required=True, help='label=file, e.g. mc23g=mc23g_kin.root')
     parser.add_argument('--ref', default='mc23g')
-    parser.add_argument('--mode', choices=['raw', 'shape', 'yield', 'both', 'all'], default='both',
-                        help='both = shape + yield (default), all = raw + shape + yield')
+    parser.add_argument('--mode', choices=['shape', 'yield', 'both'], default='both')
     parser.add_argument('--no-sf', action='store_true', help='leave out the photon SFs')
     parser.add_argument('--no-prw', action='store_true', help='leave out the pile-up weight')
     parser.add_argument('--no-jet-sf', action='store_true', help='leave out the jet SFs (JVT, fJVT, b-tagging)')
-    parser.add_argument('--no-gen', action='store_true',
-                        help='leave out the generator weight (yield then divides by the number of generated events)')
     parser.add_argument('--only', nargs='*', help='only make these plots')
-    parser.add_argument('--compare-prw', metavar='NAME',
-                        help='make only this variable, with and without the pile-up weight')
-    parser.add_argument('--compare-sf', metavar='NAME',
-                        help='make only this variable, with and without the photon SFs')
-    parser.add_argument('--compare-gen', metavar='NAME',
-                        help='make only this variable, with and without the generator weight')
     parser.add_argument('--cut-scan', nargs='?', const='photon1_phi', metavar='NAME',
-                        help='plot one variable (default photon1_phi) again and again, '
-                             'dropping the pre-selection cuts one at a time')
+                        help='cut scan of one variable (default photon1_phi)')
     parser.add_argument('--compare-kf', action='store_true',
-                        help='mbb and pTbb without (left) and with (right) the kinematic fit')
+                        help='mbb and pTbb without and with the kinematic fit')
     parser.add_argument('--at-least-two-bjets', action='store_true',
                         help='require >= 2 b-jets instead of exactly 2')
     parser.add_argument('--g35-g25-only', action='store_true',
-                        help='only keep events selected through the g35_g25 diphoton trigger')
+                        help='g35_g25 trigger and relpT cuts only')
     parser.add_argument('--no-skim', action='store_true',
-                        help='read the files directly for every plot (slow, but no in-memory copy)')
+                        help='no in-memory copy of the selected events (slower)')
     parser.add_argument('--tag', default='kin')
     args = parser.parse_args()
 
@@ -679,7 +547,6 @@ def main():
         presel_text = 'bbyy pre-selection, g35_g25 trigger only'
 
     if args.at_least_two_bjets:
-        # same b-jet collection and working point, just >= 2 instead of exactly 2
         presel_cuts = [('AT_LEAST_TWO_B_JETS', 'bbyy_nBJets_NOSYS >= 2') if c == 'EXACTLY_TWO_B_JETS' else (c, e)
                        for c, e in presel_cuts]
         presel_text += ', #geq 2 b-jets'
@@ -697,7 +564,6 @@ def main():
         labels.append(label)
         files[label] = ROOT.TFile.Open(path)
         trees[label] = files[label].Get('AnalysisMiniTree')
-        # read branches in large blocks; makes a big difference when reading from EOS
         trees[label].SetCacheSize(200 * 1024 * 1024)
         trees[label].AddBranchToCache('*', True)
         branches[label] = set(b.GetName() for b in trees[label].GetListOfBranches())
@@ -706,9 +572,7 @@ def main():
         raise SystemExit(f'reference {args.ref} is not one of {labels}')
     others = [l for l in labels if l != args.ref]
 
-    if args.mode == 'all':
-        modes = ['raw', 'shape', 'yield']
-    elif args.mode == 'both':
+    if args.mode == 'both':
         modes = ['shape', 'yield']
     else:
         modes = [args.mode]
@@ -718,7 +582,7 @@ def main():
     n_gen = {}
     sumw = {}
     for label in labels:
-        weights[label], weight_text = get_weight(branches[label], not args.no_sf, not args.no_prw, not args.no_gen,
+        weights[label], weight_text = get_weight(branches[label], not args.no_sf, not args.no_prw, True,
                                                  not args.no_jet_sf)
         print(f'{label}: CutBookkeeper')
         n_gen[label], sumw[label] = get_cutbookkeeper(files[label])
@@ -737,27 +601,16 @@ def main():
         chosen = [p for p in plots if p[0] == args.cut_scan]
         if not chosen:
             raise SystemExit(f'no plot called {args.cut_scan}, choose from: {[p[0] for p in plots]}')
-        total = n_gen if args.no_gen else sumw
+        total = sumw
         cut_scan(chosen[0], args, labels, others, trees, branches, total, color)
         return
 
-    # everything below uses the full pre-selection, so work from in-memory copies
     if not args.no_skim:
         trees = skim_trees(trees, branches, labels)
 
     if args.compare_kf:
-        total = n_gen if args.no_gen else sumw
+        total = sumw
         compare_kf(args, labels, others, trees, branches, weights, weight_text, total, color)
-        return
-
-    if args.compare_prw or args.compare_sf or args.compare_gen:
-        for which, name in [('prw', args.compare_prw), ('sf', args.compare_sf), ('gen', args.compare_gen)]:
-            if not name:
-                continue
-            chosen = [p for p in plots if p[0] == name]
-            if not chosen:
-                raise SystemExit(f'no plot called {name}, choose from: {[p[0] for p in plots]}')
-            compare_weight(chosen[0], which, args, labels, others, trees, branches, sumw, n_gen, color)
         return
 
     for mode in modes:
@@ -768,7 +621,6 @@ def main():
         if args.only and name not in args.only:
             continue
 
-        # skip plots whose branches are not in every file
         needed = [t for t in re.findall(r'[A-Za-z_]\w*', expr) if t.endswith('NOSYS') or t.startswith('average')]
         missing = [l for l in labels if any(b not in branches[l] for b in needed)]
         if missing:
@@ -778,22 +630,14 @@ def main():
         if binning == 'auto':
             binning = auto_range(trees[args.ref], expr)
 
-        total = n_gen if args.no_gen else sumw
+        total = sumw
         weighted = None
         for mode in modes:
-            if mode == 'raw':
-                hists, ytitle = fill_hists(name, expr, binning, xtitle, 'raw', labels, trees, weights, total, color)
-            else:
-                if weighted is None:
-                    weighted, _ = fill_hists(name, expr, binning, xtitle, 'unscaled', labels, trees, weights,
-                                             total, color)
-                hists, ytitle = scale_hists(weighted, mode, binning, xtitle, total, f'_{mode}')
-
-            if mode == 'raw':
-                text = 'none (raw MC events)'
-            else:
-                text = weight_text
-            keep += make_plot(c, hists, args.ref, others, binning, xtitle, ytitle, text,
+            if weighted is None:
+                weighted, _ = fill_hists(name, expr, binning, xtitle, 'unscaled', labels, trees, weights,
+                                         total, color)
+            hists, ytitle = scale_hists(weighted, mode, binning, xtitle, total, f'_{mode}')
+            keep += make_plot(c, hists, args.ref, others, binning, xtitle, ytitle, weight_text,
                               show_ratio=name not in no_ratio, ymax_factor=headroom.get(name, 1.45))
             keep += list(hists.values())
             c.Print(f'{args.tag}_{mode}_plots.pdf')
@@ -805,4 +649,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-

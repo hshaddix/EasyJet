@@ -1,15 +1,17 @@
+# bbyy ntupler config used for the mc23a/d/e/g photon isolation and kinematics checks.
+# Bypass mode: every event is kept and each cut is stored as a flag, so the selection
+# is applied in the plotting scripts.
 include: [bbyyAnalysis/RunConfig-bbyy-base.yaml]
 
 bypass: true
 do_trigger_filtering: false
 save_cutflow: true
 
+# photon ID and isolation SF systematics
 do_CP_systematics: true
 systematics_regex: ["PH_EFF_ISO", "PH_EFF_ID"]
 
-save_HbbCand_vars: true
-do_KinematicFit: true
-
+# PASS_TRIGGER_MATCHING is needed for MC, otherwise PASS_RELPT is never true
 CutList:
   - PASS_TRIGGER
   - TWO_LOOSE_PHOTONS
@@ -22,7 +24,7 @@ CutList:
   - LESS_THAN_SIX_CENTRAL_JETS
   - EXACTLY_TWO_B_JETS
 
-# save ID and isolation SFs separately (in addition to the combined effSF)
+# keep the ID and isolation SFs separately as well as the combined one
 ttree_output:
   collection_options:
     photons:
@@ -30,3 +32,7 @@ ttree_output:
         - ["ph_id_effSF_Tight_FixedCutLoose_%SYS%", null]
         - ["ph_isol_effSF_Tight_FixedCutLoose_%SYS%", null]
         - ["ph_id_effSF_Tight_NonIso_%SYS%", null]
+
+# H->bb candidate jets and kinematic fit variables
+save_HbbCand_vars: true
+do_KinematicFit: true

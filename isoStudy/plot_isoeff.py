@@ -1,3 +1,5 @@
+# Photon isolation efficiency (Tight + FixedCutLoose / Tight) vs pT, eta or <mu> for mc23 campaigns.
+
 import argparse
 from array import array
 
@@ -26,10 +28,8 @@ VARS = {
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument('--samples', nargs='+', metavar='LABEL=FILE',
-                   default=['mc23a=isocheck-mc23a-phys.root', 'mc23d=isocheck-mc23d-phys.root',
-                            'mc23e=isocheck-mc23e-phys.root', 'mc23g=isocheck-mc23g-phys.root'])
-    p.add_argument('--ref', default='mc23e', help='label of the reference sample for the ratio')
+    p.add_argument('--samples', nargs='+', metavar='LABEL=FILE', required=True)
+    p.add_argument('--ref', default='mc23g', help='label of the reference sample for the ratio')
     p.add_argument('--var', choices=VARS, default='pt')
     p.add_argument('--photons', choices=['both', 'leading'], default='both')
     p.add_argument('--conv', type=int, choices=[0, 1], default=0, help='0 = unconverted, 1 = converted')
@@ -54,7 +54,9 @@ def fill(path, args, tag):
     tight_iso = find_branch(names, 'baselineSelection_Tight_FixedCutLoose')
     conv = find_branch(names, 'isConv')
 
-    events = 'pass_trigger_diphoton_g35_g25_NOSYS && pass_matching_trigger_diphoton_g35_g25_NOSYS && bbyy_TWO_LOOSE_PHOTONS_NOSYS'
+    # g35_g25 trigger (fired + matched), >= 2 loose photons
+    events = ('pass_trigger_diphoton_g35_g25_NOSYS && pass_matching_trigger_diphoton_g35_g25_NOSYS'
+              ' && bbyy_TWO_LOOSE_PHOTONS_NOSYS')
     den = ROOT.TH1D(f'den_{tag}', '', len(bins) - 1, array('d', bins))
     num = ROOT.TH1D(f'num_{tag}', '', len(bins) - 1, array('d', bins))
 
@@ -150,7 +152,7 @@ def main():
     tex.SetTextSize(0.035)
     tex.DrawLatex(0.19, 0.87, 'HH#rightarrowbb#gamma#gamma (#kappa_{#lambda}=1), #sqrt{s} = 13.6 TeV, DAOD_PHYS p7266')
     tex.DrawLatex(0.19, 0.82, f'{which}: {conv_name}, Tight ID{eta_text}')
-    tex.DrawLatex(0.19, 0.77, 'Trigger + 2 loose #gamma, FixedCutLoose isolation')
+    tex.DrawLatex(0.19, 0.77, 'g35_g25 trigger + 2 loose #gamma, FixedCutLoose isolation')
 
     bot.cd()
     rframe = bot.DrawFrame(bins[0], 0.95, bins[-1], 1.05, f';{xtitle};mc23X / {args.ref}')
