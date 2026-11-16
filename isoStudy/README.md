@@ -16,45 +16,72 @@ HH→bbγγ signal sample and the bbyy ntupler in EasyJet:
 
 ## Samples
 
-All four campaigns use the same DSID, generator tag and derivation, so only the simulation
-and reconstruction (and with them the pile-up and detector conditions) differ:
+HH→bbγγ signal (κλ = 1, DSID 603559), DAOD_PHYS with p7266 in all four campaigns. Only the
+simulation and reconstruction tags differ, so the differences come from the campaign
+conditions (pile-up, detector), not from the generation or derivation:
 
-```
-mc23_13p6TeV.603559.PhPy8EG_PDF4LHC21_HHbbyy_chhh1p0.deriv.DAOD_PHYS.e8564_<s>_<r>_p7266
-```
-
-| Campaign | Data year | s-tag | r-tag | ⟨μ⟩ |
+| Campaign | Data year | ⟨μ⟩ | Files | Dataset |
 |---|---|---|---|---|
-| mc23a | 2022 | s4162 | r15540 | 42 |
-| mc23d | 2023 | s4159 | r15530 | 51 |
-| mc23e | 2024 | s4369 | r16083 | 57 |
-| mc23g | 2025 | s4618 | r17610 | 60 |
+| mc23a | 2022 | 42 | 12 | `mc23_13p6TeV.603559.PhPy8EG_PDF4LHC21_HHbbyy_chhh1p0.deriv.DAOD_PHYS.e8564_s4162_r15540_p7266` |
+| mc23d | 2023 | 51 | 13 | `mc23_13p6TeV.603559.PhPy8EG_PDF4LHC21_HHbbyy_chhh1p0.deriv.DAOD_PHYS.e8564_s4159_r15530_p7266` |
+| mc23e | 2024 | 57 | 27 | `mc23_13p6TeV.603559.PhPy8EG_PDF4LHC21_HHbbyy_chhh1p0.deriv.DAOD_PHYS.e8564_s4369_r16083_p7266` |
+| mc23g | 2025 | 60 | 33 | `mc23_13p6TeV.603559.PhPy8EG_PDF4LHC21_HHbbyy_chhh1p0.deriv.DAOD_PHYS.e8564_s4618_r17610_p7266` |
 
-The ntuples from this study are in `/eos/user/h/hshaddix/isocheck_campaigns/`:
-`mc23{a,d,e,g}_kin.root` (kinematics, with H→bb candidate and KF branches) and
-`mc23{a,d,e,g}_isocheck.root` (isolation).
+The rucio scope is `mc23_13p6TeV`. Note that r15540 is mc23a and r15530 is mc23d.
 
 ## Making the ntuples
 
-Built against AthAnalysis 25.2.113. Copy the run config into your run directory, then for a
-quick local test:
+Set up EasyJet (built against AthAnalysis 25.2.113) and copy `RunConfig-bbyy-isocheck.yaml`
+into your run directory. One ntuple per campaign is enough: the same files are used for both
+the kinematic and the isolation plots.
+
+### Quick local test on one file
 
 ```bash
-bbyy-ntupler <DAOD_PHYS file> --run-config RunConfig-bbyy-isocheck.yaml --evtMax 1000 --out-file test.root
+lsetup rucio; voms-proxy-init -voms atlas
+DS=mc23_13p6TeV:mc23_13p6TeV.603559.PhPy8EG_PDF4LHC21_HHbbyy_chhh1p0.deriv.DAOD_PHYS.e8564_s4618_r17610_p7266
+rucio list-files $DS                      # the files in the dataset
+rucio download --nrandom 1 $DS            # one file, into a folder named after the dataset
+bbyy-ntupler <downloaded file> --run-config RunConfig-bbyy-isocheck.yaml \
+  --evtMax 1000 --out-file test_mc23g.root
 ```
 
-For the full samples, use `submit_grid.sh` (set `RUN_CONFIG` and `CAMPAIGN` at the top):
+Drop `--evtMax` to run over the whole file.
+
+### On the grid
+
+`submit_grid.sh` submits `bbyy-ntupler` for the four datasets above, one job per input file.
+Set `RUN_CONFIG` (path to the run config) and `CAMPAIGN` (a name that goes into the output
+dataset names) at the top, then:
 
 ```bash
-source ~/work/easyjet/env.sh; lsetup panda; voms-proxy-init -voms atlas
-./submit_grid.sh --dry-run   # check the printed datasets first
-./submit_grid.sh
+source ~/work/easyjet/env.sh        # your EasyJet setup
+lsetup panda; voms-proxy-init -voms atlas
+./submit_grid.sh --dry-run          # prints what would be submitted, submits nothing
+./submit_grid.sh                    # submit
 ```
 
-It runs one job per input file and submits from an empty directory under `/tmp/$USER`, with
-the log in `~/gridsubmit_<campaign>.log`; a log inside the submit directory ends up in the
-tarball and breaks the jobs. When the jobs are done, `rucio download` the `_TREE` output
-datasets and `hadd` them per campaign.
+- **Part of each dataset** (for a test): uncomment `N_FILES=3` in the script. Only
+  N files of each dataset are run over (`--nFiles`).
+- **Full datasets**: leave `N_FILES` commented out. This is 85 jobs in total.
+
+The script submits from an empty directory under `/tmp/$USER` and writes the log to
+`~/gridsubmit_<CAMPAIGN>.log`. A log inside the submit directory ends up in the job tarball
+and makes the jobs fail with "command not found".
+
+Follow the jobs with `pbook` (`show()`, `retry(<taskID>)`, `kill(<taskID>)`) or on
+BigPanDA. The outputs are datasets named `user.<you>.<CAMPAIGN>.<date>.603559.<tags>_TREE`.
+When they are done, download and merge one file per campaign:
+
+```bash
+rucio download user.<you>.<CAMPAIGN>.*_TREE
+hadd mc23a_kin.root user.<you>.<CAMPAIGN>.*r15540*_TREE/*.root
+hadd mc23d_kin.root user.<you>.<CAMPAIGN>.*r15530*_TREE/*.root
+hadd mc23e_kin.root user.<you>.<CAMPAIGN>.*r16083*_TREE/*.root
+hadd mc23g_kin.root user.<you>.<CAMPAIGN>.*r17610*_TREE/*.root
+```
+
+The file names are only a convention; the commands below assume them.
 
 Things to know:
 
@@ -71,7 +98,7 @@ Things to know:
 ## Kinematic plots
 
 ```bash
-D=root://eosuser.cern.ch//eos/user/h/hshaddix/isocheck_campaigns
+D=/path/to/merged/ntuples           # the folder with mc23{a,d,e,g}_kin.root
 S="--samples mc23a=$D/mc23a_kin.root mc23d=$D/mc23d_kin.root mc23e=$D/mc23e_kin.root mc23g=$D/mc23g_kin.root --ref mc23g --g35-g25-only --tag kinG35"
 
 python -u plot_kinematics.py $S                  # all variables, shape and yield
@@ -79,6 +106,9 @@ python -u plot_kinematics.py $S --only mbb pTbb  # just some of them
 python -u plot_kinematics.py $S --compare-kf     # mbb and pTbb without / with the kinematic fit
 python -u plot_kinematics.py $S --cut-scan       # photon1_phi with the cuts added one at a time
 ```
+
+For files on EOS, reading through XRootD is much faster than the `/eos` mount, e.g.
+`D=root://eosuser.cern.ch//eos/user/<initial>/<username>/<folder>`.
 
 Outputs are `<tag>_shape_<variable>.png`, `<tag>_yield_<variable>.png`, one PDF per mode,
 `<tag>_kfcompare_*.png`, `<tag>_cutscan_*` and `<tag>_prw_weights.png`. The list of
@@ -127,13 +157,12 @@ and subleading photon, with Clopper–Pearson 68% CL errors. Events need the g35
 not shown.
 
 ```bash
-D=/eos/user/h/hshaddix/isocheck_campaigns
 for conv in 0 1; do
   if [ $conv -eq 0 ]; then name=unconverted; else name=converted; fi
   for v in pt eta mu; do
     python plot_isoeff.py --var $v --conv $conv --ref mc23g \
-      --samples mc23a=$D/mc23a_isocheck.root mc23d=$D/mc23d_isocheck.root \
-                mc23e=$D/mc23e_isocheck.root mc23g=$D/mc23g_isocheck.root \
+      --samples mc23a=$D/mc23a_kin.root mc23d=$D/mc23d_kin.root \
+                mc23e=$D/mc23e_kin.root mc23g=$D/mc23g_kin.root \
       --out isoEff_G35_${name}_${v}
   done
 done
