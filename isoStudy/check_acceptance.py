@@ -1,13 +1,6 @@
 #!/usr/bin/env python3
-# Where does mc23g lose events compared to mc23a/d/e?
-#
-# For each campaign this prints, cut by cut, the fraction of generated events
-# that survive (cumulative), both unweighted and weighted, and the mean of
-# each weight factor after the full selection.
-#
-# usage:
-#   python check_acceptance.py mc23a=mc23a_kin.root mc23d=mc23d_kin.root \
-#                              mc23e=mc23e_kin.root mc23g=mc23g_kin.root
+# Cumulative cutflow fraction per campaign (unweighted and weighted), and the ratio to mc23g.
+# usage: python check_acceptance.py mc23a=a.root mc23d=d.root mc23e=e.root mc23g=g.root
 
 import sys
 import re
@@ -23,7 +16,7 @@ cuts = ['PASS_TRIGGER', 'TWO_LOOSE_PHOTONS', 'PASS_TRIGGER_MATCHING',
 
 def find_cut_branch(branches, cut):
     # trigger flags have a _SINGLE_OR_DIPHOTON suffix, the rest don't
-    pattern = re.compile(rf'^bbyy_{cut}(_SINGLE_OR_DIPHOTON)?_NOSYS$')
+    pattern = re.compile(rf'^bbyy_{cut}(_?SINGLE_OR_DIPHOTON)?_NOSYS$')
     for b in branches:
         if pattern.match(b):
             return b
@@ -64,7 +57,7 @@ for arg in sys.argv[1:]:
     samples.append((label, path))
 
 if not samples:
-    print(__doc__ if __doc__ else 'give label=file arguments')
+    print('usage: python check_acceptance.py label=file [label=file ...]')
     sys.exit(1)
 
 results = {}
@@ -86,8 +79,7 @@ for label, path in samples:
     print(f'  pile-up weight branch: {prw_branch}')
     print(f'  all PRW branches: {prw}')
 
-    # mean weights over ALL events in the tree (before any cut).
-    # in bypass mode the tree should hold every event, so <PRW> here should be ~1
+    # before any cut <PRW> should be ~1
     if prw_branch:
         print(f'  <{prw_branch}> before cuts = {mean_of(tree, prw_branch, "1"):.4f}')
     print(f'  <generatorWeight> before cuts = {mean_of(tree, "generatorWeight_NOSYS", "1"):.4f}')
@@ -112,7 +104,7 @@ for label, path in samples:
         frac_gen = weighted_sum(tree, w_gen, selection) / sumw_initial
         frac_prw = weighted_sum(tree, w_prw, selection) / sumw_initial
 
-        # photon SFs only make sense once there are two tight photons
+        # photon SFs only defined after the tight photon cut
         if 'TIGHTID' in selection:
             frac_full = weighted_sum(tree, w_full, selection) / sumw_initial
             full_text = f'{frac_full:11.4f}'
@@ -133,7 +125,7 @@ for label, path in samples:
     f.Close()
 
 
-# side by side: each campaign's cumulative fraction divided by mc23g's
+# ratio to the reference
 ref = 'mc23g' if 'mc23g' in results else samples[-1][0]
 print(f'\n=== ratio to {ref} of the cumulative fraction (columns: unweighted / gen*PRW*SF)')
 header = f'  {"cut":30s}' + ''.join(f'{lab:>18s}' for lab, _ in samples if lab != ref)
@@ -155,4 +147,3 @@ for cut in cuts:
             full = '-'
         line += f'{raw:>10.3f} / {full:>5s}'
     print(line)
-
