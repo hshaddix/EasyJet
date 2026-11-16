@@ -182,20 +182,3 @@ Prints, for each campaign, the fraction of generated events left after each cut
 (unweighted and with each weight added), and at the end each campaign divided by mc23g.
 This uses the standard bbyy cuts (all trigger routes).
 
-## Results so far
-
-- With all events and no cuts, all campaigns agree (ratio 1.00), so the normalisation and
-  pile-up weights are fine.
-- With all trigger routes, mc23e is ~7.5% above mc23g after the full selection; the cut
-  scan shows this comes from the trigger and relpT steps (the 2024-only g45_g20 route).
-  The g35_g25-only selection removes that route.
-- mc23a and mc23d are ~9% and ~5% above mc23g after the full selection. The difference
-  builds up at the Tight ID + isolation cut and at the b-tag cut and follows ⟨μ⟩.
-- Isolation efficiency: mc23a is up to ~4% higher at low pT (lower pile-up); at the same
-  ⟨μ⟩ the campaigns agree within ~1%, and mc23g agrees with mc23e within ~1%.
-
-## Next steps
-
-- Check the b-tagging SF choice (see above), and whether the standard is exactly 2 or
-  ≥ 2 b-jets.
-- Add 2026 to the mc23g campaign once the 2026 GRL, lumicalc and PRW files exist.
